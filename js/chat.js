@@ -86,6 +86,17 @@
     return active;
   };
 
+  /* Transient status line (errors, info) shown in the chat panel */
+  let statusTimer = null;
+  function showStatus(text) {
+    const el = document.getElementById("chat-typing");
+    if (!el) return;
+    el.textContent = text;
+    el.hidden = false;
+    clearTimeout(statusTimer);
+    statusTimer = setTimeout(() => { el.hidden = true; }, 4000);
+  }
+
   /* ---------------- moderation ---------------- */
   function moderate(text) {
     let out = text;
@@ -111,8 +122,9 @@
     _handlers: {},
     subscribe(r, cb) { this._handlers[r] = cb; cb(localLoad(r)); return () => { if (this._handlers[r] === cb) delete this._handlers[r]; }; },
     _emit(r) { const cb = this._handlers[r]; if (cb) cb(localLoad(r)); },
-    add(r, msg) { const m = localLoad(r); m.push(msg); localSave(r, m); this._emit(r); broadcast(r); },
-    del(r, ref) { const m = localLoad(r).filter((x) => x.id !== ref); localSave(r, m); this._emit(r); broadcast(r); },
+    add(r, msg) { const m = localLoad(r); m.push(msg); localSave(r, m); this._emit(r); broadcast(r); return Promise.resolve(); },
+    update(r, msg) { const m = localLoad(r); const i = m.findIndex((x) => x.id === msg.id); if (i >= 0) m[i] = msg; localSave(r, m); this._emit(r); broadcast(r); return Promise.resolve(); },
+    del(r, ref) { const m = localLoad(r).filter((x) => x.id !== ref); localSave(r, m); this._emit(r); broadcast(r); return Promise.resolve(); },
   };
   function broadcast(r) { if (bc) { try { bc.postMessage({ type: "msg", room: r }); } catch (e) {} } }
   function incoming(evtRoom) { if (localBackend._handlers[evtRoom]) localBackend._emit(evtRoom); }
@@ -132,13 +144,15 @@
         const app = appMod.initializeApp(FIREBASE_CONFIG);
         fb = {
           db: dbMod.getDatabase(app),
-          ref: dbMod.ref, push: dbMod.push, remove: dbMod.remove,
+          ref: dbMod.ref, push: dbMod.push, remove: dbMod.remove, set: dbMod.set,
           onValue: dbMod.onValue, query: dbMod.query, limitToLast: dbMod.limitToLast,
         };
       })();
     }
     return fbInit;
   }
+  /* strip _key and any undefined values (Firebase rejects undefined) */
+  const cleanMsg = (msg) => { const c = JSON.parse(JSON.stringify(msg)); delete c._key; return c; };
   const firebaseBackend = {
     subscribe(r, cb) {
       let off = () => {};
@@ -150,12 +164,16 @@
             .map((k) => Object.assign({ _key: k }, val[k]))
             .sort((a, b) => a.ts - b.ts);
           cb(msgs);
-        });
-      });
+        }, () => showStatus("⚠ " + t("chat_cloud_err")));
+      }).catch(() => showStatus("⚠ " + t("chat_cloud_err")));
       return () => { try { off(); } catch (e) {} };
     },
-    add(r, msg) { ensureFb().then(() => fb.push(fb.ref(fb.db, "rooms/" + r + "/messages"), msg)); },
-    del(r, ref) { ensureFb().then(() => fb.remove(fb.ref(fb.db, "rooms/" + r + "/messages/" + ref))); },
+    add(r, msg) { return ensureFb().then(() => fb.push(fb.ref(fb.db, "rooms/" + r + "/messages"), cleanMsg(msg))); },
+    update(r, msg) {
+      if (!msg._key) return this.add(r, msg);
+      return ensureFb().then(() => fb.set(fb.ref(fb.db, "rooms/" + r + "/messages/" + msg._key), cleanMsg(msg)));
+    },
+    del(r, ref) { return ensureFb().then(() => fb.remove(fb.ref(fb.db, "rooms/" + r + "/messages/" + ref))); },
   };
 
   const backend = FIREBASE_CONFIG ? firebaseBackend : localBackend;
@@ -249,9 +267,10 @@
         const isPinned = msg.pinned;
         const text = (msg.editedText || msg.text || "");
         const reactions = msg.reactions || {};
-        const reactionHtml = Object.entries(reactions).map(([emoji, users]) =>
-          `<span class="chat-reaction" title="${users.join(', ')}">${emoji} ${users.length}</span>`
-        ).join("");
+        const reactionHtml = Object.entries(reactions).map(([emoji, users]) => {
+          const list = Array.isArray(users) ? users : Object.values(users || {});
+          return `<span class="chat-reaction" title="${esc(list.join(', '))}">${esc(emoji)} ${list.length}</span>`;
+        }).join("");
         const mentioned = !mine && mentionsMe(text);
         return (
           '<div class="chat-msg ' + (mine ? "mine" : "") + (isPinned ? " pinned" : "") + (mentioned ? " mentioned" : "") + '">' +
@@ -314,18 +333,18 @@
     text = (text || "").trim();
     if (!text) return;
     const u = me();
-    if (!u) return;
-    if (!rateOk()) return;
+    if (!u) { showStatus(t("chat_login")); return; }
+    if (!rateOk()) { showStatus("⚠ " + t("chat_slow_down")); return; }
     text = moderate(text.slice(0, 500));
     const label = (u.name || u.email || "?").trim();
-    backend.add(room, {
+    Promise.resolve(backend.add(room, {
       id: "m_" + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36),
       userId: u.id,
       name: label.split(" ")[0],
       initial: label.charAt(0).toUpperCase(),
       text: text,
       ts: Date.now(),
-    });
+    })).catch(() => showStatus("⚠ " + t("chat_send_err")));
   }
 
   function del(ref) {
@@ -347,7 +366,7 @@
     if (!text) return;
     msg.editedText = moderate(text);
     msg.editTs = Date.now();
-    backend.add(room, msg);
+    Promise.resolve(backend.update(room, msg)).catch(() => showStatus("⚠ " + t("chat_send_err")));
   }
 
   function showReactionPicker(ref) {
@@ -374,13 +393,15 @@
     if (!msg) return;
     if (!msg.reactions) msg.reactions = {};
     if (!msg.reactions[emoji]) msg.reactions[emoji] = [];
+    /* Firebase can deserialize arrays as objects — normalize first */
+    if (!Array.isArray(msg.reactions[emoji])) msg.reactions[emoji] = Object.values(msg.reactions[emoji] || {});
     if (!msg.reactions[emoji].includes(u.id)) {
       msg.reactions[emoji].push(u.id);
     } else {
       msg.reactions[emoji] = msg.reactions[emoji].filter(id => id !== u.id);
       if (msg.reactions[emoji].length === 0) delete msg.reactions[emoji];
     }
-    backend.add(room, msg);
+    Promise.resolve(backend.update(room, msg)).catch(() => showStatus("⚠ " + t("chat_send_err")));
   }
 
   function togglePin(ref) {
@@ -390,7 +411,7 @@
     if (!msg) return;
     if (msg.userId !== u.id && !u.admin) return;
     msg.pinned = !msg.pinned;
-    backend.add(room, msg);
+    Promise.resolve(backend.update(room, msg)).catch(() => showStatus("⚠ " + t("chat_send_err")));
   }
 
   /* Broadcast typing status */

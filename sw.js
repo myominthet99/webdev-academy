@@ -1,7 +1,7 @@
 /* WebDev Academy — service worker (offline app shell)
    Bump CACHE on every release — cache-first serving means returning
    visitors only get new code when the cache name changes. */
-const CACHE = "wda-v3";
+const CACHE = "wda-v4";
 const ASSETS = [
   "./",
   "./index.html",

@@ -256,11 +256,24 @@
   function renderList() {
     if (!listEl) return;
     const u = me();
+    /* Room indicator: make it obvious when you're NOT in the global room,
+       with a one-tap way back (messages live per room). */
+    const roomBar = room === "community" ? "" :
+      '<div class="chat-roombar"><span>📚 ' + esc(roomLabel || room) + "</span>" +
+      '<button id="chat-to-community" type="button">🌐 ' + t("chat_go_community") + "</button></div>";
+    const wireRoomBar = () => {
+      const b = listEl.querySelector("#chat-to-community");
+      if (b) b.addEventListener("click", () => setRoom("community", null));
+    };
     const filtered = searchQuery
       ? roomCache.filter((m) => (m.text || "").toLowerCase().includes(searchQuery) || (m.name || "").toLowerCase().includes(searchQuery))
       : roomCache;
-    if (!filtered.length) { listEl.innerHTML = '<div class="chat-empty">' + (searchQuery ? "No messages match" : t("chat_empty")) + "</div>"; return; }
-    listEl.innerHTML = filtered
+    if (!filtered.length) {
+      listEl.innerHTML = roomBar + '<div class="chat-empty">' + (searchQuery ? "No messages match" : t("chat_empty")) + "</div>";
+      wireRoomBar();
+      return;
+    }
+    listEl.innerHTML = roomBar + filtered
       .map((msg) => {
         const mine = u && msg.userId === u.id;
         const ref = esc(msg._key || msg.id);
@@ -302,6 +315,7 @@
     listEl.querySelectorAll("[data-pin]").forEach((b) =>
       b.addEventListener("click", () => togglePin(b.getAttribute("data-pin")))
     );
+    wireRoomBar();
   }
   function scrollBottom() { if (listEl) listEl.scrollTop = listEl.scrollHeight; }
 

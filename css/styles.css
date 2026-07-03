@@ -555,6 +555,7 @@ button { font-family: inherit; cursor: pointer; }
 .chat-send { border: 0; background: var(--purple); color: #fff; width: 38px; border-radius: 50%; font-size: 15px; cursor: pointer; }
 .chat-send:hover { filter: brightness(1.06); }
 .chat-search { flex: 1; min-width: 60px; max-width: 150px; padding: 6px 10px; border: 1px solid var(--line); font-size: 13px; background: var(--surface-2); color: var(--ink); border-radius: 6px; margin: 0 8px; }
+.chat-ver { font-size: 10px; opacity: .65; margin-left: 6px; white-space: nowrap; }
 .chat-presence { font-size: 12px; color: var(--muted); margin: 0 8px; white-space: nowrap; }
 .chat-online { display: inline-flex; align-items: center; gap: 4px; color: #16794c; font-weight: 600; }
 .chat-mention { color: var(--purple); font-weight: 700; background: rgba(164, 53, 240, .08); border-radius: 4px; padding: 0 3px; }

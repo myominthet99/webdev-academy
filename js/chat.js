@@ -15,6 +15,7 @@
   const I18N = window.I18N;
   const KEY = "wda_chat_v1";
   const MAX = 200;
+  const BUILD = "v7"; /* shown in the chat header — bump with releases */
 
   /* ============ Firebase config (optional) ============
      Configured centrally in js/firebase-config.js — paste your config
@@ -153,19 +154,18 @@
   }
   /* strip _key and any undefined values (Firebase rejects undefined) */
   const cleanMsg = (msg) => { const c = JSON.parse(JSON.stringify(msg)); delete c._key; return c; };
+  const mapSnap = (val) =>
+    Object.keys(val || {})
+      .map((k) => Object.assign({ _key: k }, val[k]))
+      .sort((a, b) => a.ts - b.ts);
+
   const firebaseBackend = {
     subscribe(r, cb) {
       let off = () => {};
       ensureFb().then(() => {
         const q = fb.query(fb.ref(fb.db, "rooms/" + r + "/messages"), fb.limitToLast(MAX));
-        off = fb.onValue(q, (snap) => {
-          const val = snap.val() || {};
-          const msgs = Object.keys(val)
-            .map((k) => Object.assign({ _key: k }, val[k]))
-            .sort((a, b) => a.ts - b.ts);
-          cb(msgs);
-        }, () => showStatus("⚠ " + t("chat_cloud_err")));
-      }).catch(() => showStatus("⚠ " + t("chat_cloud_err")));
+        off = fb.onValue(q, (snap) => cb(mapSnap(snap.val())), degradeToRest);
+      }).catch(degradeToRest);
       return () => { try { off(); } catch (e) {} };
     },
     add(r, msg) { return ensureFb().then(() => fb.push(fb.ref(fb.db, "rooms/" + r + "/messages"), cleanMsg(msg))); },
@@ -176,7 +176,50 @@
     del(r, ref) { return ensureFb().then(() => fb.remove(fb.ref(fb.db, "rooms/" + r + "/messages/" + ref))); },
   };
 
-  const backend = FIREBASE_CONFIG ? firebaseBackend : localBackend;
+  /* REST fallback: plain HTTPS polling — works even where the Firebase SDK
+     or its websocket is blocked (some mobile networks, proxies, old browsers). */
+  const restUrl = (r, key) =>
+    FIREBASE_CONFIG.databaseURL + "/rooms/" + encodeURIComponent(r) + "/messages" + (key ? "/" + key : "") + ".json";
+  const restBackend = {
+    _cbs: {},
+    subscribe(r, cb) {
+      this._cbs[r] = cb;
+      const poll = () => {
+        if (this._cbs[r] !== cb) return;
+        fetch(restUrl(r)).then((res) => res.json()).then((val) => {
+          if (this._cbs[r] === cb) cb(mapSnap(val));
+        }).catch(() => {});
+      };
+      poll();
+      const id = setInterval(poll, 4000);
+      this._poll = poll;
+      return () => { clearInterval(id); if (this._cbs[r] === cb) delete this._cbs[r]; };
+    },
+    _refresh() { if (this._poll) this._poll(); },
+    add(r, msg) {
+      return fetch(restUrl(r), { method: "POST", body: JSON.stringify(cleanMsg(msg)) })
+        .then((res) => { if (!res.ok) throw new Error("send failed"); this._refresh(); });
+    },
+    update(r, msg) {
+      if (!msg._key) return this.add(r, msg);
+      return fetch(restUrl(r, msg._key), { method: "PUT", body: JSON.stringify(cleanMsg(msg)) })
+        .then((res) => { if (!res.ok) throw new Error("update failed"); this._refresh(); });
+    },
+    del(r, ref) {
+      return fetch(restUrl(r, ref), { method: "DELETE" })
+        .then((res) => { if (!res.ok) throw new Error("delete failed"); this._refresh(); });
+    },
+  };
+
+  let backend = FIREBASE_CONFIG ? firebaseBackend : localBackend;
+  let restMode = false;
+  function degradeToRest() {
+    if (restMode || !FIREBASE_CONFIG) return;
+    restMode = true;
+    backend = restBackend;
+    setTitle(); /* refresh the mode badge */
+    subscribeRoom(); /* re-subscribe through the REST poller */
+  }
 
   /* ---------------- DOM ---------------- */
   function build() {
@@ -187,6 +230,7 @@
       '<span class="chat-badge" hidden>0</span></button>' +
       '<div id="chat-panel" class="chat-panel" hidden>' +
       '  <div class="chat-head"><span class="chat-title"></span>' +
+      '    <span id="chat-ver" class="chat-ver" title="build · backend"></span>' +
       '    <span id="chat-presence" class="chat-presence"></span>' +
       '    <input id="chat-search" type="text" class="chat-search" placeholder="🔍 Search..." style="display:none">' +
       '    <button class="chat-close" type="button" aria-label="Close">&times;</button></div>' +
@@ -211,6 +255,8 @@
   function setTitle() {
     const el = panel && panel.querySelector(".chat-title");
     if (el) el.textContent = roomLabel || t("chat_title");
+    const ver = panel && panel.querySelector("#chat-ver");
+    if (ver) ver.textContent = BUILD + (FIREBASE_CONFIG ? (restMode ? "⚡" : "☁") : "💾");
   }
 
   function renderPresence() {

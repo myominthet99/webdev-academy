@@ -1,7 +1,8 @@
 /* WebDev Academy — service worker (offline app shell)
-   Bump CACHE on every release — cache-first serving means returning
-   visitors only get new code when the cache name changes. */
-const CACHE = "wda-v5";
+   Strategy: NETWORK-FIRST for same-origin requests — users always get
+   fresh code when online; the cache is only an offline fallback.
+   Still bump CACHE per release so stale precaches get purged. */
+const CACHE = "wda-v6";
 const ASSETS = [
   "./",
   "./index.html",
@@ -35,16 +36,17 @@ self.addEventListener("fetch", (e) => {
   const url = new URL(req.url);
   // Only handle same-origin requests; let CDN/video/Google/Firebase go to network.
   if (url.origin !== location.origin) return;
+  // Network-first: phones rarely get a hard refresh, and the old cache-first
+  // strategy left them stuck running outdated JS forever.
   e.respondWith(
-    caches.match(req).then((hit) =>
-      hit ||
-      fetch(req)
-        .then((res) => {
-          const copy = res.clone();
-          caches.open(CACHE).then((c) => c.put(req, copy)).catch(() => {});
-          return res;
-        })
-        .catch(() => caches.match("./index.html"))
-    )
+    fetch(req)
+      .then((res) => {
+        const copy = res.clone();
+        caches.open(CACHE).then((c) => c.put(req, copy)).catch(() => {});
+        return res;
+      })
+      .catch(() =>
+        caches.match(req).then((hit) => hit || caches.match("./index.html"))
+      )
   );
 });

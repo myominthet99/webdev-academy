@@ -35,13 +35,38 @@
   let room = "community", roomLabel = null;
   let roomCache = [], primed = false, unsub = null;
   let sendTimes = [], typingUsers = new Set(), searchQuery = "";
-  let fab, panel, listEl, footEl, badgeEl, searchEl;
+  let fab, panel, listEl, footEl, badgeEl, searchEl, presenceEl;
+  let activeUsers = new Map(); /* room -> Set of user IDs */
 
   let bc = null;
   try { bc = new BroadcastChannel("wda_chat"); } catch (e) { bc = null; }
 
   const me = () => (window.Auth && window.Auth.current ? window.Auth.current() : null);
   const roomKey = (r) => KEY + "::" + r;
+  const presenceKey = (r) => KEY + "::presence::" + r;
+
+  /* Presence tracking */
+  const loadPresence = (r) => { try { return JSON.parse(localStorage.getItem(presenceKey(r)) || "{}"); } catch (e) { return {}; } };
+  const savePresence = (r, p) => localStorage.setItem(presenceKey(r), JSON.stringify(p));
+  const markPresence = (r) => {
+    const u = me();
+    if (!u) return;
+    const p = loadPresence(r);
+    p[u.id] = { name: u.name || u.email, ts: Date.now() };
+    savePresence(r, p);
+    if (bc) bc.postMessage({ type: "presence", room: r, userId: u.id });
+  };
+  const getActiveUsers = (r) => {
+    const p = loadPresence(r);
+    const now = Date.now();
+    const active = {};
+    Object.entries(p).forEach(([id, data]) => {
+      if (now - data.ts < 60000) active[id] = data; /* 60 sec timeout */
+      else delete p[id];
+    });
+    savePresence(r, p);
+    return active;
+  };
 
   /* ---------------- moderation ---------------- */
   function moderate(text) {
@@ -126,6 +151,7 @@
       '<span class="chat-badge" hidden>0</span></button>' +
       '<div id="chat-panel" class="chat-panel" hidden>' +
       '  <div class="chat-head"><span class="chat-title"></span>' +
+      '    <span id="chat-presence" class="chat-presence"></span>' +
       '    <input id="chat-search" type="text" class="chat-search" placeholder="🔍 Search..." style="display:none">' +
       '    <button class="chat-close" type="button" aria-label="Close">&times;</button></div>' +
       '  <div class="chat-list" id="chat-list"></div>' +
@@ -139,6 +165,7 @@
     footEl = wrap.querySelector("#chat-foot");
     badgeEl = wrap.querySelector(".chat-badge");
     searchEl = wrap.querySelector("#chat-search");
+    presenceEl = wrap.querySelector("#chat-presence");
     fab.addEventListener("click", () => setOpen(!open));
     wrap.querySelector(".chat-close").addEventListener("click", () => setOpen(false));
     searchEl.addEventListener("input", (e) => { searchQuery = e.target.value.toLowerCase(); if (open) renderList(); });
@@ -150,13 +177,27 @@
     if (el) el.textContent = roomLabel || t("chat_title");
   }
 
+  function renderPresence() {
+    if (!presenceEl) return;
+    const active = getActiveUsers(room);
+    const count = Object.keys(active).length;
+    if (count > 0) {
+      const names = Object.values(active).slice(0, 2).map(u => u.name.split(" ")[0]).join(", ");
+      const more = Object.keys(active).length > 2 ? ` +${Object.keys(active).length - 2}` : "";
+      presenceEl.innerHTML = `<span class="chat-online" title="${Object.values(active).map(u => u.name).join(', ')}">${count} 🟢 ${names}${more}</span>`;
+    } else {
+      presenceEl.innerHTML = "";
+    }
+  }
+
   function setOpen(v) {
     open = v;
     if (panel) panel.hidden = !open;
     if (fab) fab.classList.toggle("active", open);
     if (searchEl) searchEl.style.display = v ? "block" : "none";
     if (open) {
-      unread = 0; renderBadge(); renderList(); renderFoot(); scrollBottom();
+      unread = 0; renderBadge(); renderList(); renderFoot(); renderPresence(); scrollBottom();
+      markPresence(room);
       const inp = footEl.querySelector("input.chat-form input");
       if (inp) inp.focus();
     }
@@ -354,7 +395,7 @@
     }
   }
 
-  /* Handle typing from other tabs */
+  /* Handle typing and presence from other tabs */
   if (bc) {
     bc.onmessage = (e) => {
       if (!e || !e.data) return;
@@ -364,6 +405,9 @@
         renderTyping();
         clearTimeout(typingTimer);
         typingTimer = setTimeout(() => { typingUsers.clear(); renderTyping(); }, 2000);
+      }
+      else if (e.data.type === "presence" && e.data.room === room && open) {
+        renderPresence();
       }
     };
   }
@@ -385,8 +429,9 @@
     id = id || "community";
     if (id === room) { if (label !== roomLabel) { roomLabel = label; setTitle(); } return; }
     room = id; roomLabel = label || null; unread = 0; renderBadge(); setTitle();
+    markPresence(room);
     subscribeRoom();
-    if (open) renderList();
+    if (open) { renderList(); renderPresence(); }
   }
 
   /* re-render on auth change (login/logout) */

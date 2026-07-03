@@ -138,6 +138,7 @@ window.I18N = {
       chat_edit_tooltip: "Edit",
       chat_react_tooltip: "React",
       chat_pin_tooltip: "Pin",
+      chat_online: "online",
 
       theme_toggle: "Toggle light / dark",
 
@@ -384,6 +385,7 @@ window.I18N = {
       chat_edit_tooltip: "ပြင်ဆင်ရန်",
       chat_react_tooltip: "ကျေးဇူးတင်ရန်",
       chat_pin_tooltip: "ပင်မထားရန်",
+      chat_online: "အွန်လိုင်း",
 
       theme_toggle: "အလင်း / အမှောင် ပြောင်းရန်",
 

@@ -1,14 +1,18 @@
-/* WebDev Academy — service worker (offline app shell) */
-const CACHE = "wda-v1";
+/* WebDev Academy — service worker (offline app shell)
+   Bump CACHE on every release — cache-first serving means returning
+   visitors only get new code when the cache name changes. */
+const CACHE = "wda-v2";
 const ASSETS = [
   "./",
   "./index.html",
   "./css/styles.css",
+  "./js/firebase-config.js",
   "./js/data.js",
   "./js/i18n.js",
   "./js/auth.js",
   "./js/app.js",
   "./js/chat.js",
+  "./js/cloud-sync.js",
   "./manifest.json",
   "./icon.svg",
 ];

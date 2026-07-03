@@ -17,9 +17,9 @@
   const MAX = 200;
 
   /* ============ Firebase config (optional) ============
-     Leave null to use the local backend. Paste your Firebase web config
-     object to enable real cross-device chat. See README for steps. */
-  const FIREBASE_CONFIG = null;
+     Configured centrally in js/firebase-config.js — paste your config
+     there to enable real cross-device chat. See README for steps. */
+  const FIREBASE_CONFIG = window.FIREBASE_CONFIG || null;
   /* ==================================================== */
 
   /* Moderation: add lowercase words to auto-mask (e.g. ["darn"]). */

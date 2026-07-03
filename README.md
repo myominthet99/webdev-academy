@@ -77,18 +77,20 @@ A 💬 bubble (bottom-right) opens a group chat. Features:
 
 By default it uses **localStorage** and syncs live **between tabs of the same browser** (open two tabs, log in as two accounts, and chat). There is no server, so it does **not** sync across different devices — for that, enable Firebase below.
 
-### Enable real cross-device chat (Firebase)
+### Enable real cross-device chat + cloud progress sync (Firebase)
 1. Go to the [Firebase Console](https://console.firebase.google.com/) → **Add project** (free "Spark" plan is fine).
 2. **Build → Realtime Database → Create Database** → start in **test mode** (you can tighten rules later).
 3. Project settings (⚙) → **Your apps → Web (`</>`)** → register the app → copy the **`firebaseConfig`** object.
-4. Paste it into `FIREBASE_CONFIG` at the top of [js/chat.js](js/chat.js):
+4. Paste it into **one file**: [js/firebase-config.js](js/firebase-config.js), replacing `null`:
    ```js
-   const FIREBASE_CONFIG = {
+   window.FIREBASE_CONFIG = {
      apiKey: "…", authDomain: "…", databaseURL: "https://…firebaseio.com",
      projectId: "…", storageBucket: "…", messagingSenderId: "…", appId: "…",
    };
    ```
-5. Save & refresh. The chat now syncs across every device in real time — same UI, no other changes.
+5. Save & redeploy. Two things turn on automatically:
+   - **Chat** syncs across every device in real time.
+   - **Cloud progress sync** ([js/cloud-sync.js](js/cloud-sync.js)): enrollments, completed lessons, notes, bookmarks, quiz scores, comments, reviews and admin-created courses follow each user (keyed by login email) to any device.
 
 > The `databaseURL` field is required for Realtime Database. Tighten the security rules before going public (e.g. require auth, validate message shape).
 

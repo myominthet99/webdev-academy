@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WebDev Academy — Learn Web Development</title>
+  <meta name="description" content="A bilingual (English + Myanmar) learning platform for mastering web development: HTML, CSS, JavaScript and more." />
+  <meta name="theme-color" content="#a435f0" />
+
+  <!-- Favicon: inline SVG (no extra file needed) -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230f1113'/%3E%3Ctext x='50' y='68' font-size='52' font-family='monospace' font-weight='bold' fill='%23a435f0' text-anchor='middle'%3E&lt;/&gt;%3C/text%3E%3C/svg%3E" />
+
+  <!-- Social share (Open Graph + Twitter) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="WebDev Academy — Learn Web Development" />
+  <meta property="og:description" content="Free, bilingual (English + Myanmar) courses in HTML, CSS & JavaScript — with videos, quizzes, and a community chat." />
+  <meta name="twitter:card" content="summary" />
+
+  <!-- PWA (installable + offline) -->
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icon.svg" />
+
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#/">
+      <span class="brand-mark">&lt;/&gt;</span>
+      <span class="brand-name">WebDev<strong>Academy</strong></span>
+    </a>
+
+    <nav class="topnav">
+      <a id="nav-courses" href="#/courses">Courses</a>
+    </nav>
+
+    <form class="searchbar" id="search-form" autocomplete="off">
+      <input id="search-input" type="search" placeholder="Search for HTML, CSS, JavaScript…" aria-label="Search courses" />
+      <button type="submit" aria-label="Search">&#128269;</button>
+    </form>
+
+    <nav class="topnav right">
+      <a id="nav-mylearning" href="#/my-learning">My Learning</a>
+      <button id="theme-toggle" class="lang-btn" type="button" title="Toggle theme">🌙</button>
+      <button id="lang-toggle" class="lang-btn" type="button" title="Switch language / ဘာသာစကားပြောင်းရန်">မြန်မာ</button>
+      <span class="pill" id="streak-pill" title="Lessons completed">&#128293; <span id="streak-count">0</span></span>
+      <div id="auth-area" class="auth-area"></div>
+    </nav>
+  </header>
+
+  <main id="app" class="app"></main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div>
+        <span class="brand-mark small">&lt;/&gt;</span>
+        <strong>WebDev Academy</strong> — <span id="footer-tag">a demo learning platform. Built with plain HTML, CSS &amp; JavaScript.</span>
+      </div>
+      <div class="muted" id="footer-saved">Your progress is saved in this browser (localStorage). No account needed.</div>
+    </div>
+  </footer>
+
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="js/data.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/chat.js"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", function () {
+        navigator.serviceWorker.register("sw.js").catch(function () {});
+      });
+    }
+  </script>
+</body>
+</html>

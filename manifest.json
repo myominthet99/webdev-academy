@@ -1,0 +1,15 @@
+{
+  "name": "WebDev Academy",
+  "short_name": "WebDev",
+  "description": "Bilingual (English + Myanmar) web development courses — HTML, CSS & JavaScript.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0f1113",
+  "theme_color": "#a435f0",
+  "lang": "en",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

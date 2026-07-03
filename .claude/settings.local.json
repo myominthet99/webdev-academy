@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e \"console.log\\('JavaScript syntax check...'\\); const fs = require\\('fs'\\); const app = fs.readFileSync\\('./js/app.js', 'utf-8'\\); const i18n = fs.readFileSync\\('./js/i18n.js', 'utf-8'\\); console.log\\('✓ app.js loaded'\\); console.log\\('✓ i18n.js loaded'\\); if\\(app.includes\\('getTotalTimeSpent'\\)\\) console.log\\('✓ Time tracking implemented'\\); if\\(app.includes\\('loadComments'\\)\\) console.log\\('✓ Comments implemented'\\); if\\(app.includes\\('recommendedSection'\\)\\) console.log\\('✓ Recommendations implemented'\\); if\\(app.includes\\('highlightText'\\)\\) console.log\\('✓ Search highlighting implemented'\\); if\\(app.includes\\('showShortcutsModal'\\)\\) console.log\\('✓ Keyboard shortcuts implemented'\\); if\\(app.includes\\('exportTranscript'\\)\\) console.log\\('✓ Transcript export implemented'\\);\")",
+      "Bash(node -e ' *)",
+      "Bash(git init *)",
+      "Bash(git config *)",
+      "Bash(git add *)",
+      "Bash(git commit -m 'Initial commit: WebDev Academy with full feature set *)"
+    ]
+  }
+}

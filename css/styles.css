@@ -547,6 +547,11 @@ button { font-family: inherit; cursor: pointer; }
 .chat-mention { color: var(--purple); font-weight: 700; background: rgba(164, 53, 240, .08); border-radius: 4px; padding: 0 3px; }
 .chat-mention.me { background: rgba(229, 152, 25, .2); color: #a15c00; }
 .chat-msg.mentioned .chat-bubble { border-color: var(--purple); box-shadow: 0 0 0 1px rgba(164, 53, 240, .25); }
+.role-badge { display: inline-block; background: var(--purple); color: #fff; font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 999px; vertical-align: middle; margin-left: 4px; }
+.video-src-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.video-src-row input[name="lvideo"] { flex: 1; min-width: 180px; }
+.upload-btn { cursor: pointer; margin: 0; white-space: nowrap; }
+.upload-status { font-size: 12px; }
 .chat-search:focus { outline: none; border-color: var(--purple); }
 .chat-msg.pinned { background: rgba(165, 53, 240, .05); }
 .chat-pin { margin-right: 6px; }

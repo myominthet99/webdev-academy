@@ -350,8 +350,52 @@
     type === "quiz" ? "❓" : type === "article" ? "📄" : "▶";
 
   /* Build a real player from a lesson's video src (file / YouTube / Vimeo). */
+  /* ---------------- Local video store (IndexedDB) ----------------
+     Lets admins upload video files from their computer. Files are stored
+     as Blobs in IndexedDB (localStorage is far too small for video) and
+     referenced from lessons with an "idb:<key>" src. */
+  const VideoStore = {
+    _db: null,
+    open() {
+      if (this._db) return Promise.resolve(this._db);
+      return new Promise((res, rej) => {
+        const req = indexedDB.open("wda_videos", 1);
+        req.onupgradeneeded = () => req.result.createObjectStore("videos");
+        req.onsuccess = () => { this._db = req.result; res(this._db); };
+        req.onerror = () => rej(req.error);
+      });
+    },
+    put(key, blob) {
+      return this.open().then((db) => new Promise((res, rej) => {
+        const tx = db.transaction("videos", "readwrite");
+        tx.objectStore("videos").put(blob, key);
+        tx.oncomplete = () => res();
+        tx.onerror = () => rej(tx.error);
+      }));
+    },
+    get(key) {
+      return this.open().then((db) => new Promise((res, rej) => {
+        const tx = db.transaction("videos", "readonly");
+        const rq = tx.objectStore("videos").get(key);
+        rq.onsuccess = () => res(rq.result || null);
+        rq.onerror = () => rej(rq.error);
+      }));
+    },
+  };
+  function hydrateIdbVideos() {
+    app.querySelectorAll("video[data-idb-src]").forEach((v) => {
+      const key = v.getAttribute("data-idb-src");
+      VideoStore.get(key)
+        .then((blob) => { if (blob) v.src = URL.createObjectURL(blob); })
+        .catch(() => {});
+    });
+  }
+
   function videoEmbed(src, title) {
     const safe = escapeHtml(title || "");
+    if (src.indexOf("idb:") === 0) {
+      return `<video class="video-frame" controls preload="metadata" playsinline data-idb-src="${escapeHtml(src.slice(4))}"></video>`;
+    }
     let m = src.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([\w-]{11})/);
     if (m) {
       return `<iframe class="video-frame" src="https://www.youtube.com/embed/${m[1]}" title="${safe}"
@@ -770,6 +814,8 @@
           ${sidebar}
         </aside>
       </div>`;
+
+    hydrateIdbVideos();
 
     app.querySelectorAll("[data-goto]").forEach((b) =>
       b.addEventListener("click", () => {
@@ -1289,8 +1335,13 @@
         <input name="ldur" placeholder="e.g. 8 min" value="${l.duration && l.duration !== "Quiz" ? escapeHtml(l.duration) : ""}">
       </div>
       <div class="lesson-av">
-        <input name="lvideo" placeholder="${escapeHtml(t("admin_lvideo"))}" value="${l.src ? escapeHtml(l.src) : ""}">
-        <textarea name="lnotes" rows="2" placeholder="${escapeHtml(t("admin_lnotes"))}">${l.content && l.content !== "<p></p>" ? escapeHtml(l.content) : ""}</textarea>
+        <div class="video-src-row">
+          <input name="lvideo" placeholder="${escapeHtml(t("admin_lvideo"))}" value="${l.src ? escapeHtml(l.src) : ""}">
+          <label class="btn btn-outline btn-sm upload-btn">📁 ${t("admin_upload_video")}
+            <input type="file" accept="video/*" hidden data-video-file></label>
+          <span class="upload-status muted"></span>
+        </div>
+        <textarea name="lnotes" rows="6" placeholder="${escapeHtml(t("admin_lnotes"))}">${l.content && l.content !== "<p></p>" ? escapeHtml(l.content) : ""}</textarea>
       </div>
       <div class="lesson-quiz">
         <div class="q-list">${(l.questions || []).map(qRowHtml).join("") || qRowHtml()}</div>
@@ -1312,6 +1363,15 @@
   }
   function renderAdmin(editId) {
     if (!loggedIn()) { location.hash = "#/"; if (window.Auth) window.Auth.openModal("login"); return; }
+    if (!(window.Auth && window.Auth.isAdmin && window.Auth.isAdmin())) {
+      app.innerHTML = `
+        <div class="container"><div class="empty">
+          <h2>🔒 ${t("admin_only")}</h2>
+          <p>${t("admin_only_sub")}</p>
+          <a class="btn btn-primary" href="#/">${t("back_home")}</a>
+        </div></div>`;
+      return;
+    }
     const custom = loadCustomCourses();
     const editing = editId ? custom.find((c) => c.id === editId) : null;
     const cats = CATEGORIES.filter((c) => c !== "All");
@@ -1378,6 +1438,24 @@
     });
     form.addEventListener("change", (e) => {
       if (e.target.name === "ltype") e.target.closest(".admin-lesson").dataset.type = e.target.value;
+
+      /* Video file upload → saved to IndexedDB, src field set to idb:<key> */
+      const fi = e.target.closest("[data-video-file]");
+      if (fi) {
+        const f = fi.files && fi.files[0];
+        if (!f) return;
+        const row = fi.closest(".video-src-row");
+        const status = row.querySelector(".upload-status");
+        if (f.size > 500 * 1024 * 1024) { if (status) status.textContent = t("admin_upload_toobig"); return; }
+        if (status) status.textContent = "⏳ " + t("admin_uploading");
+        const key = "v_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+        VideoStore.put(key, f)
+          .then(() => {
+            row.querySelector('input[name="lvideo"]').value = "idb:" + key;
+            if (status) status.textContent = "✓ " + f.name;
+          })
+          .catch(() => { if (status) status.textContent = t("admin_upload_err"); });
+      }
     });
 
     form.addEventListener("submit", (e) => {

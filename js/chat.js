@@ -266,7 +266,7 @@
           '<button class="chat-react" data-react="' + ref + '" title="React">😊</button>' +
           (mine ? '<button class="chat-edit" data-edit="' + ref + '" title="Edit">✏️</button>' : "") +
           (mine || (u && u.admin) ? '<button class="chat-pin" data-pin="' + ref + '" title="' + (isPinned ? "Unpin" : "Pin") + '">' + (isPinned ? "📌" : "📌") + '</button>' : "") +
-          (mine ? '<button class="chat-del" data-del="' + ref + '" title="' + esc(t("chat_delete")) + '">🗑</button>' : "") +
+          (mine || (u && u.admin) ? '<button class="chat-del" data-del="' + ref + '" title="' + esc(t("chat_delete")) + '">🗑</button>' : "") +
           "</div></div></div>"
         );
       })
@@ -332,7 +332,7 @@
     const u = me();
     if (!u) return;
     const msg = roomCache.find((m) => (m._key || m.id) === ref);
-    if (!msg || msg.userId !== u.id) return; // only your own
+    if (!msg || (msg.userId !== u.id && !u.admin)) return; // your own, or admin
     backend.del(room, ref);
   }
 

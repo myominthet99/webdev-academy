@@ -21,6 +21,9 @@
 
   /* ============ CONFIG ============ */
   const GOOGLE_CLIENT_ID = ""; // <-- paste your Google OAuth Client ID here
+  /* Emails listed here are always admins. The very first account created
+     in this browser also becomes admin automatically. */
+  const ADMIN_EMAILS = ["mmtboy90@gmail.com"];
   /* ================================ */
 
   const USERS_KEY = "wda_users";
@@ -48,11 +51,19 @@
   const genId = () => "u_" + Date.now().toString(36) + Math.floor(Math.random() * 1e6).toString(36);
 
   /* ---------------- core API ---------------- */
+  function isAdminUser(u) {
+    if (!u) return false;
+    if (u.role === "admin") return true;
+    return ADMIN_EMAILS.indexOf((u.email || "").toLowerCase()) >= 0;
+  }
   function current() {
     if (!session) return null;
     const users = loadUsers();
-    return Object.values(users).find((u) => u.id === session) || null;
+    const u = Object.values(users).find((x) => x.id === session) || null;
+    if (u) u.admin = isAdminUser(u);
+    return u;
   }
+  const isAdmin = () => isAdminUser(current());
   function notify() {
     const u = current();
     listeners.forEach((cb) => { try { cb(u); } catch (e) {} });
@@ -67,7 +78,8 @@
     if (password.length < 6) return { error: t("auth_err_shortpass") };
     const users = loadUsers();
     if (users[email]) return { error: t("auth_err_exists") };
-    users[email] = { id: genId(), name, email, pass: hash(password), provider: "local" };
+    const role = Object.keys(users).length === 0 ? "admin" : "user"; /* first account = admin */
+    users[email] = { id: genId(), name, email, pass: hash(password), provider: "local", role };
     saveUsers(users);
     session = users[email].id;
     localStorage.setItem(SESSION_KEY, session);
@@ -93,7 +105,8 @@
     if (!email) return;
     const users = loadUsers();
     if (!users[email]) {
-      users[email] = { id: genId(), name: p.name || email, email, provider: p.provider || "google", picture: p.picture || "" };
+      const role = Object.keys(users).length === 0 ? "admin" : "user"; /* first account = admin */
+      users[email] = { id: genId(), name: p.name || email, email, provider: p.provider || "google", picture: p.picture || "", role };
     } else if (p.picture) {
       users[email].picture = p.picture;
     }
@@ -343,10 +356,11 @@
       '<span class="caret">▾</span>' +
       '<div class="user-menu" hidden>' +
       '<div class="user-menu-head"><div class="um-name">' + (u.name || "") +
+      (u.admin ? ' <span class="role-badge">' + t("role_admin") + "</span>" : "") +
       '</div><div class="um-email">' + (u.email || "") + "</div></div>" +
       '<a href="#/account" class="user-menu-item">' + t("auth_account") + "</a>" +
       '<a href="#/my-learning" class="user-menu-item">' + t("nav_mylearning") + "</a>" +
-      '<a href="#/admin" class="user-menu-item">' + t("admin") + "</a>" +
+      (u.admin ? '<a href="#/admin" class="user-menu-item">' + t("admin") + "</a>" : "") +
       '<button class="user-menu-item logout" type="button">' + t("auth_logout") + "</button>" +
       "</div></div>";
 
@@ -371,6 +385,7 @@
   /* ---------------- expose + boot ---------------- */
   window.Auth = {
     current,
+    isAdmin,
     login,
     signup,
     logout,

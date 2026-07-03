@@ -30,6 +30,24 @@
   const esc = (s) =>
     String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
+  /* @mentions: escape first, then wrap @name tokens; highlight mentions of me */
+  function formatText(text) {
+    const u = me();
+    const myName = u ? String(u.name || u.email || "").split(/[\s@]/)[0].toLowerCase() : null;
+    return esc(text).replace(/@([\w.-]+)/g, (m, name) => {
+      const isMe = myName && name.toLowerCase() === myName;
+      return '<span class="chat-mention' + (isMe ? " me" : "") + '">' + m + "</span>";
+    });
+  }
+  function mentionsMe(text) {
+    const u = me();
+    if (!u) return false;
+    const myName = String(u.name || u.email || "").split(/[\s@]/)[0].toLowerCase();
+    if (!myName) return false;
+    const m = String(text || "").match(/@([\w.-]+)/g);
+    return !!m && m.some((tok) => tok.slice(1).toLowerCase() === myName);
+  }
+
   /* ---------------- state ---------------- */
   let open = false, unread = 0;
   let room = "community", roomLabel = null;
@@ -234,13 +252,14 @@
         const reactionHtml = Object.entries(reactions).map(([emoji, users]) =>
           `<span class="chat-reaction" title="${users.join(', ')}">${emoji} ${users.length}</span>`
         ).join("");
+        const mentioned = !mine && mentionsMe(text);
         return (
-          '<div class="chat-msg ' + (mine ? "mine" : "") + (isPinned ? " pinned" : "") + '">' +
+          '<div class="chat-msg ' + (mine ? "mine" : "") + (isPinned ? " pinned" : "") + (mentioned ? " mentioned" : "") + '">' +
           (isPinned ? '<span class="chat-pin" title="Pinned">📌</span>' : "") +
           (mine ? "" : '<span class="chat-avatar">' + esc(msg.initial || "?") + "</span>") +
           '<div class="chat-bubble">' +
           (mine ? "" : '<div class="chat-name">' + esc(msg.name || "") + "</div>") +
-          '<div class="chat-text">' + esc(text) + (msg.editedText ? ' <span class="chat-edited">(edited)</span>' : "") + "</div>" +
+          '<div class="chat-text">' + formatText(text) + (msg.editedText ? ' <span class="chat-edited">(edited)</span>' : "") + "</div>" +
           (reactionHtml ? '<div class="chat-reactions">' + reactionHtml + '</div>' : "") +
           '<div class="chat-meta"><span class="chat-time">' + fmtTime(msg.ts) + "</span>" +
           '<div class="chat-actions">' +

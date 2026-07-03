@@ -544,6 +544,9 @@ button { font-family: inherit; cursor: pointer; }
 .chat-search { width: 100%; padding: 8px 12px; border: 1px solid var(--line); font-size: 13px; background: var(--surface-2); color: var(--ink); border-radius: 6px; }
 .chat-presence { font-size: 12px; color: var(--muted); margin: 0 8px; white-space: nowrap; }
 .chat-online { display: inline-flex; align-items: center; gap: 4px; color: #16794c; font-weight: 600; }
+.chat-mention { color: var(--purple); font-weight: 700; background: rgba(164, 53, 240, .08); border-radius: 4px; padding: 0 3px; }
+.chat-mention.me { background: rgba(229, 152, 25, .2); color: #a15c00; }
+.chat-msg.mentioned .chat-bubble { border-color: var(--purple); box-shadow: 0 0 0 1px rgba(164, 53, 240, .25); }
 .chat-search:focus { outline: none; border-color: var(--purple); }
 .chat-msg.pinned { background: rgba(165, 53, 240, .05); }
 .chat-pin { margin-right: 6px; }

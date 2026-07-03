@@ -112,17 +112,36 @@
 
   const loadNotes = () => jget(ns("wda_notes"), {});
   const saveNote = (lessonId, text) => { const n = loadNotes(); if (text) n[lessonId] = text; else delete n[lessonId]; jset(ns("wda_notes"), n); };
-  const loadComments = (lessonId) => jget(ns("wda_comments::" + lessonId), []);
+  const loadComments = (lessonId) => {
+    try {
+      const c = jget(ns("wda_comments::" + lessonId), []);
+      return Array.isArray(c) ? c : [];
+    } catch (e) {
+      return [];
+    }
+  };
   const saveComment = (lessonId, author, text) => {
-    const c = loadComments(lessonId);
-    c.push({ id: Date.now(), author, text, ts: Date.now() });
-    jset(ns("wda_comments::" + lessonId), c);
+    if (!author || !text) return; // Validate input
+    try {
+      const c = loadComments(lessonId);
+      const id = Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
+      c.push({ id, author: author.trim(), text: text.trim(), ts: Date.now() });
+      jset(ns("wda_comments::" + lessonId), c);
+    } catch (e) {
+      console.error("Failed to save comment:", e);
+    }
   };
   const deleteComment = (lessonId, commentId) => {
-    const c = loadComments(lessonId);
-    const idx = c.findIndex((x) => x.id === commentId);
-    if (idx >= 0) c.splice(idx, 1);
-    jset(ns("wda_comments::" + lessonId), c);
+    try {
+      const c = loadComments(lessonId);
+      const idx = c.findIndex((x) => String(x.id) === String(commentId));
+      if (idx >= 0) {
+        c.splice(idx, 1);
+        jset(ns("wda_comments::" + lessonId), c);
+      }
+    } catch (e) {
+      console.error("Failed to delete comment:", e);
+    }
   };
   const loadBookmarks = () => jget(ns("wda_bookmarks"), []);
   const isBookmarked = (id) => loadBookmarks().indexOf(id) >= 0;
@@ -152,34 +171,50 @@
   const loadLessonTime = (lessonId) => jget(ns("wda_lesson_time::" + lessonId), { opened: null, total: 0 });
   const startLessonTimer = (lessonId) => {
     const t = loadLessonTime(lessonId);
-    t.opened = Date.now();
-    jset(ns("wda_lesson_time::" + lessonId), t);
+    /* Only set opened if not already tracking (prevent reset on re-render) */
+    if (!t.opened) {
+      t.opened = Date.now();
+      jset(ns("wda_lesson_time::" + lessonId), t);
+    }
   };
   const endLessonTimer = (lessonId) => {
     const t = loadLessonTime(lessonId);
     if (t.opened) {
       const elapsed = Math.floor((Date.now() - t.opened) / 1000);
-      t.total += Math.min(elapsed, 3600);
+      const capped = Math.min(elapsed, 43200); /* 12 hour max per session */
+      if (elapsed > 43200) console.warn(`Session time for ${lessonId} capped at 12 hours`);
+      t.total += capped;
       t.opened = null;
     }
     jset(ns("wda_lesson_time::" + lessonId), t);
   };
   const getTotalTimeSpent = (courseId) => {
-    let total = 0;
-    const c = courseById(courseId);
-    if (!c) return 0;
-    lessonsOf(c).forEach((x) => {
-      const t = loadLessonTime(x.lesson.id);
-      total += t.total || 0;
-    });
-    return total;
+    try {
+      let total = 0;
+      const c = courseById(courseId);
+      if (!c) return 0;
+      const lessons = lessonsOf(c);
+      if (!Array.isArray(lessons)) return 0;
+      lessons.forEach((x) => {
+        if (x && x.lesson && x.lesson.id) {
+          const t = loadLessonTime(x.lesson.id);
+          total += Number(t.total) || 0;
+        }
+      });
+      return Math.max(0, total);
+    } catch (e) {
+      console.error("Error calculating time spent:", e);
+      return 0;
+    }
   };
   const formatTime = (seconds) => {
-    const h = Math.floor(seconds / 3600);
-    const m = Math.floor((seconds % 3600) / 60);
+    const s = Number(seconds) || 0;
+    if (!isFinite(s)) return "0s";
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
     if (h > 0) return `${h}h ${m}m`;
     if (m > 0) return `${m}m`;
-    return `${Math.max(0, Math.floor(seconds))}s`;
+    return `${Math.max(0, Math.floor(s))}s`;
   };
 
   /* Progress transcript export */
@@ -791,6 +826,10 @@
 
     /* Time tracking: start timer for this lesson */
     startLessonTimer(current.id);
+
+    /* Clean up any previous intervals if re-rendering */
+    if (window._lessonTimerCleanup) window._lessonTimerCleanup();
+
     let timeDisplay = setInterval(() => {
       const el = app.querySelector("#time-spent");
       if (el) el.textContent = formatTime(loadLessonTime(current.id).total);
@@ -805,6 +844,12 @@
         clearInterval(timeDisplay);
       }
     }, 500);
+
+    /* Store cleanup function for next render */
+    window._lessonTimerCleanup = () => {
+      clearInterval(timer);
+      clearInterval(timeDisplay);
+    };
 
     window.scrollTo(0, 0);
   }
@@ -1444,9 +1489,13 @@
     if (toggle) toggle.textContent = lang === "en" ? "မြန်မာ" : "EN";
   }
 
-  /* Keyboard shortcuts */
+  /* Keyboard shortcuts - prevent duplicate listeners in SPA re-renders */
+  if (!window._keyboardShortcutsInitialized) {
+    window._keyboardShortcutsInitialized = true;
   document.addEventListener("keydown", (e) => {
-    if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey || document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA") return;
+    if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+    const el = document.activeElement;
+    if (el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA")) return;
     if (e.key === "ArrowRight") {
       const btn = document.querySelector("[data-next]");
       if (btn) {
@@ -1457,7 +1506,7 @@
       const prev = document.querySelector(".lesson-nav a:first-child");
       if (prev && prev.href) {
         e.preventDefault();
-        location.href = prev.href;
+        location.hash = prev.href.split("#")[1] || prev.href;
       }
     } else if (e.key === "b" || e.key === "B") {
       const bm = document.querySelector("[data-bookmark]");
@@ -1472,12 +1521,19 @@
         btn.click();
       }
     } else if (e.key === "?" || e.key === "h" || e.key === "H") {
+      e.preventDefault();
       showShortcutsModal();
     }
   });
+  } /* end keyboard shortcuts guard */
 
   function showShortcutsModal() {
+    /* Remove existing modal if any */
+    const existing = document.querySelector('[data-shortcuts-modal]');
+    if (existing) existing.remove();
+
     const modal = document.createElement("div");
+    modal.setAttribute('data-shortcuts-modal', '1');
     modal.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:1000";
     modal.innerHTML = `
       <div style="background:var(--surface);padding:24px;border-radius:10px;max-width:400px;box-shadow:0 4px 20px rgba(0,0,0,.2)">
@@ -1489,9 +1545,10 @@
           <li style="margin-bottom:12px"><kbd style="background:var(--surface-2);padding:4px 8px;border-radius:4px;font-family:monospace">M</kbd> ${t("shortcut_complete")}</li>
           <li style="margin-bottom:12px"><kbd style="background:var(--surface-2);padding:4px 8px;border-radius:4px;font-family:monospace">?</kbd> ${t("shortcut_help")}</li>
         </ul>
-        <button onclick="this.closest('div').parentElement.remove()" class="btn btn-primary" style="margin-top:16px;width:100%">${t("close_modal")}</button>
+        <button class="btn btn-primary" style="margin-top:16px;width:100%" onclick="this.closest('[data-shortcuts-modal]').remove()">${t("close_modal")}</button>
       </div>
     `;
+    modal.addEventListener("click", (e) => { if (e.target === modal) modal.remove(); });
     document.body.appendChild(modal);
   }
 

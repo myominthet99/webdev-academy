@@ -14,7 +14,7 @@
      course/lesson ids — see Reports → Engagement → Events)
    • Where students drop off (page paths track every hash route)
    ===================================================================== */
-const GA_MEASUREMENT_ID = ""; // <-- paste your G-XXXXXXXXXX here
+const GA_MEASUREMENT_ID = "G-Q9YLT3BBLV";
 
 (function () {
   "use strict";

@@ -338,6 +338,7 @@
     state.completed[courseId] = [...set];
     if (done) bumpDayStreak();
     saveState();
+    if (typeof pushLeaderboard === "function") pushLeaderboard();
   }
   function enroll(courseId) {
     if (!isEnrolled(courseId)) {
@@ -686,6 +687,78 @@
         if (totals.length) cb(totals);
       })
       .catch(() => {});
+  }
+
+  /* ---------------- Leaderboard (Firebase stats path) ----------------
+     Whenever progress changes, the signed-in user's totals are published
+     to stats/leaderboard/<uid>; the leaderboard page ranks everyone. */
+  function computeMyStats() {
+    let lessons = 0, coursesDone = 0;
+    COURSES.forEach((c) => {
+      const cc = completedCount(c), tot = totalLessons(c);
+      lessons += cc;
+      if (tot > 0 && cc === tot && isEnrolled(c.id)) coursesDone++;
+    });
+    const qs = loadQuizScores();
+    const passes = Object.values(qs).filter((q) => q.score >= Math.ceil(q.total * 0.6)).length;
+    const xp = lessons * 10 + passes * 5;
+    return { lessons, coursesDone, xp, level: Math.floor(xp / 100) + 1 };
+  }
+  function pushLeaderboard() {
+    const base = statsBase();
+    const u = window.Auth && window.Auth.current ? window.Auth.current() : null;
+    if (!base || !u) return;
+    const s = computeMyStats();
+    if (s.lessons === 0) return; /* nothing to rank yet */
+    fetch(base + "/stats/leaderboard/" + encodeURIComponent(u.id) + ".json", {
+      method: "PUT",
+      body: JSON.stringify({
+        name: (u.name || u.email || "?").split(" ")[0],
+        xp: s.xp, lessons: s.lessons, courses: s.coursesDone,
+        streak: dayStreak(), ts: Date.now(),
+      }),
+    }).catch(() => {});
+  }
+  function renderLeaderboard() {
+    app.innerHTML = `
+      <div class="container" style="max-width:680px">
+        <h2 class="section-title">🏆 ${t("lb_title")}</h2>
+        <p class="section-sub">${t("lb_sub")}</p>
+        <div id="lb-list"><div class="empty"><h2>⏳</h2></div></div>
+      </div>`;
+    const base = statsBase();
+    const mount = document.getElementById("lb-list");
+    if (!base) { mount.innerHTML = `<div class="empty"><h2>${t("lb_offline")}</h2></div>`; return; }
+    const u = window.Auth && window.Auth.current ? window.Auth.current() : null;
+    fetch(base + "/stats/leaderboard.json")
+      .then((r) => r.json())
+      .then((val) => {
+        const rows = Object.entries(val || {})
+          .map(([id, x]) => Object.assign({ id }, x))
+          .filter((x) => x && x.xp > 0)
+          .sort((a, b) => b.xp - a.xp)
+          .slice(0, 20);
+        if (!rows.length) {
+          mount.innerHTML = `<div class="empty"><h2>${t("lb_empty")}</h2><p>${t("lb_empty_sub")}</p></div>`;
+          return;
+        }
+        const medal = (i) => (i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `${i + 1}.`);
+        mount.innerHTML = `
+          <div class="lb-table">
+            ${rows.map((x, i) => `
+              <div class="lb-row ${u && x.id === u.id ? "me" : ""}">
+                <span class="lb-rank">${medal(i)}</span>
+                <span class="lb-name">${escapeHtml(x.name || "?")}${u && x.id === u.id ? ` <em>(${t("lb_you")})</em>` : ""}</span>
+                <span class="lb-stat">⚡ ${x.xp} XP</span>
+                <span class="lb-stat">📗 ${x.lessons}</span>
+                <span class="lb-stat">🎓 ${x.courses || 0}</span>
+                <span class="lb-stat">🔥 ${x.streak || 0}</span>
+              </div>`).join("")}
+          </div>
+          <p class="muted" style="font-size:12px">${t("lb_note")}</p>`;
+      })
+      .catch(() => { mount.innerHTML = `<div class="empty"><h2>${t("lb_offline")}</h2></div>`; });
+    window.scrollTo(0, 0);
   }
 
   /* ---------------- Course card (shared) ---------------- */
@@ -1483,7 +1556,10 @@
       .join("");
     app.innerHTML = `
       <div class="container">
-        <h2 class="section-title">${t("dash_title")}</h2>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+          <h2 class="section-title">${t("dash_title")}</h2>
+          <a class="btn btn-outline btn-sm" href="#/leaderboard">🏆 ${t("lb_title")}</a>
+        </div>
         ${statsHeader()}
         <h2 class="section-title">${t("my_learning")}</h2>
         ${
@@ -1966,6 +2042,7 @@
     else if (parts[0] === "courses") renderCatalog();
     else if (parts[0] === "search") renderSearch(decodeURIComponent(parts[1] || ""));
     else if (parts[0] === "playground") renderPlayground();
+    else if (parts[0] === "leaderboard") renderLeaderboard();
     else if (parts[0] === "roadmap") renderRoadmap();
     else if (parts[0] === "my-learning") renderMyLearning();
     else if (parts[0] === "account") renderAccount();

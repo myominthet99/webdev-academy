@@ -1629,7 +1629,7 @@
   /* ---------------- View: Learning Roadmap ---------------- */
   function renderRoadmap() {
     /* Order courses along the natural learning path */
-    const order = ["Fundamentals", "HTML", "CSS", "JavaScript", "Responsive", "Frontend", "Backend", "Databases", "Programming", "AI", "Tools", "Career"];
+    const order = ["Kids", "Fundamentals", "HTML", "CSS", "JavaScript", "Responsive", "Frontend", "Backend", "Databases", "Programming", "AI", "Tools", "Career"];
     const oi = (c) => { const i = order.indexOf(c.category); return i === -1 ? 98 : i; };
     const list = COURSES.slice().sort(
       (a, b) => (oi(a) - oi(b)) || ((a.level === "Beginner" ? 0 : 1) - (b.level === "Beginner" ? 0 : 1))

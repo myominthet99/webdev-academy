@@ -3,7 +3,7 @@
    All lesson HTML is pre-escaped so code samples render as text.
    ===================================================================== */
 
-const CATEGORIES = ["All", "Fundamentals", "HTML", "CSS", "JavaScript", "Frontend", "Backend", "Programming", "Databases", "AI", "Tools", "Responsive", "Career"];
+const CATEGORIES = ["All", "Kids", "Fundamentals", "HTML", "CSS", "JavaScript", "Frontend", "Backend", "Programming", "Databases", "AI", "Tools", "Responsive", "Career"];
 
 /* Small helpers to keep the data compact.
    video(): the optional 5th argument `src` attaches a real video —
@@ -5344,6 +5344,293 @@ Strong: "You are a patient math tutor. I'm learning fractions.
             { q: "An AI 'hallucination' is...", options: ["A scary picture", "When AI confidently states something false", "A computer virus", "A dream"], answer: 1 },
             { q: "AI wrote your whole essay and you submit it as yours. This is...", options: ["Smart time-saving", "Plagiarism — and you learned nothing", "Teamwork", "Fine if not caught"], answer: 1 },
             { q: "What should you NEVER share with a chatbot?", options: ["Your favorite color", "Math questions", "Your address and passwords", "Song lyrics"], answer: 2 },
+          ]),
+        ],
+      },
+    ],
+  },
+  {
+    id: "scratch-kids",
+    title: "Scratch: Code Your First Games (Ages 8+)",
+    subtitle: "Snap colorful blocks together and make games, stories and animations — the world's favorite first coding language.",
+    instructor: "Su Myat",
+    category: "Kids",
+    level: "Beginner",
+    rating: 4.9,
+    ratings: 15200,
+    students: 118000,
+    hours: 6,
+    price: "Free",
+    free: true,
+    color: "linear-gradient(135deg,#f9a825,#ff6f00)",
+    icon: "🐱",
+    description:
+      "Scratch (from MIT) is where millions of kids write their first code — no typing, no errors, just snapping blocks like LEGO. You'll make characters move and talk, build a complete Catch-the-Apple game with scoring, and share your creations with the world.",
+    whatYouLearn: [
+      "Find your way around Scratch and control sprites",
+      "Events, loops and 'if' blocks — real programming logic",
+      "Build a complete game with score and game-over",
+      "Variables — the boxes that remember things",
+      "Create an animated story and share your projects",
+    ],
+    sections: [
+      {
+        title: "Scratch Basics",
+        lessons: [
+          article("sc-start", "Meet Scratch: Make the Cat Move", "12 min", `
+<h3>🎯 Intro</h3>
+<p><strong>Scratch</strong> is free, runs in your browser, and needs zero typing. Let's make the famous cat obey your code!</p>
+<h3>📝 Follow these steps</h3>
+<ol style="line-height:2">
+  <li>Open <a href="https://scratch.mit.edu" target="_blank" rel="noopener"><strong>scratch.mit.edu</strong></a> → click <strong>Create</strong> (make a free account so you can save!)</li>
+  <li>The screen has 3 parts: <strong>blocks</strong> (left), your <strong>code area</strong> (middle), the <strong>stage</strong> where the cat lives (right)</li>
+  <li>Drag <code>when 🚩 clicked</code> (Events, yellow) into the code area</li>
+  <li>Snap <code>move 10 steps</code> (Motion, blue) underneath it</li>
+  <li>Snap <code>say "Hello!" for 2 seconds</code> (Looks, purple) under that</li>
+  <li>Click the green flag 🚩 above the stage — the cat moves and talks!</li>
+</ol>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> make the cat move 50 steps, say your name, then <code>play sound Meow</code>. Then click the cat's costume tab and change its color!</div>`),
+          article("sc-loops", "Events, Loops & Dance Party", "13 min", `
+<h3>🎯 Intro</h3>
+<p>Two superpowers turn blocks into programs: <strong>events</strong> (WHEN things happen) and <strong>loops</strong> (REPEAT things).</p>
+<h3>📝 Build a dance party</h3>
+<ol style="line-height:2">
+  <li>Start with <code>when 🚩 clicked</code></li>
+  <li>Add <code>forever</code> (Control, orange) — everything inside repeats forever</li>
+  <li>Inside it put: <code>next costume</code> + <code>wait 0.3 seconds</code> — the cat dances!</li>
+  <li>Add music: another <code>when 🚩 clicked</code> script with <code>forever</code> + <code>play sound until done</code></li>
+  <li>Add a second dancer: click <strong>Choose a Sprite</strong> (bottom right) and give them their own dance script</li>
+</ol>
+<div class="callout tip">Two scripts running at the same time — you just wrote a <strong>parallel program</strong>. Many adult programmers find that hard! 😎</div>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> make the dance party start when you press the SPACE key instead (find the <code>when key pressed</code> block), and make a sprite spin using <code>turn 15 degrees</code> in a loop.</div>`),
+          quiz("sc-quiz-1", "Quiz: Scratch Basics", [
+            { q: "Which block starts your program when the green flag is clicked?", options: ["move 10 steps", "when 🚩 clicked", "forever", "say Hello"], answer: 1 },
+            { q: "The 'forever' block...", options: ["Runs code once", "Repeats everything inside it non-stop", "Deletes code", "Only works with sound"], answer: 1 },
+            { q: "Two sprites each running their own script at once is called...", options: ["A bug", "Parallel programs", "Cheating", "A costume"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Build a Real Game",
+        lessons: [
+          article("sc-game", "Catch the Apple — Full Game", "18 min", `
+<h3>🎯 Intro</h3>
+<p>Time to build a complete game: apples fall from the sky, you catch them with a bowl. Every real game concept is in here!</p>
+<h3>📝 Build it step by step</h3>
+<ol style="line-height:2">
+  <li><strong>New project.</strong> Delete the cat (right-click → delete). Add sprites: <strong>Bowl</strong> and <strong>Apple</strong></li>
+  <li><strong>Bowl script:</strong> <code>when 🚩 clicked</code> → <code>forever</code> → <code>set x to (mouse x)</code> — the bowl follows your mouse left/right</li>
+  <li><strong>Apple script:</strong>
+    <pre><code>when 🚩 clicked
+forever
+  go to x: (pick random -220 to 220) y: 180
+  repeat until &lt;touching Bowl?&gt; or &lt;y position &lt; -170&gt;
+    change y by -7
+  if &lt;touching Bowl?&gt; then
+    play sound Pop</code></pre></li>
+  <li>Click 🚩 — you're playing your own game! 🎮</li>
+</ol>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> make the apple fall faster (change y by -12), then add a second falling sprite — a banana!</div>`),
+          article("sc-score", "Variables: Score & Game Over", "15 min", `
+<h3>🎯 Intro</h3>
+<p>A <strong>variable</strong> is a box that remembers a number — like your score. This is one of the biggest ideas in ALL of programming.</p>
+<h3>📝 Add scoring to your game</h3>
+<ol style="line-height:2">
+  <li>Go to <strong>Variables</strong> (dark orange) → <strong>Make a Variable</strong> → name it <code>score</code>; make another called <code>lives</code></li>
+  <li>Start of the game: <code>set score to 0</code>, <code>set lives to 3</code></li>
+  <li>When the apple touches the Bowl: <code>change score by 1</code></li>
+  <li>When the apple reaches the bottom (missed!): <code>change lives by -1</code></li>
+  <li>Add inside the forever loop:
+    <pre><code>if &lt;lives = 0&gt; then
+  say "Game Over! Score: " join (score)
+  stop all</code></pre></li>
+  <li><strong>Level-up trick:</strong> make the fall speed <code>change y by (-7 - (score / 5))</code> — the game gets faster as you score!</li>
+</ol>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> add a golden apple sprite worth +5 points that falls twice as fast. Then challenge a family member to beat your high score!</div>`),
+          quiz("sc-quiz-2", "Quiz: Game Building", [
+            { q: "A variable is best described as...", options: ["A sprite costume", "A box that remembers a value, like your score", "A sound effect", "A type of loop"], answer: 1 },
+            { q: "Which block detects the apple hitting the bowl?", options: ["when 🚩 clicked", "touching Bowl?", "play sound", "set x to"], answer: 1 },
+            { q: "(-7 - (score / 5)) for fall speed means...", options: ["The game slows down", "The game speeds up as your score grows", "Nothing changes", "The apple falls up"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Create, Share & What's Next",
+        lessons: [
+          article("sc-story", "Animated Story Time", "13 min", `
+<h3>🎯 Intro</h3>
+<p>Scratch isn't only games — it's a movie studio! Let's animate a two-character story with scene changes.</p>
+<h3>📝 Build a mini movie</h3>
+<ol style="line-height:2">
+  <li>Pick a <strong>Backdrop</strong> (bottom-right button) — e.g. a forest — plus a second one, e.g. a castle</li>
+  <li>Add two character sprites. Characters talk in turns using <code>say ... for 2 seconds</code> and <code>wait 2 seconds</code> so they don't talk over each other</li>
+  <li>Change scenes with <code>switch backdrop to castle</code></li>
+  <li>Make a character walk off-screen: <code>glide 2 secs to x: 240 y: -100</code></li>
+  <li>Use <code>broadcast message1</code> + <code>when I receive message1</code> to make sprites react to each other — like actors taking cues!</li>
+</ol>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> create a 30-second story with 2 scenes, 2 characters and at least one broadcast. Myanmar folk tales make great material! 🇲🇲</div>`),
+          article("sc-share", "Share Your Work & Choose Your Path", "10 min", `
+<h3>🎯 Intro</h3>
+<p>Real creators ship! And after Scratch, you have exciting roads ahead.</p>
+<h3>📝 Share on Scratch</h3>
+<ul>
+  <li>Click <strong>Share</strong> on your project — it gets a link anyone can play</li>
+  <li>Explore others' projects and click <strong>See inside</strong> to read their code — remixing is how everyone learns</li>
+</ul>
+<h3>🗺️ Your next step — pick what excites you most:</h3>
+<ul>
+  <li>🌐 <strong>Websites:</strong> our <em>Web Basics</em> course — build real pages with HTML &amp; CSS (very visual, super rewarding)</li>
+  <li>🎮 <strong>More games:</strong> our <em>Game Creation</em> course — Roblox Studio and retro arcade games</li>
+  <li>🤖 <strong>AI:</strong> our <em>AI for Beginners</em> course — train real AI models with your webcam</li>
+  <li>📚 <strong>More block practice:</strong> free lessons at code.org and Google CS First</li>
+</ul>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Graduation task:</strong> share your Catch-the-Apple game, send the link to a friend, and enroll in your chosen next course on this site!</div>`),
+          quiz("sc-quiz-3", "Final Quiz: Scratch", [
+            { q: "broadcast + when-I-receive blocks let sprites...", options: ["Change color", "Send signals to each other", "Play music", "Delete themselves"], answer: 1 },
+            { q: "\"See inside\" on someone's Scratch project lets you...", options: ["Hack their account", "Read their code and learn from it", "Delete their project", "Nothing"], answer: 1 },
+            { q: "After Scratch, which is a natural next step?", options: ["Nothing, coding is finished", "HTML/CSS websites, game dev, or AI — whichever excites you", "Only university courses", "Memorizing syntax"], answer: 1 },
+          ]),
+        ],
+      },
+    ],
+  },
+  {
+    id: "gamedev-kids",
+    title: "Game Creation: Roblox, Arcade & micro:bit (Ages 10+)",
+    subtitle: "Build 3D worlds in Roblox, retro games in your browser, and program a pocket robot — real code through play.",
+    instructor: "Ko Zaw",
+    category: "Kids",
+    level: "Beginner",
+    rating: 4.8,
+    ratings: 9800,
+    students: 87000,
+    hours: 7,
+    price: "Free",
+    free: true,
+    color: "linear-gradient(135deg,#00a2ff,#e2231a)",
+    icon: "🎮",
+    description:
+      "Learn real programming through the games you already love. Script your first Roblox world in Lua, build a retro arcade game that runs in any browser (MakeCode Arcade — totally free), and program a micro:bit robot in a simulator. Typing real code starts here!",
+    whatYouLearn: [
+      "Build and test a 3D world in Roblox Studio",
+      "Write your first real Lua script (a lava trap!)",
+      "Create a complete retro game with MakeCode Arcade",
+      "Program a micro:bit in the free online simulator",
+      "Decide your path: game dev, web dev, or AI",
+    ],
+    sections: [
+      {
+        title: "Roblox Studio: Your First 3D World",
+        lessons: [
+          article("rb-studio", "Build a World in Roblox Studio", "15 min", `
+<h3>🎯 Intro</h3>
+<p><strong>Roblox Studio</strong> is the free tool behind every Roblox game — and 12-year-olds have made games played by millions.</p>
+<h3>📝 First world</h3>
+<ol style="line-height:2">
+  <li>Download <strong>Roblox Studio</strong> free from roblox.com/create (a normal Roblox account works)</li>
+  <li>New → <strong>Baseplate</strong> template</li>
+  <li>Use <strong>Part</strong> (Home tab) to drop blocks; move/scale/rotate them with the tools — build a small obstacle course (an "obby"!)</li>
+  <li>Color parts with <strong>Material</strong> and <strong>Color</strong>; anchor them (Anchor button) so they don't fall</li>
+  <li>Press <strong>▶ Play</strong> — your avatar spawns INSIDE your world. Walk your course!</li>
+</ol>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> build a 5-jump obby ending on a golden platform. Test that every jump is actually possible!</div>`),
+          article("rb-lua", "Your First Lua Script: The Lava Trap", "15 min", `
+<h3>🎯 Intro</h3>
+<p>Now the real magic — <strong>typed code</strong>. Roblox uses the <strong>Lua</strong> language. Let's make a lava block that defeats players who touch it.</p>
+<h3>📝 Script it</h3>
+<ol style="line-height:2">
+  <li>Add a Part, color it red/orange, name it <strong>Lava</strong> (in Explorer panel)</li>
+  <li>Right-click the part in Explorer → <strong>Insert Object → Script</strong></li>
+  <li>Replace the code with:
+    <pre><code>local lava = script.Parent
+
+lava.Touched:Connect(function(hit)
+    local character = hit.Parent
+    local humanoid = character:FindFirstChild("Humanoid")
+    if humanoid then
+        humanoid.Health = 0   -- touched lava = defeated!
+    end
+end)</code></pre></li>
+  <li>Press ▶ Play and step on the lava. Ouch! 🔥</li>
+</ol>
+<h3>🤔 What the code means</h3>
+<ul>
+  <li><code>Touched:Connect(...)</code> — "when something touches me, run this function" (an event, like Scratch's yellow blocks!)</li>
+  <li><code>if humanoid then</code> — only affect players, not other parts</li>
+</ul>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> add lava to your obby's floor, then make a HEAL block (green) that sets <code>humanoid.Health = 100</code> instead.</div>`),
+          quiz("rb-quiz", "Quiz: Roblox", [
+            { q: "Roblox scripts are written in which language?", options: ["Python", "Lua", "Scratch", "HTML"], answer: 1 },
+            { q: "lava.Touched:Connect(...) runs the function...", options: ["Every second", "When something touches the part", "Once at start", "Never"], answer: 1 },
+            { q: "Why check 'if humanoid then'?", options: ["Style points", "So only player characters are affected, not random parts", "Lua requires it", "It makes lava hotter"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Retro Arcade Games in Your Browser",
+        lessons: [
+          article("mk-arcade", "MakeCode Arcade: Complete Game, Zero Install", "16 min", `
+<h3>🎯 Intro</h3>
+<p><strong>MakeCode Arcade</strong> (free, by Microsoft) builds real retro games in your browser — blocks OR JavaScript, and the game runs on the spot. No downloads, no purchase.</p>
+<h3>📝 Build a chase game</h3>
+<ol style="line-height:2">
+  <li>Open <a href="https://arcade.makecode.com" target="_blank" rel="noopener"><strong>arcade.makecode.com</strong></a> → <strong>New Project</strong></li>
+  <li><strong>Sprites</strong> → <code>set mySprite to sprite of kind Player</code> → draw your hero in the pixel editor 👾</li>
+  <li><strong>Controller</strong> → <code>move mySprite with buttons</code> — arrows now move you (test on the simulator's D-pad!)</li>
+  <li>Add a Food-kind sprite (draw a pizza 🍕) → <code>set position to random</code></li>
+  <li><strong>Sprites</strong> → <code>on sprite of kind Player overlaps Food</code>: inside put <code>change score by 1</code> and move the food to a new random spot</li>
+  <li><strong>Info</strong> → <code>start countdown 30</code> — when time's up, the game shows your score!</li>
+</ol>
+<div class="callout tip">Flip the toggle at the top from <strong>Blocks</strong> to <strong>JavaScript</strong> — see YOUR game as real typed code. That's exactly how the pros write it.</div>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> add an Enemy sprite that bounces around — overlapping it ends the game (<code>game over LOSE</code>). Then click Share to get a link and send it to a friend! (Minecraft owner? Try the same ideas at minecraft.makecode.com)</div>`),
+          quiz("mk-quiz", "Quiz: Arcade", [
+            { q: "MakeCode Arcade costs...", options: ["$29/month", "Nothing — it's free in the browser", "One payment", "Requires Minecraft"], answer: 1 },
+            { q: "The Blocks ↔ JavaScript toggle shows...", options: ["Two different games", "Your same game as blocks or real typed code", "A cheat menu", "Graphics settings"], answer: 1 },
+            { q: "\"on Player overlaps Food\" is an example of...", options: ["A variable", "An event — code that runs when something happens", "A costume", "An error"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Robots & Your Path Forward",
+        lessons: [
+          article("mb-microbit", "micro:bit: Program a Pocket Computer (Free Simulator)", "14 min", `
+<h3>🎯 Intro</h3>
+<p>The <strong>micro:bit</strong> is a tiny computer with LED lights, buttons and sensors. No device? No problem — the website has a <strong>perfect free simulator</strong>.</p>
+<h3>📝 Program it</h3>
+<ol style="line-height:2">
+  <li>Open <a href="https://makecode.microbit.org" target="_blank" rel="noopener"><strong>makecode.microbit.org</strong></a> → New Project</li>
+  <li><strong>Flashing heart:</strong> <code>forever</code> → <code>show icon ❤</code> → <code>pause 500ms</code> → <code>show icon 💔</code> → <code>pause 500ms</code> — watch the simulator's LEDs blink!</li>
+  <li><strong>Button game:</strong> <code>on button A pressed</code> → <code>show number (pick random 1 to 6)</code> — you built a dice! 🎲</li>
+  <li><strong>Sensor magic:</strong> <code>on shake</code> → <code>show string "EARTHQUAKE!"</code> — click "SHAKE" on the simulator</li>
+</ol>
+<div class="callout">Real micro:bits cost about $15–20 and run these exact programs — steps counters, plant-watering alarms, robot cars... If your school has LEGO Spike robots, the same thinking applies there too.</div>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> build rock-paper-scissors: on shake, show a random one of the three icons. Best of 5 against a friend!</div>`),
+          article("kd-path", "Choose Your Adventure", "8 min", `
+<h3>🎯 You've tried everything — what's YOUR path?</h3>
+<p>You've now coded with blocks (Scratch, Arcade, micro:bit) AND typed real code (Lua). Every path below starts right here on this site:</p>
+<ul style="line-height:2">
+  <li>🌐 <strong>I want to build websites</strong> → <em>Web Basics</em>, then HTML → CSS → JavaScript. (This whole academy was built with those exact skills!)</li>
+  <li>🎮 <strong>I want to make bigger games</strong> → keep leveling up in Roblox Studio (its free Creator Hub tutorials are excellent), and learn <em>JavaScript Essentials</em> here — game logic is the same everywhere</li>
+  <li>🤖 <strong>AI amazes me</strong> → our <em>AI for Beginners</em> course: train models with your webcam, then learn to prompt chatbots like a pro</li>
+  <li>🤖⚙️ <strong>I love robots</strong> → get a real micro:bit and make your simulator projects physical</li>
+</ul>
+<div class="callout tip"><strong>The secret:</strong> the path matters less than you think — loops, events, variables and conditions are the SAME everywhere. You already know them all. 🎉</div>
+<h3>🏋️ Graduation Task</h3>
+<div class="callout tip">Enroll in your chosen next course right now — and tell someone what you're going to build this year.</div>`),
+          quiz("kd-quiz", "Final Quiz: Game Creation", [
+            { q: "Which concepts appear in Scratch AND Lua AND Arcade?", options: ["Nothing in common", "Events, loops, variables, conditions", "Only colors", "Only sounds"], answer: 1 },
+            { q: "The micro:bit simulator lets you...", options: ["Only watch videos", "Program a virtual device for free before owning one", "Play Roblox", "Print money"], answer: 1 },
+            { q: "The most important thing when choosing your path is...", options: ["Picking the hardest one", "What excites you — the core concepts transfer everywhere", "What's most expensive", "Copying friends"], answer: 1 },
           ]),
         ],
       },

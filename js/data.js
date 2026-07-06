@@ -1408,71 +1408,405 @@ git commit -m "Add dark-mode toggle to portfolio header"</code></pre>
     rating: 4.8,
     ratings: 51200,
     students: 402000,
-    hours: 6,
+    hours: 14,
     price: "Free",
     free: true,
     color: "linear-gradient(135deg,#306998,#FFD43B)",
     icon: "🐍",
     description:
-      "Python reads almost like English, which makes it the perfect first language. You'll learn variables, control flow, functions and data structures — the foundation for web backends, automation, and data science.",
+      "Python reads almost like English, which makes it the perfect first language. This full course takes you from installing Python to writing a complete project: variables, control flow, data structures, functions, files and error handling — the foundation for web backends, automation, and data science.",
     whatYouLearn: [
-      "Write and run your first Python programs",
+      "Install Python and run programs three different ways",
       "Variables, strings, numbers and user input",
-      "Make decisions with if/else and repeat with loops",
-      "Organize code with functions, lists and dictionaries",
+      "Make decisions with if/elif/else and repeat with loops",
+      "Master lists, dictionaries, tuples and sets",
+      "Write clean reusable functions with parameters and returns",
+      "Read/write files, handle errors, and build a final project",
     ],
     sections: [
       {
-        title: "Python Foundations",
+        title: "Getting Started",
         lessons: [
-          article("py-hello", "Hello, Python!", "8 min", `
+          article("py-setup", "Installing & Running Python", "9 min", `
 <h3>🎯 Intro</h3>
-<p>Python programs are plain text files that run top to bottom — no setup ceremony needed.</p>
+<p>Before writing code, let's get Python onto your machine and learn the three ways to run it.</p>
 <h3>📝 Summary</h3>
 <ul>
-  <li><code>print()</code> shows output; <code>input()</code> asks the user</li>
-  <li>Variables need no type declarations</li>
-  <li>f-strings embed values inside text</li>
+  <li>Download from <strong>python.org</strong> — on Windows, tick <em>"Add Python to PATH"</em> during install</li>
+  <li><strong>REPL:</strong> type <code>python</code> in a terminal for an interactive playground</li>
+  <li><strong>Scripts:</strong> save code as <code>name.py</code>, run with <code>python name.py</code></li>
+  <li><strong>Editors:</strong> VS Code + the Python extension is the popular free setup</li>
 </ul>
 <h3>💻 Example</h3>
-<pre><code>name = input("What is your name? ")
-age = 25
-print(f"Hello {name}, next year you'll be {age + 1}!")</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> ask the user for their favorite food and print a sentence using it with an f-string.</div>`),
-          article("py-flow", "If, Loops & Lists", "12 min", `
-<h3>🎯 Intro</h3>
-<p>Real programs make decisions and repeat work. Python uses <strong>indentation</strong> instead of braces.</p>
-<h3>📝 Summary</h3>
-<ul>
-  <li><code>if / elif / else</code> for decisions</li>
-  <li><code>for item in list:</code> to loop over collections</li>
-  <li>Lists hold ordered items: <code>fruits[0]</code> is the first</li>
-</ul>
-<h3>💻 Example</h3>
-<pre><code>fruits = ["mango", "apple", "durian"]
-for fruit in fruits:
-    if fruit == "durian":
-        print(f"{fruit} — smells strong!")
-    else:
-        print(f"{fruit} — delicious")</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> make a list of 5 numbers and print only the ones greater than 10.</div>`),
-          article("py-func", "Functions & Dictionaries", "12 min", `
-<h3>🎯 Intro</h3>
-<p>Functions package logic you can reuse; dictionaries store labeled data — together they're most of everyday Python.</p>
-<h3>💻 Example</h3>
-<pre><code>def greet(user):
-    return f"Hello, {user['name']} from {user['city']}!"
+<pre><code># In the terminal:
+python --version        # e.g. Python 3.12.4
 
-student = {"name": "Aung", "city": "Yangon"}
-print(greet(student))</code></pre>
+# REPL — try math instantly:
+&gt;&gt;&gt; 2 + 3 * 4
+14
+&gt;&gt;&gt; "ha" * 3
+'hahaha'
+
+# first.py
+print("Python is installed and working!")
+# run it:  python first.py</code></pre>
 <h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> write a function <code>area(width, height)</code> that returns width × height, and call it twice with different values.</div>`),
-          quiz("py-quiz", "Quiz: Python Basics", [
+<div class="callout tip"><strong>Try it yourself:</strong> install Python, open the REPL and compute how many seconds are in a year. Then put the same line in a script and run it.</div>`),
+          article("py-hello", "Hello, Python! — print, input & variables", "10 min", `
+<h3>🎯 Intro</h3>
+<p>Python programs are plain text that runs top to bottom. Three tools carry you a long way: <code>print()</code>, <code>input()</code>, and variables.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li><code>print()</code> shows output; <code>input()</code> asks the user (always returns text!)</li>
+  <li>Variables need no type declarations — just assign</li>
+  <li>f-strings (<code>f"..."</code>) embed values inside text</li>
+  <li>Comments start with <code>#</code> and are ignored by Python</li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code># greeting.py
+name = input("What is your name? ")
+age = int(input("How old are you? "))   # convert text → number
+
+print(f"Hello {name}!")
+print(f"Next year you'll be {age + 1}.")</code></pre>
+<div class="callout">Without <code>int(...)</code>, <code>age + 1</code> would crash — input() gives you a string like "25", not the number 25.</div>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> ask for the user's favorite food and how many times they ate it this week, then print a full sentence using both.</div>`),
+          article("py-numbers", "Numbers & Math", "9 min", `
+<h3>🎯 Intro</h3>
+<p>Python has two everyday number types — and a set of operators you'll use constantly.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li><code>int</code> — whole numbers; <code>float</code> — decimals</li>
+  <li><code>+ - * /</code> as expected; <code>/</code> ALWAYS gives a float</li>
+  <li><code>//</code> floor division, <code>%</code> remainder, <code>**</code> power</li>
+  <li><code>round()</code>, <code>abs()</code>, <code>min()</code>, <code>max()</code> are built in</li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>price = 4500
+people = 4
+
+each = price / people        # 1125.0  (float)
+whole = price // people      # 1125    (int)
+left = price % people        # 0       remainder
+squared = people ** 2        # 16
+
+print(f"Each pays: {each}")
+print(round(3.14159, 2))     # 3.14</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> a 7580 kyat bill split between 3 friends — print what each pays rounded to 2 decimals, and the remainder using %.</div>`),
+          article("py-strings", "Working with Strings", "11 min", `
+<h3>🎯 Intro</h3>
+<p>Text is everywhere — names, messages, files. Python's string methods make text work painless.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li>Index characters: <code>s[0]</code> first, <code>s[-1]</code> last; slice with <code>s[2:5]</code></li>
+  <li><code>.upper() .lower() .strip() .replace() .split()</code> — the daily five</li>
+  <li><code>len(s)</code> gives length; <code>"x" in s</code> checks containment</li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>msg = "  Learn Python at WebDev Academy  "
+
+clean = msg.strip()
+print(clean.upper())              # LEARN PYTHON AT WEBDEV ACADEMY
+print(clean.replace("Python", "coding"))
+print(len(clean))                 # 30
+print("Python" in clean)          # True
+
+words = clean.split(" ")
+print(words[0], "…", words[-1])   # Learn … Academy</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> take a full name from input(), print it trimmed, in Title Case (.title()), and print how many characters it has without spaces.</div>`),
+          quiz("py-quiz-1", "Quiz: Getting Started", [
+            { q: "input() always returns which type?", options: ["int", "float", "str", "bool"], answer: 2 },
+            { q: "What is 7 // 2 in Python?", options: ["3.5", "3", "4", "1"], answer: 1 },
+            { q: "s[-1] gives you...", options: ["An error", "The last character", "The first character", "Everything but the first"], answer: 1 },
+            { q: "Which converts the text \"42\" into a number?", options: ["number(\"42\")", "int(\"42\")", "\"42\".toInt()", "parse(\"42\")"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Control Flow",
+        lessons: [
+          article("py-if", "Decisions: if / elif / else", "11 min", `
+<h3>🎯 Intro</h3>
+<p>Programs become smart when they can choose. Python uses <strong>indentation</strong> (4 spaces) to group what belongs to each branch.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li>Comparisons: <code>== != &lt; &gt; &lt;= &gt;=</code></li>
+  <li>Combine with <code>and</code>, <code>or</code>, <code>not</code></li>
+  <li><code>elif</code> chains several conditions; only the first true branch runs</li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>score = int(input("Your score: "))
+
+if score &gt;= 80:
+    grade = "A"
+elif score &gt;= 60:
+    grade = "B"
+elif score &gt;= 40:
+    grade = "C"
+else:
+    grade = "F"
+
+passed = score &gt;= 40 and score &lt;= 100
+print(f"Grade: {grade}, valid pass: {passed}")</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> ask for an age and print "child" (under 13), "teenager" (13–19) or "adult" — then add a check for impossible ages like -5.</div>`),
+          article("py-while", "while Loops", "10 min", `
+<h3>🎯 Intro</h3>
+<p><code>while</code> repeats as long as a condition stays true — perfect when you don't know how many rounds you'll need.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li>Something in the loop must change, or it never ends</li>
+  <li><code>break</code> exits immediately; <code>continue</code> skips to the next round</li>
+  <li>Classic pattern: loop until the user types a quit word</li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>secret = 7
+guess = None
+
+while guess != secret:
+    guess = int(input("Guess (1-10): "))
+    if guess &lt; secret:
+        print("Too low!")
+    elif guess &gt; secret:
+        print("Too high!")
+
+print("Correct! 🎉")</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> keep asking for words until the user types "stop", then print how many words they entered.</div>`),
+          article("py-for", "for Loops & range()", "11 min", `
+<h3>🎯 Intro</h3>
+<p><code>for</code> visits each item in a sequence. With <code>range()</code>, it becomes a counting machine.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li><code>range(5)</code> → 0,1,2,3,4; <code>range(1, 6)</code> → 1..5; <code>range(0, 20, 5)</code> steps by 5</li>
+  <li>Loop any string, list, or dictionary directly</li>
+  <li><code>enumerate()</code> gives you index + value together</li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code># multiplication table
+n = 7
+for i in range(1, 11):
+    print(f"{n} x {i} = {n * i}")
+
+# index + value
+courses = ["HTML", "CSS", "Python"]
+for i, c in enumerate(courses, start=1):
+    print(f"{i}. {c}")</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> print all even numbers from 2 to 30 using range's step — then do it again with an if + % check.</div>`),
+          quiz("py-quiz-2", "Quiz: Control Flow", [
             { q: "How does Python group the body of an if statement?", options: ["Curly braces { }", "Indentation", "Parentheses", "The end keyword"], answer: 1 },
-            { q: "What does fruits[0] return?", options: ["The last item", "An error", "The first item", "The list length"], answer: 2 },
+            { q: "range(3) produces...", options: ["1, 2, 3", "0, 1, 2", "0, 1, 2, 3", "3 zeros"], answer: 1 },
+            { q: "break inside a loop...", options: ["Pauses the program", "Skips one round", "Exits the loop immediately", "Restarts the loop"], answer: 2 },
+            { q: "A while loop whose condition never becomes false...", options: ["Stops after 1000 rounds", "Runs forever", "Throws an error", "Is impossible"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Data Structures",
+        lessons: [
+          article("py-lists", "Lists in Depth", "13 min", `
+<h3>🎯 Intro</h3>
+<p>The list is Python's workhorse: ordered, changeable, and packed with useful methods.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li><code>.append() .insert() .remove() .pop()</code> — grow and shrink</li>
+  <li><code>.sort()</code> orders in place; <code>sorted(x)</code> returns a new list</li>
+  <li>Slices work like strings: <code>nums[1:3]</code>, <code>nums[::-1]</code> reverses</li>
+  <li><code>sum() len() min() max()</code> work on whole lists</li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>scores = [75, 92, 58]
+scores.append(88)          # [75, 92, 58, 88]
+scores.sort(reverse=True)  # [92, 88, 75, 58]
+
+top3 = scores[:3]
+average = sum(scores) / len(scores)
+
+print(f"Top 3: {top3}")
+print(f"Average: {average:.1f}")
+print(f"Best: {max(scores)}, Worst: {min(scores)}")</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> collect 5 prices from input() into a list, then print them sorted, their total, and the most expensive one.</div>`),
+          article("py-dicts", "Dictionaries", "13 min", `
+<h3>🎯 Intro</h3>
+<p>A dictionary stores <strong>labeled</strong> data: look up by key instead of position. It's how real-world records are modeled.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li>Create: <code>{"name": "Aye", "score": 85}</code>; read: <code>d["name"]</code></li>
+  <li><code>d.get("key", default)</code> avoids crashes on missing keys</li>
+  <li>Loop: <code>for key, value in d.items():</code></li>
+  <li>Dictionaries nest — a list of dicts is a mini database</li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>students = [
+    {"name": "Aye", "score": 85},
+    {"name": "Ko",  "score": 55},
+    {"name": "Mya", "score": 92},
+]
+
+for s in students:
+    status = "pass" if s["score"] &gt;= 60 else "retry"
+    print(f'{s["name"]}: {s["score"]} ({status})')
+
+# count pass/fail
+results = {"pass": 0, "retry": 0}
+for s in students:
+    key = "pass" if s["score"] &gt;= 60 else "retry"
+    results[key] += 1
+print(results)   # {'pass': 2, 'retry': 1}</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> build a phone book dict of 3 friends; ask for a name with input() and print the number, or "not found" using .get().</div>`),
+          article("py-tuples", "Tuples, Sets & Comprehensions", "12 min", `
+<h3>🎯 Intro</h3>
+<p>Two more containers with superpowers — plus Python's most-loved shortcut.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li><strong>Tuple</strong> <code>(lat, lon)</code> — like a list but unchangeable; great for fixed pairs</li>
+  <li><strong>Set</strong> <code>{1, 2, 3}</code> — no duplicates, instant membership checks</li>
+  <li><strong>Comprehension</strong> — build a list in one readable line</li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>point = (16.8661, 96.1951)          # Yangon lat/lon — fixed forever
+lat, lon = point                     # unpacking
+
+votes = ["mo", "aye", "mo", "ko", "mo"]
+unique_voters = set(votes)
+print(unique_voters)                 # {'mo', 'aye', 'ko'}
+
+nums = [1, 2, 3, 4, 5, 6]
+squares = [n * n for n in nums]
+evens = [n for n in nums if n % 2 == 0]
+print(squares)   # [1, 4, 9, 16, 25, 36]
+print(evens)     # [2, 4, 6]</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> given a list of words with repeats, print the unique words, and use a comprehension to make a list of their lengths.</div>`),
+          quiz("py-quiz-3", "Quiz: Data Structures", [
+            { q: "Which method adds an item to the end of a list?", options: [".add()", ".push()", ".append()", ".insert_end()"], answer: 2 },
+            { q: "d.get(\"x\", 0) when \"x\" is missing returns...", options: ["An error", "None always", "0", "\"x\""], answer: 2 },
+            { q: "Which container silently removes duplicates?", options: ["list", "tuple", "dict", "set"], answer: 3 },
+            { q: "[n*2 for n in nums] is called a...", options: ["Lambda", "List comprehension", "Generator class", "Decorator"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Functions, Files & Final Project",
+        lessons: [
+          article("py-func", "Functions", "13 min", `
+<h3>🎯 Intro</h3>
+<p>Functions turn repeated code into named, reusable, testable pieces — the single biggest step toward professional code.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li><code>def name(params):</code> defines; <code>return</code> sends a value back</li>
+  <li>Default values: <code>def greet(name, lang="en")</code></li>
+  <li>A function should do <strong>one</strong> thing, named with a verb</li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>def area(width, height):
+    return width * height
+
+def grade(score):
+    if score &gt;= 80: return "A"
+    if score &gt;= 60: return "B"
+    return "C"
+
+def greet(name, lang="en"):
+    if lang == "my":
+        return f"မင်္ဂလာပါ {name}!"
+    return f"Hello {name}!"
+
+print(area(4, 5))            # 20
+print(grade(72))             # B
+print(greet("Aye", "my"))    # မင်္ဂလာပါ Aye!</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> write kyat_to_usd(amount, rate=4400) and use it on three amounts; then write is_even(n) returning True/False.</div>`),
+          article("py-files", "Files & Errors", "13 min", `
+<h3>🎯 Intro</h3>
+<p>Real programs save data and survive bad input. Files + try/except are how.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li><code>with open(path) as f:</code> auto-closes the file for you</li>
+  <li><code>"w"</code> writes (overwrites!), <code>"a"</code> appends, default reads</li>
+  <li><code>try / except</code> catches specific errors so the program keeps going</li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code># save scores
+with open("scores.txt", "w") as f:
+    f.write("Aye,85\\n")
+    f.write("Ko,55\\n")
+
+# read them back safely
+try:
+    with open("scores.txt") as f:
+        for line in f:
+            name, score = line.strip().split(",")
+            print(f"{name} scored {score}")
+except FileNotFoundError:
+    print("No scores saved yet.")
+except ValueError:
+    print("A line was badly formatted.")</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> write a diary program — each run appends one input() line with today's date to diary.txt, then prints the whole file.</div>`),
+          article("py-project", "Final Project: Student Report Tool", "20 min", `
+<h3>🎯 Intro</h3>
+<p>Time to combine <em>everything</em>: input, dicts, loops, functions, files. A tool a real teacher could use.</p>
+<h3>📝 The task</h3>
+<ul>
+  <li>Enter student names and scores until "done"</li>
+  <li>Compute average, highest, lowest, pass rate</li>
+  <li>Save a formatted report to report.txt</li>
+</ul>
+<h3>💻 Complete solution — read it, then write yours</h3>
+<pre><code>def collect_students():
+    students = []
+    while True:
+        name = input("Student name (or done): ").strip()
+        if name.lower() == "done":
+            return students
+        try:
+            score = int(input(f"Score for {name}: "))
+        except ValueError:
+            print("Numbers only — try again.")
+            continue
+        students.append({"name": name, "score": score})
+
+def summarize(students):
+    scores = [s["score"] for s in students]
+    passed = [s for s in students if s["score"] &gt;= 60]
+    return {
+        "count": len(students),
+        "average": sum(scores) / len(scores),
+        "best": max(students, key=lambda s: s["score"]),
+        "pass_rate": len(passed) / len(students) * 100,
+    }
+
+def save_report(students, stats):
+    with open("report.txt", "w") as f:
+        f.write("CLASS REPORT\\n============\\n")
+        for s in students:
+            f.write(f'{s["name"]:<12} {s["score"]:>3}\\n')
+        f.write(f'\\nStudents: {stats["count"]}\\n')
+        f.write(f'Average:  {stats["average"]:.1f}\\n')
+        f.write(f'Best:     {stats["best"]["name"]}\\n')
+        f.write(f'Pass rate {stats["pass_rate"]:.0f}%\\n')
+
+students = collect_students()
+if students:
+    stats = summarize(students)
+    save_report(students, stats)
+    print(f'Report saved — average {stats["average"]:.1f}, '
+          f'best: {stats["best"]["name"]} 🎉')</code></pre>
+<h3>🏋️ Level up</h3>
+<div class="callout tip"><strong>Extend it yourself:</strong> add letter grades to the report, sort students best-first, and refuse scores outside 0–100.</div>`),
+          quiz("py-quiz-4", "Final Quiz: Python", [
             { q: "Which keyword defines a function?", options: ["function", "fn", "def", "func"], answer: 2 },
+            { q: "with open(\"f.txt\", \"w\") — what does \"w\" do?", options: ["Reads only", "Appends", "Overwrites/creates for writing", "Locks the file"], answer: 2 },
+            { q: "try/except exists to...", options: ["Speed up code", "Handle errors without crashing", "Import modules", "Format strings"], answer: 1 },
+            { q: "max(students, key=lambda s: s[\"score\"]) returns...", options: ["The highest score number", "The student dict with the highest score", "A sorted list", "An error"], answer: 1 },
+            { q: "A good function should...", options: ["Do as much as possible", "Do one clear thing", "Avoid parameters", "Always print"], answer: 1 },
           ]),
         ],
       },
@@ -2280,85 +2614,332 @@ docker run -p 3000:3000 my-app</code></pre>
     rating: 4.8,
     ratings: 47600,
     students: 356000,
-    hours: 8,
+    hours: 15,
     price: "Free",
     free: true,
     color: "linear-gradient(135deg,#087ea4,#61dafb)",
     icon: "⚛️",
     description:
-      "React turns your UI into components: small, reusable pieces that update automatically when data changes. Learn JSX, props, state and events — the 90% you use every day.",
+      "React turns your UI into components: small, reusable pieces that update automatically when data changes. This full course covers JSX, props, state, forms, effects and data fetching — then you build a complete study-tracker app.",
     whatYouLearn: [
-      "JSX: HTML-like syntax inside JavaScript",
-      "Components and props",
-      "State with the useState hook",
-      "Handling events and rendering lists",
+      "Start a real React project with Vite",
+      "JSX rules and thinking in components",
+      "Props, state and one-way data flow",
+      "Controlled forms and user input",
+      "Fetch data from APIs with useEffect",
+      "Build a complete interactive app",
     ],
     sections: [
       {
-        title: "React Foundations",
+        title: "Thinking in React",
         lessons: [
-          article("re-components", "Components & JSX", "12 min", `
+          article("re-setup", "Setup with Vite & Your First Component", "11 min", `
 <h3>🎯 Intro</h3>
-<p>A React component is just a function that returns markup. Build small pieces, compose big apps.</p>
+<p>Real React projects use a build tool. <strong>Vite</strong> is today's fast standard — one command and you're coding.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li><code>npm create vite@latest my-app</code> → choose React</li>
+  <li><code>npm install</code> then <code>npm run dev</code> → live at localhost:5173</li>
+  <li>Components live in .jsx files; <code>App.jsx</code> is your root</li>
+</ul>
 <h3>💻 Example</h3>
-<pre><code>function Welcome({ name }) {
-  return &lt;h2&gt;Hello, {name}!&lt;/h2&gt;;
+<pre><code>// src/App.jsx
+function App() {
+  const student = "Aye";
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;WebDev Academy&lt;/h1&gt;
+      &lt;p&gt;Welcome back, {student}! Today is {new Date().toDateString()}.&lt;/p&gt;
+    &lt;/div&gt;
+  );
+}
+
+export default App;</code></pre>
+<div class="callout">Anything inside <code>{ }</code> in JSX is live JavaScript — variables, math, function calls.</div>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> create the Vite app, then make App show your academy name and a lessons-completed number stored in a variable.</div>`),
+          article("re-jsx", "JSX Rules You Must Know", "10 min", `
+<h3>🎯 Intro</h3>
+<p>JSX looks like HTML but has four rules that trip up every beginner. Learn them once, avoid hours of confusion.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li>Return <strong>one</strong> root element (wrap siblings in <code>&lt;&gt;...&lt;/&gt;</code>)</li>
+  <li><code>className</code> instead of <code>class</code></li>
+  <li>Every tag must close: <code>&lt;img /&gt;</code>, <code>&lt;br /&gt;</code></li>
+  <li>Style takes an object: <code>style={{ color: "purple" }}</code></li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>function Banner() {
+  const urgent = true;
+  return (
+    &lt;&gt;
+      &lt;h2 className="title"&gt;New course out!&lt;/h2&gt;
+      &lt;p style={{ color: urgent ? "red" : "gray", fontWeight: 700 }}&gt;
+        Enrollment closes soon &lt;br /&gt;
+        Don't miss it
+      &lt;/p&gt;
+    &lt;/&gt;
+  );
+}</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> build a Profile component with an image, a styled name, and a bio — breaking none of the four rules.</div>`),
+          article("re-components", "Components & Props", "13 min", `
+<h3>🎯 Intro</h3>
+<p>Components are functions that return markup; <strong>props</strong> are their arguments. Build small pieces, compose big apps.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li>Component names start with a Capital letter</li>
+  <li>Props flow <strong>down</strong> parent → child, read-only</li>
+  <li>Destructure them: <code>function Card({ title, hours })</code></li>
+  <li><code>children</code> is whatever you nest inside the tag</li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>function CourseCard({ title, hours, free }) {
+  return (
+    &lt;div className="card"&gt;
+      &lt;h3&gt;{title}&lt;/h3&gt;
+      &lt;p&gt;{hours} hours · {free ? "Free" : "Premium"}&lt;/p&gt;
+    &lt;/div&gt;
+  );
 }
 
 function App() {
   return (
-    &lt;div&gt;
-      &lt;Welcome name="Aye" /&gt;
-      &lt;Welcome name="Ko" /&gt;
-    &lt;/div&gt;
+    &lt;main&gt;
+      &lt;CourseCard title="HTML Deep Dive" hours={4.5} free={true} /&gt;
+      &lt;CourseCard title="React" hours={15} free={true} /&gt;
+    &lt;/main&gt;
   );
 }</code></pre>
-<div class="callout tip">Props flow <strong>down</strong> from parent to child — like function arguments.</div>
 <h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> create a &lt;CourseCard title="..." hours={5} /&gt; component and render three of them.</div>`),
-          article("re-state", "State & Events", "14 min", `
+<div class="callout tip"><strong>Try it yourself:</strong> add an instructor prop to CourseCard and render four cards from your favorite courses.</div>`),
+          quiz("re-quiz-1", "Quiz: React Foundations", [
+            { q: "A React component is fundamentally...", options: ["A CSS file", "A function returning markup", "A database model", "An HTML template file"], answer: 1 },
+            { q: "In JSX you set a CSS class with...", options: ["class", "className", "css", "styleClass"], answer: 1 },
+            { q: "Props are...", options: ["Editable by the child", "Read-only inputs passed from the parent", "Global variables", "Only strings"], answer: 1 },
+            { q: "Which starts a React project fastest today?", options: ["npm create vite@latest", "Writing webpack config by hand", "A PHP server", "Copying script tags"], answer: 0 },
+          ]),
+        ],
+      },
+      {
+        title: "State & Interaction",
+        lessons: [
+          article("re-state", "State with useState", "14 min", `
 <h3>🎯 Intro</h3>
-<p>State is data that changes. When it changes, React re-renders for you — no manual DOM updates.</p>
+<p>State is data that changes over time. When it changes, React re-renders the UI for you — no manual DOM updates, ever.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li><code>const [value, setValue] = useState(initial)</code></li>
+  <li>NEVER assign directly — always call the setter</li>
+  <li>Each component instance gets its own state</li>
+  <li>Updating from previous value: <code>setCount(c =&gt; c + 1)</code></li>
+</ul>
 <h3>💻 Example</h3>
 <pre><code>import { useState } from "react";
 
-function Counter() {
-  const [count, setCount] = useState(0);
+function LessonTracker() {
+  const [done, setDone] = useState(0);
+  const total = 12;
 
   return (
-    &lt;button onClick={() =&gt; setCount(count + 1)}&gt;
-      Clicked {count} times
-    &lt;/button&gt;
+    &lt;div&gt;
+      &lt;h3&gt;Progress: {done}/{total} lessons&lt;/h3&gt;
+      &lt;progress value={done} max={total} /&gt;
+      &lt;button onClick={() =&gt; setDone(d =&gt; Math.min(d + 1, total))}&gt;
+        Complete a lesson ✓
+      &lt;/button&gt;
+      {done === total &amp;&amp; &lt;p&gt;🎓 Course finished!&lt;/p&gt;}
+    &lt;/div&gt;
   );
 }</code></pre>
-<div class="callout">Never write <code>count = 5</code> — always use the setter so React knows to update.</div>
 <h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> build a like button that toggles between 🤍 and ❤️ using state.</div>`),
-          article("re-lists", "Rendering Lists", "10 min", `
+<div class="callout tip"><strong>Try it yourself:</strong> build a like button that toggles 🤍/❤️ with a boolean state, plus a counter showing total likes.</div>`),
+          article("re-forms", "Forms & Controlled Inputs", "13 min", `
 <h3>🎯 Intro</h3>
-<p>Turning an array into UI is React's bread and butter: <code>map</code> + a <code>key</code>.</p>
+<p>In React, the input's value lives in state — the input just displays it. This is the <strong>controlled component</strong> pattern.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li><code>value={text}</code> + <code>onChange={e =&gt; setText(e.target.value)}</code></li>
+  <li>Submit with <code>onSubmit</code> on the form + <code>e.preventDefault()</code></li>
+  <li>Validation is just JavaScript on the state</li>
+</ul>
 <h3>💻 Example</h3>
-<pre><code>const courses = [
-  { id: 1, title: "HTML" },
-  { id: 2, title: "CSS" },
-  { id: 3, title: "React" },
+<pre><code>function Signup() {
+  const [email, setEmail] = useState("");
+  const [sent, setSent] = useState(false);
+  const valid = email.includes("@");
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    if (valid) setSent(true);
+  }
+
+  if (sent) return &lt;p&gt;✅ Welcome aboard, {email}!&lt;/p&gt;;
+
+  return (
+    &lt;form onSubmit={handleSubmit}&gt;
+      &lt;input
+        value={email}
+        onChange={(e) =&gt; setEmail(e.target.value)}
+        placeholder="you@example.com"
+      /&gt;
+      &lt;button disabled={!valid}&gt;Join free&lt;/button&gt;
+    &lt;/form&gt;
+  );
+}</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> add a name field, require it to be non-empty, and show a live character count under it.</div>`),
+          article("re-lists", "Lists, Keys & Conditional UI", "12 min", `
+<h3>🎯 Intro</h3>
+<p>Turning arrays into UI is React's bread and butter: <code>map</code> + a stable <code>key</code>, and show/hide with plain JavaScript.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li><code>{items.map(item =&gt; &lt;Row key={item.id} ... /&gt;)}</code></li>
+  <li>Keys must be stable and unique — use ids, not array index</li>
+  <li>Conditional: <code>{cond &amp;&amp; &lt;X /&gt;}</code> or <code>{cond ? &lt;A /&gt; : &lt;B /&gt;}</code></li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>const students = [
+  { id: 1, name: "Aye", score: 85 },
+  { id: 2, name: "Ko",  score: 55 },
+  { id: 3, name: "Mya", score: 92 },
 ];
 
-function CourseList() {
+function ClassList({ passOnly }) {
+  const shown = passOnly
+    ? students.filter(s =&gt; s.score &gt;= 60)
+    : students;
+
   return (
     &lt;ul&gt;
-      {courses.map((c) =&gt; (
-        &lt;li key={c.id}&gt;{c.title}&lt;/li&gt;
+      {shown.map(s =&gt; (
+        &lt;li key={s.id} style={{ color: s.score &gt;= 60 ? "green" : "red" }}&gt;
+          {s.name} — {s.score} {s.score &gt;= 90 &amp;&amp; "🏆"}
+        &lt;/li&gt;
       ))}
     &lt;/ul&gt;
   );
 }</code></pre>
 <h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> render a student list where scores under 60 get a red style.</div>`),
-          quiz("re-quiz", "Quiz: React", [
-            { q: "A React component is fundamentally...", options: ["A CSS file", "A function returning markup", "A database model", "An HTML template file"], answer: 1 },
+<div class="callout tip"><strong>Try it yourself:</strong> add a button that toggles passOnly with state, and an "empty class" message when the filtered list is empty.</div>`),
+          quiz("re-quiz-2", "Quiz: State & Interaction", [
             { q: "How do you update state?", options: ["Assign directly", "Call the setter from useState", "Edit the DOM", "Reload the page"], answer: 1 },
-            { q: "When rendering lists, each item needs...", options: ["An id attribute", "A unique key prop", "An index.html", "A class"], answer: 1 },
+            { q: "A controlled input's value comes from...", options: ["The DOM", "State", "Props only", "localStorage"], answer: 1 },
+            { q: "List keys should be...", options: ["Array indexes always", "Stable unique ids", "Random each render", "CSS classes"], answer: 1 },
+            { q: "{score > 90 && <Badge />} renders Badge when...", options: ["Always", "score is exactly 90", "score is greater than 90", "Never"], answer: 2 },
+          ]),
+        ],
+      },
+      {
+        title: "Effects, Data & Project",
+        lessons: [
+          article("re-effect", "useEffect & Fetching Data", "15 min", `
+<h3>🎯 Intro</h3>
+<p>Effects handle things <em>outside</em> rendering: fetching data, timers, titles. The dependency array controls when they run.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li><code>useEffect(fn, [])</code> — run once after first render (perfect for fetch)</li>
+  <li><code>useEffect(fn, [x])</code> — re-run when x changes</li>
+  <li>Track loading and error states — users always see something</li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>import { useState, useEffect } from "react";
+
+function Users() {
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() =&gt; {
+    fetch("https://jsonplaceholder.typicode.com/users")
+      .then(r =&gt; { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+      .then(data =&gt; setUsers(data))
+      .catch(err =&gt; setError(err.message))
+      .finally(() =&gt; setLoading(false));
+  }, []);
+
+  if (loading) return &lt;p&gt;Loading…&lt;/p&gt;;
+  if (error)   return &lt;p&gt;⚠ {error}&lt;/p&gt;;
+
+  return (
+    &lt;ul&gt;
+      {users.map(u =&gt; &lt;li key={u.id}&gt;{u.name} — {u.email}&lt;/li&gt;)}
+    &lt;/ul&gt;
+  );
+}</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> fetch /todos from the same API and show only incomplete ones, with a count in the heading.</div>`),
+          article("re-project", "Final Project: Study Tracker App", "25 min", `
+<h3>🎯 Intro</h3>
+<p>Everything combined — components, props, state, forms, lists, conditional UI — in one complete app you can show off.</p>
+<h3>📝 The task</h3>
+<ul>
+  <li>Add subjects with a form (controlled input)</li>
+  <li>Mark them done / not done, delete them</li>
+  <li>Show live progress and filter buttons</li>
+</ul>
+<h3>💻 Complete solution — study it, then build your own</h3>
+<pre><code>import { useState } from "react";
+
+function StudyTracker() {
+  const [subjects, setSubjects] = useState([
+    { id: 1, title: "HTML basics", done: true },
+    { id: 2, title: "React state", done: false },
+  ]);
+  const [text, setText] = useState("");
+  const [filter, setFilter] = useState("all");
+
+  function add(e) {
+    e.preventDefault();
+    if (!text.trim()) return;
+    setSubjects(s =&gt; [...s, { id: Date.now(), title: text.trim(), done: false }]);
+    setText("");
+  }
+  const toggle = (id) =&gt;
+    setSubjects(s =&gt; s.map(x =&gt; x.id === id ? { ...x, done: !x.done } : x));
+  const remove = (id) =&gt;
+    setSubjects(s =&gt; s.filter(x =&gt; x.id !== id));
+
+  const shown = subjects.filter(x =&gt;
+    filter === "all" ? true : filter === "done" ? x.done : !x.done);
+  const doneCount = subjects.filter(x =&gt; x.done).length;
+
+  return (
+    &lt;div&gt;
+      &lt;h2&gt;📚 Study Tracker ({doneCount}/{subjects.length})&lt;/h2&gt;
+      &lt;form onSubmit={add}&gt;
+        &lt;input value={text} onChange={e =&gt; setText(e.target.value)}
+               placeholder="New subject…" /&gt;
+        &lt;button&gt;Add&lt;/button&gt;
+      &lt;/form&gt;
+      {["all", "todo", "done"].map(f =&gt; (
+        &lt;button key={f} disabled={filter === f} onClick={() =&gt; setFilter(f)}&gt;
+          {f}
+        &lt;/button&gt;
+      ))}
+      &lt;ul&gt;
+        {shown.map(s =&gt; (
+          &lt;li key={s.id}&gt;
+            &lt;label style={{ textDecoration: s.done ? "line-through" : "none" }}&gt;
+              &lt;input type="checkbox" checked={s.done}
+                     onChange={() =&gt; toggle(s.id)} /&gt;
+              {s.title}
+            &lt;/label&gt;
+            &lt;button onClick={() =&gt; remove(s.id)}&gt;🗑&lt;/button&gt;
+          &lt;/li&gt;
+        ))}
+      &lt;/ul&gt;
+      {shown.length === 0 &amp;&amp; &lt;p&gt;Nothing here 🎉&lt;/p&gt;}
+    &lt;/div&gt;
+  );
+}</code></pre>
+<h3>🏋️ Level up</h3>
+<div class="callout tip"><strong>Extend it yourself:</strong> persist subjects to localStorage with useEffect, add an edit button, and show a 🎓 banner at 100% done.</div>`),
+          quiz("re-quiz-3", "Final Quiz: React", [
+            { q: "useEffect(fn, []) runs...", options: ["Every render", "Once after the first render", "Never", "Only on unmount"], answer: 1 },
+            { q: "To add an item to state, you should...", options: ["subjects.push(item)", "Create a NEW array: [...subjects, item]", "Edit the DOM", "Use a global variable"], answer: 1 },
+            { q: "{ ...x, done: !x.done } creates...", options: ["A syntax error", "A copy of x with done flipped", "A deleted object", "A DOM node"], answer: 1 },
+            { q: "Loading and error states exist so that...", options: ["Code looks longer", "Users always see meaningful UI while data arrives or fails", "React requires them", "SEO improves"], answer: 1 },
           ]),
         ],
       },

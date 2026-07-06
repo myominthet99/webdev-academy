@@ -2,12 +2,13 @@
    Strategy: NETWORK-FIRST for same-origin requests — users always get
    fresh code when online; the cache is only an offline fallback.
    Still bump CACHE per release so stale precaches get purged. */
-const CACHE = "wda-v10";
+const CACHE = "wda-v11";
 const ASSETS = [
   "./",
   "./index.html",
   "./css/styles.css",
   "./js/firebase-config.js",
+  "./js/analytics.js",
   "./js/data.js",
   "./js/i18n.js",
   "./js/auth.js",

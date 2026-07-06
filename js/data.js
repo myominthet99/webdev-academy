@@ -997,6 +997,204 @@ btn.addEventListener("click", () =&gt; {
     ],
   },
   {
+    id: "html-deep-dive",
+    title: "HTML Deep Dive: Semantic Markup, Forms & Tables",
+    subtitle: "Write clean, accessible, professional HTML — the skeleton every great website is built on.",
+    instructor: "Aung Kyaw",
+    category: "HTML",
+    level: "Beginner",
+    rating: 4.6,
+    ratings: 18240,
+    students: 96400,
+    hours: 4.5,
+    price: "Free",
+    free: true,
+    color: "linear-gradient(135deg,#e44d26,#f16529)",
+    icon: "&lt;h1&gt;",
+    description:
+      "Most developers only scratch the surface of HTML. This course goes deeper: semantic elements that make your pages accessible and SEO-friendly, professional forms with built-in validation, and data tables done right. Everything is hands-on with a practice task in every lesson.",
+    whatYouLearn: [
+      "Structure pages with semantic elements (header, nav, main, article)",
+      "Why semantics matter for accessibility and SEO",
+      "Build forms with inputs, labels, and built-in validation",
+      "Present data with well-structured, accessible tables",
+      "Embed images, audio, and video the right way",
+    ],
+    sections: [
+      {
+        title: "Semantic HTML",
+        lessons: [
+          article("hd-semantic", "Semantic Elements: Beyond div", "9 min", `
+<h3>🎯 Intro</h3>
+<p>A page built only with <code>&lt;div&gt;</code> works — but it tells the browser <em>nothing</em> about what each part means. Semantic elements give your page structure that browsers, search engines, and screen readers understand.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li><code>&lt;header&gt;</code> / <code>&lt;footer&gt;</code> — top and bottom of a page or section</li>
+  <li><code>&lt;nav&gt;</code> — groups of navigation links</li>
+  <li><code>&lt;main&gt;</code> — the unique main content (one per page)</li>
+  <li><code>&lt;article&gt;</code> — self-contained content (a post, a card)</li>
+  <li><code>&lt;section&gt;</code> — a themed group of content with a heading</li>
+  <li><code>&lt;aside&gt;</code> — side content (related links, ads)</li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>&lt;body&gt;
+  &lt;header&gt;
+    &lt;h1&gt;My Blog&lt;/h1&gt;
+    &lt;nav&gt;
+      &lt;a href="/"&gt;Home&lt;/a&gt; &lt;a href="/about"&gt;About&lt;/a&gt;
+    &lt;/nav&gt;
+  &lt;/header&gt;
+  &lt;main&gt;
+    &lt;article&gt;
+      &lt;h2&gt;My first post&lt;/h2&gt;
+      &lt;p&gt;Hello world!&lt;/p&gt;
+    &lt;/article&gt;
+  &lt;/main&gt;
+  &lt;footer&gt;© 2026&lt;/footer&gt;
+&lt;/body&gt;</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> take any page you built with only divs and replace them with header, nav, main, article, and footer. The page should look identical — but now it has meaning.</div>`),
+          article("hd-a11y", "Why Semantics Matter: Accessibility & SEO", "8 min", `
+<h3>🎯 Intro</h3>
+<p>Semantic HTML isn't just tidiness — it's how <strong>blind users</strong> navigate your site and how <strong>Google</strong> understands your content.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li>Screen readers announce landmarks: "navigation", "main", "banner" — users jump straight to what they need</li>
+  <li>Search engines rank well-structured pages higher</li>
+  <li>Headings (<code>&lt;h1&gt;</code>–<code>&lt;h6&gt;</code>) must form an outline — never skip levels for styling</li>
+  <li>Every <code>&lt;img&gt;</code> needs an <code>alt</code> describing what it shows</li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>&lt;!-- Bad: meaningless and silent for screen readers --&gt;
+&lt;div class="btn" onclick="save()"&gt;Save&lt;/div&gt;
+
+&lt;!-- Good: keyboard-focusable, announced as a button --&gt;
+&lt;button onclick="save()"&gt;Save&lt;/button&gt;
+
+&lt;img src="cat.jpg" alt="An orange cat sleeping on a laptop keyboard"&gt;</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> open your page, press <kbd>Tab</kbd> repeatedly. Can you reach every interactive element with the keyboard alone? If not, replace those divs with real buttons and links.</div>`),
+          quiz("hd-quiz-1", "Quiz: Semantic HTML", [
+            {
+              q: "Which element should contain a page's unique main content?",
+              options: ["<content>", "<main>", "<section>", "<body>"],
+              answer: 1,
+            },
+            {
+              q: "What does a screen reader use to let users jump around a page?",
+              options: ["CSS classes", "Landmark elements like <nav> and <main>", "JavaScript events", "Font sizes"],
+              answer: 1,
+            },
+            {
+              q: "Which is the correct way to make a clickable 'Save' control?",
+              options: ['<div onclick="save()">Save</div>', '<span class="btn">Save</span>', "<button>Save</button>", "<a>Save</a> with no href"],
+              answer: 2,
+            },
+          ]),
+        ],
+      },
+      {
+        title: "Forms & Tables",
+        lessons: [
+          article("hd-forms", "Forms: Inputs, Labels & Validation", "12 min", `
+<h3>🎯 Intro</h3>
+<p>Forms are how users talk to your site — sign-ups, searches, checkouts. HTML gives you rich input types and validation <em>before you write any JavaScript</em>.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li>Every input needs a <code>&lt;label&gt;</code> — click the label, focus the input</li>
+  <li>Use the right <code>type</code>: <code>email</code>, <code>number</code>, <code>date</code>, <code>password</code> — mobile keyboards adapt automatically</li>
+  <li><code>required</code>, <code>min</code>, <code>max</code>, <code>pattern</code> give you free validation</li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>&lt;form&gt;
+  &lt;label for="email"&gt;Email&lt;/label&gt;
+  &lt;input id="email" type="email" required&gt;
+
+  &lt;label for="age"&gt;Age&lt;/label&gt;
+  &lt;input id="age" type="number" min="13" max="120"&gt;
+
+  &lt;label for="plan"&gt;Plan&lt;/label&gt;
+  &lt;select id="plan"&gt;
+    &lt;option&gt;Free&lt;/option&gt;
+    &lt;option&gt;Pro&lt;/option&gt;
+  &lt;/select&gt;
+
+  &lt;button type="submit"&gt;Sign up&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+<div class="callout">Try submitting with an empty email — the browser blocks it and shows a message. Zero JavaScript needed.</div>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> build a contact form with name (required), email (type email, required), a topic dropdown, and a message textarea. Test that validation fires on submit.</div>`),
+          article("hd-tables", "Tables Done Right", "9 min", `
+<h3>🎯 Intro</h3>
+<p>Tables are for <strong>data</strong> — schedules, prices, results. Built correctly, they're readable for everyone including screen reader users.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li><code>&lt;thead&gt;</code>, <code>&lt;tbody&gt;</code> — separate headings from data</li>
+  <li><code>&lt;th&gt;</code> for header cells, <code>&lt;td&gt;</code> for data cells</li>
+  <li><code>&lt;caption&gt;</code> — a title that describes the table</li>
+  <li>Never use tables for page layout — that's CSS's job</li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>&lt;table&gt;
+  &lt;caption&gt;Course schedule&lt;/caption&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;&lt;th&gt;Day&lt;/th&gt;&lt;th&gt;Topic&lt;/th&gt;&lt;th&gt;Time&lt;/th&gt;&lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;&lt;td&gt;Mon&lt;/td&gt;&lt;td&gt;HTML&lt;/td&gt;&lt;td&gt;7 PM&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;Wed&lt;/td&gt;&lt;td&gt;CSS&lt;/td&gt;&lt;td&gt;7 PM&lt;/td&gt;&lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> make a weekly study timetable table with a caption, a header row, and at least three body rows.</div>`),
+          article("hd-media", "Images, Audio & Video", "8 min", `
+<h3>🎯 Intro</h3>
+<p>Media makes pages come alive — but done wrong it's slow and inaccessible. Here's the professional way.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li><code>&lt;img&gt;</code> always with <code>alt</code>; add <code>loading="lazy"</code> for images below the fold</li>
+  <li><code>&lt;video controls&gt;</code> / <code>&lt;audio controls&gt;</code> for local media files</li>
+  <li><code>&lt;figure&gt;</code> + <code>&lt;figcaption&gt;</code> pair media with a caption</li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>&lt;figure&gt;
+  &lt;img src="sunset.jpg" alt="Sunset over Inle Lake" loading="lazy"&gt;
+  &lt;figcaption&gt;Inle Lake at dusk, Myanmar&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;video controls width="640"&gt;
+  &lt;source src="lesson.mp4" type="video/mp4"&gt;
+  Sorry, your browser doesn't support video.
+&lt;/video&gt;</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> add a figure with caption and a lazy-loaded image to your practice page, then check the Network tab to see it load only when scrolled into view.</div>`),
+          quiz("hd-quiz-2", "Quiz: Forms, Tables & Media", [
+            {
+              q: "How do you connect a label to its input?",
+              options: ["Put them on the same line", 'label\'s "for" matches the input\'s "id"', "Give both the same class", "Wrap the input in a div"],
+              answer: 1,
+            },
+            {
+              q: "Which attribute makes a field mandatory with no JavaScript?",
+              options: ["validate", "mandatory", "required", "must"],
+              answer: 2,
+            },
+            {
+              q: "Header cells in a table use which element?",
+              options: ["<td>", "<header>", "<th>", "<thead-cell>"],
+              answer: 2,
+            },
+            {
+              q: "What should every <img> include for accessibility?",
+              options: ["title attribute", "alt attribute", "name attribute", "label attribute"],
+              answer: 1,
+            },
+          ]),
+        ],
+      },
+    ],
+  },
+  {
     id: "js-essentials",
     title: "JavaScript Essentials for Beginners",
     subtitle: "The friendly, hands-on path to writing your first real JavaScript.",

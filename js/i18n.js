@@ -31,6 +31,8 @@ window.I18N = {
       stat_rating: "Avg rating",
       featured: "Featured courses",
       featured_sub: "Hand-picked paths to get you building fast.",
+      trending: "Trending now",
+      trending_sub: "The most popular courses students are taking right now.",
       browse_topic: "Browse by topic",
       browse_sub: "Jump straight to what you want to learn.",
 
@@ -297,6 +299,8 @@ window.I18N = {
       stat_rating: "ပျမ်းမျှအဆင့်",
       featured: "အထူးသင်တန်းများ",
       featured_sub: "မြန်မြန်စတင်နိုင်ရန် ရွေးချယ်ထားသော လမ်းကြောင်းများ။",
+      trending: "လူကြိုက်များနေသော",
+      trending_sub: "ယခုအချိန်တွင် စာသင်သားများ အများဆုံးတက်ရောက်နေသော သင်တန်းများ။",
       browse_topic: "ခေါင်းစဉ်အလိုက် ရှာဖွေရန်",
       browse_sub: "သင်လေ့လာလိုသည်ကို တိုက်ရိုက်ရွေးပါ။",
 

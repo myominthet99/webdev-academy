@@ -497,6 +497,10 @@
   /* ---------------- View: Home ---------------- */
   function renderHome() {
     const featured = COURSES.slice(0, 4);
+    /* Trending: most-enrolled courses not already shown in Featured */
+    const trending = COURSES.filter((c) => featured.indexOf(c) === -1)
+      .sort((a, b) => (b.students || 0) - (a.students || 0))
+      .slice(0, 3);
     app.innerHTML = `
       <section class="hero">
         <div class="container">
@@ -528,6 +532,11 @@
         <h2 class="section-title">${t("featured")}</h2>
         <p class="section-sub">${t("featured_sub")}</p>
         <div class="grid">${featured.map(courseCard).join("")}</div>
+
+        ${trending.length ? `
+        <h2 class="section-title">🔥 ${t("trending")}</h2>
+        <p class="section-sub">${t("trending_sub")}</p>
+        <div class="grid">${trending.map(courseCard).join("")}</div>` : ""}
 
         <h2 class="section-title">${t("browse_topic")}</h2>
         <p class="section-sub">${t("browse_sub")}</p>

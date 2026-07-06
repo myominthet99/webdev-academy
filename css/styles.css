@@ -562,6 +562,29 @@ button { font-family: inherit; cursor: pointer; }
 .chat-mention { color: var(--purple); font-weight: 700; background: rgba(164, 53, 240, .08); border-radius: 4px; padding: 0 3px; }
 .chat-mention.me { background: rgba(229, 152, 25, .2); color: #a15c00; }
 .chat-msg.mentioned .chat-bubble { border-color: var(--purple); box-shadow: 0 0 0 1px rgba(164, 53, 240, .25); }
+.chat-quote {
+  font-size: 12px; color: var(--muted);
+  border-left: 3px solid var(--purple); padding: 2px 8px; margin-bottom: 4px;
+  background: rgba(164, 53, 240, .06); border-radius: 0 6px 6px 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 230px;
+}
+.chat-day { text-align: center; margin: 6px 0 2px; }
+.chat-day span {
+  font-size: 11px; font-weight: 700; color: var(--muted);
+  background: var(--surface); border: 1px solid var(--line);
+  padding: 2px 10px; border-radius: 999px;
+}
+.chat-replybar {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; color: var(--muted);
+  border-left: 3px solid var(--purple); background: rgba(164, 53, 240, .06);
+  padding: 4px 8px; margin-bottom: 8px; border-radius: 0 6px 6px 0;
+  overflow: hidden;
+}
+.chat-replybar b { color: var(--purple); }
+.chat-replybar button { border: 0; background: transparent; cursor: pointer; margin-left: auto; font-size: 12px; }
+.chat-replybtn { border: 0; background: transparent; cursor: pointer; font-size: 12px; line-height: 1; opacity: .5; padding: 0; }
+.chat-replybtn:hover { opacity: 1; }
 .role-badge { display: inline-block; background: var(--purple); color: #fff; font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 999px; vertical-align: middle; margin-left: 4px; }
 .video-src-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .video-src-row input[name="lvideo"] { flex: 1; min-width: 180px; }

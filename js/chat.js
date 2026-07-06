@@ -15,7 +15,7 @@
   const I18N = window.I18N;
   const KEY = "wda_chat_v1";
   const MAX = 200;
-  const BUILD = "v8"; /* shown in the chat header — bump with releases */
+  const BUILD = "v9"; /* shown in the chat header — bump with releases */
 
   /* ============ Firebase config (optional) ============
      Configured centrally in js/firebase-config.js — paste your config
@@ -54,6 +54,7 @@
   let room = "community", roomLabel = null;
   let roomCache = [], primed = false, unsub = null;
   let sendTimes = [], typingUsers = new Set(), searchQuery = "";
+  let replyTo = null; /* { name, text } while composing a reply */
   let fab, panel, listEl, footEl, badgeEl, searchEl, presenceEl;
   let activeUsers = new Map(); /* room -> Set of user IDs */
 
@@ -86,6 +87,79 @@
     savePresence(r, p);
     return active;
   };
+
+  /* ---------------- CLOUD presence & typing (真 cross-device) ----------------
+     Written under rooms/<room>/presence|typing so the existing "rooms"
+     database rule covers them. Heartbeat while the panel is open; a poll
+     renders who's online (60s window) and who's typing (6s window). */
+  const cloudUrl = (r, node, id) =>
+    FIREBASE_CONFIG.databaseURL + "/rooms/" + encodeURIComponent(r) + "/" + node +
+    (id ? "/" + encodeURIComponent(id) : "") + ".json";
+  let hbTimer = null, liveTimer = null, lastTypingPut = 0;
+  function heartbeat() {
+    const u = me();
+    if (!u || !FIREBASE_CONFIG) return;
+    fetch(cloudUrl(room, "presence", u.id), {
+      method: "PUT",
+      body: JSON.stringify({ name: (u.name || u.email || "?").split(" ")[0], ts: Date.now() }),
+    }).catch(() => {});
+  }
+  function cloudTypingPing() {
+    const u = me();
+    if (!u || !FIREBASE_CONFIG) return;
+    const now = Date.now();
+    if (now - lastTypingPut < 2500) return; /* throttle writes */
+    lastTypingPut = now;
+    fetch(cloudUrl(room, "typing", u.id), {
+      method: "PUT",
+      body: JSON.stringify({ name: (u.name || u.email || "?").split(" ")[0], ts: now }),
+    }).catch(() => {});
+  }
+  function pollLive() {
+    if (!FIREBASE_CONFIG || !open) return;
+    const u = me();
+    fetch(cloudUrl(room, "presence"))
+      .then((r) => r.json())
+      .then((val) => {
+        if (!open) return;
+        const now = Date.now();
+        const users = Object.values(val || {}).filter((x) => x && now - x.ts < 60000);
+        renderPresenceCloud(users);
+      }).catch(() => {});
+    fetch(cloudUrl(room, "typing"))
+      .then((r) => r.json())
+      .then((val) => {
+        if (!open) return;
+        const now = Date.now();
+        typingUsers = new Set(
+          Object.entries(val || {})
+            .filter(([id, x]) => x && now - x.ts < 6000 && (!u || id !== u.id))
+            .map(([, x]) => x.name)
+        );
+        renderTyping();
+      }).catch(() => {});
+  }
+  function startLive() {
+    if (!FIREBASE_CONFIG) return;
+    heartbeat(); pollLive();
+    clearInterval(hbTimer); clearInterval(liveTimer);
+    hbTimer = setInterval(heartbeat, 25000);
+    liveTimer = setInterval(pollLive, 5000);
+  }
+  function stopLive() {
+    clearInterval(hbTimer); clearInterval(liveTimer);
+    hbTimer = liveTimer = null;
+    const u = me();
+    if (u && FIREBASE_CONFIG) fetch(cloudUrl(room, "presence", u.id), { method: "DELETE" }).catch(() => {});
+  }
+  function renderPresenceCloud(users) {
+    if (!presenceEl) return;
+    if (!users.length) { presenceEl.innerHTML = ""; return; }
+    const names = users.slice(0, 2).map((x) => esc(x.name)).join(", ");
+    const more = users.length > 2 ? " +" + (users.length - 2) : "";
+    presenceEl.innerHTML = '<span class="chat-online" title="' +
+      esc(users.map((x) => x.name).join(", ")) + '">' + users.length + " 🟢 " + names + more + "</span>";
+  }
 
   /* Transient status line (errors, info) shown in the chat panel */
   let statusTimer = null;
@@ -280,8 +354,11 @@
     if (open) {
       unread = 0; renderBadge(); renderList(); renderFoot(); renderPresence(); scrollBottom();
       markPresence(room);
+      startLive(); /* cloud presence + typing */
       const inp = footEl.querySelector("input.chat-form input");
       if (inp) inp.focus();
+    } else {
+      stopLive();
     }
   }
 
@@ -320,11 +397,16 @@
       return;
     }
     listEl.innerHTML = roomBar + filtered
-      .map((msg) => {
+      .map((msg, i) => {
         const mine = u && msg.userId === u.id;
         const ref = esc(msg._key || msg.id);
         const isPinned = msg.pinned;
         const text = (msg.editedText || msg.text || "");
+        /* day separator when the calendar date changes */
+        const prev = filtered[i - 1];
+        const daySep = (!prev || new Date(prev.ts).toDateString() !== new Date(msg.ts).toDateString())
+          ? '<div class="chat-day"><span>' + esc(new Date(msg.ts).toLocaleDateString(lang() === "my" ? "my-MM" : "en-US", { month: "short", day: "numeric" })) + "</span></div>"
+          : "";
         const reactions = msg.reactions || {};
         const reactionHtml = Object.entries(reactions).map(([emoji, users]) => {
           const list = Array.isArray(users) ? users : Object.values(users || {});
@@ -332,15 +414,18 @@
         }).join("");
         const mentioned = !mine && mentionsMe(text);
         return (
+          daySep +
           '<div class="chat-msg ' + (mine ? "mine" : "") + (isPinned ? " pinned" : "") + (mentioned ? " mentioned" : "") + '">' +
           (isPinned ? '<span class="chat-pin" title="Pinned">📌</span>' : "") +
           (mine ? "" : '<span class="chat-avatar">' + esc(msg.initial || "?") + "</span>") +
           '<div class="chat-bubble">' +
           (mine ? "" : '<div class="chat-name">' + esc(msg.name || "") + "</div>") +
+          (msg.reply ? '<div class="chat-quote">↩ <b>' + esc(msg.reply.name || "") + "</b> " + esc(String(msg.reply.text || "").slice(0, 80)) + "</div>" : "") +
           '<div class="chat-text">' + formatText(text) + (msg.editedText ? ' <span class="chat-edited">(edited)</span>' : "") + "</div>" +
           (reactionHtml ? '<div class="chat-reactions">' + reactionHtml + '</div>' : "") +
           '<div class="chat-meta"><span class="chat-time">' + fmtTime(msg.ts) + "</span>" +
           '<div class="chat-actions">' +
+          '<button class="chat-replybtn" data-reply="' + ref + '" title="' + esc(t("chat_reply")) + '">↩</button>' +
           '<button class="chat-react" data-react="' + ref + '" title="React">😊</button>' +
           (mine ? '<button class="chat-edit" data-edit="' + ref + '" title="Edit">✏️</button>' : "") +
           (mine || (u && u.admin) ? '<button class="chat-pin" data-pin="' + ref + '" title="' + (isPinned ? "Unpin" : "Pin") + '">' + (isPinned ? "📌" : "📌") + '</button>' : "") +
@@ -361,7 +446,34 @@
     listEl.querySelectorAll("[data-pin]").forEach((b) =>
       b.addEventListener("click", () => togglePin(b.getAttribute("data-pin")))
     );
+    listEl.querySelectorAll("[data-reply]").forEach((b) =>
+      b.addEventListener("click", () => {
+        const msg = roomCache.find((m) => (m._key || m.id) === b.getAttribute("data-reply"));
+        if (!msg) return;
+        replyTo = { name: msg.name || "?", text: (msg.editedText || msg.text || "").slice(0, 80) };
+        updateReplyBar();
+        const inp = footEl && footEl.querySelector("#chat-form input");
+        if (inp) inp.focus();
+      })
+    );
     wireRoomBar();
+  }
+
+  function updateReplyBar() {
+    const bar = footEl && footEl.querySelector("#chat-replybar");
+    if (!bar) return;
+    if (replyTo) {
+      bar.hidden = false;
+      bar.innerHTML = "↩ <b>" + esc(replyTo.name) + ":</b> " + esc(replyTo.text) +
+        ' <button id="chat-replycancel" type="button">✕</button>';
+      bar.querySelector("#chat-replycancel").addEventListener("click", () => {
+        replyTo = null;
+        updateReplyBar();
+      });
+    } else {
+      bar.hidden = true;
+      bar.innerHTML = "";
+    }
   }
   function scrollBottom() { if (listEl) listEl.scrollTop = listEl.scrollHeight; }
 
@@ -374,18 +486,20 @@
       return;
     }
     footEl.innerHTML =
+      '<div id="chat-replybar" class="chat-replybar" hidden></div>' +
       '<form class="chat-form" id="chat-form">' +
       '<input type="text" maxlength="500" placeholder="' + esc(t("chat_placeholder")) + '" autocomplete="off">' +
       '<button class="chat-send" type="submit" aria-label="Send">➤</button></form>';
     const form = footEl.querySelector("#chat-form");
     const inp = form.querySelector("input");
-    inp.addEventListener("input", () => { broadcastTyping(); });
+    inp.addEventListener("input", () => { broadcastTyping(); cloudTypingPing(); });
     form.addEventListener("submit", (e) => {
       e.preventDefault();
       send(inp.value);
       inp.value = "";
       inp.focus();
     });
+    updateReplyBar();
   }
 
   /* ---------------- actions ---------------- */
@@ -397,14 +511,16 @@
     if (!rateOk()) { showStatus("⚠ " + t("chat_slow_down")); return; }
     text = moderate(text.slice(0, 500));
     const label = (u.name || u.email || "?").trim();
-    Promise.resolve(backend.add(room, {
+    const msg = {
       id: "m_" + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36),
       userId: u.id,
       name: label.split(" ")[0],
       initial: label.charAt(0).toUpperCase(),
       text: text,
       ts: Date.now(),
-    })).catch(() => showStatus("⚠ " + t("chat_send_err")));
+    };
+    if (replyTo) { msg.reply = { name: replyTo.name, text: replyTo.text }; replyTo = null; updateReplyBar(); }
+    Promise.resolve(backend.add(room, msg)).catch(() => showStatus("⚠ " + t("chat_send_err")));
   }
 
   function del(ref) {
@@ -531,7 +647,7 @@
     room = id; roomLabel = label || null; unread = 0; renderBadge(); setTitle();
     markPresence(room);
     subscribeRoom();
-    if (open) { renderList(); renderPresence(); }
+    if (open) { renderList(); renderPresence(); startLive(); }
   }
 
   /* re-render on auth change (login/logout) */

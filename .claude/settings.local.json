@@ -6,7 +6,12 @@
       "Bash(git init *)",
       "Bash(git config *)",
       "Bash(git add *)",
-      "Bash(git commit -m 'Initial commit: WebDev Academy with full feature set *)"
+      "Bash(git commit -m 'Initial commit: WebDev Academy with full feature set *)",
+      "Bash(node --check js/app.js)",
+      "Bash(node --check js/chat.js)",
+      "Bash(node --check js/i18n.js)",
+      "Bash(sed -i 's/const CACHE = \"wda-v7\";/const CACHE = \"wda-v8\";/' sw.js)",
+      "Bash(node --check sw.js)"
     ]
   }
 }

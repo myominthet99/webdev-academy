@@ -13,6 +13,14 @@
   const CUSTOM_KEY = "wda_custom_courses";
   const REVIEW_PREFIX = "wda_reviews";
 
+  /* Community group links shown in the footer — paste your invite URLs
+     here (leave "" to hide a platform). */
+  const COMMUNITY_LINKS = {
+    telegram: "",   // e.g. "https://t.me/yourgroup"
+    discord: "",    // e.g. "https://discord.gg/yourinvite"
+    facebook: "",   // e.g. "https://facebook.com/groups/yourgroup"
+  };
+
   /* ---------------- Courses (built-in + admin-created) ---------------- */
   const COURSES = []; // mutated in place so all closures see updates
   function loadCustomCourses() {
@@ -389,6 +397,35 @@
         .then((blob) => { if (blob) v.src = URL.createObjectURL(blob); })
         .catch(() => {});
     });
+  }
+
+  /* Copy-to-clipboard button on every code block in the lesson reader */
+  function addCopyButtons() {
+    app.querySelectorAll(".reader pre").forEach((pre) => {
+      if (pre.querySelector(".copy-btn")) return;
+      const btn = document.createElement("button");
+      btn.className = "copy-btn";
+      btn.type = "button";
+      btn.textContent = "📋 " + t("copy_code");
+      btn.addEventListener("click", () => {
+        const code = pre.querySelector("code");
+        let text;
+        if (code) text = code.innerText;
+        else { const clone = pre.cloneNode(true); const b = clone.querySelector(".copy-btn"); if (b) b.remove(); text = clone.innerText; }
+        const done = () => { btn.textContent = "✓ " + t("copied"); setTimeout(() => { btn.textContent = "📋 " + t("copy_code"); }, 1500); };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+        } else fallbackCopy(text, done);
+      });
+      pre.appendChild(btn);
+    });
+  }
+  function fallbackCopy(text, done) {
+    const ta = document.createElement("textarea");
+    ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); done(); } catch (e) {}
+    ta.remove();
   }
 
   function videoEmbed(src, title) {
@@ -816,6 +853,7 @@
       </div>`;
 
     hydrateIdbVideos();
+    addCopyButtons();
 
     app.querySelectorAll("[data-goto]").forEach((b) =>
       b.addEventListener("click", () => {
@@ -1056,6 +1094,43 @@
     return `
       <h3 class="section-title">${t("recommended_title")}</h3>
       <div class="grid">${top3.map(courseCard).join("")}</div>`;
+  }
+
+  /* ---------------- View: Learning Roadmap ---------------- */
+  function renderRoadmap() {
+    /* Order courses along the natural learning path */
+    const order = ["Fundamentals", "HTML", "CSS", "JavaScript", "Responsive", "Career"];
+    const list = COURSES.slice().sort(
+      (a, b) => (order.indexOf(a.category) - order.indexOf(b.category)) || ((a.level === "Beginner" ? 0 : 1) - (b.level === "Beginner" ? 0 : 1))
+    );
+    const steps = list.map((c, i) => {
+      const pct = progressPct(c);
+      const enrolled = isEnrolled(c.id);
+      const status = pct === 100 ? "done" : pct > 0 ? "active" : "todo";
+      const label = pct === 100 ? t("review") : pct > 0 ? t("continue") : t("start");
+      return `
+        <div class="road-step ${status}">
+          <div class="road-marker">${pct === 100 ? "✓" : i + 1}</div>
+          <div class="road-card">
+            <div class="road-head">
+              <span class="road-icon" style="background:${c.color}">${c.icon}</span>
+              <div>
+                <h3>${cf(c, "title")}</h3>
+                <p class="muted">${levelName(c.level)} · ${c.hours} ${t("hours_word")} · ${totalLessons(c)} ${t("lessons_word")}</p>
+              </div>
+            </div>
+            ${enrolled && pct > 0 ? `<div class="progress thin"><span style="width:${pct}%"></span></div><div class="muted" style="font-size:12px;margin-top:4px">${pct}% ${t("pct_complete_word")}</div>` : ""}
+            <a class="btn ${pct === 100 ? "btn-ghost" : "btn-primary"} btn-sm" href="#/course/${c.id}" style="margin-top:10px">${label}</a>
+          </div>
+        </div>`;
+    }).join("");
+    app.innerHTML = `
+      <div class="container" style="max-width:720px">
+        <h2 class="section-title">🗺️ ${t("roadmap_title")}</h2>
+        <p class="section-sub">${t("roadmap_sub")}</p>
+        <div class="roadmap">${steps}</div>
+      </div>`;
+    window.scrollTo(0, 0);
   }
 
   /* ---------------- View: My Learning ---------------- */
@@ -1312,6 +1387,23 @@
 
   /* ---------------- View: Admin (create/manage courses) ---------------- */
   const slug = (s) => String(s).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40) || "course";
+
+  /* Standard lesson skeleton: Intro → Summary → Example → Practice */
+  const LESSON_TEMPLATE = `<h3>🎯 Intro</h3>
+<p>What this lesson covers and why it matters.</p>
+
+<h3>📝 Summary</h3>
+<ul>
+  <li>Key point 1</li>
+  <li>Key point 2</li>
+  <li>Key point 3</li>
+</ul>
+
+<h3>💻 Example</h3>
+<pre><code>&lt;!-- paste your example code here (escape < as &amp;lt;) --&gt;</code></pre>
+
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> describe the exercise the student should complete before moving on.</div>`;
   function qRowHtml(q) {
     q = q || {};
     const opts = q.options || ["", "", "", ""];
@@ -1341,6 +1433,7 @@
             <input type="file" accept="video/*" hidden data-video-file></label>
           <span class="upload-status muted"></span>
         </div>
+        <button type="button" class="btn btn-outline btn-sm" data-template style="align-self:flex-start">📋 ${t("admin_use_template")}</button>
         <textarea name="lnotes" rows="6" placeholder="${escapeHtml(t("admin_lnotes"))}">${l.content && l.content !== "<p></p>" ? escapeHtml(l.content) : ""}</textarea>
       </div>
       <div class="lesson-quiz">
@@ -1435,6 +1528,12 @@
       if (aq) { aq.previousElementSibling.insertAdjacentHTML("beforeend", qRowHtml()); return; }
       const rq = e.target.closest("[data-rm-q]");
       if (rq) { const list = rq.closest(".q-list"); if (list.querySelectorAll(".q-row").length > 1) rq.closest(".q-row").remove(); return; }
+      const tp = e.target.closest("[data-template]");
+      if (tp) {
+        const ta = tp.closest(".lesson-av").querySelector('textarea[name="lnotes"]');
+        if (ta && (!ta.value.trim() || confirm(t("admin_template_confirm")))) ta.value = LESSON_TEMPLATE;
+        return;
+      }
     });
     form.addEventListener("change", (e) => {
       if (e.target.name === "ltype") e.target.closest(".admin-lesson").dataset.type = e.target.value;
@@ -1540,6 +1639,7 @@
 
     if (parts.length === 0) renderHome();
     else if (parts[0] === "courses") renderCatalog();
+    else if (parts[0] === "roadmap") renderRoadmap();
     else if (parts[0] === "my-learning") renderMyLearning();
     else if (parts[0] === "account") renderAccount();
     else if (parts[0] === "admin") renderAdmin(parts[1]);
@@ -1558,9 +1658,26 @@
       if (el) el.textContent = text;
     };
     set("nav-courses", t("nav_courses"));
+    set("nav-roadmap", t("nav_roadmap"));
     set("nav-mylearning", t("nav_mylearning"));
     set("footer-tag", t("footer_tag"));
     set("footer-saved", t("footer_saved"));
+
+    /* Community group links in the footer (config at top of this file) */
+    const links = Object.entries(COMMUNITY_LINKS).filter(([, v]) => v);
+    let comm = document.getElementById("footer-community");
+    if (links.length) {
+      if (!comm) {
+        comm = document.createElement("div");
+        comm.id = "footer-community";
+        const inner = document.querySelector(".footer-inner");
+        if (inner) inner.appendChild(comm);
+      }
+      const icons = { telegram: "✈️ Telegram", discord: "🎮 Discord", facebook: "📘 Facebook" };
+      comm.innerHTML = t("community_join") + " " + links
+        .map(([k, v]) => `<a href="${escapeHtml(v)}" target="_blank" rel="noopener" class="community-link">${icons[k] || k}</a>`)
+        .join(" ");
+    } else if (comm) comm.remove();
     const search = document.getElementById("search-input");
     if (search) search.placeholder = t("search_ph");
     const toggle = document.getElementById("lang-toggle");

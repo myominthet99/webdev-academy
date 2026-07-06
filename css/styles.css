@@ -590,6 +590,51 @@ button { font-family: inherit; cursor: pointer; }
   padding: 4px 10px; border-radius: 999px; white-space: nowrap; cursor: pointer;
 }
 
+/* ---------- Copy button on code blocks ---------- */
+.reader pre { position: relative; }
+.copy-btn {
+  position: absolute; top: 8px; right: 8px;
+  border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+  font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 6px;
+  cursor: pointer; opacity: .75;
+}
+.copy-btn:hover { opacity: 1; }
+
+/* ---------- Learning roadmap ---------- */
+.roadmap { position: relative; padding-left: 22px; }
+.roadmap::before {
+  content: ""; position: absolute; left: 19px; top: 18px; bottom: 30px;
+  width: 3px; background: var(--line); border-radius: 2px;
+}
+.road-step { position: relative; display: flex; gap: 16px; margin-bottom: 18px; }
+.road-marker {
+  position: relative; z-index: 1; flex: none;
+  width: 38px; height: 38px; border-radius: 50%;
+  display: grid; place-items: center; font-weight: 800; font-size: 15px;
+  background: var(--surface); border: 3px solid var(--line); color: var(--muted);
+  margin-left: -22px;
+}
+.road-step.active .road-marker { border-color: var(--purple); color: var(--purple); }
+.road-step.done .road-marker { background: var(--green); border-color: var(--green); color: #fff; }
+.road-card {
+  flex: 1; background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 14px 16px; box-shadow: var(--card-shadow);
+}
+.road-step.active .road-card { border-color: var(--purple); }
+.road-head { display: flex; gap: 12px; align-items: center; margin-bottom: 8px; }
+.road-head h3 { margin: 0; font-size: 16px; }
+.road-icon {
+  flex: none; width: 42px; height: 42px; border-radius: 10px;
+  display: grid; place-items: center; color: #fff; font-size: 18px; font-weight: 700;
+}
+
+/* ---------- Footer community links ---------- */
+#footer-community { margin-top: 6px; font-size: 14px; }
+.community-link {
+  display: inline-block; margin-left: 8px; font-weight: 700; color: var(--purple);
+}
+.community-link:hover { text-decoration: underline; }
+
 /* Chat on phones: use nearly the whole screen */
 @media (max-width: 520px) {
   .chat-panel {

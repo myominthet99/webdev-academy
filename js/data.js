@@ -3448,26 +3448,62 @@ function StudyTracker() {
     rating: 4.7,
     ratings: 21300,
     students: 142000,
-    hours: 6,
+    hours: 12,
     price: "Free",
     free: true,
     color: "linear-gradient(135deg,#35495e,#42b883)",
     icon: "V",
     description:
-      "Vue lets you sprinkle reactivity onto HTML you already know. Learn templates, directives, and reactive data — many developers find it the friendliest framework to start with.",
+      "Vue lets you sprinkle reactivity onto HTML you already know. This full course covers reactive data, computed values, all the core directives, components with props and events, data fetching — and a complete expense-tracker project.",
     whatYouLearn: [
-      "Reactive data with ref()",
-      "Template directives: v-if, v-for, v-model",
-      "Handling events with @click",
-      "Computed properties",
+      "Start Vue two ways: CDN script or a Vite project",
+      "Reactive data with ref() and two-way v-model",
+      "Computed properties that update themselves",
+      "All core directives: v-if, v-for, v-bind, v-on",
+      "Split UIs into components with props and events",
+      "Fetch API data and build a complete app",
     ],
     sections: [
       {
         title: "Vue Foundations",
         lessons: [
+          article("vu-setup", "Two Ways to Start Vue", "10 min", `
+<h3>🎯 Intro</h3>
+<p>Vue's superpower is meeting you where you are: drop a script tag into any HTML page, or scaffold a full project.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li><strong>CDN way</strong> — one script tag, perfect for learning and small pages</li>
+  <li><strong>Project way</strong> — <code>npm create vue@latest</code> for real apps (.vue files)</li>
+  <li>Both use the same concepts — everything you learn transfers</li>
+</ul>
+<h3>💻 Example (CDN — try this one in the playground!)</h3>
+<pre><code>&lt;div id="app"&gt;
+  &lt;h2&gt;{{ title }}&lt;/h2&gt;
+  &lt;p&gt;Students enrolled: {{ students }}&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;script src="https://unpkg.com/vue@3/dist/vue.global.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+const { createApp, ref } = Vue;
+createApp({
+  setup() {
+    const title = ref("WebDev Academy");
+    const students = ref(128);
+    return { title, students };
+  }
+}).mount("#app");
+&lt;/script&gt;</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> run the CDN example in the playground, then change title and students and watch the page follow.</div>`),
           article("vu-reactive", "Reactive Data & Templates", "11 min", `
 <h3>🎯 Intro</h3>
 <p>Change the data → the page updates. That's Vue's whole promise.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li><code>ref(value)</code> makes data reactive; read/write <code>.value</code> in code</li>
+  <li>In templates, refs unwrap automatically: <code>{{ count }}</code></li>
+  <li><code>@click</code> attaches events; any expression works inside</li>
+</ul>
 <h3>💻 Example</h3>
 <pre><code>&lt;script setup&gt;
 import { ref } from "vue";
@@ -3480,10 +3516,54 @@ const count = ref(0);
   &lt;/button&gt;
 &lt;/template&gt;</code></pre>
 <h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> add a second button that resets count to 0.</div>`),
+<div class="callout tip"><strong>Try it yourself:</strong> add a second button that resets count to 0, and a third that adds 10.</div>`),
+          article("vu-computed", "Computed Properties", "11 min", `
+<h3>🎯 Intro</h3>
+<p>A computed property is a value that <em>derives itself</em> from other data — and updates automatically when its sources change.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li><code>computed(() =&gt; ...)</code> — recalculates only when dependencies change</li>
+  <li>Use for totals, filters, formatted text — never store what you can derive</li>
+  <li>Cleaner than recalculating inside the template</li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>&lt;script setup&gt;
+import { ref, computed } from "vue";
+
+const price = ref(4500);
+const qty = ref(2);
+
+const total = computed(() =&gt; price.value * qty.value);
+const label = computed(() =&gt;
+  total.value &gt; 10000 ? "Big order 🎉" : "Standard order");
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;input type="number" v-model.number="qty" min="1"&gt;
+  &lt;p&gt;Total: {{ total }} kyat — {{ label }}&lt;/p&gt;
+&lt;/template&gt;</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> add a discount ref (0–100) and a computed finalPrice that applies it to total.</div>`),
+          quiz("vu-quiz", "Quiz: Vue Foundations", [
+            { q: "ref(0) creates...", options: ["A constant", "Reactive data", "A DOM reference only", "A route"], answer: 1 },
+            { q: "In script code you read a ref with...", options: ["count", "count.value", "count()", "this.count only"], answer: 1 },
+            { q: "A computed property recalculates...", options: ["Every millisecond", "When its reactive dependencies change", "Only on page load", "Never"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Directives & Components",
+        lessons: [
           article("vu-directives", "v-if, v-for & v-model", "13 min", `
 <h3>🎯 Intro</h3>
 <p>Directives are HTML attributes with superpowers.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li><code>v-if / v-else</code> — render or don't; <code>v-show</code> just hides</li>
+  <li><code>v-for="t in tasks" :key="..."</code> — loop with a stable key</li>
+  <li><code>v-model</code> — two-way binding for inputs</li>
+  <li><code>:attr</code> binds attributes; <code>@event</code> listens</li>
+</ul>
 <h3>💻 Example</h3>
 <pre><code>&lt;script setup&gt;
 import { ref } from "vue";
@@ -3499,15 +3579,183 @@ function add() {
   &lt;input v-model="newTask" @keyup.enter="add" placeholder="New task"&gt;
   &lt;p v-if="tasks.length === 0"&gt;Nothing to do 🎉&lt;/p&gt;
   &lt;ul&gt;
-    &lt;li v-for="t in tasks" :key="t"&gt;{{ t }}&lt;/li&gt;
+    &lt;li v-for="(t, i) in tasks" :key="t"&gt;
+      {{ t }} &lt;button @click="tasks.splice(i, 1)"&gt;🗑&lt;/button&gt;
+    &lt;/li&gt;
   &lt;/ul&gt;
 &lt;/template&gt;</code></pre>
 <h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> add a delete button to each task using v-for's index.</div>`),
-          quiz("vu-quiz", "Quiz: Vue", [
-            { q: "ref(0) creates...", options: ["A constant", "Reactive data", "A DOM reference only", "A route"], answer: 1 },
+<div class="callout tip"><strong>Try it yourself:</strong> add a counter "X of Y done" and a v-if congratulations line when every task is deleted.</div>`),
+          article("vu-components", "Components & Props", "13 min", `
+<h3>🎯 Intro</h3>
+<p>Components split big UIs into named, reusable pieces — same idea as React, Vue flavor.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li>One component per .vue file; import and use like a tag</li>
+  <li><code>defineProps</code> declares the inputs a component accepts</li>
+  <li>Bind live data to props with <code>:prop="value"</code></li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>&lt;!-- CourseCard.vue --&gt;
+&lt;script setup&gt;
+defineProps({ title: String, hours: Number, free: Boolean });
+&lt;/script&gt;
+&lt;template&gt;
+  &lt;div class="card"&gt;
+    &lt;h3&gt;{{ title }}&lt;/h3&gt;
+    &lt;p&gt;{{ hours }}h · {{ free ? "Free" : "Premium" }}&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;!-- App.vue --&gt;
+&lt;script setup&gt;
+import CourseCard from "./CourseCard.vue";
+const courses = [
+  { id: 1, title: "Vue Fundamentals", hours: 12, free: true },
+  { id: 2, title: "CSS Mastery", hours: 14, free: false },
+];
+&lt;/script&gt;
+&lt;template&gt;
+  &lt;CourseCard v-for="c in courses" :key="c.id"
+              :title="c.title" :hours="c.hours" :free="c.free" /&gt;
+&lt;/template&gt;</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> add an instructor prop with a default value ("Staff") and render 3 cards.</div>`),
+          article("vu-emits", "Child → Parent: Events", "12 min", `
+<h3>🎯 Intro</h3>
+<p>Props flow down; events flow up. A child asks the parent to act by <em>emitting</em>.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li>Child: <code>defineEmits(["enroll"])</code> then <code>emit("enroll", payload)</code></li>
+  <li>Parent listens: <code>@enroll="handleEnroll"</code></li>
+  <li>The parent owns the data; children request changes</li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>&lt;!-- EnrollButton.vue --&gt;
+&lt;script setup&gt;
+defineProps({ courseId: Number });
+const emit = defineEmits(["enroll"]);
+&lt;/script&gt;
+&lt;template&gt;
+  &lt;button @click="emit('enroll', courseId)"&gt;Enroll&lt;/button&gt;
+&lt;/template&gt;
+
+&lt;!-- App.vue --&gt;
+&lt;script setup&gt;
+import { ref } from "vue";
+import EnrollButton from "./EnrollButton.vue";
+const enrolled = ref([]);
+function handleEnroll(id) {
+  if (!enrolled.value.includes(id)) enrolled.value.push(id);
+}
+&lt;/script&gt;
+&lt;template&gt;
+  &lt;EnrollButton :course-id="1" @enroll="handleEnroll" /&gt;
+  &lt;p&gt;Enrolled in {{ enrolled.length }} course(s)&lt;/p&gt;
+&lt;/template&gt;</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> make a RatingStars child that emits "rate" with 1–5, and a parent that stores and displays the rating.</div>`),
+          quiz("vu-quiz-2", "Quiz: Directives & Components", [
             { q: "Which directive loops over a list?", options: ["v-loop", "v-each", "v-for", "v-map"], answer: 2 },
             { q: "v-model on an input gives you...", options: ["Validation", "Two-way binding", "Styling", "Autocomplete"], answer: 1 },
+            { q: "Data flows child → parent via...", options: ["Props", "Emitted events", "Global variables", "v-if"], answer: 1 },
+            { q: "defineProps is used to...", options: ["Create routes", "Declare a component's inputs", "Fetch data", "Style components"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Data & Project",
+        lessons: [
+          article("vu-fetch", "Fetching Data with onMounted", "13 min", `
+<h3>🎯 Intro</h3>
+<p><code>onMounted</code> runs once when the component appears — the natural moment to load data.</p>
+<h3>💻 Example</h3>
+<pre><code>&lt;script setup&gt;
+import { ref, onMounted } from "vue";
+
+const users = ref([]);
+const loading = ref(true);
+const error = ref(null);
+
+onMounted(async () =&gt; {
+  try {
+    const r = await fetch("https://jsonplaceholder.typicode.com/users");
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    users.value = await r.json();
+  } catch (e) {
+    error.value = e.message;
+  } finally {
+    loading.value = false;
+  }
+});
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;p v-if="loading"&gt;Loading…&lt;/p&gt;
+  &lt;p v-else-if="error"&gt;⚠ {{ error }}&lt;/p&gt;
+  &lt;ul v-else&gt;
+    &lt;li v-for="u in users" :key="u.id"&gt;{{ u.name }} — {{ u.email }}&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/template&gt;</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> fetch /todos, show only incomplete ones, and add a computed count in the heading.</div>`),
+          article("vu-project", "Final Project: Expense Tracker", "22 min", `
+<h3>🎯 Intro</h3>
+<p>Everything combined: refs, computed, v-model, v-for, conditional rendering — a complete money tracker.</p>
+<h3>💻 Complete solution — study it, then build yours</h3>
+<pre><code>&lt;script setup&gt;
+import { ref, computed } from "vue";
+
+const desc = ref("");
+const amount = ref(null);
+const items = ref([
+  { id: 1, desc: "Lunch", amount: -3500 },
+  { id: 2, desc: "Freelance", amount: 50000 },
+]);
+
+const balance = computed(() =&gt;
+  items.value.reduce((s, x) =&gt; s + x.amount, 0));
+const income = computed(() =&gt;
+  items.value.filter(x =&gt; x.amount &gt; 0).reduce((s, x) =&gt; s + x.amount, 0));
+const spent = computed(() =&gt;
+  items.value.filter(x =&gt; x.amount &lt; 0).reduce((s, x) =&gt; s + x.amount, 0));
+
+function add() {
+  if (!desc.value || !amount.value) return;
+  items.value.push({ id: Date.now(), desc: desc.value, amount: amount.value });
+  desc.value = ""; amount.value = null;
+}
+const remove = (id) =&gt;
+  items.value = items.value.filter(x =&gt; x.id !== id);
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;h2&gt;💰 Balance: {{ balance }} kyat&lt;/h2&gt;
+  &lt;p&gt;⬆ {{ income }} · ⬇ {{ spent }}&lt;/p&gt;
+
+  &lt;form @submit.prevent="add"&gt;
+    &lt;input v-model="desc" placeholder="Description"&gt;
+    &lt;input v-model.number="amount" type="number"
+           placeholder="+income / -expense"&gt;
+    &lt;button&gt;Add&lt;/button&gt;
+  &lt;/form&gt;
+
+  &lt;p v-if="items.length === 0"&gt;No transactions yet.&lt;/p&gt;
+  &lt;ul&gt;
+    &lt;li v-for="x in items" :key="x.id"
+        :style="{ color: x.amount &lt; 0 ? 'crimson' : 'green' }"&gt;
+      {{ x.desc }}: {{ x.amount }}
+      &lt;button @click="remove(x.id)"&gt;🗑&lt;/button&gt;
+    &lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/template&gt;</code></pre>
+<h3>🏋️ Level up</h3>
+<div class="callout tip"><strong>Extend it yourself:</strong> add a category dropdown, a computed per-category summary, and persist items to localStorage with watch().</div>`),
+          quiz("vu-quiz-3", "Final Quiz: Vue", [
+            { q: "onMounted runs...", options: ["Every update", "Once when the component appears", "On every click", "Before setup"], answer: 1 },
+            { q: "v-model.number does what?", options: ["Formats currency", "Casts the input value to a number", "Limits to 1 digit", "Nothing"], answer: 1 },
+            { q: "balance was implemented as computed because...", options: ["It's faster to type", "It derives from items and stays in sync automatically", "refs can't hold numbers", "Templates require it"], answer: 1 },
+            { q: "@submit.prevent on a form...", options: ["Blocks all input", "Runs the handler and stops the page reload", "Validates fields", "Submits twice"], answer: 1 },
           ]),
         ],
       },
@@ -3934,18 +4182,20 @@ curl -X DELETE http://localhost:3000/api/courses/1</code></pre>
     rating: 4.4,
     ratings: 19700,
     students: 154000,
-    hours: 6,
+    hours: 11,
     price: "Free",
     free: true,
     color: "linear-gradient(135deg,#4f5b93,#8892bf)",
     icon: "🐘",
     description:
-      "PHP generates HTML on the server and talks to databases with ease. It powers WordPress (40% of the web) — learning it opens a huge job market.",
+      "PHP generates HTML on the server and talks to databases with ease. It powers WordPress (40% of the web). This full course covers PHP-in-HTML, arrays and functions, secure form handling, sessions, MySQL with PDO — and a working guestbook project.",
     whatYouLearn: [
-      "Embed PHP inside HTML",
-      "Variables, arrays and loops",
-      "Handle form submissions ($_POST)",
-      "Structure code with functions and includes",
+      "Embed PHP inside HTML and run a local server",
+      "Indexed and associative arrays, loops",
+      "Functions and file includes for clean structure",
+      "Handle form submissions ($_POST) safely",
+      "Remember users with sessions",
+      "Query MySQL securely with PDO prepared statements",
     ],
     sections: [
       {
@@ -3954,6 +4204,12 @@ curl -X DELETE http://localhost:3000/api/courses/1</code></pre>
           article("php-hello", "PHP Inside HTML", "10 min", `
 <h3>🎯 Intro</h3>
 <p>PHP runs on the server and prints into your HTML before the browser sees it.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li>Code lives between <code>&lt;?php ... ?&gt;</code>; <code>&lt;?= x ?&gt;</code> echoes a value</li>
+  <li>Variables start with <code>$</code></li>
+  <li>Run locally: <code>php -S localhost:8000</code></li>
+</ul>
 <h3>💻 Example</h3>
 <pre><code>&lt;?php
 $name = "Moe";
@@ -3965,10 +4221,62 @@ $courses = ["HTML", "CSS", "PHP"];
   &lt;li&gt;&lt;?= $c ?&gt;&lt;/li&gt;
 &lt;?php endforeach; ?&gt;
 &lt;/ul&gt;</code></pre>
-<div class="callout">Run locally with <code>php -S localhost:8000</code> — no other server needed.</div>
 <h3>🏋️ Practice Task</h3>
 <div class="callout tip"><strong>Try it yourself:</strong> print a price list from an associative array of item =&gt; price.</div>`),
-          article("php-forms", "Handling Forms", "12 min", `
+          article("php-arrays", "Arrays: Indexed & Associative", "12 min", `
+<h3>🎯 Intro</h3>
+<p>PHP's array is two structures in one: a list AND a key-value map. Most PHP data work is array work.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li>Indexed: <code>["a", "b"]</code>; associative: <code>["name" =&gt; "Aye"]</code></li>
+  <li><code>foreach ($arr as $key =&gt; $value)</code> visits both</li>
+  <li>Helpers: <code>count() array_sum() array_filter() array_map() sort()</code></li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>&lt;?php
+$student = ["name" =&gt; "Aye", "city" =&gt; "Yangon", "score" =&gt; 85];
+foreach ($student as $key =&gt; $value) {
+    echo "$key: $value\\n";
+}
+
+$scores = [75, 92, 58, 88];
+$passing = array_filter($scores, fn($s) =&gt; $s &gt;= 60);
+echo "Average: " . array_sum($scores) / count($scores) . "\\n";
+echo "Passed: " . count($passing) . "\\n";
+?&gt;</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> build an array of 3 students (each an associative array) and print "NAME from CITY scored X" for each.</div>`),
+          article("php-functions", "Functions & Includes", "11 min", `
+<h3>🎯 Intro</h3>
+<p>Functions organize logic; <code>include</code> splits pages into reusable parts (header, footer) — the pattern behind every PHP site.</p>
+<h3>💻 Example</h3>
+<pre><code>&lt;?php
+// helpers.php
+function grade(int $score): string {
+    if ($score &gt;= 80) return "A";
+    if ($score &gt;= 60) return "B";
+    return "C";
+}
+
+// index.php
+include "helpers.php";
+include "header.php";     // shared &lt;head&gt;, nav...
+echo "&lt;p&gt;Grade: " . grade(85) . "&lt;/p&gt;";
+include "footer.php";
+?&gt;</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> split a page into header.php / footer.php and a formatPrice($n) helper that adds "Ks" and thousands separators (number_format).</div>`),
+          quiz("php-quiz", "Quiz: PHP Foundations", [
+            { q: "<?= $name ?> is shorthand for...", options: ["A comment", "echo $name", "A variable declaration", "An import"], answer: 1 },
+            { q: "[\"name\" => \"Aye\"] is a(n)...", options: ["Indexed array", "Associative array", "Object literal", "Constant"], answer: 1 },
+            { q: "include \"header.php\" does what?", options: ["Downloads a file", "Inserts and runs that file here", "Comments it out", "Caches it"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Forms, Sessions & MySQL",
+        lessons: [
+          article("php-forms", "Handling Forms Safely", "12 min", `
 <h3>🎯 Intro</h3>
 <p>Forms POST to a PHP file; <code>$_POST</code> holds the values. Always escape output!</p>
 <h3>💻 Example</h3>
@@ -3985,11 +4293,125 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 ?&gt;</code></pre>
 <div class="callout tip"><code>htmlspecialchars()</code> stops users injecting HTML/scripts into your page — never skip it.</div>
 <h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> add an email field and print both values back safely after submit.</div>`),
-          quiz("php-quiz", "Quiz: PHP", [
-            { q: "<?= $name ?> is shorthand for...", options: ["A comment", "echo $name", "A variable declaration", "An import"], answer: 1 },
+<div class="callout tip"><strong>Try it yourself:</strong> add an email field, validate it with filter_var($email, FILTER_VALIDATE_EMAIL), and show an error when invalid.</div>`),
+          article("php-sessions", "Sessions: Remembering Users", "12 min", `
+<h3>🎯 Intro</h3>
+<p>HTTP forgets everything between requests. Sessions give each visitor a private server-side memory — the basis of every login.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li><code>session_start()</code> first thing on every page that uses it</li>
+  <li><code>$_SESSION["key"]</code> persists across page loads</li>
+  <li>Logout = <code>session_destroy()</code></li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>&lt;?php
+session_start();
+
+// login.php (after checking password!)
+$_SESSION["user"] = "mmtboy90@gmail.com";
+
+// any other page
+if (isset($_SESSION["user"])) {
+    echo "Welcome back, " . htmlspecialchars($_SESSION["user"]);
+} else {
+    header("Location: login.php");   // not logged in → redirect
+    exit;
+}
+
+// logout.php
+session_destroy();
+?&gt;</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> build a page-view counter per visitor: increment $_SESSION["visits"] on each refresh and display it.</div>`),
+          article("php-mysql", "MySQL with PDO", "14 min", `
+<h3>🎯 Intro</h3>
+<p>PDO is PHP's safe way to talk to databases. <strong>Prepared statements</strong> make SQL injection impossible — the #1 rule of PHP security.</p>
+<h3>💻 Example</h3>
+<pre><code>&lt;?php
+$pdo = new PDO(
+    "mysql:host=localhost;dbname=academy;charset=utf8mb4",
+    "root", "password",
+    [PDO::ATTR_ERRMODE =&gt; PDO::ERRMODE_EXCEPTION]
+);
+
+// NEVER glue user input into SQL. Use ? placeholders:
+$stmt = $pdo-&gt;prepare("SELECT name, score FROM students WHERE score &gt;= ?");
+$stmt-&gt;execute([60]);
+
+foreach ($stmt-&gt;fetchAll() as $row) {
+    echo htmlspecialchars($row["name"]) . ": " . $row["score"] . "&lt;br&gt;";
+}
+
+// insert safely
+$pdo-&gt;prepare("INSERT INTO students (name, score) VALUES (?, ?)")
+    -&gt;execute([$_POST["name"], (int)$_POST["score"]]);
+?&gt;</code></pre>
+<div class="callout">Gluing input into SQL strings ("SELECT ... WHERE name = '$name'") is how sites get hacked. Placeholders, always.</div>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> write a prepared query that finds students by a city typed into a form field.</div>`),
+          quiz("php-quiz-2", "Quiz: Forms, Sessions & PDO", [
             { q: "Submitted form values arrive in...", options: ["$_FORM", "$_DATA", "$_POST", "$input"], answer: 2 },
             { q: "htmlspecialchars() protects against...", options: ["Slow queries", "HTML/script injection (XSS)", "Typos", "Large uploads"], answer: 1 },
+            { q: "Which must run before using $_SESSION?", options: ["session_begin()", "session_start()", "start_session()", "Nothing"], answer: 1 },
+            { q: "Prepared statements with ? placeholders prevent...", options: ["Slow pages", "SQL injection", "CSS bugs", "Session loss"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Project: Guestbook",
+        lessons: [
+          article("php-project", "Final Project: A Working Guestbook", "20 min", `
+<h3>🎯 Intro</h3>
+<p>A complete mini-app on one page: form handling, validation, file storage, safe output — the full PHP request cycle.</p>
+<h3>💻 Complete solution — study it, then build yours</h3>
+<pre><code>&lt;?php
+// guestbook.php — run with: php -S localhost:8000
+$file = "entries.json";
+$entries = file_exists($file)
+    ? json_decode(file_get_contents($file), true)
+    : [];
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $name = trim($_POST["name"] ?? "");
+    $msg  = trim($_POST["message"] ?? "");
+    if ($name !== "" &amp;&amp; $msg !== "") {
+        $entries[] = [
+            "name" =&gt; $name,
+            "msg"  =&gt; $msg,
+            "time" =&gt; date("Y-m-d H:i"),
+        ];
+        file_put_contents($file, json_encode($entries, JSON_PRETTY_PRINT));
+        header("Location: guestbook.php");   // avoid re-post on refresh
+        exit;
+    }
+    $error = "Both fields are required.";
+}
+?&gt;
+&lt;h1&gt;📖 Guestbook (&lt;?= count($entries) ?&gt;)&lt;/h1&gt;
+
+&lt;?php if (!empty($error)): ?&gt;
+  &lt;p style="color:red"&gt;&lt;?= htmlspecialchars($error) ?&gt;&lt;/p&gt;
+&lt;?php endif; ?&gt;
+
+&lt;form method="post"&gt;
+  &lt;input name="name" placeholder="Your name"&gt;
+  &lt;textarea name="message" placeholder="Say something nice…"&gt;&lt;/textarea&gt;
+  &lt;button&gt;Sign&lt;/button&gt;
+&lt;/form&gt;
+
+&lt;?php foreach (array_reverse($entries) as $e): ?&gt;
+  &lt;div class="entry"&gt;
+    &lt;strong&gt;&lt;?= htmlspecialchars($e["name"]) ?&gt;&lt;/strong&gt;
+    &lt;small&gt;&lt;?= $e["time"] ?&gt;&lt;/small&gt;
+    &lt;p&gt;&lt;?= nl2br(htmlspecialchars($e["msg"])) ?&gt;&lt;/p&gt;
+  &lt;/div&gt;
+&lt;?php endforeach; ?&gt;</code></pre>
+<h3>🏋️ Level up</h3>
+<div class="callout tip"><strong>Extend it yourself:</strong> add a session-based "you already signed" notice, a delete button protected by an admin session, and swap the JSON file for a MySQL table using PDO.</div>`),
+          quiz("php-quiz-3", "Final Quiz: PHP", [
+            { q: "Why redirect after a successful POST?", options: ["Speed", "Prevents duplicate submits on refresh", "PHP requires it", "SEO"], answer: 1 },
+            { q: "nl2br(htmlspecialchars($msg)) — why this order?", options: ["Random", "Escape first, then convert newlines — so user HTML stays harmless", "br tags need escaping", "It's alphabetical"], answer: 1 },
+            { q: "array_reverse($entries) in the display shows...", options: ["Oldest first", "Newest first", "Random order", "Only 10"], answer: 1 },
           ]),
         ],
       },

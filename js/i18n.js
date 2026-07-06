@@ -36,6 +36,9 @@ window.I18N = {
       featured_sub: "Hand-picked paths to get you building fast.",
       trending: "Trending now",
       trending_sub: "The most popular courses students are taking right now.",
+      search_results: "Search results",
+      search_in_lessons: "Inside lessons",
+      search_more: "Showing the first 30 lesson matches — refine your search for more precise results.",
       browse_topic: "Browse by topic",
       browse_sub: "Jump straight to what you want to learn.",
 
@@ -307,6 +310,9 @@ window.I18N = {
       featured_sub: "မြန်မြန်စတင်နိုင်ရန် ရွေးချယ်ထားသော လမ်းကြောင်းများ။",
       trending: "လူကြိုက်များနေသော",
       trending_sub: "ယခုအချိန်တွင် စာသင်သားများ အများဆုံးတက်ရောက်နေသော သင်တန်းများ။",
+      search_results: "ရှာဖွေမှုရလဒ်များ",
+      search_in_lessons: "သင်ခန်းစာများအတွင်း",
+      search_more: "ပထမ သင်ခန်းစာရလဒ် ၃၀ ကိုပြထားသည် — ပိုတိကျရန် ရှာဖွေမှုကို ပြင်ဆင်ပါ။",
       browse_topic: "ခေါင်းစဉ်အလိုက် ရှာဖွေရန်",
       browse_sub: "သင်လေ့လာလိုသည်ကို တိုက်ရိုက်ရွေးပါ။",
 

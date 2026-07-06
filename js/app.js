@@ -1188,6 +1188,68 @@
       <div class="grid">${top3.map(courseCard).join("")}</div>`;
   }
 
+  /* ---------------- View: Global search (courses + inside lessons) ---------------- */
+  function stripHtml(html) {
+    return String(html || "")
+      .replace(/<[^>]*>/g, " ")
+      .replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'").replace(/&amp;/g, "&")
+      .replace(/\s+/g, " ").trim();
+  }
+  function renderSearch(query) {
+    const q = (query || "").trim();
+    const ql = q.toLowerCase();
+    if (!ql) { location.hash = "#/courses"; return; }
+    filter.query = q; /* so courseCard highlights matches */
+
+    const courseHits = COURSES.filter((c) =>
+      (c.title + " " + c.subtitle + " " + c.category + " " + c.instructor +
+        " " + (cf(c, "title") || "") + " " + (cf(c, "subtitle") || ""))
+        .toLowerCase().includes(ql)
+    );
+
+    const MAXL = 30;
+    const lessonHits = [];
+    COURSES.forEach((c) => {
+      c.sections.forEach((sec) => sec.lessons.forEach((l) => {
+        const title = lf(l, "title") || l.title || "";
+        const body = stripHtml(lf(l, "content") || l.content || "") +
+          (l.questions ? " " + l.questions.map((x) => x.q).join(" ") : "");
+        const inTitle = title.toLowerCase().includes(ql);
+        const idx = body.toLowerCase().indexOf(ql);
+        if (inTitle || idx >= 0) {
+          let snippet;
+          if (idx >= 0) {
+            const start = Math.max(0, idx - 60);
+            snippet = (start > 0 ? "…" : "") + body.slice(start, idx + ql.length + 90) + "…";
+          } else {
+            snippet = body.slice(0, 140) + (body.length > 140 ? "…" : "");
+          }
+          lessonHits.push({ c, l, title, snippet });
+        }
+      }));
+    });
+
+    const mark = (s) => highlightText(escapeHtml(s), q);
+    const lessonRows = lessonHits.slice(0, MAXL).map(({ c, l, title, snippet }) => `
+      <a class="search-hit" href="#/learn/${c.id}/${l.id}">
+        <div class="sh-title">${lessonIcon(l.type)} ${mark(title)}</div>
+        <div class="sh-course">${escapeHtml(cf(c, "title"))} · ${catName(c.category)}</div>
+        <div class="sh-snippet">${mark(snippet)}</div>
+      </a>`).join("");
+
+    app.innerHTML = `
+      <div class="container" style="max-width:860px">
+        <h2 class="section-title">🔍 ${t("search_results")} — “${escapeHtml(q)}”</h2>
+        <p class="section-sub">${courseHits.length} ${t("courses_word")} · ${lessonHits.length} ${t("lessons_word")}</p>
+        ${courseHits.length ? `<h3 class="section-title" style="font-size:19px">${t("nav_courses")}</h3><div class="grid">${courseHits.map(courseCard).join("")}</div>` : ""}
+        ${lessonHits.length ? `<h3 class="section-title" style="font-size:19px">${t("search_in_lessons")}</h3><div class="search-hits">${lessonRows}</div>
+          ${lessonHits.length > MAXL ? `<p class="muted">${t("search_more")}</p>` : ""}` : ""}
+        ${!courseHits.length && !lessonHits.length ? `<div class="empty"><h2>${t("no_courses")}</h2><p>${t("no_courses_sub")}</p></div>` : ""}
+      </div>`;
+    window.scrollTo(0, 0);
+  }
+
   /* ---------------- View: Learning Roadmap ---------------- */
   function renderRoadmap() {
     /* Order courses along the natural learning path */
@@ -1732,6 +1794,7 @@
 
     if (parts.length === 0) renderHome();
     else if (parts[0] === "courses") renderCatalog();
+    else if (parts[0] === "search") renderSearch(decodeURIComponent(parts[1] || ""));
     else if (parts[0] === "roadmap") renderRoadmap();
     else if (parts[0] === "my-learning") renderMyLearning();
     else if (parts[0] === "account") renderAccount();
@@ -1856,13 +1919,15 @@
     });
   }
 
-  /* ---------------- Search ---------------- */
+  /* ---------------- Search (global: courses + inside lessons) ---------------- */
   document.getElementById("search-form").addEventListener("submit", (e) => {
     e.preventDefault();
-    filter.query = document.getElementById("search-input").value;
+    const q = document.getElementById("search-input").value.trim();
+    if (!q) return;
     filter.category = "All";
-    if (location.hash === "#/courses") renderCatalog();
-    else location.hash = "#/courses";
+    const target = "#/search/" + encodeURIComponent(q);
+    if (location.hash === target) renderSearch(q);
+    else location.hash = target;
   });
 
   /* ---------------- Language toggle ---------------- */

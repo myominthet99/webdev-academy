@@ -21,13 +21,16 @@
     facebook: "",   // e.g. "https://facebook.com/groups/yourgroup"
   };
 
-  /* Premium membership — students pay via KBZPay, you approve in Admin.
-     Fill in your real KBZPay details below. */
+  /* Premium membership — students scan your KBZPay QR, you approve in
+     Admin. Save your QR image (KBZPay app → My QR) as kbzpay-qr.png in
+     the project root, and set the price below. */
   const PAYMENT_CONFIG = {
     method: "KBZPay",
-    phone: "09-XXX XXX XXXX",   // <-- your KBZPay phone number
-    accountName: "Your Name",   // <-- the name shown in KBZPay
-    price: 9900,                // <-- membership price in Kyat
+    qrImage: "kbzpay-qr.png",   // QR image file in the project folder ("" to hide)
+    accountName: "",            // optional: name shown under the QR
+    phone: "",                  // optional fallback if no QR image
+    price: 50000,               // current (promotion) price in Kyat
+    listPrice: 100000,          // regular price shown crossed out ("" or 0 to hide)
   };
 
   /* ---------------- Courses (built-in + admin-created) ---------------- */
@@ -800,7 +803,13 @@
         <h2 class="section-title">⭐ ${t("prem_title")}</h2>
         <p class="section-sub">${t("prem_sub")}</p>
         <div class="panel">
-          <div class="prem-price">${fmt(PAYMENT_CONFIG.price)} Ks <span class="muted">· ${t("prem_once")}</span></div>
+          ${PAYMENT_CONFIG.listPrice && PAYMENT_CONFIG.listPrice > PAYMENT_CONFIG.price
+            ? `<div class="prem-promo-badge">🎉 ${t("prem_promo")} −${Math.round((1 - PAYMENT_CONFIG.price / PAYMENT_CONFIG.listPrice) * 100)}%</div>`
+            : ""}
+          <div class="prem-price">
+            ${PAYMENT_CONFIG.listPrice && PAYMENT_CONFIG.listPrice > PAYMENT_CONFIG.price ? `<s class="prem-oldprice">${fmt(PAYMENT_CONFIG.listPrice)} Ks</s> ` : ""}
+            ${fmt(PAYMENT_CONFIG.price)} Ks <span class="muted">· ${t("prem_once")}</span>
+          </div>
           <ul class="learn-grid" style="grid-template-columns:1fr">
             <li>${premiumCourses.length} ${t("prem_benefit_courses")}</li>
             <li>${t("prem_benefit_future")}</li>
@@ -836,8 +845,16 @@
       mount.innerHTML = `
         <div class="panel">
           <h2>${t("prem_how")}</h2>
+          ${PAYMENT_CONFIG.qrImage ? `
+          <div class="prem-qr">
+            <img src="${escapeHtml(PAYMENT_CONFIG.qrImage)}" alt="${escapeHtml(PAYMENT_CONFIG.method)} QR"
+                 onerror="this.parentElement.innerHTML='<p class=muted>QR coming soon</p>'">
+            ${PAYMENT_CONFIG.accountName ? `<div class="prem-qr-name">${escapeHtml(PAYMENT_CONFIG.accountName)}</div>` : ""}
+          </div>` : ""}
           <ol style="line-height:2">
-            <li>${t("prem_step1")} <strong>${fmt(PAYMENT_CONFIG.price)} Ks</strong> → <strong>${escapeHtml(PAYMENT_CONFIG.method)}</strong>: <strong>${escapeHtml(PAYMENT_CONFIG.phone)}</strong> (${escapeHtml(PAYMENT_CONFIG.accountName)})</li>
+            <li>${PAYMENT_CONFIG.qrImage
+              ? `${t("prem_step1_qr")} <strong>${escapeHtml(PAYMENT_CONFIG.method)}</strong> → ${t("prem_step1")} <strong>${fmt(PAYMENT_CONFIG.price)} Ks</strong>`
+              : `${t("prem_step1")} <strong>${fmt(PAYMENT_CONFIG.price)} Ks</strong> → <strong>${escapeHtml(PAYMENT_CONFIG.method)}</strong>: <strong>${escapeHtml(PAYMENT_CONFIG.phone)}</strong> (${escapeHtml(PAYMENT_CONFIG.accountName)})`}</li>
             <li>${t("prem_step2")}</li>
             <li>${t("prem_step3")}</li>
           </ol>

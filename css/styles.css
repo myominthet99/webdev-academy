@@ -730,6 +730,18 @@ button { font-family: inherit; cursor: pointer; }
 /* ---------- Premium ---------- */
 .prem-price { font-size: 2rem; font-weight: 800; color: var(--purple); margin-bottom: 10px; }
 .prem-price .muted { font-size: 14px; font-weight: 400; }
+.prem-oldprice { color: var(--muted); font-size: 1.2rem; font-weight: 600; margin-right: 6px; }
+.prem-promo-badge {
+  display: inline-block; background: #e11d48; color: #fff;
+  font-size: 12px; font-weight: 800; padding: 3px 12px; border-radius: 999px;
+  margin-bottom: 8px; letter-spacing: .3px;
+}
+.prem-qr { text-align: center; margin: 8px 0 16px; }
+.prem-qr img {
+  max-width: 240px; width: 100%; border: 1px solid var(--line);
+  border-radius: 12px; background: #fff; padding: 8px;
+}
+.prem-qr-name { font-weight: 700; margin-top: 6px; }
 
 /* ---------- Leaderboard ---------- */
 .lb-table { display: flex; flex-direction: column; gap: 8px; }

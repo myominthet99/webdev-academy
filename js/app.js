@@ -26,8 +26,8 @@
      the project root, and set the price below. */
   const PAYMENT_CONFIG = {
     method: "KBZPay",
-    qrImage: "kbzpay-qr.png",   // QR image file in the project folder ("" to hide)
-    accountName: "",            // optional: name shown under the QR
+    qrImage: "kbzpay-qr.jpg",   // QR image file in the project folder ("" to hide)
+    accountName: "Myo Min Thet (******0610)",
     phone: "",                  // optional fallback if no QR image
     price: 50000,               // current (promotion) price in Kyat
     listPrice: 100000,          // regular price shown crossed out ("" or 0 to hide)

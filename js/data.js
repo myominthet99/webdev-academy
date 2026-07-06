@@ -3,7 +3,7 @@
    All lesson HTML is pre-escaped so code samples render as text.
    ===================================================================== */
 
-const CATEGORIES = ["All", "Fundamentals", "HTML", "CSS", "JavaScript", "Frontend", "Backend", "Programming", "Databases", "Tools", "Responsive", "Career"];
+const CATEGORIES = ["All", "Fundamentals", "HTML", "CSS", "JavaScript", "Frontend", "Backend", "Programming", "Databases", "AI", "Tools", "Responsive", "Career"];
 
 /* Small helpers to keep the data compact.
    video(): the optional 5th argument `src` attaches a real video —
@@ -5178,6 +5178,172 @@ db.courses.deleteOne({ title: "Old Course" });</code></pre>
             { q: "MongoDB stores data as...", options: ["Rows in tables", "JSON-like documents", "Plain text files", "Key-value pairs only"], answer: 1 },
             { q: "{ hours: { $lt: 6 } } finds documents where hours is...", options: ["Equal to 6", "Less than 6", "At least 6", "Missing"], answer: 1 },
             { q: "Strictly relational money data (orders/payments) usually fits best in...", options: ["MongoDB", "A SQL database", "Text files", "Cookies"], answer: 1 },
+          ]),
+        ],
+      },
+    ],
+  },
+  {
+    id: "ai-for-kids",
+    title: "AI for Beginners: Train Your First AI (Ages 10+)",
+    subtitle: "No coding needed! Teach a real AI to see, hear and think — then learn to use chatbots wisely.",
+    instructor: "Su Myat",
+    category: "AI",
+    level: "Beginner",
+    rating: 4.9,
+    ratings: 8100,
+    students: 64000,
+    hours: 6,
+    price: "Free",
+    free: true,
+    color: "linear-gradient(135deg,#7b2ff7,#00c9a7)",
+    icon: "🤖",
+    description:
+      "Made for young beginners (great from age 10 up — fun at any age!). You'll train a REAL artificial intelligence with your webcam, build a machine-learning powered game with blocks, and learn to talk to AI chatbots the smart, honest way. Every tool in this course is free — no coding experience needed.",
+    whatYouLearn: [
+      "What AI really is — and where you already meet it every day",
+      "Train an image AI with your webcam (Teachable Machine)",
+      "Teach an AI to understand text, and use it inside a Scratch game",
+      "Write good prompts that get great answers from chatbots",
+      "Use AI honestly: avoid plagiarism, check facts, protect privacy",
+    ],
+    sections: [
+      {
+        title: "Step 1 — Meet AI & Train Your First Model",
+        lessons: [
+          article("ai-what", "What is AI, Really?", "8 min", `
+<h3>🎯 Intro</h3>
+<p>AI (Artificial Intelligence) is a computer program that <strong>learns from examples</strong> instead of following exact instructions. You don't tell it the rules — you show it examples, and it figures out the rules itself!</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li>🎵 Music apps learn what songs you like → suggest new ones</li>
+  <li>📷 Your phone camera finds faces → that's AI seeing</li>
+  <li>🗣️ Voice assistants understand speech → that's AI hearing</li>
+  <li>💬 Chatbots write answers → that's AI using language</li>
+</ul>
+<p>The learning part is called <strong>Machine Learning (ML)</strong>: show the computer many examples ("this is a cat", "this is a dog") and it learns to tell them apart — just like you learned as a small child!</p>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> write down 3 places YOU met AI this week (phone, games, apps, YouTube...). For each one, guess: what examples did it learn from?</div>`),
+          article("ai-teachable", "Train an AI with Your Webcam", "15 min", `
+<h3>🎯 Intro</h3>
+<p>Time to train a REAL AI — in your browser, for free, with zero code. We'll use <strong>Google Teachable Machine</strong>.</p>
+<h3>📝 Follow these steps</h3>
+<ol style="line-height:2">
+  <li>Open <a href="https://teachablemachine.withgoogle.com" target="_blank" rel="noopener"><strong>teachablemachine.withgoogle.com</strong></a> → <strong>Get Started</strong></li>
+  <li>Choose <strong>Image Project</strong> → Standard</li>
+  <li>Rename Class 1 to <strong>"Happy"</strong> — hold the webcam button and record ~50 pictures of yourself smiling 😊</li>
+  <li>Rename Class 2 to <strong>"Sad"</strong> — record ~50 pictures frowning 😢</li>
+  <li>Click <strong>Train Model</strong> and wait a moment</li>
+  <li>Now make faces at the camera — watch the AI guess your mood LIVE!</li>
+</ol>
+<h3>🤔 What just happened?</h3>
+<p>You gave the AI <strong>examples</strong> (your photos), it found <strong>patterns</strong> (mouth shape, eyebrows...), and now it can judge pictures it has <em>never seen before</em>. That's machine learning — the same idea behind self-driving cars and medical AI, just smaller!</p>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> train a new model with 3 classes: ✊ Rock, ✋ Paper, ✌️ Scissors. Test it — can it referee your game? What happens if you show it a thumbs-up it never learned?</div>`),
+          article("ai-data", "Why AI Makes Mistakes (Data Matters!)", "10 min", `
+<h3>🎯 Intro</h3>
+<p>Did your Rock-Paper-Scissors AI ever guess wrong? Great — that's the most important lesson in all of AI!</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li>AI is only as good as its <strong>training data</strong> (the examples)</li>
+  <li>Few examples → weak AI. Only bright-room photos → fails in the dark</li>
+  <li>If all your "cat" photos are orange cats, it may think a black cat is a dog! This is called <strong>bias</strong></li>
+  <li>Real AI teams spend most of their time collecting good, fair, varied data</li>
+</ul>
+<h3>🧪 Experiment</h3>
+<p>Go back to Teachable Machine and make your model STRONGER: add examples with different lighting, angles, distances, and backgrounds. Test again — better, right?</p>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Think like an AI engineer:</strong> a hospital AI learned only from adult X-rays. What might happen with a child's X-ray? How would you fix the training data?</div>`),
+          quiz("ai-quiz-1", "Quiz: AI Basics", [
+            { q: "How does machine learning work?", options: ["Programmers type in every rule", "The computer learns patterns from examples", "It's magic", "It copies from the internet"], answer: 1 },
+            { q: "Your face-mood AI guesses wrong in a dark room. The best fix is...", options: ["A faster computer", "Add training photos taken in the dark", "Train it longer on the same photos", "Give up"], answer: 1 },
+            { q: "Training data with only orange cats causes...", options: ["Faster AI", "Bias — the AI may not recognize other cats", "Better accuracy", "Nothing"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Step 2 — Real ML Projects with Blocks",
+        lessons: [
+          article("ai-mlkids", "Machine Learning for Kids: Text AI", "15 min", `
+<h3>🎯 Intro</h3>
+<p><strong>Machine Learning for Kids</strong> (free) lets you train AIs on text, numbers and sounds — then USE your model inside Scratch, the block-coding tool.</p>
+<h3>📝 Build a compliment/insult detector</h3>
+<ol style="line-height:2">
+  <li>Open <a href="https://machinelearningforkids.co.uk" target="_blank" rel="noopener"><strong>machinelearningforkids.co.uk</strong></a> → "Get started" → "Try it now" (no account needed)</li>
+  <li><strong>Add a new project</strong> → name: "Kind or Mean" → recognising <strong>text</strong></li>
+  <li>Make two labels: <strong>kind</strong> and <strong>mean</strong></li>
+  <li>Add ~10 examples each: "You are awesome" → kind, "Nobody likes you" → mean...</li>
+  <li><strong>Learn &amp; Test</strong> → train the model → type NEW sentences and watch it classify them!</li>
+</ol>
+<h3>🤔 Notice</h3>
+<p>It understands sentences you never typed! It learned <em>patterns of words</em>, not a fixed list — the same idea behind spam filters and comment moderation on real websites.</p>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> make it smarter — add tricky examples like "you are not nice" (mean, even though "nice" appears!). Retrain and test.</div>`),
+          article("ai-scratch", "Put Your AI Inside a Game", "15 min", `
+<h3>🎯 Intro</h3>
+<p>The magic step: your trained model becomes a Scratch block you can drag into a real game.</p>
+<h3>📝 Build it</h3>
+<ol style="line-height:2">
+  <li>In your ML for Kids project → <strong>Make</strong> → <strong>Scratch 3</strong> → "Open in Scratch"</li>
+  <li>You'll see new blocks like <code>recognise text (…)</code> under your project's name</li>
+  <li>Build this script on a character sprite:
+    <pre><code>when green flag clicked
+forever
+  ask "Say something to me!" and wait
+  if &lt;recognise text (answer) = kind&gt; then
+    say "Thank you! 😊" for 2 seconds
+  else
+    say "That wasn't very nice... 😢" for 2 seconds</code></pre></li>
+  <li>Press the green flag — your character now UNDERSTANDS feelings!</li>
+</ol>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Level up:</strong> make the character dance when the message is kind, and add a third label "question" that makes it answer "Good question!". Show your game to a friend!</div>`),
+          quiz("ai-quiz-2", "Quiz: ML Projects", [
+            { q: "Your text AI understood a sentence you never trained it on. Why?", options: ["It memorized the internet", "It learned word patterns, not a fixed list", "Luck", "Scratch wrote it"], answer: 1 },
+            { q: "\"You are not nice\" being MEAN teaches the AI...", options: ["Nothing useful", "That word combinations matter, not single words", "To be rude", "Grammar"], answer: 1 },
+            { q: "ML for Kids + Scratch lets you...", options: ["Only watch demos", "Use your own trained model inside a game you build", "Just play games", "Write Python"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Step 3 — Chatbots: Prompts & Playing Fair",
+        lessons: [
+          article("ai-prompts", "Prompt Power: Talking to AI Chatbots", "12 min", `
+<h3>🎯 Intro</h3>
+<p>Chatbots (like Gemini, ChatGPT or Copilot — all have free versions) answer better when you ask better. Writing good questions is a real skill called <strong>prompting</strong>.</p>
+<h3>📝 The 4 rules of a great prompt</h3>
+<ul>
+  <li><strong>1. Be specific:</strong> ❌ "tell me about animals" → ✅ "List 5 amazing facts about octopuses, for a 12-year-old"</li>
+  <li><strong>2. Give it a role:</strong> "You are a friendly science teacher. Explain why the sky is blue."</li>
+  <li><strong>3. Show the format you want:</strong> "...as a table with columns: Animal, Superpower"</li>
+  <li><strong>4. Improve in rounds:</strong> answer too hard? Reply "simpler please, with an example"</li>
+</ul>
+<h3>💻 Example — same question, two ways</h3>
+<pre><code>Weak:   "help with math"
+
+Strong: "You are a patient math tutor. I'm learning fractions.
+        Explain how to add 1/2 + 1/3 step by step,
+        then give me 2 practice problems (don't show answers yet)."</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> pick a topic you love (football, K-pop, Minecraft...). Write one weak prompt and one strong prompt using all 4 rules. Compare the answers!</div>`),
+          article("ai-ethics", "Using AI Honestly (The Champion's Rules)", "12 min", `
+<h3>🎯 Intro</h3>
+<p>AI is a powerful helper — and with power comes responsibility. These rules keep you smart, safe and honest.</p>
+<h3>📝 The Champion's Rules</h3>
+<ul>
+  <li><strong>🎓 AI is a tutor, not a cheat code.</strong> "Explain this so I understand" = learning. Copy-pasting AI homework as your own = plagiarism, and you learn nothing.</li>
+  <li><strong>🔍 AI can be confidently WRONG.</strong> It sometimes invents facts (called "hallucination"). Always double-check important facts in another source.</li>
+  <li><strong>🔒 Protect your private info.</strong> Never tell a chatbot your full name, address, school, passwords, or photos of yourself.</li>
+  <li><strong>⚖️ Remember bias.</strong> AI learned from human writing — it can repeat human unfairness. If an answer feels wrong about a group of people, question it.</li>
+  <li><strong>🙋 Say when you used AI.</strong> "I used AI to help brainstorm" is honest and totally OK when allowed.</li>
+</ul>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Decide — OK or not OK?</strong> (a) Asking AI to explain photosynthesis before a test. (b) Submitting an AI essay with your name on it. (c) Asking AI to quiz you with practice questions. (d) Telling it your home address for "better answers". Discuss with a friend or parent!</div>`),
+          quiz("ai-quiz-3", "Final Quiz: AI Champion", [
+            { q: "Which prompt gets the best answer?", options: ["\"science\"", "\"You are a science teacher. Explain gravity to a 12-year-old with one fun example.\"", "\"tell me stuff\"", "\"gravity now\""], answer: 1 },
+            { q: "An AI 'hallucination' is...", options: ["A scary picture", "When AI confidently states something false", "A computer virus", "A dream"], answer: 1 },
+            { q: "AI wrote your whole essay and you submit it as yours. This is...", options: ["Smart time-saving", "Plagiarism — and you learned nothing", "Teamwork", "Fine if not caught"], answer: 1 },
+            { q: "What should you NEVER share with a chatbot?", options: ["Your favorite color", "Math questions", "Your address and passwords", "Song lyrics"], answer: 2 },
           ]),
         ],
       },

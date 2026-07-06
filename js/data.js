@@ -1221,14 +1221,92 @@ btn.addEventListener("click", () =&gt; {
         title: "First Steps",
         lessons: [
           video("je-hello", "Your First Script", "8 min", `
-<p>Add JavaScript to a page just before the closing <code>&lt;/body&gt;</code> tag:</p>
+<h3>🎯 Intro</h3>
+<p>JavaScript is the only language browsers run natively — one script tag and your page comes alive.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li>Load scripts just before <code>&lt;/body&gt;</code> so the HTML exists first</li>
+  <li><code>console.log()</code> is your best friend for seeing what's happening</li>
+  <li>DevTools (F12) → Console shows logs and errors</li>
+</ul>
+<h3>💻 Example</h3>
 <pre><code>&lt;script src="app.js"&gt;&lt;/script&gt;</code></pre>
 <p>In <code>app.js</code>:</p>
 <pre><code>console.log("Hello from JavaScript!");
 alert("The page is alive!");</code></pre>
-<div class="callout tip">Open DevTools (F12) → Console tab to see your logs.</div>`),
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> log your name, the current year, and 7 * 6 to the console — then find all three in DevTools.</div>`),
+          article("je-variables", "Variables & Types", "11 min", `
+<h3>🎯 Intro</h3>
+<p>Variables are named boxes for values. Modern JavaScript gives you two: <code>const</code> and <code>let</code>.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li><code>const</code> — can't be reassigned (use it by default)</li>
+  <li><code>let</code> — can change (counters, accumulating values)</li>
+  <li>Core types: string, number, boolean, undefined, null</li>
+  <li>Template literals: <code>\`Hello \${name}\`</code> embed values in text</li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>const name = "Aye";
+let lessonsDone = 3;
+lessonsDone = lessonsDone + 1;
+
+const isEnrolled = true;
+const price = 0;
+
+console.log(\`\${name} finished \${lessonsDone} lessons\`);
+console.log(typeof name, typeof price, typeof isEnrolled);
+// string number boolean</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> create const course and let progress (0–100), increase progress twice, and log a template-literal sentence with both.</div>`),
+          article("je-conditions", "Comparisons & if/else", "11 min", `
+<h3>🎯 Intro</h3>
+<p>Programs choose. Comparisons produce true/false, and <code>if</code> acts on them.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li>ALWAYS use <code>===</code> and <code>!==</code> (strict — no type surprises)</li>
+  <li>Combine with <code>&amp;&amp;</code> (and), <code>||</code> (or), <code>!</code> (not)</li>
+  <li>Ternary for tiny choices: <code>cond ? a : b</code></li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>const score = 72;
+
+if (score &gt;= 80) {
+  console.log("Grade A 🏆");
+} else if (score &gt;= 60) {
+  console.log("Grade B — pass!");
+} else {
+  console.log("Keep practicing");
+}
+
+const label = score &gt;= 60 ? "PASS" : "RETRY";
+console.log(\`Result: \${label}\`);
+
+// why === matters:
+console.log(5 == "5");    // true  (loose — avoid!)
+console.log(5 === "5");   // false (strict — correct)</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> write age checks that print "child" / "teen" / "adult", then convert one of them into a ternary.</div>`),
+          quiz("je-quiz", "Quiz: JS Basics", [
+            { q: "What prints text to the developer console?", options: ["print()", "console.log()", "echo()", "log.console()"], answer: 1 },
+            { q: "Which declares a variable that can't be reassigned?", options: ["let", "var", "const", "static"], answer: 2 },
+            { q: "5 === \"5\" evaluates to...", options: ["true", "false", "\"5\"", "an error"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Loops, Arrays & Functions",
+        lessons: [
           video("je-loops", "Loops", "10 min", `
+<h3>🎯 Intro</h3>
 <p>Loops repeat work without copy-paste.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li><code>for (let i = 0; i &lt; n; i++)</code> — counting loop</li>
+  <li><code>for (const item of array)</code> — walk arrays cleanly</li>
+  <li><code>while (condition)</code> — repeat until something changes</li>
+</ul>
+<h3>💻 Example</h3>
 <pre><code>for (let i = 1; i &lt;= 5; i++) {
   console.log("Line " + i);
 }
@@ -1237,23 +1315,205 @@ const fruits = ["apple", "pear", "kiwi"];
 for (const fruit of fruits) {
   console.log(fruit);
 }</code></pre>
-<div class="callout">Use a <code>for...of</code> loop to walk through arrays cleanly.</div>`),
-          quiz("je-quiz", "Quiz: JS Basics", [
-            {
-              q: "What prints text to the developer console?",
-              options: ["print()", "console.log()", "echo()", "log.console()"],
-              answer: 1,
-            },
-            {
-              q: "A for loop is used to...",
-              options: [
-                "Style elements",
-                "Repeat a block of code",
-                "Define a variable",
-                "Load a page",
-              ],
-              answer: 1,
-            },
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> print the 7-times table from 7×1 to 7×10 with a counting loop.</div>`),
+          article("je-arrays", "Arrays & Their Methods", "13 min", `
+<h3>🎯 Intro</h3>
+<p>Arrays hold ordered lists — and their built-in methods do in one line what loops do in five.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li><code>.push() .pop()</code> add/remove at the end; <code>.length</code>, <code>[0]</code>, <code>.includes()</code></li>
+  <li><code>.map()</code> transforms every item into a new array</li>
+  <li><code>.filter()</code> keeps items that pass a test</li>
+  <li><code>.reduce()</code> boils a list down to one value</li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>const scores = [75, 92, 58, 88];
+
+const doubled = scores.map(s =&gt; s * 2);
+const passing = scores.filter(s =&gt; s &gt;= 60);
+const total   = scores.reduce((sum, s) =&gt; sum + s, 0);
+
+console.log(doubled);              // [150, 184, 116, 176]
+console.log(passing);              // [75, 92, 88]
+console.log(total / scores.length); // 78.25</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> from an array of prices, make a new array with 10% discount applied, then filter to only items under 5000, and sum them.</div>`),
+          article("je-functions", "Functions & Arrow Syntax", "13 min", `
+<h3>🎯 Intro</h3>
+<p>Functions are reusable machines: input → work → output. Modern JS writes them two ways.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li>Classic: <code>function add(a, b) { return a + b; }</code></li>
+  <li>Arrow: <code>const add = (a, b) =&gt; a + b;</code></li>
+  <li>Default parameters: <code>(name = "friend")</code></li>
+  <li>Small, single-purpose functions = readable programs</li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>function grade(score) {
+  if (score &gt;= 80) return "A";
+  if (score &gt;= 60) return "B";
+  return "C";
+}
+
+const greet = (name = "friend") =&gt; \`Hello, \${name}!\`;
+const kyatToUsd = (amount, rate = 4400) =&gt; (amount / rate).toFixed(2);
+
+console.log(grade(85));            // A
+console.log(greet());              // Hello, friend!
+console.log(kyatToUsd(100000));    // 22.73</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> write isEven(n), an arrow function celsiusToF(c), and a describe(name, age) using both in a template literal.</div>`),
+          article("je-objects", "Objects", "12 min", `
+<h3>🎯 Intro</h3>
+<p>Objects group related data under names — the shape of every API response you'll ever meet.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li>Create: <code>{ title: "JS", hours: 12 }</code>; read: <code>c.title</code> or <code>c["title"]</code></li>
+  <li>Destructure: <code>const { title, hours } = course</code></li>
+  <li>Arrays of objects = your data model</li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>const course = { title: "JS Essentials", hours: 12, free: true };
+const { title, hours } = course;
+console.log(\`\${title} — \${hours}h\`);
+
+const students = [
+  { name: "Aye", score: 85 },
+  { name: "Ko",  score: 55 },
+];
+const names = students.map(s =&gt; s.name);
+const best = students.reduce((a, b) =&gt; a.score &gt; b.score ? a : b);
+console.log(names, best.name);   // ["Aye","Ko"] "Aye"</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> model 3 phones as objects (name, price, inStock); print only in-stock names with filter + map.</div>`),
+          quiz("je-quiz-2", "Quiz: Data & Functions", [
+            { q: "Which method keeps only items passing a test?", options: [".map()", ".filter()", ".push()", ".join()"], answer: 1 },
+            { q: "const f = (x) => x * 2 is...", options: ["A syntax error", "An arrow function", "An object", "A loop"], answer: 1 },
+            { q: "const { name } = user does what?", options: ["Renames user", "Extracts user.name into a variable", "Deletes name", "Creates an object"], answer: 1 },
+            { q: "A for loop is used to...", options: ["Style elements", "Repeat a block of code", "Define a variable", "Load a page"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "The DOM: Making Pages Interactive",
+        lessons: [
+          article("je-dom", "Selecting & Changing the Page", "13 min", `
+<h3>🎯 Intro</h3>
+<p>The DOM is your HTML as live objects. Select an element, change it, and the page updates instantly.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li><code>document.querySelector("css selector")</code> — first match</li>
+  <li><code>querySelectorAll</code> — all matches (loop with for...of)</li>
+  <li><code>.textContent</code> for text, <code>.classList.add/remove/toggle</code> for styling</li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>&lt;h1 id="title"&gt;Loading…&lt;/h1&gt;
+&lt;p class="note"&gt;First note&lt;/p&gt;
+&lt;p class="note"&gt;Second note&lt;/p&gt;
+
+&lt;script&gt;
+const title = document.querySelector("#title");
+title.textContent = "Welcome to WebDev Academy!";
+title.style.color = "purple";
+
+for (const note of document.querySelectorAll(".note")) {
+  note.classList.add("highlight");
+}
+&lt;/script&gt;</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> build a page with 3 paragraphs; use JS to number them "1.", "2.", "3." automatically.</div>`),
+          article("je-events", "Events: Reacting to the User", "13 min", `
+<h3>🎯 Intro</h3>
+<p>Events are the moments users create — clicks, typing, submitting. <code>addEventListener</code> lets you respond.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li><code>el.addEventListener("click", fn)</code></li>
+  <li>Input events: read <code>e.target.value</code> live</li>
+  <li>Forms: listen to "submit" + <code>e.preventDefault()</code></li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>&lt;input id="name" placeholder="Type your name"&gt;
+&lt;button id="btn"&gt;Greet&lt;/button&gt;
+&lt;p id="out"&gt;&lt;/p&gt;
+
+&lt;script&gt;
+const out = document.querySelector("#out");
+
+document.querySelector("#btn").addEventListener("click", () =&gt; {
+  const name = document.querySelector("#name").value || "friend";
+  out.textContent = \`Hello, \${name}! 👋\`;
+});
+
+document.querySelector("#name").addEventListener("input", (e) =&gt; {
+  out.textContent = \`Typing: \${e.target.value}\`;
+});
+&lt;/script&gt;</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> add a "Clear" button that empties both the input and the paragraph.</div>`),
+          article("je-project", "Final Project: Interactive To-Do List", "22 min", `
+<h3>🎯 Intro</h3>
+<p>Everything in one page: variables, arrays, functions, DOM, events. The classic first project — built properly.</p>
+<h3>💻 Complete solution — study it, then build yours</h3>
+<pre><code>&lt;h2&gt;📚 My Study List &lt;span id="count"&gt;&lt;/span&gt;&lt;/h2&gt;
+&lt;form id="form"&gt;
+  &lt;input id="input" placeholder="Add a topic…" autocomplete="off"&gt;
+  &lt;button&gt;Add&lt;/button&gt;
+&lt;/form&gt;
+&lt;ul id="list"&gt;&lt;/ul&gt;
+
+&lt;script&gt;
+let items = [];
+
+const list  = document.querySelector("#list");
+const count = document.querySelector("#count");
+const input = document.querySelector("#input");
+
+function render() {
+  list.innerHTML = "";
+  for (const item of items) {
+    const li = document.createElement("li");
+
+    const label = document.createElement("span");
+    label.textContent = item.text;
+    label.style.textDecoration = item.done ? "line-through" : "none";
+    label.addEventListener("click", () =&gt; {
+      item.done = !item.done;
+      render();
+    });
+
+    const del = document.createElement("button");
+    del.textContent = "🗑";
+    del.addEventListener("click", () =&gt; {
+      items = items.filter(x =&gt; x !== item);
+      render();
+    });
+
+    li.append(label, " ", del);
+    list.append(li);
+  }
+  const done = items.filter(x =&gt; x.done).length;
+  count.textContent = \`(\${done}/\${items.length})\`;
+}
+
+document.querySelector("#form").addEventListener("submit", (e) =&gt; {
+  e.preventDefault();
+  const text = input.value.trim();
+  if (!text) return;
+  items.push({ text, done: false });
+  input.value = "";
+  render();
+});
+
+render();
+&lt;/script&gt;</code></pre>
+<h3>🏋️ Level up</h3>
+<div class="callout tip"><strong>Extend it yourself:</strong> save items to localStorage so the list survives refresh, and add a "clear completed" button using filter.</div>`),
+          quiz("je-quiz-3", "Final Quiz: JavaScript", [
+            { q: "document.querySelector(\".card\") returns...", options: ["All matching elements", "The first matching element", "A string of HTML", "An error"], answer: 1 },
+            { q: "e.preventDefault() in a submit handler...", options: ["Clears the form", "Stops the page from reloading", "Validates inputs", "Sends the data"], answer: 1 },
+            { q: "To respond to a click you use...", options: ["onClickNow()", "el.addEventListener(\"click\", fn)", "el.click = fn only", "listen(el)"], answer: 1 },
+            { q: "items.filter(x => x !== item) is used above to...", options: ["Sort items", "Remove one item immutably", "Duplicate items", "Mark done"], answer: 1 },
           ]),
         ],
       },

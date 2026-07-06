@@ -939,33 +939,190 @@ btn.addEventListener("click", () =&gt; {
     rating: 4.7,
     ratings: 42310,
     students: 210500,
-    hours: 9,
+    hours: 14,
     price: "Free",
     free: false,
     color: "linear-gradient(135deg,#2193b0,#6dd5ed)",
     icon: "{ }",
     description:
-      "Modern CSS is powerful and fun. In this focused course you'll master Flexbox, Grid, custom properties, transitions and keyframe animations — the toolkit for professional-looking interfaces.",
+      "Modern CSS is powerful and fun. This full course takes you from selectors and the box model through Flexbox, Grid and positioning, to variables, animation and responsive design — finishing with a polished pricing-page project.",
     whatYouLearn: [
-      "Build complex layouts with Grid & Flexbox",
+      "Selectors, specificity and the cascade — why styles win or lose",
+      "The box model and modern units (rem, %, vh)",
+      "Build any layout with Flexbox and Grid",
       "Use CSS variables for maintainable themes",
       "Create smooth transitions and keyframe animations",
-      "Make anything responsive with modern techniques",
+      "Make everything responsive with media queries",
     ],
     sections: [
       {
-        title: "Modern CSS Foundations",
+        title: "CSS Foundations",
         lessons: [
+          article("cm-selectors", "Selectors & Specificity", "12 min", `
+<h3>🎯 Intro</h3>
+<p>When two rules fight over one element, <strong>specificity</strong> decides the winner. Understand it once and CSS stops feeling random.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li>Selectors: <code>p</code> (element) &lt; <code>.card</code> (class) &lt; <code>#header</code> (id)</li>
+  <li>Combinators: <code>.card p</code> (descendant), <code>.card &gt; p</code> (direct child)</li>
+  <li>States: <code>:hover :focus :first-child :not()</code></li>
+  <li>Tie? The <em>later</em> rule in the file wins</li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>p            { color: gray; }        /* 0-0-1 */
+.note        { color: blue; }        /* 0-1-0 wins over p  */
+#special     { color: purple; }      /* 1-0-0 wins over all */
+
+.card:hover  { border-color: purple; }
+li:first-child { font-weight: 700; }
+button:not(.primary) { opacity: .8; }</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> style three paragraphs so element, class and id rules conflict — predict each winner before checking in the playground.</div>`),
+          article("cm-boxmodel", "The Box Model & Units", "12 min", `
+<h3>🎯 Intro</h3>
+<p>Every element is a box: content + padding + border + margin. Master the box, master layout.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li><code>box-sizing: border-box</code> — width includes padding+border (use always!)</li>
+  <li>Padding = inside space; margin = outside space</li>
+  <li>Units: <code>rem</code> for sizes/text, <code>%</code> for fluid widths, <code>vh/vw</code> for viewport, <code>px</code> for borders</li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>* { box-sizing: border-box; }
+
+.card {
+  width: 100%;
+  max-width: 20rem;       /* caps at 320px */
+  padding: 1rem 1.5rem;   /* vertical | horizontal */
+  margin: 0 auto;         /* the classic centering trick */
+  border: 1px solid #ddd;
+  border-radius: 10px;
+}
+
+.hero { min-height: 60vh; }  /* 60% of the screen height */</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> build a centered card with comfortable padding — then remove border-box and watch the width break.</div>`),
           video("cm-vars", "CSS Custom Properties (Variables)", "9 min", `
+<h3>🎯 Intro</h3>
 <p>Custom properties let you define reusable values — perfect for theming.</p>
+<h3>💻 Example</h3>
 <pre><code>:root {
   --brand: #a435f0;
   --gap: 16px;
 }
 .button { background: var(--brand); padding: var(--gap); }</code></pre>
-<div class="callout tip">Change one variable in <code>:root</code> and it updates everywhere — the foundation of dark mode and design systems.</div>`),
+<div class="callout tip">Change one variable in <code>:root</code> and it updates everywhere — the foundation of dark mode and design systems.</div>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> define --brand and --radius variables, use them on two buttons, then change the theme by editing only :root.</div>`),
+          quiz("cm-quiz", "Quiz: CSS Foundations", [
+            { q: "Where are global CSS variables usually declared?", options: [":root", "body", "@media", "*"], answer: 0 },
+            { q: "Which selector is the most specific?", options: ["p", ".note", "#special", "*"], answer: 2 },
+            { q: "box-sizing: border-box makes width include...", options: ["Only content", "Content + padding + border", "Margin too", "Nothing new"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Layout: Flexbox, Grid & Position",
+        lessons: [
+          article("cm-flexbox", "Flexbox", "14 min", `
+<h3>🎯 Intro</h3>
+<p>Flexbox lays things out in a row or column and solves the two classic nightmares: vertical centering and equal-height columns.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li>Parent: <code>display: flex</code>; direction with <code>flex-direction</code></li>
+  <li><code>justify-content</code> = main axis; <code>align-items</code> = cross axis</li>
+  <li><code>gap</code> spaces children; <code>flex: 1</code> makes a child stretch</li>
+  <li><code>flex-wrap: wrap</code> lets items flow to the next line</li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>/* perfect centering — the interview classic */
+.hero {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 40vh;
+}
+
+/* nav bar: logo left, links right */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+/* equal cards that wrap on small screens */
+.cards { display: flex; flex-wrap: wrap; gap: 16px; }
+.cards .card { flex: 1 1 240px; }</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> build a header with a logo, centered menu, and a right-aligned button using one flex container.</div>`),
+          article("cm-grid", "CSS Grid", "14 min", `
+<h3>🎯 Intro</h3>
+<p>Grid is two-dimensional: rows AND columns at once. Page layouts that took hacks now take three lines.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li><code>display: grid</code> + <code>grid-template-columns</code></li>
+  <li><code>fr</code> = share of free space; <code>repeat(3, 1fr)</code> = 3 equal columns</li>
+  <li>Auto-fit + minmax = responsive card grid with ZERO media queries</li>
+  <li>Span areas: <code>grid-column: 1 / -1</code> (full width)</li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>/* the magic responsive gallery */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+/* classic page: sidebar + content */
+.layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 24px;
+}
+.layout .full { grid-column: 1 / -1; }</code></pre>
+<div class="callout tip">Rule of thumb: <strong>Flexbox</strong> for one direction (menus, toolbars), <strong>Grid</strong> for two (pages, galleries).</div>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> build the auto-fit gallery with 6 colored divs, then resize the result pane and watch columns adapt.</div>`),
+          article("cm-position", "Positioning & z-index", "11 min", `
+<h3>🎯 Intro</h3>
+<p>Sometimes elements must escape normal flow: sticky headers, badges, overlays. That's positioning.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li><code>relative</code> — stays in flow, becomes an anchor for children</li>
+  <li><code>absolute</code> — pinned to the nearest positioned ancestor</li>
+  <li><code>fixed</code> — pinned to the screen; <code>sticky</code> — sticks while scrolling</li>
+  <li><code>z-index</code> stacks positioned elements</li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>/* notification badge on a bell icon */
+.bell { position: relative; }
+.badge {
+  position: absolute;
+  top: -6px; right: -6px;
+  background: red; color: #fff;
+  border-radius: 999px; padding: 2px 6px; font-size: 11px;
+}
+
+/* header that sticks while you scroll */
+.topbar { position: sticky; top: 0; z-index: 50; }</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> put a "NEW" badge on a card's corner, and make a footer button that stays fixed bottom-right like this site's chat bubble.</div>`),
+          quiz("cm-quiz-2", "Quiz: Layout", [
+            { q: "Perfect centering with Flexbox uses...", options: ["text-align + margin", "justify-content + align-items", "float + clear", "position: center"], answer: 1 },
+            { q: "repeat(auto-fit, minmax(220px, 1fr)) gives you...", options: ["Fixed 220px columns", "A responsive grid without media queries", "One giant column", "An error"], answer: 1 },
+            { q: "A child with position:absolute is placed relative to...", options: ["The screen always", "The nearest positioned ancestor", "The body always", "Its siblings"], answer: 1 },
+            { q: "Flexbox vs Grid: Grid is best for...", options: ["Single rows", "Two-dimensional layouts", "Text styling", "Animations"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Polish: Motion, Responsive & Project",
+        lessons: [
           video("cm-transitions", "Transitions & Animations", "12 min", `
-<h3>Transitions</h3>
+<h3>🎯 Intro</h3>
+<p>Subtle motion makes interfaces feel alive and guides the eye.</p>
+<h3>💻 Example — Transitions</h3>
 <pre><code>.card {
   transition: transform .2s ease, box-shadow .2s ease;
 }
@@ -973,24 +1130,100 @@ btn.addEventListener("click", () =&gt; {
   transform: translateY(-4px);
   box-shadow: 0 8px 20px rgba(0,0,0,.15);
 }</code></pre>
-<h3>Keyframe animations</h3>
+<h3>💻 Example — Keyframe animations</h3>
 <pre><code>@keyframes pulse {
   0%, 100% { opacity: 1; }
   50%      { opacity: .4; }
 }
 .badge { animation: pulse 1.5s infinite; }</code></pre>
-<div class="callout">Subtle motion guides attention. Keep durations short (150–300ms) for UI feedback.</div>`),
-          quiz("cm-quiz", "Quiz: Modern CSS", [
-            {
-              q: "Where are global CSS variables usually declared?",
-              options: [":root", "body", "@media", "*"],
-              answer: 0,
-            },
-            {
-              q: "Which property animates changes smoothly on hover?",
-              options: ["animation", "transition", "transform", "keyframes"],
-              answer: 1,
-            },
+<div class="callout">Subtle motion guides attention. Keep durations short (150–300ms) for UI feedback.</div>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> make a button that lifts and grows slightly on hover, and a dot that pulses forever.</div>`),
+          article("cm-responsive", "Responsive Design & Media Queries", "13 min", `
+<h3>🎯 Intro</h3>
+<p>Most of your students browse on phones. Responsive design isn't optional — it's the default.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li>Always: <code>&lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;</code></li>
+  <li>Mobile-first: base styles for phones, <code>@media (min-width: 768px)</code> adds desktop</li>
+  <li>Fluid media: <code>img { max-width: 100%; height: auto; }</code></li>
+  <li>Modern helpers: <code>clamp()</code> for fluid font sizes</li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>/* mobile first: one column */
+.features { display: grid; gap: 16px; }
+
+/* tablets and up: three columns */
+@media (min-width: 768px) {
+  .features { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* fluid heading: never too small, never too big */
+h1 { font-size: clamp(1.6rem, 4vw, 3rem); }
+
+img { max-width: 100%; height: auto; }</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> build a 1-column feature list that becomes 3 columns above 768px — test by resizing the playground result pane.</div>`),
+          article("cm-project", "Final Project: Pricing Page", "20 min", `
+<h3>🎯 Intro</h3>
+<p>Everything combined: variables, Flexbox/Grid, box model, hover motion and responsiveness — a real pricing section you could ship.</p>
+<h3>💻 Complete solution — study it, then build yours</h3>
+<pre><code>&lt;style&gt;
+:root { --brand: #a435f0; --ink: #1c1d1f; --line: #e4e8eb; }
+* { box-sizing: border-box; margin: 0; }
+body { font-family: sans-serif; color: var(--ink); padding: 24px; }
+
+.plans {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px; max-width: 900px; margin: 0 auto;
+}
+.plan {
+  border: 1px solid var(--line); border-radius: 14px;
+  padding: 24px; text-align: center;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.plan:hover { transform: translateY(-6px); box-shadow: 0 12px 28px rgba(0,0,0,.12); }
+.plan.featured { border: 2px solid var(--brand); position: relative; }
+.plan.featured::before {
+  content: "POPULAR"; position: absolute; top: -12px; left: 50%;
+  transform: translateX(-50%);
+  background: var(--brand); color: #fff; font-size: 11px;
+  padding: 3px 12px; border-radius: 999px;
+}
+.price { font-size: 2.2rem; font-weight: 800; margin: 12px 0; }
+.plan ul { list-style: none; padding: 0; margin: 0 0 18px; line-height: 2; }
+.btn {
+  display: inline-block; width: 100%; padding: 12px;
+  border-radius: 8px; border: 0; font-weight: 700; cursor: pointer;
+  background: var(--brand); color: #fff;
+}
+&lt;/style&gt;
+
+&lt;div class="plans"&gt;
+  &lt;div class="plan"&gt;
+    &lt;h3&gt;Starter&lt;/h3&gt;&lt;div class="price"&gt;Free&lt;/div&gt;
+    &lt;ul&gt;&lt;li&gt;5 courses&lt;/li&gt;&lt;li&gt;Community chat&lt;/li&gt;&lt;/ul&gt;
+    &lt;button class="btn"&gt;Start&lt;/button&gt;
+  &lt;/div&gt;
+  &lt;div class="plan featured"&gt;
+    &lt;h3&gt;Pro&lt;/h3&gt;&lt;div class="price"&gt;$9&lt;/div&gt;
+    &lt;ul&gt;&lt;li&gt;All courses&lt;/li&gt;&lt;li&gt;Certificates&lt;/li&gt;&lt;/ul&gt;
+    &lt;button class="btn"&gt;Go Pro&lt;/button&gt;
+  &lt;/div&gt;
+  &lt;div class="plan"&gt;
+    &lt;h3&gt;Team&lt;/h3&gt;&lt;div class="price"&gt;$29&lt;/div&gt;
+    &lt;ul&gt;&lt;li&gt;10 seats&lt;/li&gt;&lt;li&gt;Progress reports&lt;/li&gt;&lt;/ul&gt;
+    &lt;button class="btn"&gt;Contact&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+<h3>🏋️ Level up</h3>
+<div class="callout tip"><strong>Extend it yourself:</strong> add a dark theme by swapping :root variables, and a monthly/yearly toggle styled with :checked.</div>`),
+          quiz("cm-quiz-3", "Final Quiz: CSS Mastery", [
+            { q: "Which property animates changes smoothly on hover?", options: ["animation", "transition", "transform", "keyframes"], answer: 1 },
+            { q: "Mobile-first means...", options: ["Designing desktop then shrinking", "Base styles for phones, media queries add larger layouts", "Only supporting phones", "Using apps"], answer: 1 },
+            { q: "clamp(1.6rem, 4vw, 3rem) sets a font size that...", options: ["Is always 4vw", "Scales but never below 1.6rem or above 3rem", "Randomizes", "Only works on desktop"], answer: 1 },
+            { q: "The POPULAR ribbon used which technique?", options: ["A second image", "position:absolute on a ::before pseudo-element", "float", "Grid rows"], answer: 1 },
           ]),
         ],
       },

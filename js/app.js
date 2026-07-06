@@ -1191,9 +1191,10 @@
   /* ---------------- View: Learning Roadmap ---------------- */
   function renderRoadmap() {
     /* Order courses along the natural learning path */
-    const order = ["Fundamentals", "HTML", "CSS", "JavaScript", "Responsive", "Career"];
+    const order = ["Fundamentals", "HTML", "CSS", "JavaScript", "Responsive", "Frontend", "Backend", "Databases", "Programming", "Tools", "Career"];
+    const oi = (c) => { const i = order.indexOf(c.category); return i === -1 ? 98 : i; };
     const list = COURSES.slice().sort(
-      (a, b) => (order.indexOf(a.category) - order.indexOf(b.category)) || ((a.level === "Beginner" ? 0 : 1) - (b.level === "Beginner" ? 0 : 1))
+      (a, b) => (oi(a) - oi(b)) || ((a.level === "Beginner" ? 0 : 1) - (b.level === "Beginner" ? 0 : 1))
     );
     const steps = list.map((c, i) => {
       const pct = progressPct(c);

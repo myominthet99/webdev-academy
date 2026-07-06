@@ -603,10 +603,10 @@ button { font-family: inherit; cursor: pointer; }
 /* ---------- "Try it Yourself" (W3Schools-style) ---------- */
 .try-yourself-btn {
   display: inline-block; margin: 2px 0 18px; padding: 9px 22px;
-  background: #04aa6d; color: #fff; border: 0; border-radius: 6px;
+  background: var(--purple); color: #fff; border: 0; border-radius: 8px;
   font-size: 14px; font-weight: 700; cursor: pointer;
 }
-.try-yourself-btn:hover { background: #059862; }
+.try-yourself-btn:hover { background: var(--purple-dark); }
 
 .playground-overlay {
   position: fixed; inset: 0; background: rgba(0, 0, 0, .6); z-index: 1200;

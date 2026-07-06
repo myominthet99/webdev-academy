@@ -34,8 +34,11 @@
     "wda_reviews",      /* course reviews                   */
   ];
   const shouldSync = (k) => typeof k === "string" && SYNC_PREFIXES.some((p) => k.indexOf(p) === 0);
-  /* Firebase paths may not contain . # $ [ ] / */
-  const encKey = (k) => encodeURIComponent(k).replace(/\./g, "%2E");
+  /* Firebase paths may not contain . # $ [ ] / — swap them for commas.
+     (Percent-encoding does NOT work: the server decodes %2E back to "."
+     and rejects the path.) Original keys are stored inside each row (k),
+     so the encoding never needs to be reversed. */
+  const encKey = (k) => String(k).replace(/[.#$\[\]\/%]/g, ",");
 
   let fb = null, fbInit = null;
   function ensureFb() {

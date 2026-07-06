@@ -776,7 +776,8 @@
   /* ---------------- Premium membership (KBZPay manual approval) ----------------
      premium/<emailKey> = { since } marks a paying member (admin-granted).
      payments/ holds submitted claims awaiting admin review. */
-  const emailKey = (e) => encodeURIComponent(String(e || "").toLowerCase()).replace(/\./g, "%2E");
+  /* Firebase paths forbid . # $ [ ] / — swap them for commas (one-way is fine) */
+  const emailKey = (e) => String(e || "").toLowerCase().replace(/[.#$\[\]\/%]/g, ",");
   let premiumStatus = false;
   function isPremiumUser() {
     return premiumStatus || (window.Auth && window.Auth.isAdmin && window.Auth.isAdmin());

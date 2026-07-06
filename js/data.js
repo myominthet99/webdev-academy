@@ -4160,18 +4160,20 @@ $long   = Course::where("hours", "&gt;", 5)-&gt;get();</code></pre>
     rating: 4.8,
     ratings: 38200,
     students: 289000,
-    hours: 5,
+    hours: 11,
     price: "Free",
     free: true,
     color: "linear-gradient(135deg,#00618a,#5aa8c9)",
     icon: "SQL",
     description:
-      "Every serious application stores data in a database, and SQL is how you talk to it. SELECT, WHERE, JOIN — learn the queries you'll use for the rest of your career.",
+      "Every serious application stores data in a database, and SQL is how you talk to it. This full course covers SELECT and filtering, safe data changes, aggregation with GROUP BY, all the JOIN types, and finishes with a real school-database project.",
     whatYouLearn: [
       "SELECT with WHERE, ORDER BY and LIMIT",
+      "Pattern matching with LIKE, IN, BETWEEN and NULL handling",
       "INSERT, UPDATE, DELETE safely",
-      "Aggregate with COUNT, SUM, GROUP BY",
-      "Combine tables with JOIN",
+      "Aggregate with COUNT, SUM, AVG, GROUP BY and HAVING",
+      "Combine tables with INNER and LEFT JOIN",
+      "Answer real questions against a realistic schema",
     ],
     sections: [
       {
@@ -4180,6 +4182,13 @@ $long   = Course::where("hours", "&gt;", 5)-&gt;get();</code></pre>
           article("sql-select", "SELECT: Asking Questions", "11 min", `
 <h3>🎯 Intro</h3>
 <p>A query describes <em>what</em> you want; the database figures out how to get it.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li><code>SELECT columns FROM table</code> — <code>*</code> means all columns</li>
+  <li><code>WHERE</code> filters rows, <code>ORDER BY ... DESC</code> sorts</li>
+  <li><code>LIMIT</code> caps how many rows come back</li>
+  <li><code>AS</code> renames columns in the result</li>
+</ul>
 <h3>💻 Example</h3>
 <pre><code>SELECT name, score
 FROM students
@@ -4187,9 +4196,33 @@ WHERE score &gt;= 60
 ORDER BY score DESC
 LIMIT 5;
 
--- top 5 passing students, best first</code></pre>
+-- top 5 passing students, best first
+
+SELECT name, score * 1.0 / 100 AS ratio
+FROM students;</code></pre>
 <h3>🏋️ Practice Task</h3>
 <div class="callout tip"><strong>Try it yourself:</strong> write a query for the 3 cheapest products under 10000 from a products(name, price) table.</div>`),
+          article("sql-where", "Filtering Like a Pro", "12 min", `
+<h3>🎯 Intro</h3>
+<p>Real questions are rarely "score = 60". They're ranges, patterns, lists — and the tricky business of missing data.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li><code>BETWEEN 60 AND 80</code>, <code>IN ("Yangon", "Mandalay")</code></li>
+  <li><code>LIKE 'A%'</code> starts with A; <code>'%web%'</code> contains web</li>
+  <li>NULL is special: use <code>IS NULL / IS NOT NULL</code>, never <code>= NULL</code></li>
+  <li>Combine: <code>AND</code>, <code>OR</code>, parentheses for clarity</li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>SELECT name, city, score
+FROM students
+WHERE score BETWEEN 60 AND 89
+  AND city IN ('Yangon', 'Mandalay')
+  AND name LIKE 'A%';
+
+-- students who never took the exam:
+SELECT name FROM students WHERE score IS NULL;</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> find products whose name contains "phone", priced 100–500, from brands ('Apple','Samsung') — then all products with no description (NULL).</div>`),
           article("sql-crud", "INSERT, UPDATE, DELETE", "10 min", `
 <h3>🎯 Intro</h3>
 <p>Changing data is easy — dangerously easy. The WHERE clause is your seatbelt.</p>
@@ -4201,11 +4234,50 @@ UPDATE students SET score = 80 WHERE name = "Hla";
 DELETE FROM students WHERE score &lt; 20;
 
 -- ⚠ UPDATE/DELETE without WHERE touches EVERY row!</code></pre>
+<div class="callout tip">Pro habit: before an UPDATE or DELETE, run a SELECT with the same WHERE first — see exactly which rows you're about to change.</div>
 <h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> insert three students, raise one score by 10, then delete one by name.</div>`),
-          article("sql-join", "GROUP BY & JOIN", "14 min", `
+<div class="callout tip"><strong>Try it yourself:</strong> insert three students, raise one score by 10, then delete one by name — running the safety SELECT before each change.</div>`),
+          quiz("sql-quiz", "Quiz: Query Foundations", [
+            { q: "Which clause filters rows?", options: ["FILTER", "WHERE", "HAVING only", "LIMIT"], answer: 1 },
+            { q: "DELETE FROM users; (no WHERE) does what?", options: ["Deletes one row", "Errors", "Deletes ALL rows", "Nothing"], answer: 2 },
+            { q: "How do you find rows where email is missing?", options: ["email = NULL", "email == NULL", "email IS NULL", "email EMPTY"], answer: 2 },
+            { q: "name LIKE 'M%' matches...", options: ["Names containing M", "Names starting with M", "Names ending with M", "Exactly 'M%'"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Aggregation & Joining Tables",
+        lessons: [
+          article("sql-agg", "COUNT, SUM & GROUP BY", "13 min", `
+<h3>🎯 Intro</h3>
+<p>Aggregates turn thousands of rows into one answer: totals, averages, counts — per group.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li><code>COUNT(*) SUM(x) AVG(x) MIN(x) MAX(x)</code></li>
+  <li><code>GROUP BY city</code> — one result row per city</li>
+  <li><code>HAVING</code> filters <em>groups</em> (WHERE filters rows, before grouping)</li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>-- sales summary per city
+SELECT city,
+       COUNT(*)      AS orders,
+       SUM(amount)   AS total,
+       AVG(amount)   AS avg_order
+FROM orders
+GROUP BY city
+HAVING SUM(amount) &gt; 100000
+ORDER BY total DESC;</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> from enrollments(course_id, student, paid), count students and sum payments per course — only courses with 10+ students.</div>`),
+          article("sql-join", "INNER JOIN", "14 min", `
 <h3>🎯 Intro</h3>
 <p>JOIN combines tables; GROUP BY summarizes. Together they answer real business questions.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li><code>JOIN table2 ON table2.fk = table1.id</code> — match rows across tables</li>
+  <li>Table aliases (<code>courses c</code>) keep queries readable</li>
+  <li>INNER JOIN keeps only rows that match on BOTH sides</li>
+</ul>
 <h3>💻 Example</h3>
 <pre><code>-- how many students per course?
 SELECT c.title, COUNT(e.student_id) AS students
@@ -4214,11 +4286,83 @@ JOIN enrollments e ON e.course_id = c.id
 GROUP BY c.title
 ORDER BY students DESC;</code></pre>
 <h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> write a query for total sales per city from orders(city, amount).</div>`),
-          quiz("sql-quiz", "Quiz: SQL", [
-            { q: "Which clause filters rows?", options: ["FILTER", "WHERE", "HAVING only", "LIMIT"], answer: 1 },
-            { q: "DELETE FROM users; (no WHERE) does what?", options: ["Deletes one row", "Errors", "Deletes ALL rows", "Nothing"], answer: 2 },
+<div class="callout tip"><strong>Try it yourself:</strong> write a query for total sales per city from orders joined to customers(city).</div>`),
+          article("sql-left", "LEFT JOIN & Missing Matches", "12 min", `
+<h3>🎯 Intro</h3>
+<p>INNER JOIN silently drops rows without a match. LEFT JOIN keeps them — essential for questions about what's <em>missing</em>.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li><code>LEFT JOIN</code> keeps every left-table row; unmatched right columns become NULL</li>
+  <li>"Which courses have NO students?" → LEFT JOIN + <code>IS NULL</code></li>
+  <li>COUNT(column) skips NULLs — perfect with LEFT JOIN</li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>-- every course, including empty ones
+SELECT c.title, COUNT(e.id) AS students
+FROM courses c
+LEFT JOIN enrollments e ON e.course_id = c.id
+GROUP BY c.title;
+
+-- ONLY the courses nobody enrolled in
+SELECT c.title
+FROM courses c
+LEFT JOIN enrollments e ON e.course_id = c.id
+WHERE e.id IS NULL;</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> list customers who have never placed an order (customers LEFT JOIN orders + IS NULL).</div>`),
+          quiz("sql-quiz-2", "Quiz: Aggregation & Joins", [
             { q: "JOIN is used to...", options: ["Merge databases", "Combine rows from related tables", "Create indexes", "Backup data"], answer: 1 },
+            { q: "HAVING differs from WHERE because it filters...", options: ["Columns", "Groups after aggregation", "Tables", "Nothing — identical"], answer: 1 },
+            { q: "To include courses with zero enrollments you need...", options: ["INNER JOIN", "LEFT JOIN", "DOUBLE JOIN", "GROUP BY"], answer: 1 },
+            { q: "AVG(amount) computes...", options: ["The total", "The row count", "The mean value", "The median"], answer: 2 },
+          ]),
+        ],
+      },
+      {
+        title: "Project: The School Database",
+        lessons: [
+          article("sql-project", "Final Project: Answer Real Questions", "22 min", `
+<h3>🎯 Intro</h3>
+<p>Here's a realistic mini-schema. Your job: answer the questions a school manager would actually ask.</p>
+<h3>📝 The schema</h3>
+<pre><code>students(id, name, city)
+courses(id, title, fee)
+enrollments(id, student_id, course_id, score)</code></pre>
+<h3>💻 The questions — with solutions to check yourself</h3>
+<pre><code>-- 1. Top 3 students by average score
+SELECT s.name, AVG(e.score) AS avg_score
+FROM students s
+JOIN enrollments e ON e.student_id = s.id
+GROUP BY s.name
+ORDER BY avg_score DESC
+LIMIT 3;
+
+-- 2. Revenue per course (enrollment count × fee)
+SELECT c.title, COUNT(e.id) * c.fee AS revenue
+FROM courses c
+LEFT JOIN enrollments e ON e.course_id = c.id
+GROUP BY c.title, c.fee
+ORDER BY revenue DESC;
+
+-- 3. Pass rate per course (score >= 60)
+SELECT c.title,
+       ROUND(100.0 * SUM(CASE WHEN e.score &gt;= 60 THEN 1 ELSE 0 END)
+             / COUNT(e.id), 1) AS pass_pct
+FROM courses c
+JOIN enrollments e ON e.course_id = c.id
+GROUP BY c.title;
+
+-- 4. Students from Yangon not enrolled in anything
+SELECT s.name
+FROM students s
+LEFT JOIN enrollments e ON e.student_id = s.id
+WHERE s.city = 'Yangon' AND e.id IS NULL;</code></pre>
+<h3>🏋️ Level up</h3>
+<div class="callout tip"><strong>Extend it yourself:</strong> write queries for (a) each city's average score, (b) the most popular course per city, (c) students enrolled in 2+ courses. Practice free at sqliteonline.com.</div>`),
+          quiz("sql-quiz-3", "Final Quiz: SQL", [
+            { q: "CASE WHEN score >= 60 THEN 1 ELSE 0 END inside SUM() computes...", options: ["The max score", "A conditional count", "An error", "The average"], answer: 1 },
+            { q: "Why does query 2 use LEFT JOIN?", options: ["Speed", "So courses with zero enrollments still appear with 0 revenue", "Style", "INNER JOIN is deprecated"], answer: 1 },
+            { q: "GROUP BY c.title, c.fee — the second column is there because...", options: ["It sorts results", "Selected non-aggregated columns must be grouped", "Fees repeat", "It's optional decoration"], answer: 1 },
           ]),
         ],
       },

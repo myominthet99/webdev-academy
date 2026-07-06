@@ -41,7 +41,8 @@
   function saveCustomCourses(list) { localStorage.setItem(CUSTOM_KEY, JSON.stringify(list)); }
   function syncCourses() {
     COURSES.length = 0;
-    BUILTIN_COURSES.forEach((c) => COURSES.push(c));
+    /* built-in courses get generated cover art (tools/gen-covers.js) */
+    BUILTIN_COURSES.forEach((c) => COURSES.push(c.image ? c : Object.assign({}, c, { image: "covers/" + c.id + ".svg" })));
     loadCustomCourses().forEach((c) => COURSES.push(Object.assign({ custom: true }, c)));
   }
   syncCourses();

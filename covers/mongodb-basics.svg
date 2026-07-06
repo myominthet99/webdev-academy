@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#116149"/>
+      <stop offset="1" stop-color="#4faa41"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#bg)"/>
+  <circle cx="570" cy="40" r="130" fill="#ffffff" fill-opacity="0.08"/>
+  <circle cx="50" cy="330" r="90" fill="#000000" fill-opacity="0.10"/>
+  <text x="285" y="305" font-size="38" fill="#ffffff" fill-opacity="0.09" font-family="Consolas,monospace" font-weight="700" transform="rotate(18 285 305)">&amp;&amp;</text>
+  <text x="123" y="83" font-size="18" fill="#ffffff" fill-opacity="0.09" font-family="Consolas,monospace" font-weight="700" transform="rotate(27 123 83)">( )</text>
+  <text x="592" y="72" font-size="39" fill="#ffffff" fill-opacity="0.09" font-family="Consolas,monospace" font-weight="700" transform="rotate(-16 592 72)">( )</text>
+  <text x="556" y="286" font-size="25" fill="#ffffff" fill-opacity="0.09" font-family="Consolas,monospace" font-weight="700" transform="rotate(-20 556 286)">&amp;&amp;</text>
+  <text x="555" y="59" font-size="22" fill="#ffffff" fill-opacity="0.09" font-family="Consolas,monospace" font-weight="700" transform="rotate(19 555 59)">&lt;/&gt;</text>
+  <text x="570" y="237" font-size="18" fill="#ffffff" fill-opacity="0.09" font-family="Consolas,monospace" font-weight="700" transform="rotate(0 570 237)">*</text>
+  <text x="334" y="327" font-size="24" fill="#ffffff" fill-opacity="0.09" font-family="Consolas,monospace" font-weight="700" transform="rotate(-2 334 327)">;</text>
+  <text x="90" y="205" font-size="18" fill="#ffffff" fill-opacity="0.09" font-family="Consolas,monospace" font-weight="700" transform="rotate(-27 90 205)">[ ]</text>
+  <text x="316" y="141" font-size="37" fill="#ffffff" fill-opacity="0.09" font-family="Consolas,monospace" font-weight="700" transform="rotate(5 316 141)">[ ]</text>
+  <text x="555" y="148" font-size="24" fill="#ffffff" fill-opacity="0.09" font-family="Consolas,monospace" font-weight="700" transform="rotate(28 555 148)">[ ]</text>
+  <text x="556" y="234" font-size="20" fill="#ffffff" fill-opacity="0.09" font-family="Consolas,monospace" font-weight="700" transform="rotate(22 556 234)">//</text>
+  <text x="65" y="193" font-size="29" fill="#ffffff" fill-opacity="0.09" font-family="Consolas,monospace" font-weight="700" transform="rotate(8 65 193)">[ ]</text>
+  <text x="461" y="251" font-size="20" fill="#ffffff" fill-opacity="0.09" font-family="Consolas,monospace" font-weight="700" transform="rotate(-24 461 251)">&lt;/&gt;</text>
+  <text x="67" y="145" font-size="42" fill="#ffffff" fill-opacity="0.09" font-family="Consolas,monospace" font-weight="700" transform="rotate(10 67 145)">&amp;&amp;</text>
+  
+  <text x="320" y="184" font-size="96" text-anchor="middle" dominant-baseline="middle"
+        font-family="'Segoe UI Emoji','Apple Color Emoji',Consolas,monospace" font-weight="800" fill="#ffffff"
+        style="paint-order:stroke" stroke="#000000" stroke-opacity="0.15" stroke-width="4">🍃</text>
+  <rect x="24" y="308" width="4" height="26" rx="2" fill="#ffffff" fill-opacity="0.9"/>
+  <text x="38" y="328" font-size="17" font-family="'Segoe UI',Arial,sans-serif" font-weight="700"
+        fill="#ffffff" fill-opacity="0.92" letter-spacing="2">DATABASES</text>
+  <text x="616" y="328" font-size="13" text-anchor="end" font-family="'Segoe UI',Arial,sans-serif"
+        font-weight="600" fill="#ffffff" fill-opacity="0.55">WebDev Academy</text>
+</svg>

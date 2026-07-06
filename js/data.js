@@ -3163,62 +3163,269 @@ $el.on("click", fn)          el.addEventListener("click", fn)</code></pre>
     rating: 4.7,
     ratings: 29400,
     students: 201000,
-    hours: 7,
+    hours: 13,
     price: "Free",
     free: true,
     color: "linear-gradient(135deg,#215732,#68a063)",
     icon: "⬢",
     description:
-      "The JavaScript you already know, now running servers. Learn Node's runtime, npm, and Express — the standard toolkit for building web APIs.",
+      "The JavaScript you already know, now running servers. This full course covers Node's runtime, modules, npm and the file system, then builds up Express routing, middleware and a complete CRUD API — the exact backend skills that pair with React.",
     whatYouLearn: [
-      "Run JavaScript outside the browser",
-      "npm: install and manage packages",
-      "Build routes with Express",
-      "Return JSON and handle POST bodies",
+      "Run JavaScript outside the browser and use npm",
+      "Organize code with modules",
+      "Read and write files with fs",
+      "Build Express routes with params and queries",
+      "Understand middleware and handle JSON bodies",
+      "Ship a complete CRUD API with proper status codes",
     ],
     sections: [
       {
-        title: "Server Foundations",
+        title: "Node Foundations",
         lessons: [
-          article("nd-hello", "Node & npm", "10 min", `
+          article("nd-hello", "Node, npm & Your First Script", "11 min", `
 <h3>🎯 Intro</h3>
-<p>Node runs JavaScript files directly on your computer — no browser needed.</p>
+<p>Node runs JavaScript directly on your computer — the same language you know from the browser, now with access to files, networks and the operating system.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li>Install from <strong>nodejs.org</strong> (LTS version); check with <code>node --version</code></li>
+  <li>Run any file: <code>node app.js</code></li>
+  <li><code>npm init -y</code> creates <code>package.json</code> — your project's ID card</li>
+  <li><code>npm install &lt;package&gt;</code> downloads into <code>node_modules</code></li>
+</ul>
 <h3>💻 Example</h3>
-<pre><code>// hello.js
+<pre><code>// info.js
 const os = require("os");
-console.log("Hello from Node on " + os.platform());
+
+console.log("Node version:", process.version);
+console.log("Platform:", os.platform());
+console.log("CPU cores:", os.cpus().length);
+console.log("Free memory:", Math.round(os.freemem() / 1e6), "MB");
 
 // terminal:
-// node hello.js
-// npm init -y            → creates package.json
-// npm install express    → adds a package</code></pre>
+//   node info.js</code></pre>
+<div class="callout tip">Add <code>"start": "node app.js"</code> under scripts in package.json — then <code>npm start</code> runs your app the standard way.</div>
 <h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> write a script that prints today's date and your Node version (process.version).</div>`),
-          article("nd-express", "Your First Express API", "14 min", `
+<div class="callout tip"><strong>Try it yourself:</strong> write a script that prints today's date, your username (os.userInfo().username), and how long the computer has been on (os.uptime(), in hours).</div>`),
+          article("nd-modules", "Modules: Splitting Your Code", "11 min", `
 <h3>🎯 Intro</h3>
-<p>Express maps URLs to functions. That's an API.</p>
+<p>Real projects are many small files, not one giant one. Modules let files share functions cleanly.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li>Export: <code>module.exports = { fn1, fn2 }</code></li>
+  <li>Import: <code>const { fn1 } = require("./myfile")</code> — note the <code>./</code></li>
+  <li>No <code>./</code> means npm package or built-in (express, os, fs)</li>
+  <li>Each module's variables are private unless exported</li>
+</ul>
 <h3>💻 Example</h3>
+<pre><code>// math.js
+function add(a, b) { return a + b; }
+function average(list) {
+  return list.reduce((s, x) =&gt; s + x, 0) / list.length;
+}
+module.exports = { add, average };
+
+// app.js
+const { add, average } = require("./math");
+
+console.log(add(3, 4));                 // 7
+console.log(average([75, 92, 58]));     // 75</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> create text.js exporting shout(s) (uppercase + "!") and initials(fullName); use both from app.js.</div>`),
+          article("nd-fs", "Files with the fs Module", "12 min", `
+<h3>🎯 Intro</h3>
+<p>Servers constantly read and write files: configs, logs, uploads, data. Node's <code>fs</code> module handles it all.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li><code>fs.readFileSync / fs.writeFileSync</code> — simple, blocking versions</li>
+  <li><code>JSON.parse / JSON.stringify</code> turn files into data and back</li>
+  <li>Wrap reads in try/catch — files may not exist yet</li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>const fs = require("fs");
+
+// save data
+const students = [{ name: "Aye", score: 85 }, { name: "Ko", score: 55 }];
+fs.writeFileSync("students.json", JSON.stringify(students, null, 2));
+
+// load data safely
+function load() {
+  try {
+    return JSON.parse(fs.readFileSync("students.json", "utf-8"));
+  } catch (e) {
+    return [];   // first run — no file yet
+  }
+}
+
+const data = load();
+console.log(\`Loaded \${data.length} students\`);</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> build a tiny visit counter: read count.json, add 1, save it back, print "Visit #N". Run it three times.</div>`),
+          quiz("nd-quiz-1", "Quiz: Node Foundations", [
+            { q: "npm install express does what?", options: ["Runs the server", "Downloads the package into node_modules", "Creates routes", "Compiles JS"], answer: 1 },
+            { q: "require(\"./math\") vs require(\"express\") — the ./ means...", options: ["Nothing", "A local file in your project", "A global install", "A URL"], answer: 1 },
+            { q: "JSON.stringify(data, null, 2) produces...", options: ["Compressed JSON", "Pretty-printed JSON text", "A JavaScript object", "A file handle"], answer: 1 },
+            { q: "Reading a file that doesn't exist...", options: ["Returns null", "Returns \"\"", "Throws an error you should catch", "Creates the file"], answer: 2 },
+          ]),
+        ],
+      },
+      {
+        title: "Express Essentials",
+        lessons: [
+          article("nd-express", "Your First Express Server", "13 min", `
+<h3>🎯 Intro</h3>
+<p>Express maps URLs to functions — that's the whole idea. A route says: "when this URL is requested, run this code."</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li><code>npm install express</code>, then create the app and listen on a port</li>
+  <li><code>app.get(path, handler)</code> — handler gets <code>(req, res)</code></li>
+  <li><code>res.json()</code> for data, <code>res.send()</code> for text/HTML</li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>const express = require("express");
+const app = express();
+
+app.get("/", (req, res) =&gt; {
+  res.send("&lt;h1&gt;WebDev Academy API&lt;/h1&gt;");
+});
+
+app.get("/api/health", (req, res) =&gt; {
+  res.json({ ok: true, time: new Date().toISOString() });
+});
+
+app.listen(3000, () =&gt;
+  console.log("Running at http://localhost:3000"));</code></pre>
+<div class="callout">Test in the browser, or from a terminal: <code>curl http://localhost:3000/api/health</code></div>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> add /api/about returning JSON with your academy's name and version, and a /bye route that sends plain text.</div>`),
+          article("nd-routes", "Route Params & Query Strings", "13 min", `
+<h3>🎯 Intro</h3>
+<p>Real URLs carry information: <code>/api/courses/3</code>, <code>/search?q=html</code>. Express parses both for you.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li><code>/:id</code> in the path → <code>req.params.id</code> (always a string!)</li>
+  <li><code>?q=html&amp;limit=5</code> → <code>req.query.q</code>, <code>req.query.limit</code></li>
+  <li>Missing things deserve a <code>404</code>, not a crash</li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>const courses = [
+  { id: 1, title: "HTML Deep Dive" },
+  { id: 2, title: "React Fundamentals" },
+  { id: 3, title: "Node & Express" },
+];
+
+app.get("/api/courses/:id", (req, res) =&gt; {
+  const course = courses.find(c =&gt; c.id === Number(req.params.id));
+  if (!course) return res.status(404).json({ error: "Not found" });
+  res.json(course);
+});
+
+app.get("/api/search", (req, res) =&gt; {
+  const q = (req.query.q || "").toLowerCase();
+  res.json(courses.filter(c =&gt; c.title.toLowerCase().includes(q)));
+});</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> add ?limit=N support to /api/search using .slice(0, limit) with a sensible default.</div>`),
+          article("nd-middleware", "Middleware & POST Bodies", "14 min", `
+<h3>🎯 Intro</h3>
+<p>Middleware are functions that run <em>before</em> your routes — logging, auth, parsing. They're Express's superpower.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li><code>app.use(fn)</code> runs fn for every request; call <code>next()</code> to continue</li>
+  <li><code>app.use(express.json())</code> parses JSON bodies into <code>req.body</code></li>
+  <li>Validate input and answer <code>400</code> for bad requests</li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>app.use(express.json());
+
+// logger middleware
+app.use((req, res, next) =&gt; {
+  console.log(\`\${req.method} \${req.url}\`);
+  next();
+});
+
+app.post("/api/courses", (req, res) =&gt; {
+  const { title } = req.body;
+  if (!title || title.trim().length &lt; 3) {
+    return res.status(400).json({ error: "title (3+ chars) required" });
+  }
+  const course = { id: Date.now(), title: title.trim() };
+  courses.push(course);
+  res.status(201).json(course);
+});</code></pre>
+<div class="callout tip">Status codes tell the story: 200 OK, 201 Created, 400 bad input, 404 missing, 500 server error.</div>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> write middleware that adds req.requestTime = Date.now(), and a route that reports how old the request is.</div>`),
+          quiz("nd-quiz-2", "Quiz: Express", [
+            { q: "req.params.id from /courses/:id is...", options: ["A number", "Always a string", "An object", "undefined"], answer: 1 },
+            { q: "Which middleware fills req.body for JSON?", options: ["express.static()", "express.json()", "body.get()", "None needed"], answer: 1 },
+            { q: "Creating a resource successfully should return status...", options: ["200", "201", "301", "404"], answer: 1 },
+            { q: "A middleware that never calls next()...", options: ["Speeds things up", "Leaves the request hanging unless it responds itself", "Crashes Express", "Is ignored"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Project: Complete CRUD API",
+        lessons: [
+          article("nd-crud", "Build the Courses API (Full CRUD)", "22 min", `
+<h3>🎯 Intro</h3>
+<p>Create, Read, Update, Delete — every real backend is built on these four. Here's a complete, correct API in ~50 lines.</p>
+<h3>💻 Complete solution — study it, then build yours</h3>
 <pre><code>const express = require("express");
 const app = express();
 app.use(express.json());
 
-const courses = [{ id: 1, title: "HTML" }, { id: 2, title: "CSS" }];
+let courses = [{ id: 1, title: "HTML Deep Dive", hours: 4.5 }];
+let nextId = 2;
 
+// READ all + READ one
 app.get("/api/courses", (req, res) =&gt; res.json(courses));
+app.get("/api/courses/:id", (req, res) =&gt; {
+  const c = courses.find(x =&gt; x.id === Number(req.params.id));
+  if (!c) return res.status(404).json({ error: "Not found" });
+  res.json(c);
+});
 
+// CREATE
 app.post("/api/courses", (req, res) =&gt; {
-  const c = { id: courses.length + 1, title: req.body.title };
+  const { title, hours } = req.body;
+  if (!title) return res.status(400).json({ error: "title required" });
+  const c = { id: nextId++, title, hours: Number(hours) || 0 };
   courses.push(c);
   res.status(201).json(c);
 });
 
-app.listen(3000, () =&gt; console.log("http://localhost:3000"));</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> add GET /api/courses/:id that returns one course or a 404.</div>`),
-          quiz("nd-quiz", "Quiz: Node & Express", [
-            { q: "npm install express does what?", options: ["Runs the server", "Downloads the package into node_modules", "Creates routes", "Compiles JS"], answer: 1 },
-            { q: "app.get(\"/api/courses\", fn) handles...", options: ["All requests", "GET requests to that path", "Database queries", "File uploads"], answer: 1 },
-            { q: "res.json(data) sends...", options: ["An HTML page", "A JSON response", "A file download", "A redirect"], answer: 1 },
+// UPDATE
+app.put("/api/courses/:id", (req, res) =&gt; {
+  const c = courses.find(x =&gt; x.id === Number(req.params.id));
+  if (!c) return res.status(404).json({ error: "Not found" });
+  if (req.body.title) c.title = req.body.title;
+  if (req.body.hours !== undefined) c.hours = Number(req.body.hours);
+  res.json(c);
+});
+
+// DELETE
+app.delete("/api/courses/:id", (req, res) =&gt; {
+  const before = courses.length;
+  courses = courses.filter(x =&gt; x.id !== Number(req.params.id));
+  if (courses.length === before)
+    return res.status(404).json({ error: "Not found" });
+  res.status(204).end();
+});
+
+app.listen(3000, () =&gt; console.log("API ready on :3000"));</code></pre>
+<h3>🧪 Test it</h3>
+<pre><code>curl http://localhost:3000/api/courses
+curl -X POST -H "Content-Type: application/json" \\
+     -d '{"title":"React","hours":15}' \\
+     http://localhost:3000/api/courses
+curl -X DELETE http://localhost:3000/api/courses/1</code></pre>
+<h3>🏋️ Level up</h3>
+<div class="callout tip"><strong>Extend it yourself:</strong> persist courses to courses.json with fs on every change (load at startup), and add ?q= search to the list route. Bonus: connect it to your React Study Tracker!</div>`),
+          quiz("nd-quiz-3", "Final Quiz: Node & Express", [
+            { q: "CRUD stands for...", options: ["Code, Run, Update, Debug", "Create, Read, Update, Delete", "Connect, Route, Use, Deploy", "None"], answer: 1 },
+            { q: "Which HTTP method conventionally updates an existing resource?", options: ["GET", "POST", "PUT", "DELETE"], answer: 2 },
+            { q: "res.status(204).end() means...", options: ["Error", "Success with no body to return", "Redirect", "Timeout"], answer: 1 },
+            { q: "Why Number(req.params.id)?", options: ["Style preference", "Params are strings; the ids are numbers — types must match for ===", "Express requires it", "It validates auth"], answer: 1 },
           ]),
         ],
       },

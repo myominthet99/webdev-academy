@@ -3892,6 +3892,136 @@ $el.on("click", fn)          el.addEventListener("click", fn)</code></pre>
           ]),
         ],
       },
+      {
+        title: "Building Blocks",
+        lessons: [
+          article("bs-navbar", "Responsive Navbar", "12 min", `
+<h3>🎯 Intro</h3>
+<p>The responsive navbar — desktop menu that collapses into a ☰ burger on phones — is Bootstrap's most-copied component.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li><code>navbar-expand-md</code> = horizontal on medium+ screens, collapsed below</li>
+  <li>The toggler button targets the collapse div by id</li>
+  <li>Needs Bootstrap's JS bundle for the toggle to work</li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>&lt;script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"&gt;&lt;/script&gt;
+
+&lt;nav class="navbar navbar-expand-md bg-dark navbar-dark"&gt;
+  &lt;div class="container"&gt;
+    &lt;a class="navbar-brand" href="#"&gt;WebDev Academy&lt;/a&gt;
+    &lt;button class="navbar-toggler" data-bs-toggle="collapse"
+            data-bs-target="#menu"&gt;
+      &lt;span class="navbar-toggler-icon"&gt;&lt;/span&gt;
+    &lt;/button&gt;
+    &lt;div class="collapse navbar-collapse" id="menu"&gt;
+      &lt;ul class="navbar-nav ms-auto"&gt;
+        &lt;li class="nav-item"&gt;&lt;a class="nav-link active" href="#"&gt;Courses&lt;/a&gt;&lt;/li&gt;
+        &lt;li class="nav-item"&gt;&lt;a class="nav-link" href="#"&gt;Roadmap&lt;/a&gt;&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/nav&gt;</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> run it in the playground, shrink the result pane, and watch the menu collapse into the burger.</div>`),
+          article("bs-forms", "Forms & Feedback", "12 min", `
+<h3>🎯 Intro</h3>
+<p>Bootstrap makes forms look professional with two classes — and adds validation states for free.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li><code>form-label</code> + <code>form-control</code> style any input</li>
+  <li><code>form-select form-check</code> for dropdowns and checkboxes</li>
+  <li><code>is-invalid</code> + <code>invalid-feedback</code> show errors</li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>&lt;form class="p-4" style="max-width:420px"&gt;
+  &lt;div class="mb-3"&gt;
+    &lt;label class="form-label"&gt;Email&lt;/label&gt;
+    &lt;input type="email" class="form-control is-invalid"&gt;
+    &lt;div class="invalid-feedback"&gt;Please enter a valid email.&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="mb-3"&gt;
+    &lt;label class="form-label"&gt;Course&lt;/label&gt;
+    &lt;select class="form-select"&gt;
+      &lt;option&gt;HTML Deep Dive&lt;/option&gt;
+      &lt;option&gt;Bootstrap&lt;/option&gt;
+    &lt;/select&gt;
+  &lt;/div&gt;
+  &lt;div class="form-check mb-3"&gt;
+    &lt;input class="form-check-input" type="checkbox" id="agree"&gt;
+    &lt;label class="form-check-label" for="agree"&gt;I agree to learn daily&lt;/label&gt;
+  &lt;/div&gt;
+  &lt;button class="btn btn-primary w-100"&gt;Enroll&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> build a contact form with name, email, message textarea and a full-width submit — with one field showing the invalid state.</div>`),
+          quiz("bs-quiz-2", "Quiz: Components", [
+            { q: "navbar-expand-md means the menu is horizontal...", options: ["Always", "On medium screens and larger", "Only on phones", "Never"], answer: 1 },
+            { q: "Which class styles a text input?", options: ["input-style", "form-control", "text-box", "bs-input"], answer: 1 },
+            { q: "invalid-feedback text appears when the input has...", options: ["focus", "is-invalid", "disabled", "required"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Project: Landing Page",
+        lessons: [
+          article("bs-project", "Final Project: Course Landing Page", "20 min", `
+<h3>🎯 Intro</h3>
+<p>Hero, feature cards, and a signup form — a complete landing page with zero custom CSS.</p>
+<h3>💻 Complete solution — run it in the playground</h3>
+<pre><code>&lt;link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"&gt;
+
+&lt;section class="bg-dark text-white text-center py-5"&gt;
+  &lt;div class="container py-4"&gt;
+    &lt;h1 class="display-5 fw-bold"&gt;Learn Web Development&lt;/h1&gt;
+    &lt;p class="lead text-white-50"&gt;Free bilingual courses — HTML to full-stack.&lt;/p&gt;
+    &lt;a href="#signup" class="btn btn-primary btn-lg"&gt;Start free&lt;/a&gt;
+  &lt;/div&gt;
+&lt;/section&gt;
+
+&lt;section class="container py-5"&gt;
+  &lt;div class="row g-4"&gt;
+    &lt;div class="col-md-4"&gt;
+      &lt;div class="card h-100 text-center p-3"&gt;
+        &lt;div class="fs-1"&gt;🎓&lt;/div&gt;
+        &lt;h5&gt;29 Courses&lt;/h5&gt;
+        &lt;p class="text-muted"&gt;From first HTML tag to deployment.&lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="col-md-4"&gt;
+      &lt;div class="card h-100 text-center p-3"&gt;
+        &lt;div class="fs-1"&gt;🧪&lt;/div&gt;
+        &lt;h5&gt;Live Playground&lt;/h5&gt;
+        &lt;p class="text-muted"&gt;Try every example in your browser.&lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="col-md-4"&gt;
+      &lt;div class="card h-100 text-center p-3"&gt;
+        &lt;div class="fs-1"&gt;💬&lt;/div&gt;
+        &lt;h5&gt;Community&lt;/h5&gt;
+        &lt;p class="text-muted"&gt;Chat with fellow students live.&lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/section&gt;
+
+&lt;section id="signup" class="bg-light py-5"&gt;
+  &lt;div class="container" style="max-width:480px"&gt;
+    &lt;h3 class="text-center mb-4"&gt;Join free&lt;/h3&gt;
+    &lt;input class="form-control mb-3" placeholder="Your name"&gt;
+    &lt;input type="email" class="form-control mb-3" placeholder="Email"&gt;
+    &lt;button class="btn btn-primary w-100"&gt;Create account&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/section&gt;</code></pre>
+<h3>🏋️ Level up</h3>
+<div class="callout tip"><strong>Extend it yourself:</strong> add the responsive navbar from the earlier lesson, a pricing row (3 cards), and a footer with social links.</div>`),
+          quiz("bs-quiz-3", "Final Quiz: Bootstrap", [
+            { q: "h-100 on the cards makes them...", options: ["100px tall", "Equal full height in their row", "Hidden", "Full width"], answer: 1 },
+            { q: "display-5 fw-bold styles a...", options: ["Table", "Large bold heading", "Flexbox", "Modal"], answer: 1 },
+            { q: "row g-4 — the g-4 sets...", options: ["4 columns", "Gutter (gap) size", "Margin top", "Grid rows"], answer: 1 },
+          ]),
+        ],
+      },
     ],
   },
   {
@@ -4491,6 +4621,130 @@ python manage.py createsuperuser   # then visit /admin ✨</code></pre>
             { q: "Which command starts the dev server?", options: ["django run", "python manage.py runserver", "npm start", "django serve"], answer: 1 },
             { q: "A Django model maps to...", options: ["A CSS file", "A database table", "A URL", "A template"], answer: 1 },
             { q: "The admin interface is...", options: ["A paid add-on", "Built in — enable and go to /admin", "Only for superusers' code", "Deprecated"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Templates & the ORM",
+        lessons: [
+          article("dj-templates", "Templates: HTML with Superpowers", "13 min", `
+<h3>🎯 Intro</h3>
+<p>Views hand data to templates; templates render HTML with loops, conditions and inheritance.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li><code>{{ variable }}</code> prints (auto-escaped — XSS-safe by default)</li>
+  <li><code>{% for %} {% if %}</code> control flow</li>
+  <li><code>{% extends "base.html" %}</code> — one layout, many pages</li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code># courses/views.py
+from django.shortcuts import render
+from .models import Course
+
+def course_list(request):
+    courses = Course.objects.all()
+    return render(request, "courses/list.html", {"courses": courses})
+
+&lt;!-- templates/courses/list.html --&gt;
+{% extends "base.html" %}
+{% block content %}
+  &lt;h1&gt;Our Courses ({{ courses|length }})&lt;/h1&gt;
+  {% if not courses %}
+    &lt;p&gt;No courses yet — check back soon!&lt;/p&gt;
+  {% endif %}
+  &lt;ul&gt;
+  {% for c in courses %}
+    &lt;li&gt;{{ c.title }} — {{ c.hours }}h
+        {% if c.free %}&lt;strong&gt;FREE&lt;/strong&gt;{% endif %}&lt;/li&gt;
+  {% endfor %}
+  &lt;/ul&gt;
+{% endblock %}</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> make a base.html with a nav block, and an about page that extends it.</div>`),
+          article("dj-orm", "Querying with the ORM", "13 min", `
+<h3>🎯 Intro</h3>
+<p>The ORM writes SQL for you — in Python. Filters chain, reads are lazy, and it's injection-proof by design.</p>
+<h3>📝 Summary</h3>
+<ul>
+  <li><code>Model.objects.all() / .get(id=1) / .filter(...)</code></li>
+  <li>Field lookups: <code>hours__gte=5</code>, <code>title__icontains="css"</code></li>
+  <li><code>.order_by("-hours")</code> sorts; <code>.count()</code> aggregates</li>
+</ul>
+<h3>💻 Example</h3>
+<pre><code>from courses.models import Course
+
+Course.objects.create(title="Django", hours=12, free=True)
+
+long_free = (Course.objects
+    .filter(free=True, hours__gte=5)
+    .exclude(title__icontains="old")
+    .order_by("-hours"))
+
+first = Course.objects.get(id=1)      # exactly one (or error)
+total = Course.objects.count()
+
+# UPDATE and DELETE
+first.hours = 13
+first.save()
+Course.objects.filter(hours__lt=1).delete()</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> in <code>python manage.py shell</code>, create 3 courses and query: free ones, the longest one, and how many contain "web" in the title.</div>`),
+          quiz("dj-quiz-2", "Quiz: Templates & ORM", [
+            { q: "{{ user_input }} in a template is...", options: ["Dangerous by default", "Auto-escaped (XSS-safe)", "Ignored", "Only for numbers"], answer: 1 },
+            { q: "hours__gte=5 means hours...", options: ["equals 5", "greater than or equal to 5", "less than 5", "grouped by 5"], answer: 1 },
+            { q: "{% extends \"base.html\" %} gives you...", options: ["Faster queries", "Layout inheritance", "A database", "URL routing"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Project: Course Site",
+        lessons: [
+          article("dj-project", "Final Project: List & Detail Pages", "20 min", `
+<h3>🎯 Intro</h3>
+<p>The classic Django pattern — a list page linking to detail pages — is the skeleton of blogs, shops and course sites alike.</p>
+<h3>💻 Complete solution — study it, then build yours</h3>
+<pre><code># courses/urls.py
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path("", views.course_list, name="course_list"),
+    path("course/&lt;int:pk&gt;/", views.course_detail, name="course_detail"),
+]
+
+# courses/views.py
+from django.shortcuts import render, get_object_or_404
+from .models import Course
+
+def course_list(request):
+    q = request.GET.get("q", "")
+    courses = Course.objects.filter(title__icontains=q) if q \\
+              else Course.objects.all()
+    return render(request, "courses/list.html",
+                  {"courses": courses, "q": q})
+
+def course_detail(request, pk):
+    course = get_object_or_404(Course, pk=pk)   # clean 404 if missing
+    return render(request, "courses/detail.html", {"course": course})
+
+&lt;!-- list.html (inside the content block) --&gt;
+&lt;form&gt;&lt;input name="q" value="{{ q }}" placeholder="Search…"&gt;&lt;/form&gt;
+{% for c in courses %}
+  &lt;p&gt;&lt;a href="{% url 'course_detail' c.pk %}"&gt;{{ c.title }}&lt;/a&gt;&lt;/p&gt;
+{% empty %}
+  &lt;p&gt;Nothing found for “{{ q }}”.&lt;/p&gt;
+{% endfor %}
+
+&lt;!-- detail.html --&gt;
+&lt;h1&gt;{{ course.title }}&lt;/h1&gt;
+&lt;p&gt;{{ course.hours }} hours · {% if course.free %}Free{% else %}Premium{% endif %}&lt;/p&gt;
+&lt;a href="{% url 'course_list' %}"&gt;← All courses&lt;/a&gt;</code></pre>
+<h3>🏋️ Level up</h3>
+<div class="callout tip"><strong>Extend it yourself:</strong> add an Enrollment model with a ForeignKey to Course, show enrollment counts on the list page, and register both models in the admin.</div>`),
+          quiz("dj-quiz-3", "Final Quiz: Django", [
+            { q: "get_object_or_404 does what when the id doesn't exist?", options: ["Crashes with 500", "Returns None", "Shows a clean 404 page", "Creates the object"], answer: 2 },
+            { q: "{% url 'course_detail' c.pk %} generates...", options: ["A database query", "The URL for that route by name", "A template", "JavaScript"], answer: 1 },
+            { q: "{% empty %} inside {% for %} renders when...", options: ["There's an error", "The list has no items", "The loop ends", "Always"], answer: 1 },
           ]),
         ],
       },

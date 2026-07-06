@@ -533,6 +533,42 @@
     return text.replace(regex, '<mark style="background:rgba(165,53,240,.2);font-weight:600">$1</mark>');
   }
 
+  /* ---------------- Real trending (Firebase view stats) ----------------
+     Each course-page visit atomically increments a per-day counter in
+     RTDB (stats/courses/<id>/<YYYY-MM-DD>). Trending = most real views
+     in the last 7 days; falls back to the static list when there's no
+     data or no Firebase. Needs "stats" allowed in the database rules. */
+  const statsBase = () => (window.FIREBASE_CONFIG && window.FIREBASE_CONFIG.databaseURL) || null;
+  const dateKey = (offset) => new Date(Date.now() - offset * 86400000).toISOString().slice(0, 10);
+  function trackCourseView(courseId) {
+    const base = statsBase();
+    if (!base) return;
+    fetch(base + "/stats/courses/" + encodeURIComponent(courseId) + "/" + dateKey(0) + ".json", {
+      method: "PUT",
+      body: JSON.stringify({ ".sv": { "increment": 1 } }),
+    }).catch(() => {});
+  }
+  function fetchTrending(cb) {
+    const base = statsBase();
+    if (!base) return;
+    fetch(base + "/stats/courses.json")
+      .then((r) => r.json())
+      .then((val) => {
+        if (!val) return;
+        const week = [];
+        for (let i = 0; i < 7; i++) week.push(dateKey(i));
+        const totals = Object.entries(val)
+          .map(([id, days]) => ({
+            id,
+            views: week.reduce((s, d) => s + (Number(days && days[d]) || 0), 0),
+          }))
+          .filter((x) => x.views > 0)
+          .sort((a, b) => b.views - a.views);
+        if (totals.length) cb(totals);
+      })
+      .catch(() => {});
+  }
+
   /* ---------------- Course card (shared) ---------------- */
   function courseCard(c) {
     const enrolled = isEnrolled(c.id);
@@ -608,8 +644,8 @@
 
         ${trending.length ? `
         <h2 class="section-title">🔥 ${t("trending")}</h2>
-        <p class="section-sub">${t("trending_sub")}</p>
-        <div class="grid">${trending.map(courseCard).join("")}</div>` : ""}
+        <p class="section-sub" id="trending-sub">${t("trending_sub")}</p>
+        <div class="grid" id="trending-grid">${trending.map(courseCard).join("")}</div>` : ""}
 
         <h2 class="section-title">${t("browse_topic")}</h2>
         <p class="section-sub">${t("browse_sub")}</p>
@@ -626,6 +662,20 @@
         filter.query = "";
       })
     );
+
+    /* Upgrade Trending with REAL view data once it arrives */
+    fetchTrending((totals) => {
+      const grid = document.getElementById("trending-grid");
+      const sub = document.getElementById("trending-sub");
+      if (!grid) return;
+      const real = totals
+        .map((x) => ({ course: courseById(x.id), views: x.views }))
+        .filter((x) => x.course)
+        .slice(0, 3);
+      if (!real.length) return;
+      grid.innerHTML = real.map((x) => courseCard(x.course)).join("");
+      if (sub) sub.textContent = t("trending_live_sub");
+    });
   }
 
   /* ---------------- View: Catalog ---------------- */
@@ -701,6 +751,7 @@
   function renderCourse(id) {
     const c = courseById(id);
     if (!c) return renderNotFound();
+    trackCourseView(c.id);
     const enrolled = isEnrolled(c.id);
     const pct = progressPct(c);
     const firstLesson = lessonsOf(c)[0].lesson.id;

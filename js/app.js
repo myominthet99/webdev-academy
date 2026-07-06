@@ -399,26 +399,99 @@
     });
   }
 
-  /* Copy-to-clipboard button on every code block in the lesson reader */
+  /* Copy + W3Schools-style "Try it yourself" buttons on every code block */
+  function codeTextOf(pre) {
+    const code = pre.querySelector("code");
+    if (code) return code.innerText;
+    const clone = pre.cloneNode(true);
+    clone.querySelectorAll(".copy-btn, .try-btn").forEach((b) => b.remove());
+    return clone.innerText;
+  }
   function addCopyButtons() {
     app.querySelectorAll(".reader pre").forEach((pre) => {
       if (pre.querySelector(".copy-btn")) return;
+
       const btn = document.createElement("button");
       btn.className = "copy-btn";
       btn.type = "button";
       btn.textContent = "📋 " + t("copy_code");
       btn.addEventListener("click", () => {
-        const code = pre.querySelector("code");
-        let text;
-        if (code) text = code.innerText;
-        else { const clone = pre.cloneNode(true); const b = clone.querySelector(".copy-btn"); if (b) b.remove(); text = clone.innerText; }
+        const text = codeTextOf(pre);
         const done = () => { btn.textContent = "✓ " + t("copied"); setTimeout(() => { btn.textContent = "📋 " + t("copy_code"); }, 1500); };
         if (navigator.clipboard && navigator.clipboard.writeText) {
           navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
         } else fallbackCopy(text, done);
       });
       pre.appendChild(btn);
+
+      /* W3Schools-style green button below every example */
+      const tryBtn = document.createElement("button");
+      tryBtn.className = "try-yourself-btn";
+      tryBtn.type = "button";
+      tryBtn.textContent = t("try_yourself") + " »";
+      tryBtn.addEventListener("click", () => openPlayground(codeTextOf(pre)));
+      pre.insertAdjacentElement("afterend", tryBtn);
     });
+  }
+
+  /* Live playground: edit the example on the left, see the result on the
+     right — code runs inside a sandboxed iframe via srcdoc. */
+  function buildRunnableDoc(code) {
+    if (/<html[\s>]/i.test(code)) return code; /* already a full document */
+    const hasTag = /<\w+[^>]*>/.test(code);
+    const looksCss = !hasTag && /[{}]/.test(code) && /[a-z-]+\s*:/i.test(code) &&
+      !/\b(function|const|let|var|console|=>)\b/.test(code);
+    let body;
+    if (hasTag) {
+      body = code;
+    } else if (looksCss) {
+      body = "<style>" + code + "</style>" +
+        "<h3>Heading</h3><p>Paragraph text to style.</p><button>Button</button>" +
+        '<div class="card">A div with class "card"</div>';
+    } else {
+      /* JavaScript: route console.log to the page so results are visible */
+      body = '<div id="output"></div>' +
+        "<script>console.log=function(){var d=document.createElement('div');" +
+        "d.textContent=Array.prototype.slice.call(arguments).join(' ');" +
+        "document.getElementById('output').appendChild(d);};</scr" + "ipt>" +
+        "<script>" + code.replace(/<\/script/gi, "<\\/script") + "</scr" + "ipt>";
+    }
+    return "<!DOCTYPE html><html><head><meta charset=\"utf-8\">" +
+      "<style>body{font-family:system-ui,sans-serif;padding:14px;line-height:1.5}</style>" +
+      "</head><body>" + body + "</body></html>";
+  }
+  function openPlayground(code) {
+    const existing = document.querySelector("[data-playground]");
+    if (existing) existing.remove();
+    const wrap = document.createElement("div");
+    wrap.setAttribute("data-playground", "1");
+    wrap.className = "playground-overlay";
+    wrap.innerHTML = `
+      <div class="playground">
+        <div class="pg-head">
+          <strong>🧪 ${t("pg_title")}</strong>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-primary btn-sm" data-pg-run>▶ ${t("pg_run")}</button>
+            <button class="btn btn-outline btn-sm" data-pg-close>✕</button>
+          </div>
+        </div>
+        <div class="pg-body">
+          <textarea class="pg-code" spellcheck="false"></textarea>
+          <iframe class="pg-result" sandbox="allow-scripts" title="Result"></iframe>
+        </div>
+      </div>`;
+    document.body.appendChild(wrap);
+    const ta = wrap.querySelector(".pg-code");
+    const frame = wrap.querySelector(".pg-result");
+    ta.value = code;
+    const run = () => { frame.srcdoc = buildRunnableDoc(ta.value); };
+    wrap.querySelector("[data-pg-run]").addEventListener("click", run);
+    wrap.querySelector("[data-pg-close]").addEventListener("click", () => wrap.remove());
+    wrap.addEventListener("click", (e) => { if (e.target === wrap) wrap.remove(); });
+    ta.addEventListener("keydown", (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") { e.preventDefault(); run(); }
+    });
+    run();
   }
   function fallbackCopy(text, done) {
     const ta = document.createElement("textarea");
@@ -832,7 +905,8 @@
               <div>
                 ${prev ? `<a class="btn btn-outline btn-sm" href="#/learn/${c.id}/${prev}">${t("previous")}</a>` : ""}
               </div>
-              <div style="display:flex;gap:10px;align-items:center">
+              <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+                <button class="btn btn-outline btn-sm" data-trylesson>🧪 ${t("pg_title")}</button>
                 <button class="btn btn-outline btn-sm" data-bookmark>${isBookmarked(current.id) ? "★ " + t("bookmarked") : "☆ " + t("bookmark")}</button>
                 ${
                   current.type !== "quiz"
@@ -884,6 +958,15 @@
     }
     const bm = app.querySelector("[data-bookmark]");
     if (bm) bm.addEventListener("click", () => { toggleBookmark(current.id); renderLearn(courseId, lessonId); });
+
+    /* Per-lesson demo: open the playground with this lesson's first code
+       example, or a starter document when the lesson has none */
+    const tl = app.querySelector("[data-trylesson]");
+    if (tl) tl.addEventListener("click", () => {
+      const firstPre = app.querySelector(".reader pre");
+      const starter = "<!DOCTYPE html>\n<html>\n<body>\n\n<h1>My First Heading</h1>\n<p>My first paragraph.</p>\n\n</body>\n</html>";
+      openPlayground(firstPre ? codeTextOf(firstPre) : starter);
+    });
 
     const commentBtn = app.querySelector("#comment-btn");
     const commentInput = app.querySelector("#comment-input");

@@ -727,6 +727,10 @@ button { font-family: inherit; cursor: pointer; }
 .sh-snippet { font-size: 13px; color: var(--muted); line-height: 1.5; word-break: break-word; }
 .search-hit mark, .card-title mark { background: rgba(165, 53, 240, .2); color: inherit; border-radius: 2px; }
 
+/* ---------- Premium ---------- */
+.prem-price { font-size: 2rem; font-weight: 800; color: var(--purple); margin-bottom: 10px; }
+.prem-price .muted { font-size: 14px; font-weight: 400; }
+
 /* ---------- Leaderboard ---------- */
 .lb-table { display: flex; flex-direction: column; gap: 8px; }
 .lb-row {

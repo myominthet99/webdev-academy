@@ -21,6 +21,15 @@
     facebook: "",   // e.g. "https://facebook.com/groups/yourgroup"
   };
 
+  /* Premium membership — students pay via KBZPay, you approve in Admin.
+     Fill in your real KBZPay details below. */
+  const PAYMENT_CONFIG = {
+    method: "KBZPay",
+    phone: "09-XXX XXX XXXX",   // <-- your KBZPay phone number
+    accountName: "Your Name",   // <-- the name shown in KBZPay
+    price: 9900,                // <-- membership price in Kyat
+  };
+
   /* ---------------- Courses (built-in + admin-created) ---------------- */
   const COURSES = []; // mutated in place so all closures see updates
   function loadCustomCourses() {
@@ -761,6 +770,109 @@
     window.scrollTo(0, 0);
   }
 
+  /* ---------------- Premium membership (KBZPay manual approval) ----------------
+     premium/<emailKey> = { since } marks a paying member (admin-granted).
+     payments/ holds submitted claims awaiting admin review. */
+  const emailKey = (e) => encodeURIComponent(String(e || "").toLowerCase()).replace(/\./g, "%2E");
+  let premiumStatus = false;
+  function isPremiumUser() {
+    return premiumStatus || (window.Auth && window.Auth.isAdmin && window.Auth.isAdmin());
+  }
+  function refreshPremium() {
+    const base = statsBase();
+    const u = window.Auth && window.Auth.current ? window.Auth.current() : null;
+    if (!base || !u || !u.email) { premiumStatus = false; return; }
+    fetch(base + "/premium/" + emailKey(u.email) + ".json")
+      .then((r) => r.json())
+      .then((v) => {
+        const was = premiumStatus;
+        premiumStatus = !!v;
+        if (premiumStatus !== was) window.dispatchEvent(new Event("hashchange"));
+      })
+      .catch(() => {});
+  }
+
+  function renderPremium() {
+    const u = loggedIn() ? window.Auth.current() : null;
+    const premiumCourses = COURSES.filter((c) => !isFree(c));
+    app.innerHTML = `
+      <div class="container" style="max-width:620px">
+        <h2 class="section-title">⭐ ${t("prem_title")}</h2>
+        <p class="section-sub">${t("prem_sub")}</p>
+        <div class="panel">
+          <div class="prem-price">${fmt(PAYMENT_CONFIG.price)} Ks <span class="muted">· ${t("prem_once")}</span></div>
+          <ul class="learn-grid" style="grid-template-columns:1fr">
+            <li>${premiumCourses.length} ${t("prem_benefit_courses")}</li>
+            <li>${t("prem_benefit_future")}</li>
+            <li>${t("prem_benefit_cert")}</li>
+          </ul>
+        </div>
+        <div id="prem-state"><div class="empty"><h2>⏳</h2></div></div>
+      </div>`;
+    const mount = document.getElementById("prem-state");
+
+    if (!u) {
+      mount.innerHTML = `<div class="panel"><p>${t("prem_login_first")}</p>
+        <button class="btn btn-primary" id="prem-login">${t("auth_login")}</button></div>`;
+      mount.querySelector("#prem-login").addEventListener("click", () => window.Auth.openModal("login"));
+      return;
+    }
+    if (isPremiumUser()) {
+      mount.innerHTML = `<div class="panel"><h2>🎉 ${t("prem_active")}</h2><p class="muted">${t("prem_active_sub")}</p>
+        <a class="btn btn-primary" href="#/courses">${t("browse_courses")}</a></div>`;
+      return;
+    }
+    const base = statsBase();
+    if (!base) { mount.innerHTML = `<div class="panel"><p>${t("lb_offline")}</p></div>`; return; }
+
+    /* pending claim already submitted? */
+    fetch(base + "/payments.json").then((r) => r.json()).then((val) => {
+      const mine = Object.values(val || {}).filter(
+        (p) => p && p.email === u.email.toLowerCase() && p.status === "pending");
+      if (mine.length) {
+        mount.innerHTML = `<div class="panel"><h2>⏳ ${t("prem_pending")}</h2><p class="muted">${t("prem_pending_sub")}</p></div>`;
+        return;
+      }
+      mount.innerHTML = `
+        <div class="panel">
+          <h2>${t("prem_how")}</h2>
+          <ol style="line-height:2">
+            <li>${t("prem_step1")} <strong>${fmt(PAYMENT_CONFIG.price)} Ks</strong> → <strong>${escapeHtml(PAYMENT_CONFIG.method)}</strong>: <strong>${escapeHtml(PAYMENT_CONFIG.phone)}</strong> (${escapeHtml(PAYMENT_CONFIG.accountName)})</li>
+            <li>${t("prem_step2")}</li>
+            <li>${t("prem_step3")}</li>
+          </ol>
+          <form id="prem-form" class="auth-form">
+            <label>${t("prem_phone_label")}</label>
+            <input name="phone" type="tel" required placeholder="09...">
+            <label>${t("prem_txn_label")}</label>
+            <input name="txn" type="text" required placeholder="${escapeHtml(t("prem_txn_ph"))}">
+            <div class="auth-err" hidden></div>
+            <button class="btn btn-primary btn-block" type="submit" style="margin-top:14px">${t("prem_submit")}</button>
+          </form>
+        </div>`;
+      const form = mount.querySelector("#prem-form");
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const phone = form.phone.value.trim(), txn = form.txn.value.trim();
+        if (!phone || !txn) return;
+        fetch(base + "/payments.json", {
+          method: "POST",
+          body: JSON.stringify({
+            email: u.email.toLowerCase(), name: u.name || "",
+            phone, txn, ts: Date.now(), status: "pending",
+          }),
+        }).then((r) => {
+          if (!r.ok) throw new Error("post failed");
+          renderPremium(); /* shows the pending state */
+        }).catch(() => {
+          const err = form.querySelector(".auth-err");
+          err.hidden = false; err.textContent = t("chat_send_err");
+        });
+      });
+    }).catch(() => { mount.innerHTML = `<div class="panel"><p>${t("lb_offline")}</p></div>`; });
+    window.scrollTo(0, 0);
+  }
+
   /* ---------------- Course card (shared) ---------------- */
   function courseCard(c) {
     const enrolled = isEnrolled(c.id);
@@ -974,7 +1086,9 @@
       .join("");
 
     const enrollLabel =
-      !isFree(c) && !loggedIn() ? t("login_to_enroll") : `${t("enroll_now")} ${priceText(c)}`;
+      !isFree(c) && !loggedIn() ? t("login_to_enroll")
+      : !isFree(c) && !isPremiumUser() ? "⭐ " + t("prem_go")
+      : `${t("enroll_now")} ${priceText(c)}`;
     const cta = enrolled
       ? `<a class="btn btn-primary btn-block" href="#/learn/${c.id}/${firstLesson}">${pct > 0 ? t("continue_learning") : t("start_course")}</a>`
       : `<button class="btn btn-primary btn-block" data-enroll="${c.id}">${enrollLabel}</button>`;
@@ -1052,7 +1166,7 @@
           location.hash = `#/learn/${c.id}/${firstLesson}`;
         };
         if (isFree(c)) go();
-        else requireAuth(go);
+        else requireAuth(() => { if (isPremiumUser()) go(); else location.hash = "#/premium"; });
       });
     }
     wireReviews(c);
@@ -1069,6 +1183,7 @@
       window.Auth.openModal("login");
       return;
     }
+    if (!isFree(c) && !isPremiumUser()) { location.hash = "#/premium"; return; }
     if (!isEnrolled(c.id)) enroll(c.id);
 
     const flat = lessonsOf(c);
@@ -1855,6 +1970,64 @@
       <button type="button" class="btn btn-outline btn-sm" data-add-lesson>${t("admin_addlesson")}</button>
     </div>`;
   }
+  /* Admin: review KBZPay payment claims, grant/revoke premium */
+  function renderAdminPayments() {
+    const base = statsBase();
+    app.innerHTML = `
+      <div class="container" style="max-width:760px">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+          <h2 class="section-title">💳 ${t("admin_payments")}</h2>
+          <a class="btn btn-outline btn-sm" href="#/admin">← ${t("admin")}</a>
+        </div>
+        <div id="pay-list"><div class="empty"><h2>⏳</h2></div></div>
+      </div>`;
+    const mount = document.getElementById("pay-list");
+    if (!base) { mount.innerHTML = `<div class="empty"><h2>${t("lb_offline")}</h2></div>`; return; }
+    fetch(base + "/payments.json").then((r) => r.json()).then((val) => {
+      const rows = Object.entries(val || {})
+        .map(([key, p]) => Object.assign({ key }, p))
+        .sort((a, b) => (b.ts || 0) - (a.ts || 0));
+      if (!rows.length) {
+        mount.innerHTML = `<div class="empty"><h2>${t("admin_no_payments")}</h2></div>`;
+        return;
+      }
+      mount.innerHTML = rows.map((p) => `
+        <div class="panel" style="margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:center">
+            <div>
+              <strong>${escapeHtml(p.name || "?")}</strong> · ${escapeHtml(p.email || "")}<br>
+              <span class="muted" style="font-size:13px">KBZPay: ${escapeHtml(p.phone || "")} · ${t("prem_txn_label")}: ${escapeHtml(p.txn || "")} · ${new Date(p.ts || 0).toLocaleString()}</span>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center">
+              ${p.status === "pending"
+                ? `<button class="btn btn-primary btn-sm" data-approve="${escapeHtml(p.key)}" data-email="${escapeHtml(p.email || "")}">✓ ${t("admin_approve")}</button>
+                   <button class="btn btn-outline btn-sm" data-reject="${escapeHtml(p.key)}">✕ ${t("admin_reject")}</button>`
+                : `<span class="role-badge" style="background:${p.status === "approved" ? "var(--green)" : "#888"}">${escapeHtml(p.status)}</span>`}
+            </div>
+          </div>
+        </div>`).join("");
+      const setStatus = (key, status) =>
+        fetch(base + "/payments/" + encodeURIComponent(key) + "/status.json", { method: "PUT", body: JSON.stringify(status) });
+      mount.querySelectorAll("[data-approve]").forEach((b) =>
+        b.addEventListener("click", () => {
+          const email = b.getAttribute("data-email");
+          fetch(base + "/premium/" + emailKey(email) + ".json", {
+            method: "PUT",
+            body: JSON.stringify({ since: Date.now(), by: (window.Auth.current() || {}).email || "admin" }),
+          })
+            .then(() => setStatus(b.getAttribute("data-approve"), "approved"))
+            .then(() => renderAdminPayments())
+            .catch(() => alert(t("chat_send_err")));
+        })
+      );
+      mount.querySelectorAll("[data-reject]").forEach((b) =>
+        b.addEventListener("click", () => {
+          setStatus(b.getAttribute("data-reject"), "rejected").then(() => renderAdminPayments()).catch(() => {});
+        })
+      );
+    }).catch(() => { mount.innerHTML = `<div class="empty"><h2>${t("lb_offline")}</h2></div>`; });
+  }
+
   function renderAdmin(editId) {
     if (!loggedIn()) { location.hash = "#/"; if (window.Auth) window.Auth.openModal("login"); return; }
     if (!(window.Auth && window.Auth.isAdmin && window.Auth.isAdmin())) {
@@ -1866,6 +2039,7 @@
         </div></div>`;
       return;
     }
+    if (editId === "payments") return renderAdminPayments();
     const custom = loadCustomCourses();
     const editing = editId ? custom.find((c) => c.id === editId) : null;
     const cats = CATEGORIES.filter((c) => c !== "All");
@@ -1873,7 +2047,10 @@
     const initialSections = editing && editing.sections && editing.sections.length ? editing.sections : [{ title: "Lessons", lessons: [] }];
     app.innerHTML = `
       <div class="container" style="max-width:860px">
-        <h2 class="section-title">${t("admin_title")}</h2>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+          <h2 class="section-title">${t("admin_title")}</h2>
+          <a class="btn btn-outline btn-sm" href="#/admin/payments">💳 ${t("admin_payments")}</a>
+        </div>
         <div class="panel">
           <form id="admin-form" class="auth-form">
             <label>${t("admin_ftitle")}</label>
@@ -2043,6 +2220,7 @@
     else if (parts[0] === "search") renderSearch(decodeURIComponent(parts[1] || ""));
     else if (parts[0] === "playground") renderPlayground();
     else if (parts[0] === "leaderboard") renderLeaderboard();
+    else if (parts[0] === "premium") renderPremium();
     else if (parts[0] === "roadmap") renderRoadmap();
     else if (parts[0] === "my-learning") renderMyLearning();
     else if (parts[0] === "account") renderAccount();
@@ -2199,10 +2377,12 @@
 
   /* ---------------- Boot ---------------- */
   /* Reload this account's progress and re-render whenever auth changes. */
+  refreshPremium(); /* fetch membership status for the current session */
   if (window.Auth && window.Auth.onChange) {
     window.Auth.onChange(function () {
       state = loadState();
       updateStreak();
+      refreshPremium();
       if (loggedIn() && pendingAction) {
         const act = pendingAction;
         pendingAction = null;

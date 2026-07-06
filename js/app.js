@@ -434,10 +434,21 @@
     });
   }
 
-  /* Live playground: edit the example on the left, see the result on the
-     right — code runs inside a sandboxed iframe via srcdoc. */
+  /* Live playground: edit on the left, live result on the right, real
+     console output below — code runs inside a sandboxed iframe via srcdoc.
+     Console shim posts log/warn/error (and runtime errors) back to us. */
+  const PG_SHIM =
+    "<script>(function(){" +
+    'function send(type,args){try{parent.postMessage({__pg:true,type:type,text:args.map(function(a){try{return typeof a==="object"?JSON.stringify(a):String(a)}catch(e){return String(a)}}).join(" ")},"*")}catch(e){}}' +
+    '["log","warn","error","info"].forEach(function(m){var o=console[m];console[m]=function(){send(m,[].slice.call(arguments));try{o.apply(console,arguments)}catch(e){}}});' +
+    'window.onerror=function(msg,src,line){send("error",[msg+" (line "+line+")"]);};' +
+    "})();</scr" + "ipt>";
+
   function buildRunnableDoc(code) {
-    if (/<html[\s>]/i.test(code)) return code; /* already a full document */
+    if (/<html[\s>]/i.test(code)) {
+      /* full document: inject the console shim right after <head> if possible */
+      return code.replace(/<head([^>]*)>/i, "<head$1>" + PG_SHIM) || code;
+    }
     const hasTag = /<\w+[^>]*>/.test(code);
     const looksCss = !hasTag && /[{}]/.test(code) && /[a-z-]+\s*:/i.test(code) &&
       !/\b(function|const|let|var|console|=>)\b/.test(code);
@@ -449,49 +460,157 @@
         "<h3>Heading</h3><p>Paragraph text to style.</p><button>Button</button>" +
         '<div class="card">A div with class "card"</div>';
     } else {
-      /* JavaScript: route console.log to the page so results are visible */
-      body = '<div id="output"></div>' +
-        "<script>console.log=function(){var d=document.createElement('div');" +
-        "d.textContent=Array.prototype.slice.call(arguments).join(' ');" +
-        "document.getElementById('output').appendChild(d);};</scr" + "ipt>" +
+      /* JavaScript: output appears in the console panel below the result */
+      body = "<p style='color:#888;font-size:13px'>JavaScript ran — see the Console panel ⬇</p>" +
         "<script>" + code.replace(/<\/script/gi, "<\\/script") + "</scr" + "ipt>";
     }
-    return "<!DOCTYPE html><html><head><meta charset=\"utf-8\">" +
+    return "<!DOCTYPE html><html><head><meta charset=\"utf-8\">" + PG_SHIM +
       "<style>body{font-family:system-ui,sans-serif;padding:14px;line-height:1.5}</style>" +
       "</head><body>" + body + "</body></html>";
   }
+
+  /* Snippet storage */
+  const loadSnippets = () => jget("wda_pg_snippets", []);
+  const saveSnippets = (s) => jset("wda_pg_snippets", s);
+
+  let pgConsoleEl = null; /* the active playground's console panel */
+  window.addEventListener("message", (e) => {
+    if (!e.data || !e.data.__pg || !pgConsoleEl) return;
+    const line = document.createElement("div");
+    line.className = "pg-line " + (e.data.type || "log");
+    line.textContent = (e.data.type === "error" ? "✖ " : e.data.type === "warn" ? "⚠ " : "» ") + e.data.text;
+    pgConsoleEl.appendChild(line);
+    pgConsoleEl.scrollTop = pgConsoleEl.scrollHeight;
+  });
+
+  /* Builds the full playground UI inside `mount`. Used by both the modal
+     (lesson examples) and the standalone #/playground page. */
+  function buildPlayground(mount, initialCode) {
+    mount.innerHTML = `
+      <div class="pg-head">
+        <div class="pg-tools">
+          <button class="btn btn-primary btn-sm" data-pg-run>▶ ${t("pg_run")}</button>
+          <label class="pg-auto"><input type="checkbox" data-pg-auto checked> ${t("pg_auto")}</label>
+          <button class="btn btn-outline btn-sm" data-pg-save>💾 ${t("pg_save")}</button>
+          <select class="pg-snippets" data-pg-snippets></select>
+          <button class="btn btn-outline btn-sm" data-pg-del title="Delete snippet">🗑</button>
+          <button class="btn btn-outline btn-sm" data-pg-dl>⬇ ${t("pg_download")}</button>
+        </div>
+        <span data-pg-extra></span>
+      </div>
+      <div class="pg-body">
+        <textarea class="pg-code" spellcheck="false"></textarea>
+        <iframe class="pg-result" sandbox="allow-scripts" title="Result"></iframe>
+      </div>
+      <div class="pg-console-wrap">
+        <div class="pg-console-head">${t("pg_console")}</div>
+        <div class="pg-console" data-pg-console></div>
+      </div>`;
+
+    const ta = mount.querySelector(".pg-code");
+    const frame = mount.querySelector(".pg-result");
+    const auto = mount.querySelector("[data-pg-auto]");
+    const consoleEl = mount.querySelector("[data-pg-console]");
+    const sel = mount.querySelector("[data-pg-snippets]");
+    ta.value = initialCode || "";
+    pgConsoleEl = consoleEl;
+
+    const run = () => {
+      consoleEl.innerHTML = "";
+      pgConsoleEl = consoleEl;
+      frame.srcdoc = buildRunnableDoc(ta.value);
+      try { localStorage.setItem("wda_pg_last", ta.value); } catch (e) {}
+    };
+
+    /* editor niceties: Tab inserts spaces, Ctrl+Enter runs, auto-run debounce */
+    let timer;
+    ta.addEventListener("keydown", (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") { e.preventDefault(); run(); return; }
+      if (e.key === "Tab") {
+        e.preventDefault();
+        const s = ta.selectionStart, en = ta.selectionEnd;
+        ta.value = ta.value.slice(0, s) + "  " + ta.value.slice(en);
+        ta.selectionStart = ta.selectionEnd = s + 2;
+      }
+    });
+    ta.addEventListener("input", () => {
+      if (!auto.checked) return;
+      clearTimeout(timer);
+      timer = setTimeout(run, 600);
+    });
+
+    mount.querySelector("[data-pg-run]").addEventListener("click", run);
+
+    /* download as a standalone .html file */
+    mount.querySelector("[data-pg-dl]").addEventListener("click", () => {
+      const blob = new Blob([buildRunnableDoc(ta.value)], { type: "text/html" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = "playground.html"; a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    /* snippets: save / load / delete via localStorage */
+    function refreshSnippets(selected) {
+      const items = loadSnippets();
+      sel.innerHTML = `<option value="">📁 ${t("pg_snippets")} (${items.length})</option>` +
+        items.map((x, i) => `<option value="${i}" ${selected === i ? "selected" : ""}>${escapeHtml(x.name)}</option>`).join("");
+    }
+    mount.querySelector("[data-pg-save]").addEventListener("click", () => {
+      const name = prompt(t("pg_name_prompt"));
+      if (!name || !name.trim()) return;
+      const items = loadSnippets();
+      items.push({ name: name.trim().slice(0, 40), code: ta.value, ts: Date.now() });
+      saveSnippets(items);
+      refreshSnippets(items.length - 1);
+    });
+    sel.addEventListener("change", () => {
+      const items = loadSnippets();
+      const it = items[Number(sel.value)];
+      if (it) { ta.value = it.code; run(); }
+    });
+    mount.querySelector("[data-pg-del]").addEventListener("click", () => {
+      const i = Number(sel.value);
+      if (sel.value === "" || isNaN(i)) return;
+      const items = loadSnippets();
+      items.splice(i, 1);
+      saveSnippets(items);
+      refreshSnippets();
+    });
+    refreshSnippets();
+
+    run();
+    return { run, ta };
+  }
+
   function openPlayground(code) {
     const existing = document.querySelector("[data-playground]");
     if (existing) existing.remove();
     const wrap = document.createElement("div");
     wrap.setAttribute("data-playground", "1");
     wrap.className = "playground-overlay";
-    wrap.innerHTML = `
-      <div class="playground">
-        <div class="pg-head">
-          <strong>🧪 ${t("pg_title")}</strong>
-          <div style="display:flex;gap:8px">
-            <button class="btn btn-primary btn-sm" data-pg-run>▶ ${t("pg_run")}</button>
-            <button class="btn btn-outline btn-sm" data-pg-close>✕</button>
-          </div>
-        </div>
-        <div class="pg-body">
-          <textarea class="pg-code" spellcheck="false"></textarea>
-          <iframe class="pg-result" sandbox="allow-scripts" title="Result"></iframe>
-        </div>
-      </div>`;
+    wrap.innerHTML = `<div class="playground"></div>`;
     document.body.appendChild(wrap);
-    const ta = wrap.querySelector(".pg-code");
-    const frame = wrap.querySelector(".pg-result");
-    ta.value = code;
-    const run = () => { frame.srcdoc = buildRunnableDoc(ta.value); };
-    wrap.querySelector("[data-pg-run]").addEventListener("click", run);
-    wrap.querySelector("[data-pg-close]").addEventListener("click", () => wrap.remove());
+    const inner = wrap.querySelector(".playground");
+    buildPlayground(inner, code);
+    const extra = inner.querySelector("[data-pg-extra]");
+    extra.innerHTML = `<button class="btn btn-outline btn-sm" data-pg-close>✕</button>`;
+    extra.querySelector("[data-pg-close]").addEventListener("click", () => wrap.remove());
     wrap.addEventListener("click", (e) => { if (e.target === wrap) wrap.remove(); });
-    ta.addEventListener("keydown", (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") { e.preventDefault(); run(); }
-    });
-    run();
+  }
+
+  /* Standalone playground page (#/playground) */
+  function renderPlayground() {
+    const starter = localStorage.getItem("wda_pg_last") ||
+      "<!DOCTYPE html>\n<html>\n<body>\n\n<h1>My First Heading</h1>\n<p>My first paragraph.</p>\n\n<script>\nconsole.log(\"Hello from the console!\");\n<\/script>\n\n</body>\n</html>";
+    app.innerHTML = `
+      <div class="container" style="max-width:1100px">
+        <h2 class="section-title">🧪 ${t("pg_title")}</h2>
+        <p class="section-sub">${t("pg_page_sub")}</p>
+        <div class="playground pg-page" id="pg-mount"></div>
+      </div>`;
+    buildPlayground(document.getElementById("pg-mount"), starter);
+    window.scrollTo(0, 0);
   }
   function fallbackCopy(text, done) {
     const ta = document.createElement("textarea");
@@ -1846,6 +1965,7 @@
     if (parts.length === 0) renderHome();
     else if (parts[0] === "courses") renderCatalog();
     else if (parts[0] === "search") renderSearch(decodeURIComponent(parts[1] || ""));
+    else if (parts[0] === "playground") renderPlayground();
     else if (parts[0] === "roadmap") renderRoadmap();
     else if (parts[0] === "my-learning") renderMyLearning();
     else if (parts[0] === "account") renderAccount();
@@ -1866,6 +1986,7 @@
     };
     set("nav-courses", t("nav_courses"));
     set("nav-roadmap", t("nav_roadmap"));
+    set("nav-playground", t("nav_playground"));
     set("nav-mylearning", t("nav_mylearning"));
     set("footer-tag", t("footer_tag"));
     set("footer-saved", t("footer_saved"));

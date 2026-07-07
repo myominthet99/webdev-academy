@@ -912,6 +912,37 @@ button { font-family: inherit; cursor: pointer; }
 .badge small { font-size: 11px; text-align: center; color: var(--muted); }
 @media (max-width: 680px) { .dash-stats { grid-template-columns: repeat(3, 1fr); } }
 
+/* ---------- Admin: creator studio upgrades ---------- */
+.admin-toolbar { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.admin-toolbar > button[data-fmt] {
+  border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+  min-width: 30px; height: 28px; border-radius: 6px; font-size: 12px;
+  font-family: Consolas, monospace; cursor: pointer;
+}
+.admin-toolbar > button[data-fmt]:hover { border-color: var(--purple); color: var(--purple); }
+.admin-toolbar .tb-gap { flex: 1; }
+.lesson-preview {
+  border: 1px dashed var(--purple); border-radius: 8px; padding: 12px 14px;
+  background: var(--surface); font-size: 14px;
+}
+.admin-move { display: inline-flex; flex-direction: column; gap: 1px; }
+.admin-move .mv {
+  border: 1px solid var(--line); background: var(--surface); color: var(--muted);
+  font-size: 8px; line-height: 1; padding: 2px 5px; border-radius: 4px; cursor: pointer;
+}
+.admin-move .mv:hover { color: var(--purple); border-color: var(--purple); }
+.admin-colors { display: inline-flex; gap: 6px; }
+.admin-colors input[type="color"] {
+  width: 42px; height: 32px; border: 1px solid var(--line); border-radius: 6px;
+  padding: 2px; background: var(--surface); cursor: pointer;
+}
+.card-prev {
+  display: flex; align-items: center; gap: 10px; color: #fff;
+  border-radius: 10px; padding: 14px 16px; margin: 10px 0 4px;
+  font-size: 15px; text-shadow: 0 1px 3px rgba(0, 0, 0, .3);
+}
+.card-prev span { font-size: 26px; }
+
 /* ---------- Admin: sections, lesson types, quiz builder ---------- */
 .admin-lesson select[name="ltype"] { max-width: 130px; }
 .admin-lesson[data-type="quiz"] .lesson-av { display: none; }

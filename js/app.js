@@ -1956,10 +1956,15 @@
     const type = l.type || "video";
     const types = [["video", t("type_video")], ["article", t("type_article")], ["quiz", t("type_quiz")]];
     return `<div class="admin-lesson" data-type="${type}">
+      <input type="hidden" name="lid" value="${l.id ? escapeHtml(l.id) : ""}">
       <div class="admin-row">
         <input name="ltitle" placeholder="${escapeHtml(t("admin_ltitle"))}" value="${l.title ? escapeHtml(l.title) : ""}">
         <select name="ltype">${types.map(([v, lab]) => `<option value="${v}" ${type === v ? "selected" : ""}>${lab}</option>`).join("")}</select>
         <input name="ldur" placeholder="e.g. 8 min" value="${l.duration && l.duration !== "Quiz" ? escapeHtml(l.duration) : ""}">
+        <span class="admin-move">
+          <button type="button" class="mv" data-move="up" title="Move up">▲</button>
+          <button type="button" class="mv" data-move="down" title="Move down">▼</button>
+        </span>
       </div>
       <div class="lesson-av">
         <div class="video-src-row">
@@ -1968,8 +1973,19 @@
             <input type="file" accept="video/*" hidden data-video-file></label>
           <span class="upload-status muted"></span>
         </div>
-        <button type="button" class="btn btn-outline btn-sm" data-template style="align-self:flex-start">📋 ${t("admin_use_template")}</button>
+        <div class="admin-toolbar">
+          <button type="button" data-fmt="h3" title="Heading">H3</button>
+          <button type="button" data-fmt="b" title="Bold"><b>B</b></button>
+          <button type="button" data-fmt="code" title="Inline code">&lt;/&gt;</button>
+          <button type="button" data-fmt="pre" title="Code block">▤</button>
+          <button type="button" data-fmt="tip" title="Tip box">💡</button>
+          <button type="button" data-fmt="ul" title="Bullet list">≡</button>
+          <span class="tb-gap"></span>
+          <button type="button" class="btn btn-outline btn-sm" data-template>📋 ${t("admin_use_template")}</button>
+          <button type="button" class="btn btn-outline btn-sm" data-preview>👁 ${t("admin_preview")}</button>
+        </div>
         <textarea name="lnotes" rows="6" placeholder="${escapeHtml(t("admin_lnotes"))}">${l.content && l.content !== "<p></p>" ? escapeHtml(l.content) : ""}</textarea>
+        <div class="reader lesson-preview" hidden></div>
       </div>
       <div class="lesson-quiz">
         <div class="q-list">${(l.questions || []).map(qRowHtml).join("") || qRowHtml()}</div>
@@ -1983,6 +1999,10 @@
     return `<div class="admin-section">
       <div class="admin-row">
         <input name="stitle" placeholder="${escapeHtml(t("admin_section"))}" value="${sec.title ? escapeHtml(sec.title) : ""}">
+        <span class="admin-move">
+          <button type="button" class="mv" data-sec-move="up" title="Move up">▲</button>
+          <button type="button" class="mv" data-sec-move="down" title="Move down">▼</button>
+        </span>
         <button type="button" class="chat-del" data-rm-section>🗑</button>
       </div>
       <div class="admin-lessons">${(sec.lessons || []).map(lessonRowHtml).join("") || lessonRowHtml()}</div>
@@ -2084,10 +2104,24 @@
               <div><label>${t("admin_ficon")}</label>
                 <input name="icon" maxlength="4" value="${editing ? escapeHtml(editing.icon || "📘") : "📘"}"></div>
             </div>
+            <div class="admin-row">
+              <div><label>${t("admin_finst")}</label>
+                <input name="instructor" value="${editing ? escapeHtml(editing.instructor || "") : ""}" placeholder="${escapeHtml((window.Auth.current() || {}).name || "")}"></div>
+              <div><label>${t("admin_fhours")}</label>
+                <input name="hours" type="number" min="1" step="0.5" value="${editing && editing.hours ? editing.hours : ""}"></div>
+              <div><label>${t("admin_colors")}</label>
+                <span class="admin-colors">
+                  <input name="color1" type="color" value="${(editing && (String(editing.color).match(/#[0-9a-fA-F]{6}/g) || [])[0]) || "#654ea3"}">
+                  <input name="color2" type="color" value="${(editing && (String(editing.color).match(/#[0-9a-fA-F]{6}/g) || [])[1]) || "#eaafc8"}">
+                </span></div>
+            </div>
+            <div class="card-prev" id="card-prev"><span id="card-prev-icon"></span><b id="card-prev-title"></b></div>
             <label>${t("admin_image")}</label>
             <input name="image" value="${editing && editing.image ? escapeHtml(editing.image) : ""}">
             <label>${t("admin_fdesc")}</label>
             <textarea name="description" rows="3">${editing ? escapeHtml(editing.description || "") : ""}</textarea>
+            <label>${t("admin_flearn")}</label>
+            <textarea name="learn" rows="3" placeholder="${escapeHtml(t("admin_flearn_ph"))}">${editing && editing.whatYouLearn ? escapeHtml(editing.whatYouLearn.join("\n")) : ""}</textarea>
             <label class="admin-check"><input type="checkbox" name="free" ${!editing || editing.free !== false ? "checked" : ""}> ${t("admin_ffree")}</label>
             <h3 style="margin:18px 0 6px">${t("admin_lessons")}</h3>
             <div id="admin-sections">${initialSections.map(sectionBlockHtml).join("")}</div>
@@ -2131,7 +2165,72 @@
         if (ta && (!ta.value.trim() || confirm(t("admin_template_confirm")))) ta.value = LESSON_TEMPLATE;
         return;
       }
+      /* formatting toolbar: wrap the selection in HTML */
+      const fmt = e.target.closest("[data-fmt]");
+      if (fmt) {
+        const ta = fmt.closest(".lesson-av").querySelector('textarea[name="lnotes"]');
+        const wraps = {
+          h3: ["<h3>", "</h3>\n"],
+          b: ["<strong>", "</strong>"],
+          code: ["<code>", "</code>"],
+          pre: ["\n<pre><code>", "</code></pre>\n"],
+          tip: ['\n<div class="callout tip"><strong>Tip:</strong> ', "</div>\n"],
+          ul: ["\n<ul>\n  <li>", "</li>\n</ul>\n"],
+        };
+        const w = wraps[fmt.getAttribute("data-fmt")];
+        if (ta && w) {
+          const s = ta.selectionStart, en = ta.selectionEnd;
+          const sel = ta.value.slice(s, en) || "text";
+          ta.value = ta.value.slice(0, s) + w[0] + sel + w[1] + ta.value.slice(en);
+          ta.focus();
+          ta.selectionStart = s + w[0].length;
+          ta.selectionEnd = s + w[0].length + sel.length;
+        }
+        return;
+      }
+      /* live preview of the lesson HTML */
+      const pv = e.target.closest("[data-preview]");
+      if (pv) {
+        const av = pv.closest(".lesson-av");
+        const box = av.querySelector(".lesson-preview");
+        const ta = av.querySelector('textarea[name="lnotes"]');
+        box.hidden = !box.hidden;
+        if (!box.hidden) box.innerHTML = ta.value || "<p class='muted'>(empty)</p>";
+        return;
+      }
+      /* reorder lessons and sections */
+      const mv = e.target.closest("[data-move]");
+      if (mv) {
+        const row = mv.closest(".admin-lesson");
+        if (mv.getAttribute("data-move") === "up" && row.previousElementSibling)
+          row.parentElement.insertBefore(row, row.previousElementSibling);
+        else if (mv.getAttribute("data-move") === "down" && row.nextElementSibling)
+          row.parentElement.insertBefore(row.nextElementSibling, row);
+        return;
+      }
+      const sm = e.target.closest("[data-sec-move]");
+      if (sm) {
+        const sec = sm.closest(".admin-section");
+        if (sm.getAttribute("data-sec-move") === "up" && sec.previousElementSibling)
+          sec.parentElement.insertBefore(sec, sec.previousElementSibling);
+        else if (sm.getAttribute("data-sec-move") === "down" && sec.nextElementSibling)
+          sec.parentElement.insertBefore(sec.nextElementSibling, sec);
+        return;
+      }
     });
+
+    /* live course-card preview (icon + gradient + title) */
+    const prevBox = app.querySelector("#card-prev");
+    function updateCardPrev() {
+      const v = (n) => form.querySelector('[name="' + n + '"]').value;
+      prevBox.style.background = "linear-gradient(135deg," + v("color1") + "," + v("color2") + ")";
+      app.querySelector("#card-prev-icon").textContent = v("icon") || "📘";
+      app.querySelector("#card-prev-title").textContent = v("title") || t("admin_ftitle");
+    }
+    form.addEventListener("input", (e) => {
+      if (["title", "icon", "color1", "color2"].indexOf(e.target.name) >= 0) updateCardPrev();
+    });
+    updateCardPrev();
     form.addEventListener("change", (e) => {
       if (e.target.name === "ltype") e.target.closest(".admin-lesson").dataset.type = e.target.value;
 
@@ -2166,7 +2265,10 @@
           const lt = g("ltitle");
           if (!lt) return null;
           const type = row.querySelector('[name="ltype"]').value;
-          const base = { id: "cl_" + Date.now().toString(36) + si + "_" + li, title: lt, duration: g("ldur") || (type === "quiz" ? "Quiz" : type === "video" ? "Video" : "Lesson"), type };
+          /* keep the existing lesson id when editing so students don't lose
+             their completion marks; only brand-new rows get a fresh id */
+          const lid = g("lid") || "cl_" + Date.now().toString(36) + si + "_" + li;
+          const base = { id: lid, title: lt, duration: g("ldur") || (type === "quiz" ? "Quiz" : type === "video" ? "Video" : "Lesson"), type };
           if (type === "quiz") {
             const questions = [...row.querySelectorAll(".q-row")].map((qr) => {
               const qtext = qr.querySelector('[name="qtext"]').value.trim();
@@ -2192,15 +2294,20 @@
       const id = editing ? editing.id : slug(title) + "-" + Date.now().toString(36);
       const course = {
         id, title, subtitle: val("subtitle"),
-        instructor: (u && (u.name || u.email)) || "You",
+        instructor: val("instructor") || (u && (u.name || u.email)) || "You",
         category: val("category"), level: val("level"),
-        rating: 0, ratings: 0, students: 0, hours: Math.max(1, nLessons),
+        rating: editing ? editing.rating || 0 : 0,
+        ratings: editing ? editing.ratings || 0 : 0,
+        students: editing ? editing.students || 0 : 0,
+        hours: Number(val("hours")) || Math.max(1, nLessons),
         price: form.querySelector('[name="free"]').checked ? "Free" : "Premium",
         free: form.querySelector('[name="free"]').checked,
-        color: "linear-gradient(135deg,#654ea3,#eaafc8)", icon: val("icon") || "📘",
+        color: "linear-gradient(135deg," + val("color1") + "," + val("color2") + ")",
+        icon: val("icon") || "📘",
         image: val("image") || undefined,
         description: val("description") || val("subtitle"),
-        whatYouLearn: [], sections,
+        whatYouLearn: val("learn").split("\n").map((s) => s.trim()).filter(Boolean),
+        sections,
       };
       const list = loadCustomCourses().filter((c) => c.id !== id);
       list.push(course);

@@ -25,9 +25,15 @@
     model: "gemini-2.5-flash", /* fast + generous free-tier limits */
   };
 
-  /* Fetch the config from Firebase at boot so secrets never sit in the repo */
-  if (window.FIREBASE_CONFIG && FIREBASE_CONFIG.databaseURL) {
-    fetch(FIREBASE_CONFIG.databaseURL + "/stats/aiConfig.json")
+  /* Fetch the config from Firebase so secrets never sit in the repo.
+     complete() awaits this, and re-fetches once if the boot attempt failed
+     (flaky mobile connections must not disable AI for the whole session). */
+  let cfgPromise = null;
+  function loadConfig() {
+    if (AI_CONFIG.proxyUrl || AI_CONFIG.apiKey) return Promise.resolve();
+    if (cfgPromise) return cfgPromise;
+    if (!(window.FIREBASE_CONFIG && FIREBASE_CONFIG.databaseURL)) return Promise.resolve();
+    cfgPromise = fetch(FIREBASE_CONFIG.databaseURL + "/stats/aiConfig.json")
       .then((r) => r.json())
       .then((v) => {
         if (!v) return;
@@ -35,15 +41,18 @@
         if (v.key) AI_CONFIG.apiKey = v.key;
         if (v.model) AI_CONFIG.model = v.model;
       })
-      .catch(() => {});
+      .catch(() => { cfgPromise = null; /* allow a retry on next use */ });
+    return cfgPromise;
   }
+  loadConfig();
 
   const ready = () => !!(AI_CONFIG.proxyUrl || AI_CONFIG.apiKey);
 
-  /* Gemini wraps answers in ```html fences — strip them for direct use */
+  /* Gemini wraps answers in ```html fences — strip them for direct use
+     (labels like c++, html5 and single-line fences included) */
   function stripFences(text) {
     let out = String(text || "").trim();
-    const m = out.match(/^```[a-zA-Z]*\s*\n([\s\S]*?)\n?```$/);
+    const m = out.match(/^```[^\n`]*\n?([\s\S]*?)\n?```$/);
     if (m) out = m[1].trim();
     return out;
   }
@@ -52,7 +61,12 @@
      opts: { system, maxTokens, temperature } */
   function complete(prompt, opts) {
     opts = opts || {};
-    if (!ready()) return Promise.reject(new Error("no-key"));
+    return loadConfig().then(() => {
+      if (!ready()) throw new Error("no-key");
+      return completeNow(prompt, opts);
+    });
+  }
+  function completeNow(prompt, opts) {
     const body = {
       contents: [{ role: "user", parts: [{ text: String(prompt) }] }],
       generationConfig: {

@@ -61,6 +61,35 @@
     return "sync/" + encKey(String(u.email).toLowerCase());
   };
 
+  /* Most keys are namespaced "...::<uid>", but uid is RANDOM PER BROWSER —
+     the same email gets a different uid on every device. Cloud rows use the
+     device-independent marker "::@me" instead, translated back to the local
+     uid on pull. (Without this, progress synced from one phone could never
+     be read on another — the restore landed under a uid nobody used.) */
+  const myId = () => {
+    const u = window.Auth && window.Auth.current ? window.Auth.current() : null;
+    return u ? String(u.id) : null;
+  };
+  const UID_RE = /::(u_[a-z0-9]+|guest)$/;
+  /* local key → cloud key; null = not this account's data, don't sync */
+  const toCloudKey = (k) => {
+    const id = myId();
+    if (!id) return null;
+    if (k.slice(-(id.length + 2)) === "::" + id) return k.slice(0, k.length - id.length) + "@me";
+    if (UID_RE.test(k)) return null; /* guest bucket or another account on this browser */
+    return k; /* global key (e.g. wda_custom_courses) */
+  };
+  /* cloud key → local key; also adopts legacy rows written by old versions
+     (suffixed with some other device's random uid) */
+  const fromCloudKey = (k) => {
+    const id = myId();
+    if (!id) return null;
+    if (k.slice(-5) === "::@me") return k.slice(0, k.length - 3) + id;
+    const m = k.match(UID_RE);
+    if (m) return m[1] === "guest" ? null : k.slice(0, k.length - m[1].length) + id;
+    return k;
+  };
+
   /* ---------- push: wrap localStorage.setItem, debounce uploads ---------- */
   const origSet = Storage.prototype.setItem;
   const pending = Object.create(null);
@@ -80,10 +109,12 @@
     for (const k in pending) delete pending[k];
     ensureFb().then(() => {
       Object.keys(batch).forEach((k) => {
-        fb.set(fb.ref(fb.db, base + "/" + encKey(k)), { k, v: batch[k], t: Date.now() })
-          .catch(() => {});
+        const ck = toCloudKey(k);
+        if (!ck) return; /* another account's (or guest) bucket — never upload */
+        fb.set(fb.ref(fb.db, base + "/" + encKey(ck)), { k: ck, v: batch[k], t: Date.now() })
+          .catch(() => { pending[k] = batch[k]; }); /* keep for retry on the next write */
       });
-    }).catch(() => {});
+    }).catch(() => { Object.assign(pending, batch); });
   }
 
   /* ---------- pull: on boot + on login, cloud → localStorage ---------- */
@@ -95,11 +126,17 @@
     ensureFb().then(() => fb.get(fb.ref(fb.db, base))).then((snap) => {
       const val = snap && snap.val && snap.val();
       if (!val) { pushAll(); return; } /* first device: seed the cloud */
+      /* Newest row wins per logical key — canonical "@me" rows and legacy
+         per-device rows can describe the same key */
+      const best = Object.create(null);
       Object.values(val).forEach((row) => {
-        if (row && typeof row.k === "string" && typeof row.v === "string" && shouldSync(row.k)) {
-          origSet.call(localStorage, row.k, row.v);
-        }
+        if (!row || typeof row.k !== "string" || typeof row.v !== "string" || !shouldSync(row.k)) return;
+        const lk = fromCloudKey(row.k);
+        if (!lk) return;
+        const ts = Number(row.t) || 0;
+        if (!best[lk] || ts >= best[lk].t) best[lk] = { v: row.v, t: ts };
       });
+      Object.keys(best).forEach((lk) => origSet.call(localStorage, lk, best[lk].v));
       /* re-render the current view with the restored data */
       window.dispatchEvent(new Event("hashchange"));
     }).catch(() => { lastPulledFor = null; });
@@ -108,7 +145,9 @@
   function pushAll() {
     for (let i = 0; i < localStorage.length; i++) {
       const k = localStorage.key(i);
-      if (k && shouldSync(k)) pending[k] = localStorage.getItem(k);
+      /* only this account's rows — never seed the cloud with the guest
+         bucket or other accounts sharing this browser */
+      if (k && shouldSync(k) && toCloudKey(k)) pending[k] = localStorage.getItem(k);
     }
     flush();
   }

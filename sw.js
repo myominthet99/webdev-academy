@@ -2,7 +2,7 @@
    Strategy: NETWORK-FIRST for same-origin requests — users always get
    fresh code when online; the cache is only an offline fallback.
    Still bump CACHE per release so stale precaches get purged. */
-const CACHE = "wda-v41";
+const CACHE = "wda-v42";
 const ASSETS = [
   "./",
   "./index.html",
@@ -43,12 +43,22 @@ self.addEventListener("fetch", (e) => {
   e.respondWith(
     fetch(req)
       .then((res) => {
-        const copy = res.clone();
-        caches.open(CACHE).then((c) => c.put(req, copy)).catch(() => {});
+        /* only cache good responses — a transient 404/500 must not
+           overwrite a working cached copy */
+        if (res.ok) {
+          const copy = res.clone();
+          caches.open(CACHE).then((c) => c.put(req, copy)).catch(() => {});
+        }
         return res;
       })
       .catch(() =>
-        caches.match(req).then((hit) => hit || caches.match("./index.html"))
+        caches.match(req).then((hit) => {
+          if (hit) return hit;
+          /* index.html fallback is only correct for page navigations —
+             serving HTML as a script/style breaks the page worse */
+          if (req.mode === "navigate") return caches.match("./index.html");
+          return Response.error();
+        })
       )
   );
 });

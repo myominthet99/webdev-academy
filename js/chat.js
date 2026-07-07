@@ -15,7 +15,7 @@
   const I18N = window.I18N;
   const KEY = "wda_chat_v1";
   const MAX = 200;
-  const BUILD = "v12"; /* shown in the chat header — bump with releases */
+  const BUILD = "v13"; /* shown in the chat header — bump with releases */
 
   /* ============ Firebase config (optional) ============
      Configured centrally in js/firebase-config.js — paste your config
@@ -43,12 +43,14 @@
       const tail = url.slice(trimmed.length);
       return '<a href="' + trimmed + '" target="_blank" rel="noopener" class="chat-link">' + trimmed + "</a>" + tail;
     });
-    /* @mentions; highlight mentions of me */
+    /* @mentions; highlight mentions of me. Only match after whitespace or
+       start of a tag — an @ inside a URL (https://esm.sh/react@18) must not
+       get a <span> injected into the middle of the href attribute. */
     const u = me();
     const myName = u ? String(u.name || u.email || "").split(/[\s@]/)[0].toLowerCase() : null;
-    s = s.replace(/@([\w.-]+)/g, (m, name) => {
+    s = s.replace(/(^|[\s>])@([\w.-]+)/g, (m, pre, name) => {
       const isMe = myName && name.toLowerCase() === myName;
-      return '<span class="chat-mention' + (isMe ? " me" : "") + '">' + m + "</span>";
+      return pre + '<span class="chat-mention' + (isMe ? " me" : "") + '">@' + name + "</span>";
     });
     return s;
   }
@@ -257,7 +259,11 @@
 
   /* ================= backends ================= */
   const localLoad = (r) => { try { return JSON.parse(localStorage.getItem(roomKey(r))) || []; } catch (e) { return []; } };
-  const localSave = (r, msgs) => localStorage.setItem(roomKey(r), JSON.stringify(msgs.slice(-MAX)));
+  const localSave = (r, msgs) => {
+    /* photos are big base64 strings — a full localStorage must not crash send() */
+    try { localStorage.setItem(roomKey(r), JSON.stringify(msgs.slice(-MAX))); }
+    catch (e) { try { localStorage.setItem(roomKey(r), JSON.stringify(msgs.slice(-20).map((m) => { const c = Object.assign({}, m); delete c.img; return c; }))); } catch (e2) {} }
+  };
 
   const localBackend = {
     _handlers: {},
@@ -642,10 +648,12 @@
   /* ---------------- AI bot (free Gemini via js/ai.js) ---------------- */
   function askAiBot(question, userMsg) {
     if (window.WDA && window.WDA.isPremium && !window.WDA.isPremium()) { showStatus("⭐ " + t("chat_ai_premium")); return; }
-    if (!(window.AI && window.AI.ready())) { showStatus("🤖 " + t("chat_ai_nokey")); return; }
+    if (!window.AI) { showStatus("🤖 " + t("chat_ai_nokey")); return; }
     if (!question) question = "Say hello and explain how you can help.";
     showStatus("🤖 " + t("chat_ai_thinking"));
-    /* a little room context so the bot can follow the conversation */
+    /* capture the room NOW — the user may switch rooms while the AI thinks,
+       and the answer must land next to its question */
+    const askedRoom = room;
     const ctx = roomCache.slice(-8)
       .map((m) => (m.bot ? "AI Bot" : (m.name || "?")) + ": " + String(m.editedText || m.text || "").slice(0, 160))
       .join("\n");
@@ -656,7 +664,7 @@
           "You are the friendly AI helper in WebDev Academy's community chat — a free web-development school for Myanmar students. " +
           "Answer coding and learning questions in under 120 words, in simple English (reply in Burmese if the student wrote Burmese). " +
           "Put code inside ```code fences```. If the question is not about learning or coding, reply kindly in one short sentence.",
-        maxTokens: 1024,
+        maxTokens: 2048,
       }
     ).then((reply) => {
       const bot = {
@@ -669,8 +677,11 @@
         ts: Date.now(),
         reply: { name: userMsg.name, text: String(userMsg.text || "").slice(0, 80) },
       };
-      Promise.resolve(backend.add(room, bot)).catch(() => showStatus("⚠ " + t("chat_send_err")));
-    }).catch((err) => showStatus("⚠ AI: " + ((err && err.message) || err)));
+      Promise.resolve(backend.add(askedRoom, bot)).catch(() => showStatus("⚠ " + t("chat_send_err")));
+    }).catch((err) => {
+      const m = (err && err.message) || String(err);
+      showStatus(m === "no-key" ? "🤖 " + t("chat_ai_nokey") : "⚠ AI: " + m);
+    });
   }
 
   function del(ref) {

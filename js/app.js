@@ -654,9 +654,10 @@
   }
 
   function updateStreak() {
-    const total = Object.values(state.completed).reduce((a, arr) => a + arr.length, 0);
+    /* the 🔥 pill shows the DAY STREAK (it used to show lifetime lessons,
+       which contradicted the fire icon) */
     const el = document.getElementById("streak-count");
-    if (el) el.textContent = total;
+    if (el) el.textContent = dayStreak();
   }
 
   /* Highlight search term in text */
@@ -746,9 +747,18 @@
     fetch(base + "/stats/leaderboard.json")
       .then((r) => r.json())
       .then((val) => {
+        /* Coerce every field to a safe type — the DB is world-writable, so
+           a crafted row must never reach innerHTML as markup */
         const rows = Object.entries(val || {})
-          .map(([id, x]) => Object.assign({ id }, x))
-          .filter((x) => x && x.xp > 0)
+          .map(([id, x]) => ({
+            id,
+            name: String((x && x.name) || "?").slice(0, 40),
+            xp: Number(x && x.xp) || 0,
+            lessons: Number(x && x.lessons) || 0,
+            courses: Number(x && x.courses) || 0,
+            streak: Number(x && x.streak) || 0,
+          }))
+          .filter((x) => x.xp > 0)
           .sort((a, b) => b.xp - a.xp)
           .slice(0, 20);
         if (!rows.length) {
@@ -780,6 +790,7 @@
   /* Firebase paths forbid . # $ [ ] / — swap them for commas (one-way is fine) */
   const emailKey = (e) => String(e || "").toLowerCase().replace(/[.#$\[\]\/%]/g, ",");
   let premiumStatus = false;
+  let premiumChecked = false; /* true once the membership lookup finished */
   function isPremiumUser() {
     return premiumStatus || (window.Auth && window.Auth.isAdmin && window.Auth.isAdmin());
   }
@@ -789,15 +800,19 @@
   function refreshPremium() {
     const base = statsBase();
     const u = window.Auth && window.Auth.current ? window.Auth.current() : null;
-    if (!base || !u || !u.email) { premiumStatus = false; return; }
+    if (!base || !u || !u.email) { premiumStatus = false; premiumChecked = true; return; }
+    premiumChecked = false;
     fetch(base + "/premium/" + emailKey(u.email) + ".json")
       .then((r) => r.json())
       .then((v) => {
         const was = premiumStatus;
+        const first = !premiumChecked;
         premiumStatus = !!v;
-        if (premiumStatus !== was) window.dispatchEvent(new Event("hashchange"));
+        premiumChecked = true;
+        /* re-render once the answer is in, so deep-linked premium lessons load */
+        if (premiumStatus !== was || first) window.dispatchEvent(new Event("hashchange"));
       })
-      .catch(() => {});
+      .catch(() => { premiumChecked = true; window.dispatchEvent(new Event("hashchange")); });
   }
 
   function renderPremium() {
@@ -839,10 +854,11 @@
     const base = statsBase();
     if (!base) { mount.innerHTML = `<div class="panel"><p>${t("lb_offline")}</p></div>`; return; }
 
-    /* pending claim already submitted? */
-    fetch(base + "/payments.json").then((r) => r.json()).then((val) => {
-      const mine = Object.values(val || {}).filter(
-        (p) => p && p.email === u.email.toLowerCase() && p.status === "pending");
+    /* pending claim already submitted? Claims are keyed by the user's own
+       email key, so we fetch ONE row — never the whole collection (other
+       people's emails/phones must not download to every visitor) */
+    fetch(base + "/payments/" + emailKey(u.email) + ".json").then((r) => r.json()).then((p) => {
+      const mine = p && p.status === "pending" ? [p] : [];
       if (mine.length) {
         mount.innerHTML = `<div class="panel"><h2>⏳ ${t("prem_pending")}</h2><p class="muted">${t("prem_pending_sub")}</p></div>`;
         return;
@@ -877,8 +893,8 @@
         e.preventDefault();
         const phone = form.phone.value.trim(), txn = form.txn.value.trim();
         if (!phone || !txn) return;
-        fetch(base + "/payments.json", {
-          method: "POST",
+        fetch(base + "/payments/" + emailKey(u.email) + ".json", {
+          method: "PUT", /* one claim per account, keyed by email */
           body: JSON.stringify({
             email: u.email.toLowerCase(), name: u.name || "",
             phone, txn, ts: Date.now(), status: "pending",
@@ -1080,7 +1096,8 @@
     trackCourseView(c.id);
     const enrolled = isEnrolled(c.id);
     const pct = progressPct(c);
-    const firstLesson = lessonsOf(c)[0].lesson.id;
+    const firstFlat = lessonsOf(c)[0]; /* imported/malformed course may be empty */
+    const firstLesson = firstFlat ? firstFlat.lesson.id : "";
     const done = completedSet(c.id);
 
     const curriculum = c.sections
@@ -1230,7 +1247,7 @@
       return d;
     };
     const ask = (question, displayText) => {
-      if (!(window.AI && window.AI.ready())) { bubble("bot", escapeHtml(t("ai_no_key"))); return; }
+      if (!window.AI) { bubble("bot", escapeHtml(t("ai_no_key"))); return; }
       bubble("me", escapeHtml(displayText || question));
       const wait = bubble("bot", "⏳ " + escapeHtml(t("tutor_thinking")));
       const convo = history.slice(-6).map((h) => (h.me ? "Student" : "Tutor") + ": " + h.text).join("\n");
@@ -1245,12 +1262,15 @@
             "You are the patient AI tutor of WebDev Academy, helping Myanmar teenagers (ages 12-18) learn web development. " +
             "Use very simple English; if the student writes Burmese or asks for Burmese, answer in Burmese but keep technical words (HTML, CSS, tag names) in English. " +
             "Keep answers under 150 words unless showing code. Put code inside ```fences```. Be encouraging.",
-          maxTokens: 1500,
+          maxTokens: 2500,
         }
       ).then((reply) => {
         history.push({ me: false, text: String(reply).slice(0, 500) });
         wait.innerHTML = fmt(reply);
-      }).catch((err) => { wait.innerHTML = "⚠ AI: " + escapeHtml((err && err.message) || String(err)); });
+      }).catch((err) => {
+        const m = (err && err.message) || String(err);
+        wait.innerHTML = m === "no-key" ? escapeHtml(t("ai_no_key")) : "⚠ AI: " + escapeHtml(m);
+      });
     };
     const chipQs = {
       simple: "Explain this lesson in very simple words, like I am 12 years old.",
@@ -1279,7 +1299,16 @@
       window.Auth.openModal("login");
       return;
     }
-    if (!isFree(c) && !isPremiumUser()) { location.hash = "#/premium"; return; }
+    if (!isFree(c) && !isPremiumUser()) {
+      /* Membership lookup may still be in flight on a hard reload — wait for
+         it instead of bouncing a paying member to the premium page */
+      if (!premiumChecked && loggedIn()) {
+        app.innerHTML = `<div class="container"><div class="empty"><h2>⏳</h2><p class="muted">${t("prem_checking")}</p></div></div>`;
+        return;
+      }
+      location.hash = "#/premium";
+      return;
+    }
     if (!isEnrolled(c.id)) enroll(c.id);
 
     const flat = lessonsOf(c);
@@ -1475,7 +1504,9 @@
     /* Time tracking: start timer for this lesson */
     startLessonTimer(current.id);
 
-    /* Clean up any previous intervals if re-rendering */
+    /* Clean up the previous lesson's timers AND commit its elapsed time —
+       lesson→lesson navigation used to tear the poll down before it could
+       save, silently losing the session's minutes */
     if (window._lessonTimerCleanup) window._lessonTimerCleanup();
 
     let timeDisplay = setInterval(() => {
@@ -1483,21 +1514,18 @@
       if (el) el.textContent = formatTime(loadLessonTime(current.id).total);
     }, 1000);
 
-    /* Stop timer when user navigates away */
+    /* Stop + save when the user navigates away (any route change) */
     const originalHash = location.hash;
-    const timer = setInterval(() => {
-      if (location.hash !== originalHash) {
-        endLessonTimer(current.id);
-        clearInterval(timer);
-        clearInterval(timeDisplay);
-      }
-    }, 500);
-
-    /* Store cleanup function for next render */
-    window._lessonTimerCleanup = () => {
+    let committed = false;
+    const commitTime = () => {
+      if (!committed) { committed = true; endLessonTimer(current.id); }
       clearInterval(timer);
       clearInterval(timeDisplay);
     };
+    const timer = setInterval(() => {
+      if (location.hash !== originalHash) commitTime();
+    }, 500);
+    window._lessonTimerCleanup = commitTime;
 
     window.scrollTo(0, 0);
   }
@@ -1541,11 +1569,16 @@
         const block = app.querySelector(`.q-block[data-q="${qi}"]`);
         const picked = block.querySelector(`input[name="q${qi}"]:checked`);
         block.querySelectorAll(".q-opt").forEach((o) => o.classList.remove("correct", "wrong"));
-        block.querySelector(`.q-opt[data-opt="${q.answer}"]`).classList.add("correct");
+        /* guard: a bad answer index (e.g. AI-authored) must not crash the quiz */
+        const correctEl = block.querySelector(`.q-opt[data-opt="${q.answer}"]`);
+        if (correctEl) correctEl.classList.add("correct");
         if (picked) {
           const pickedIdx = Number(picked.value);
           if (pickedIdx === q.answer) score++;
-          else block.querySelector(`.q-opt[data-opt="${pickedIdx}"]`).classList.add("wrong");
+          else {
+            const wrongEl = block.querySelector(`.q-opt[data-opt="${pickedIdx}"]`);
+            if (wrongEl) wrongEl.classList.add("wrong");
+          }
         }
       });
       const total = questions.length;
@@ -2330,7 +2363,7 @@
       /* ✨ AI: draft the lesson from the course + lesson titles (free Gemini) */
       const aiBtn = e.target.closest("[data-ai]");
       if (aiBtn) {
-        if (!(window.AI && window.AI.ready())) { alert(t("ai_no_key")); return; }
+        if (!window.AI) { alert(t("ai_no_key")); return; }
         const row = aiBtn.closest(".admin-lesson");
         const ta = row.querySelector('textarea[name="lnotes"]');
         const ltitle = row.querySelector('input[name="ltitle"]').value.trim();
@@ -2344,6 +2377,10 @@
         const sys =
           "You write lessons for WebDev Academy, a free web-development school for Myanmar teenagers (ages 12-18, English is their second language). Use short sentences and simple English.";
         const done = () => { aiBtn.disabled = false; aiBtn.textContent = oldLabel; };
+        const aiErr = (err) => {
+          const m = (err && err.message) || String(err);
+          alert(m === "no-key" ? t("ai_no_key") : "AI: " + m);
+        };
         if (ltype === "quiz") {
           window.AI.complete(
             'Course: "' + (ctitle || "Web Development") + '". Create 5 multiple-choice quiz questions for the lesson "' + ltitle +
@@ -2355,9 +2392,14 @@
             if (!Array.isArray(qs) || !qs.length) throw new Error(t("ai_bad_reply"));
             const list = row.querySelector(".q-list");
             list.innerHTML = qs.slice(0, 10).map((q) =>
-              qRowHtml({ q: String(q.q || ""), options: (q.options || []).map(String), answer: Number(q.answer) || 0 })
+              qRowHtml({
+                q: String(q.q || ""),
+                options: (q.options || []).slice(0, 4).map(String),
+                /* clamp to a valid option index — models sometimes return 4+ */
+                answer: Math.min(3, Math.max(0, Number(q.answer) || 0)),
+              })
             ).join("");
-          }).catch((err) => alert("AI: " + (err && err.message || err))).finally(done);
+          }).catch(aiErr).finally(done);
         } else {
           window.AI.complete(
             'Course: "' + (ctitle || "Web Development") + '". Write the lesson "' + ltitle + '".' +
@@ -2370,7 +2412,7 @@
             const box = row.querySelector(".lesson-preview");
             box.hidden = false;
             box.innerHTML = ta.value;
-          }).catch((err) => alert("AI: " + (err && err.message || err))).finally(done);
+          }).catch(aiErr).finally(done);
         }
         return;
       }

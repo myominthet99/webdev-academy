@@ -51,9 +51,11 @@
   const genId = () => "u_" + Date.now().toString(36) + Math.floor(Math.random() * 1e6).toString(36);
 
   /* ---------------- core API ---------------- */
+  /* Admin = listed in ADMIN_EMAILS only. (The old "first account = admin"
+     rule ran per-browser, so every student's first signup on their own
+     phone became an admin — bypassing Premium. Stored roles are ignored.) */
   function isAdminUser(u) {
     if (!u) return false;
-    if (u.role === "admin") return true;
     return ADMIN_EMAILS.indexOf((u.email || "").toLowerCase()) >= 0;
   }
   function current() {
@@ -78,8 +80,7 @@
     if (password.length < 6) return { error: t("auth_err_shortpass") };
     const users = loadUsers();
     if (users[email]) return { error: t("auth_err_exists") };
-    const role = Object.keys(users).length === 0 ? "admin" : "user"; /* first account = admin */
-    users[email] = { id: genId(), name, email, pass: hash(password), provider: "local", role };
+    users[email] = { id: genId(), name, email, pass: hash(password), provider: "local", role: "user" };
     saveUsers(users);
     session = users[email].id;
     localStorage.setItem(SESSION_KEY, session);
@@ -93,7 +94,10 @@
     const users = loadUsers();
     const user = users[email];
     if (!user) return { error: t("auth_err_notfound") };
-    if (user.provider === "local" && user.pass !== hash(password)) return { error: t("auth_err_wrongpass") };
+    /* Accounts created with Google must use the Google button — otherwise
+       any password would open them (the old check skipped non-local users) */
+    if (user.provider !== "local") return { error: t("auth_err_useprovider") };
+    if (user.pass !== hash(password)) return { error: t("auth_err_wrongpass") };
     session = user.id;
     localStorage.setItem(SESSION_KEY, session);
     notify();
@@ -105,8 +109,7 @@
     if (!email) return;
     const users = loadUsers();
     if (!users[email]) {
-      const role = Object.keys(users).length === 0 ? "admin" : "user"; /* first account = admin */
-      users[email] = { id: genId(), name: p.name || email, email, provider: p.provider || "google", picture: p.picture || "", role };
+      users[email] = { id: genId(), name: p.name || email, email, provider: p.provider || "google", picture: p.picture || "", role: "user" };
     } else if (p.picture) {
       users[email].picture = p.picture;
     }
@@ -344,20 +347,21 @@
       area.querySelector("#open-login").addEventListener("click", () => openModal("login"));
       return;
     }
+    const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
     const label = (u.name || u.email || "?").trim();
     const initial = label.charAt(0).toUpperCase();
     const first = label.split(" ")[0];
     area.innerHTML =
       '<div class="user-chip" id="user-chip" tabindex="0">' +
       (u.picture
-        ? '<img class="avatar" src="' + u.picture + '" alt="" referrerpolicy="no-referrer">'
-        : '<span class="avatar">' + initial + "</span>") +
-      '<span class="user-name">' + first + "</span>" +
+        ? '<img class="avatar" src="' + esc(u.picture) + '" alt="" referrerpolicy="no-referrer">'
+        : '<span class="avatar">' + esc(initial) + "</span>") +
+      '<span class="user-name">' + esc(first) + "</span>" +
       '<span class="caret">▾</span>' +
       '<div class="user-menu" hidden>' +
-      '<div class="user-menu-head"><div class="um-name">' + (u.name || "") +
+      '<div class="user-menu-head"><div class="um-name">' + esc(u.name || "") +
       (u.admin ? ' <span class="role-badge">' + t("role_admin") + "</span>" : "") +
-      '</div><div class="um-email">' + (u.email || "") + "</div></div>" +
+      '</div><div class="um-email">' + esc(u.email || "") + "</div></div>" +
       '<a href="#/account" class="user-menu-item">' + t("auth_account") + "</a>" +
       '<a href="#/my-learning" class="user-menu-item">' + t("nav_mylearning") + "</a>" +
       (u.admin ? '<a href="#/admin" class="user-menu-item">' + t("admin") + "</a>" : "") +

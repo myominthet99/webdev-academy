@@ -29,7 +29,17 @@
     "stats": {
       ".read": true,
       "courses":     { "$cid": { ".write": true } },
-      "leaderboard": { "$uid": { ".write": true } }
+      "leaderboard": {
+        "$uid": {
+          ".write": true,
+          "name":    { ".validate": "newData.isString() && newData.val().length <= 40" },
+          "xp":      { ".validate": "newData.isNumber()" },
+          "lessons": { ".validate": "newData.isNumber()" },
+          "courses": { ".validate": "newData.isNumber()" },
+          "streak":  { ".validate": "newData.isNumber()" },
+          "ts":      { ".validate": "newData.isNumber()" }
+        }
+      }
     },
     "payments": {
       ".read": true,

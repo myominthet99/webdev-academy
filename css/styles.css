@@ -543,6 +543,12 @@ button { font-family: inherit; cursor: pointer; }
 .chat-msg.mine .chat-bubble { background: #efe7fd; border-color: #dcc9fb; }
 /* Dark mode: own bubbles must stay readable (light ink needs a dark bg) */
 [data-theme="dark"] .chat-msg.mine .chat-bubble { background: #43306b; border-color: #5b4390; }
+/* AI bot replies get a soft teal bubble so they stand out from students */
+.chat-msg.bot .chat-avatar { background: linear-gradient(135deg, #0bab64, #3bb78f); }
+.chat-msg.bot .chat-bubble { background: #eafaf3; border-color: #bfe9d6; }
+.chat-msg.bot .chat-name { color: #0a8a54; }
+[data-theme="dark"] .chat-msg.bot .chat-bubble { background: #123b2c; border-color: #1e5c44; }
+[data-theme="dark"] .chat-msg.bot .chat-name { color: #4cd99a; }
 .chat-name { font-size: 12px; font-weight: 700; color: var(--purple); margin-bottom: 2px; }
 .chat-text { font-size: 14px; line-height: 1.4; word-break: break-word; white-space: pre-wrap; }
 .chat-meta { display: flex; align-items: center; justify-content: flex-end; gap: 6px; margin-top: 2px; flex-wrap: wrap; }

@@ -1981,6 +1981,7 @@
           <button type="button" data-fmt="tip" title="Tip box">💡</button>
           <button type="button" data-fmt="ul" title="Bullet list">≡</button>
           <span class="tb-gap"></span>
+          <button type="button" class="btn btn-outline btn-sm" data-ai>✨ ${t("admin_ai_write")}</button>
           <button type="button" class="btn btn-outline btn-sm" data-template>📋 ${t("admin_use_template")}</button>
           <button type="button" class="btn btn-outline btn-sm" data-preview>👁 ${t("admin_preview")}</button>
         </div>
@@ -2163,6 +2164,53 @@
       if (tp) {
         const ta = tp.closest(".lesson-av").querySelector('textarea[name="lnotes"]');
         if (ta && (!ta.value.trim() || confirm(t("admin_template_confirm")))) ta.value = LESSON_TEMPLATE;
+        return;
+      }
+      /* ✨ AI: draft the lesson from the course + lesson titles (free Gemini) */
+      const aiBtn = e.target.closest("[data-ai]");
+      if (aiBtn) {
+        if (!(window.AI && window.AI.ready())) { alert(t("ai_no_key")); return; }
+        const row = aiBtn.closest(".admin-lesson");
+        const ta = row.querySelector('textarea[name="lnotes"]');
+        const ltitle = row.querySelector('input[name="ltitle"]').value.trim();
+        const ltype = row.querySelector('select[name="ltype"]').value;
+        const ctitle = form.querySelector('input[name="title"]').value.trim();
+        if (!ltitle) { alert(t("ai_need_title")); return; }
+        if (ltype !== "quiz" && ta.value.trim() && !confirm(t("admin_template_confirm"))) return;
+        const oldLabel = aiBtn.textContent;
+        aiBtn.disabled = true;
+        aiBtn.textContent = "✨ " + t("ai_working");
+        const sys =
+          "You write lessons for WebDev Academy, a free web-development school for Myanmar teenagers (ages 12-18, English is their second language). Use short sentences and simple English.";
+        const done = () => { aiBtn.disabled = false; aiBtn.textContent = oldLabel; };
+        if (ltype === "quiz") {
+          window.AI.complete(
+            'Course: "' + (ctitle || "Web Development") + '". Create 5 multiple-choice quiz questions for the lesson "' + ltitle +
+              '". Reply with ONLY a JSON array, no markdown: [{"q":"question text","options":["a","b","c","d"],"answer":0}] where answer is the index (0-3) of the correct option.',
+            { system: sys, maxTokens: 2048, temperature: 0.5 }
+          ).then((raw) => {
+            let qs;
+            try { qs = JSON.parse(window.AI.stripFences(raw)); } catch (err) { throw new Error(t("ai_bad_reply")); }
+            if (!Array.isArray(qs) || !qs.length) throw new Error(t("ai_bad_reply"));
+            const list = row.querySelector(".q-list");
+            list.innerHTML = qs.slice(0, 10).map((q) =>
+              qRowHtml({ q: String(q.q || ""), options: (q.options || []).map(String), answer: Number(q.answer) || 0 })
+            ).join("");
+          }).catch((err) => alert("AI: " + (err && err.message || err))).finally(done);
+        } else {
+          window.AI.complete(
+            'Course: "' + (ctitle || "Web Development") + '". Write the lesson "' + ltitle + '".' +
+              (ltype === "video" ? " This lesson accompanies a video — write supporting notes the student reads after watching." : "") +
+              ' Output plain HTML only (no markdown, no <html> or <body>). Allowed tags: <h3>, <p>, <ul>, <li>, <strong>, <code>, <pre><code>, and <div class="callout tip">. ' +
+              'Structure: short intro paragraph, then "🔑 Key Points" (h3 + bullet list), then "💻 Example" (h3 + code block with a short explanation), then a practice task inside <div class="callout tip"><strong>Try it yourself:</strong> ...</div>. Keep it 250-450 words.',
+            { system: sys, maxTokens: 3000 }
+          ).then((html) => {
+            ta.value = window.AI.stripFences(html);
+            const box = row.querySelector(".lesson-preview");
+            box.hidden = false;
+            box.innerHTML = ta.value;
+          }).catch((err) => alert("AI: " + (err && err.message || err))).finally(done);
+        }
         return;
       }
       /* formatting toolbar: wrap the selection in HTML */

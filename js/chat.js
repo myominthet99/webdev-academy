@@ -15,7 +15,7 @@
   const I18N = window.I18N;
   const KEY = "wda_chat_v1";
   const MAX = 200;
-  const BUILD = "v11"; /* shown in the chat header — bump with releases */
+  const BUILD = "v12"; /* shown in the chat header — bump with releases */
 
   /* ============ Firebase config (optional) ============
      Configured centrally in js/firebase-config.js — paste your config
@@ -492,7 +492,7 @@
         const mentioned = !mine && mentionsMe(text);
         return (
           daySep +
-          '<div class="chat-msg ' + (mine ? "mine" : "") + (isPinned ? " pinned" : "") + (mentioned ? " mentioned" : "") + '">' +
+          '<div class="chat-msg ' + (mine ? "mine" : "") + (msg.bot ? " bot" : "") + (isPinned ? " pinned" : "") + (mentioned ? " mentioned" : "") + '">' +
           (isPinned ? '<span class="chat-pin" title="Pinned">📌</span>' : "") +
           (mine ? "" : '<span class="chat-avatar">' + esc(msg.initial || "?") + "</span>") +
           '<div class="chat-bubble">' +
@@ -580,7 +580,7 @@
       '<div id="chat-replybar" class="chat-replybar" hidden></div>' +
       '<form class="chat-form" id="chat-form">' +
       '<label class="chat-photo" title="' + esc(t("chat_photo")) + '">📷<input type="file" accept="image/*" hidden></label>' +
-      '<textarea rows="1" maxlength="500" placeholder="' + esc(t("chat_placeholder")) + '"></textarea>' +
+      '<textarea rows="1" maxlength="500" placeholder="' + esc(t("chat_placeholder") + (window.AI && window.AI.ready() ? " · @ai 🤖" : "")) + '"></textarea>' +
       '<button class="chat-send" type="submit" aria-label="Send">➤</button></form>';
     const form = footEl.querySelector("#chat-form");
     const inp = form.querySelector("textarea");
@@ -635,6 +635,41 @@
     if (img) msg.img = img;
     if (replyTo) { msg.reply = { name: replyTo.name, text: replyTo.text }; replyTo = null; updateReplyBar(); }
     Promise.resolve(backend.add(room, msg)).catch(() => showStatus("⚠ " + t("chat_send_err")));
+    /* @ai → the sender's browser asks the free AI and posts the bot's reply */
+    if (/(^|\s)@ai\b/i.test(text)) askAiBot(text.replace(/(^|\s)@ai\b/gi, " ").trim(), msg);
+  }
+
+  /* ---------------- AI bot (free Gemini via js/ai.js) ---------------- */
+  function askAiBot(question, userMsg) {
+    if (!(window.AI && window.AI.ready())) { showStatus("🤖 " + t("chat_ai_nokey")); return; }
+    if (!question) question = "Say hello and explain how you can help.";
+    showStatus("🤖 " + t("chat_ai_thinking"));
+    /* a little room context so the bot can follow the conversation */
+    const ctx = roomCache.slice(-8)
+      .map((m) => (m.bot ? "AI Bot" : (m.name || "?")) + ": " + String(m.editedText || m.text || "").slice(0, 160))
+      .join("\n");
+    window.AI.complete(
+      "Recent chat messages:\n" + ctx + "\n\nNow answer " + (userMsg.name || "the student") + "'s question:\n" + question,
+      {
+        system:
+          "You are the friendly AI helper in WebDev Academy's community chat — a free web-development school for Myanmar students. " +
+          "Answer coding and learning questions in under 120 words, in simple English (reply in Burmese if the student wrote Burmese). " +
+          "Put code inside ```code fences```. If the question is not about learning or coding, reply kindly in one short sentence.",
+        maxTokens: 1024,
+      }
+    ).then((reply) => {
+      const bot = {
+        id: "m_" + Date.now().toString(36) + "ai",
+        userId: "wda-ai-bot",
+        name: "AI Bot",
+        initial: "🤖",
+        bot: true,
+        text: String(reply).slice(0, 1200),
+        ts: Date.now(),
+        reply: { name: userMsg.name, text: String(userMsg.text || "").slice(0, 80) },
+      };
+      Promise.resolve(backend.add(room, bot)).catch(() => showStatus("⚠ " + t("chat_send_err")));
+    }).catch((err) => showStatus("⚠ AI: " + ((err && err.message) || err)));
   }
 
   function del(ref) {

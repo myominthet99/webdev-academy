@@ -15,7 +15,7 @@
   const I18N = window.I18N;
   const KEY = "wda_chat_v1";
   const MAX = 200;
-  const BUILD = "v9"; /* shown in the chat header — bump with releases */
+  const BUILD = "v10"; /* shown in the chat header — bump with releases */
 
   /* ============ Firebase config (optional) ============
      Configured centrally in js/firebase-config.js — paste your config
@@ -31,14 +31,26 @@
   const esc = (s) =>
     String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
-  /* @mentions: escape first, then wrap @name tokens; highlight mentions of me */
+  /* Message formatting: escape, then code blocks, links, and @mentions */
   function formatText(text) {
+    let s = esc(text);
+    /* ```multi-line code``` and `inline code` */
+    s = s.replace(/```([\s\S]+?)```/g, (m, c) => '<pre class="chat-code">' + c.trim() + "</pre>");
+    s = s.replace(/`([^`\n]+)`/g, '<code class="chat-icode">$1</code>');
+    /* clickable links (trailing punctuation left out of the href) */
+    s = s.replace(/https?:\/\/[^\s]+/g, (url) => {
+      const trimmed = url.replace(/[.,!?)\]]+$/, "");
+      const tail = url.slice(trimmed.length);
+      return '<a href="' + trimmed + '" target="_blank" rel="noopener" class="chat-link">' + trimmed + "</a>" + tail;
+    });
+    /* @mentions; highlight mentions of me */
     const u = me();
     const myName = u ? String(u.name || u.email || "").split(/[\s@]/)[0].toLowerCase() : null;
-    return esc(text).replace(/@([\w.-]+)/g, (m, name) => {
+    s = s.replace(/@([\w.-]+)/g, (m, name) => {
       const isMe = myName && name.toLowerCase() === myName;
       return '<span class="chat-mention' + (isMe ? " me" : "") + '">' + m + "</span>";
     });
+    return s;
   }
   function mentionsMe(text) {
     const u = me();
@@ -159,6 +171,60 @@
     const more = users.length > 2 ? " +" + (users.length - 2) : "";
     presenceEl.innerHTML = '<span class="chat-online" title="' +
       esc(users.map((x) => x.name).join(", ")) + '">' + users.length + " 🟢 " + names + more + "</span>";
+  }
+
+  /* Photos: downscale + JPEG-compress on a canvas so images fit happily
+     inside Realtime Database messages (~100-200 KB base64). */
+  function compressImage(file, cb) {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const max = 800;
+      const scale = Math.min(1, max / Math.max(img.width, img.height));
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+      canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+      let data = canvas.toDataURL("image/jpeg", 0.7);
+      if (data.length > 200000) data = canvas.toDataURL("image/jpeg", 0.45);
+      cb(data.length > 350000 ? null : data);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); cb(null); };
+    img.src = url;
+  }
+  function showImageFull(src) {
+    const box = document.createElement("div");
+    box.className = "chat-lightbox";
+    const im = document.createElement("img");
+    im.src = src;
+    box.appendChild(im);
+    box.addEventListener("click", () => box.remove());
+    document.body.appendChild(box);
+  }
+
+  /* New-message alert: short beep + flashing tab title until refocused */
+  function beep() {
+    try {
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      const ctx = new Ctx();
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.frequency.value = 880; g.gain.value = 0.05;
+      o.start(); o.stop(ctx.currentTime + 0.12);
+    } catch (e) {}
+  }
+  let titleTimer = null;
+  const baseTitle = document.title;
+  function flashTitle() {
+    if (titleTimer) return;
+    let on = false;
+    titleTimer = setInterval(() => { document.title = (on = !on) ? "💬 New message!" : baseTitle; }, 1200);
+    const stop = () => {
+      clearInterval(titleTimer); titleTimer = null; document.title = baseTitle;
+      window.removeEventListener("focus", stop);
+    };
+    window.addEventListener("focus", stop);
   }
 
   /* Transient status line (errors, info) shown in the chat panel */
@@ -307,6 +373,7 @@
       '    <span id="chat-ver" class="chat-ver" title="build · backend"></span>' +
       '    <span id="chat-presence" class="chat-presence"></span>' +
       '    <input id="chat-search" type="text" class="chat-search" placeholder="🔍 Search..." style="display:none">' +
+      '    <button class="chat-full" id="chat-full" type="button" aria-label="Fullscreen" title="Fullscreen">⛶</button>' +
       '    <button class="chat-close" type="button" aria-label="Close">&times;</button></div>' +
       '  <div class="chat-list" id="chat-list"></div>' +
       '  <div id="chat-typing" class="chat-typing" hidden></div>' +
@@ -322,6 +389,16 @@
     presenceEl = wrap.querySelector("#chat-presence");
     fab.addEventListener("click", () => setOpen(!open));
     wrap.querySelector(".chat-close").addEventListener("click", () => setOpen(false));
+    /* fullscreen mode toggle — remembered across sessions */
+    const fullBtn = wrap.querySelector("#chat-full");
+    const applyFull = (on) => {
+      panel.classList.toggle("full", on);
+      fullBtn.textContent = on ? "🗗" : "⛶";
+      try { localStorage.setItem("wda_chat_full", on ? "1" : ""); } catch (e) {}
+      if (open) scrollBottom();
+    };
+    fullBtn.addEventListener("click", () => applyFull(!panel.classList.contains("full")));
+    if (localStorage.getItem("wda_chat_full") === "1") applyFull(true);
     searchEl.addEventListener("input", (e) => { searchQuery = e.target.value.toLowerCase(); if (open) renderList(); });
     setTitle();
   }
@@ -355,7 +432,7 @@
       unread = 0; renderBadge(); renderList(); renderFoot(); renderPresence(); scrollBottom();
       markPresence(room);
       startLive(); /* cloud presence + typing */
-      const inp = footEl.querySelector("input.chat-form input");
+      const inp = footEl.querySelector("#chat-form textarea");
       if (inp) inp.focus();
     } else {
       stopLive();
@@ -421,7 +498,8 @@
           '<div class="chat-bubble">' +
           (mine ? "" : '<div class="chat-name">' + esc(msg.name || "") + "</div>") +
           (msg.reply ? '<div class="chat-quote">↩ <b>' + esc(msg.reply.name || "") + "</b> " + esc(String(msg.reply.text || "").slice(0, 80)) + "</div>" : "") +
-          '<div class="chat-text">' + formatText(text) + (msg.editedText ? ' <span class="chat-edited">(edited)</span>' : "") + "</div>" +
+          (msg.img ? '<img class="chat-img" loading="lazy" src="' + esc(msg.img) + '" alt="photo">' : "") +
+          (text ? '<div class="chat-text">' + formatText(text) + (msg.editedText ? ' <span class="chat-edited">(edited)</span>' : "") + "</div>" : "") +
           (reactionHtml ? '<div class="chat-reactions">' + reactionHtml + '</div>' : "") +
           '<div class="chat-meta"><span class="chat-time">' + fmtTime(msg.ts) + "</span>" +
           '<div class="chat-actions">' +
@@ -450,11 +528,14 @@
       b.addEventListener("click", () => {
         const msg = roomCache.find((m) => (m._key || m.id) === b.getAttribute("data-reply"));
         if (!msg) return;
-        replyTo = { name: msg.name || "?", text: (msg.editedText || msg.text || "").slice(0, 80) };
+        replyTo = { name: msg.name || "?", text: ((msg.editedText || msg.text) || (msg.img ? "📷 photo" : "")).slice(0, 80) };
         updateReplyBar();
-        const inp = footEl && footEl.querySelector("#chat-form input");
+        const inp = footEl && footEl.querySelector("#chat-form textarea");
         if (inp) inp.focus();
       })
+    );
+    listEl.querySelectorAll(".chat-img").forEach((im) =>
+      im.addEventListener("click", () => showImageFull(im.src))
     );
     wireRoomBar();
   }
@@ -488,24 +569,46 @@
     footEl.innerHTML =
       '<div id="chat-replybar" class="chat-replybar" hidden></div>' +
       '<form class="chat-form" id="chat-form">' +
-      '<input type="text" maxlength="500" placeholder="' + esc(t("chat_placeholder")) + '" autocomplete="off">' +
+      '<label class="chat-photo" title="' + esc(t("chat_photo")) + '">📷<input type="file" accept="image/*" hidden></label>' +
+      '<textarea rows="1" maxlength="500" placeholder="' + esc(t("chat_placeholder")) + '"></textarea>' +
       '<button class="chat-send" type="submit" aria-label="Send">➤</button></form>';
     const form = footEl.querySelector("#chat-form");
-    const inp = form.querySelector("input");
-    inp.addEventListener("input", () => { broadcastTyping(); cloudTypingPing(); });
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
+    const inp = form.querySelector("textarea");
+    const file = form.querySelector('input[type="file"]');
+    const doSend = () => {
       send(inp.value);
       inp.value = "";
+      inp.style.height = "auto";
       inp.focus();
+    };
+    inp.addEventListener("input", () => {
+      broadcastTyping(); cloudTypingPing();
+      inp.style.height = "auto";
+      inp.style.height = Math.min(inp.scrollHeight, 90) + "px";
+    });
+    /* Enter sends, Shift+Enter makes a new line (for ```code blocks```) */
+    inp.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); doSend(); }
+    });
+    form.addEventListener("submit", (e) => { e.preventDefault(); doSend(); });
+    file.addEventListener("change", () => {
+      const f = file.files && file.files[0];
+      file.value = "";
+      if (!f) return;
+      showStatus("⏳ …");
+      compressImage(f, (data) => {
+        if (!data) { showStatus("⚠ " + t("chat_img_err")); return; }
+        send(inp.value, data);
+        inp.value = "";
+      });
     });
     updateReplyBar();
   }
 
   /* ---------------- actions ---------------- */
-  function send(text) {
+  function send(text, img) {
     text = (text || "").trim();
-    if (!text) return;
+    if (!text && !img) return;
     const u = me();
     if (!u) { showStatus(t("chat_login")); return; }
     if (!rateOk()) { showStatus("⚠ " + t("chat_slow_down")); return; }
@@ -519,6 +622,7 @@
       text: text,
       ts: Date.now(),
     };
+    if (img) msg.img = img;
     if (replyTo) { msg.reply = { name: replyTo.name, text: replyTo.text }; replyTo = null; updateReplyBar(); }
     Promise.resolve(backend.add(room, msg)).catch(() => showStatus("⚠ " + t("chat_send_err")));
   }
@@ -637,7 +741,7 @@
       roomCache = msgs;
       if (!primed) { primed = true; if (open) { renderList(); scrollBottom(); } return; }
       if (open) { renderList(); scrollBottom(); }
-      else if (delta > 0) { unread += delta; renderBadge(); }
+      else if (delta > 0) { unread += delta; renderBadge(); beep(); flashTitle(); }
     });
   }
 

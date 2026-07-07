@@ -1343,6 +1343,12 @@
     const locked = !isFree(c) && !isPremiumUser();
     let previewMode = false;
     if (locked) {
+      /* wait for Firebase to restore the session before deciding to redirect
+         a (possibly logged-in) user hitting a premium deep link */
+      if (window.Auth && window.Auth.ready && !window.Auth.ready()) {
+        app.innerHTML = `<div class="container"><div class="empty"><h2>⏳</h2><p class="muted">${t("prem_checking")}</p></div></div>`;
+        return;
+      }
       if (!loggedIn()) {
         pendingAction = () => { location.hash = `#/learn/${courseId}/${lessonId}`; };
         location.hash = `#/course/${courseId}`;
@@ -1979,9 +1985,10 @@
     pf.addEventListener("submit", (e) => {
       e.preventDefault();
       const err = pf.querySelector(".auth-err");
-      const res = window.Auth.updateProfile(new FormData(pf).get("name"));
-      if (res && res.error) { err.textContent = res.error; err.hidden = false; }
-      else renderAccount(t("auth_profile_saved"));
+      Promise.resolve(window.Auth.updateProfile(new FormData(pf).get("name"))).then((res) => {
+        if (res && res.error) { err.textContent = res.error; err.hidden = false; }
+        else renderAccount(t("auth_profile_saved"));
+      });
     });
     const cpf = app.querySelector("#password-form");
     if (cpf) {
@@ -1989,9 +1996,10 @@
         e.preventDefault();
         const d = new FormData(cpf);
         const err = cpf.querySelector(".auth-err");
-        const res = window.Auth.changePassword(d.get("current"), d.get("next"));
-        if (res && res.error) { err.textContent = res.error; err.hidden = false; }
-        else renderAccount(t("auth_password_updated"));
+        Promise.resolve(window.Auth.changePassword(d.get("current"), d.get("next"))).then((res) => {
+          if (res && res.error) { err.textContent = res.error; err.hidden = false; }
+          else renderAccount(t("auth_password_updated"));
+        });
       });
     }
     window.scrollTo(0, 0);

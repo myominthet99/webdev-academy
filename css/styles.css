@@ -493,6 +493,9 @@ button { font-family: inherit; cursor: pointer; }
 .auth-tab.active { background: var(--ink); color: #fff; }
 .auth-title { font-size: 20px; margin: 0 0 16px; }
 .auth-err { background: #fdecec; color: #c0392b; border: 1px solid #f3c2c2; padding: 9px 12px; border-radius: 8px; font-size: 13.5px; margin-bottom: 14px; }
+.auth-ok { background: #e9f9ef; color: #1a7f43; border: 1px solid #bfe6cd; padding: 9px 12px; border-radius: 8px; font-size: 13.5px; margin-bottom: 14px; }
+[data-theme="dark"] .auth-ok { background: #14331f; color: #7fe0a2; border-color: #245c39; }
+.verify-flag { color: #e8a13a; font-weight: 900; }
 .auth-form label { display: block; font-size: 13px; font-weight: 600; margin: 10px 0 4px; }
 .auth-form input { width: 100%; padding: 11px 12px; border: 1px solid var(--line); border-radius: 8px; font-size: 15px; }
 .auth-form input:focus { outline: none; border-color: var(--purple); }

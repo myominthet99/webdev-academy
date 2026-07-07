@@ -1,12 +1,11 @@
 /* =====================================================================
    WebDev Academy — free AI helper (Google Gemini free tier)
 
-   HOW TO ENABLE (free, no credit card):
-     1. Open https://aistudio.google.com/apikey and sign in with Google
-     2. Click "Create API key" and copy it
-     3. Paste it into apiKey below and redeploy
-     4. Recommended: in AI Studio, restrict the key to your site's domain
-        so nobody else can use your free quota.
+   The key comes from a FREE https://aistudio.google.com/apikey account.
+   It is stored in Firebase at stats/aiConfig — NOT in this public repo,
+   because Google scans public GitHub code and may disable exposed keys.
+   To change it:  PUT {"key":"...","model":"gemini-2.5-flash"}
+   to <databaseURL>/stats/aiConfig.json
 
    This powers the ✨ AI buttons in the course creator (admin) and the
    @ai bot in the community chat. Without a key those features simply
@@ -16,9 +15,22 @@
   "use strict";
 
   const AI_CONFIG = {
-    apiKey: "", /* <-- paste your free Gemini API key here */
+    apiKey: "", /* loaded from Firebase below (or paste one here to override) */
     model: "gemini-2.5-flash", /* fast + generous free-tier limits */
   };
+
+  /* Fetch the key from Firebase at boot so it never sits in the repo */
+  if (!AI_CONFIG.apiKey && window.FIREBASE_CONFIG && FIREBASE_CONFIG.databaseURL) {
+    fetch(FIREBASE_CONFIG.databaseURL + "/stats/aiConfig.json")
+      .then((r) => r.json())
+      .then((v) => {
+        if (v && v.key) {
+          AI_CONFIG.apiKey = v.key;
+          if (v.model) AI_CONFIG.model = v.model;
+        }
+      })
+      .catch(() => {});
+  }
 
   const ready = () => !!AI_CONFIG.apiKey;
 

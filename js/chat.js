@@ -641,6 +641,7 @@
 
   /* ---------------- AI bot (free Gemini via js/ai.js) ---------------- */
   function askAiBot(question, userMsg) {
+    if (window.WDA && window.WDA.isPremium && !window.WDA.isPremium()) { showStatus("⭐ " + t("chat_ai_premium")); return; }
     if (!(window.AI && window.AI.ready())) { showStatus("🤖 " + t("chat_ai_nokey")); return; }
     if (!question) question = "Say hello and explain how you can help.";
     showStatus("🤖 " + t("chat_ai_thinking"));

@@ -783,6 +783,9 @@
   function isPremiumUser() {
     return premiumStatus || (window.Auth && window.Auth.isAdmin && window.Auth.isAdmin());
   }
+  /* chat.js gates the @ai bot on premium too */
+  window.WDA = window.WDA || {};
+  window.WDA.isPremium = isPremiumUser;
   function refreshPremium() {
     const base = statsBase();
     const u = window.Auth && window.Auth.current ? window.Auth.current() : null;
@@ -1201,6 +1204,7 @@
     if (!box) return;
     const log = box.querySelector(".tutor-log");
     const form = box.querySelector(".tutor-form");
+    if (!form) return; /* premium-locked panel — nothing to wire */
     const inp = form.querySelector("input");
     const history = [];
     /* plain-text lesson body for context (tags stripped, capped) */
@@ -1329,17 +1333,20 @@
             ${body}
             <div class="ai-tutor" id="ai-tutor">
               <div class="notes-head"><strong>🎓 ${t("tutor_title")}</strong> <span class="muted" style="font-size:12px">${t("tutor_sub")}</span></div>
-              <div class="tutor-chips">
-                <button type="button" data-tq="simple">💡 ${t("tutor_simple")}</button>
-                <button type="button" data-tq="burmese">🇲🇲 ${t("tutor_burmese")}</button>
-                <button type="button" data-tq="example">💻 ${t("tutor_example")}</button>
-                <button type="button" data-tq="practice">🏋️ ${t("tutor_practice")}</button>
-              </div>
-              <div class="tutor-log" hidden></div>
-              <form class="tutor-form">
-                <input type="text" maxlength="300" placeholder="${escapeHtml(t("tutor_ph"))}">
-                <button class="btn btn-primary btn-sm" type="submit">${t("tutor_ask")}</button>
-              </form>
+              ${isPremiumUser()
+                ? `<div class="tutor-chips">
+                     <button type="button" data-tq="simple">💡 ${t("tutor_simple")}</button>
+                     <button type="button" data-tq="burmese">🇲🇲 ${t("tutor_burmese")}</button>
+                     <button type="button" data-tq="example">💻 ${t("tutor_example")}</button>
+                     <button type="button" data-tq="practice">🏋️ ${t("tutor_practice")}</button>
+                   </div>
+                   <div class="tutor-log" hidden></div>
+                   <form class="tutor-form">
+                     <input type="text" maxlength="300" placeholder="${escapeHtml(t("tutor_ph"))}">
+                     <button class="btn btn-primary btn-sm" type="submit">${t("tutor_ask")}</button>
+                   </form>`
+                : `<p class="muted" style="margin:8px 0">🔒 ${t("tutor_premium")}</p>
+                   <a class="btn btn-primary btn-sm" href="#/premium">⭐ ${t("prem_go")}</a>`}
             </div>
             <div class="notes">
               <div class="notes-head"><strong>${t("notes_title")}</strong> <span class="notes-status" id="notes-status"></span></div>
@@ -1593,10 +1600,16 @@
     const xp = lessons * 10 + passes * 5;
     const level = Math.floor(xp / 100) + 1;
     const bilingual = localStorage.getItem("wda_bilingual") === "1";
+    const streak = dayStreak();
     const badges = [
       { key: "badge_first_lesson", earned: lessons >= 1, icon: "👣" },
-      { key: "badge_ten_lessons", earned: lessons >= 10, icon: "🔥" },
+      { key: "badge_ten_lessons", earned: lessons >= 10, icon: "📚" },
+      { key: "badge_fifty_lessons", earned: lessons >= 50, icon: "🚀" },
       { key: "badge_first_course", earned: coursesDone >= 1, icon: "🎓" },
+      { key: "badge_five_courses", earned: coursesDone >= 5, icon: "🏆" },
+      { key: "badge_streak3", earned: streak >= 3, icon: "🔥" },
+      { key: "badge_streak7", earned: streak >= 7, icon: "⚡" },
+      { key: "badge_streak30", earned: streak >= 30, icon: "💎" },
       { key: "badge_quiz_ace", earned: perfect, icon: "🧠" },
       { key: "badge_bilingual", earned: bilingual, icon: "🌐" },
     ];
@@ -1605,7 +1618,7 @@
       <div class="dash">
         <div class="dash-stats">
           ${stat(level, t("stat_level"))}${stat(xp, t("stat_xp"))}${stat(lessons, t("stat_completed"))}
-          ${stat(coursesDone, t("stat_courses_done"))}${stat(coursesDone, t("stat_certs"))}${stat(formatTime(totalTime), "⏱ " + t("spent"))}
+          ${stat(coursesDone, t("stat_courses_done"))}${stat("🔥 " + streak, t("stat_streak"))}${stat(formatTime(totalTime), "⏱ " + t("spent"))}
         </div>
         <div class="badges">
           ${badges.map((b) => `<div class="badge ${b.earned ? "on" : ""}" title="${b.earned ? t(b.key) : t("badge_locked")}"><span>${b.earned ? b.icon : "🔒"}</span><small>${t(b.key)}</small></div>`).join("")}
@@ -1962,6 +1975,54 @@
   }
 
   /* ---------------- View: Certificate ---------------- */
+  /* Draw the certificate on a canvas so students can download a PNG
+     (phones can't print — an image is shareable on Facebook etc.) */
+  function drawCertPng(name, courseTitle, meta, dateStr, certId) {
+    const W = 1400, H = 990;
+    const cv = document.createElement("canvas");
+    cv.width = W; cv.height = H;
+    const x = cv.getContext("2d");
+    const FAM = "Georgia, 'Myanmar Text', 'Padauk', serif";
+    const fit = (text, style, base, maxW) => {
+      let size = base;
+      x.font = style + " " + size + "px " + FAM;
+      while (x.measureText(text).width > maxW && size > 20) {
+        size -= 2;
+        x.font = style + " " + size + "px " + FAM;
+      }
+    };
+    x.fillStyle = "#fffdf7"; x.fillRect(0, 0, W, H);
+    const g = x.createLinearGradient(0, 0, W, H);
+    g.addColorStop(0, "#654ea3"); g.addColorStop(1, "#eaafc8");
+    x.strokeStyle = g; x.lineWidth = 18; x.strokeRect(24, 24, W - 48, H - 48);
+    x.strokeStyle = "#d9cff2"; x.lineWidth = 2; x.strokeRect(48, 48, W - 96, H - 96);
+    x.textAlign = "center";
+    x.fillStyle = "#654ea3"; x.font = "bold 34px " + FAM;
+    x.fillText("</> WebDev Academy", W / 2, 135);
+    x.fillStyle = "#1a1a2e"; fit(t("cert_title"), "bold", 62, W - 260);
+    x.fillText(t("cert_title"), W / 2, 245);
+    x.fillStyle = "#777"; x.font = "26px " + FAM;
+    x.fillText(t("cert_intro"), W / 2, 325);
+    x.fillStyle = "#654ea3"; fit(name, "italic bold", 74, W - 300);
+    x.fillText(name, W / 2, 435);
+    x.strokeStyle = "#eaafc8"; x.lineWidth = 3;
+    x.beginPath(); x.moveTo(W / 2 - 330, 465); x.lineTo(W / 2 + 330, 465); x.stroke();
+    x.fillStyle = "#777"; x.font = "26px " + FAM;
+    x.fillText(t("cert_completed"), W / 2, 528);
+    x.fillStyle = "#1a1a2e"; fit(courseTitle, "bold", 46, W - 260);
+    x.fillText(courseTitle, W / 2, 600);
+    x.fillStyle = "#8a8a99"; x.font = "24px " + FAM;
+    x.fillText(meta, W / 2, 660);
+    x.fillText(dateStr, W / 2, 800);
+    x.fillStyle = "#b0b0bd"; x.font = "18px " + FAM;
+    x.fillText(t("cert_id") + ": " + certId + " · myominthet99.github.io/webdev-academy", W / 2, 860);
+    x.beginPath(); x.arc(W - 190, H - 195, 66, 0, Math.PI * 2);
+    x.fillStyle = "#654ea3"; x.fill();
+    x.fillStyle = "#fff"; x.font = "bold 60px Arial";
+    x.fillText("✓", W - 190, H - 174);
+    return cv;
+  }
+
   function renderCertificate(courseId) {
     const c = courseById(courseId);
     if (!c) return renderNotFound();
@@ -1993,11 +2054,23 @@
         <div class="cert-actions no-print">
           <a class="btn btn-outline" href="#/course/${c.id}">${t("cert_back")}</a>
           <button class="btn btn-outline" id="cert-copy" type="button">${t("cert_copy")}</button>
-          <button class="btn btn-primary" id="cert-print" type="button">${t("cert_print")}</button>
+          <button class="btn btn-outline" id="cert-print" type="button">${t("cert_print")}</button>
+          <button class="btn btn-primary" id="cert-dl" type="button">⬇ ${t("cert_download")}</button>
         </div>
       </div>`;
     const p = app.querySelector("#cert-print");
     if (p) p.addEventListener("click", () => window.print());
+    const dl = app.querySelector("#cert-dl");
+    if (dl) dl.addEventListener("click", () => {
+      const meta = totalLessons(c) + " " + t("lessons_word") + " · " + c.hours + " " + t("hours_content");
+      const cv = drawCertPng(name, cf(c, "title"), meta, dateStr, certId);
+      const a = document.createElement("a");
+      a.href = cv.toDataURL("image/png");
+      a.download = "WebDevAcademy-Certificate-" + c.id + ".png";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    });
     const cp = app.querySelector("#cert-copy");
     if (cp) cp.addEventListener("click", () => {
       const link = location.origin + location.pathname + "#/certificate/" + c.id;

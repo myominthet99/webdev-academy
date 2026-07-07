@@ -1,0 +1,43 @@
+{
+  "rules": {
+    "rooms": {
+      ".read": true,
+      "$room": {
+        "messages": {
+          "$msg": {
+            ".write": true,
+            "text":  { ".validate": "newData.isString() && newData.val().length <= 2000" },
+            "name":  { ".validate": "newData.isString() && newData.val().length <= 60" },
+            "img":   { ".validate": "newData.isString() && newData.val().length <= 500000" },
+            "ts":    { ".validate": "newData.isNumber()" }
+          }
+        },
+        "presence": { "$uid": { ".write": true } },
+        "typing":   { "$uid": { ".write": true } }
+      }
+    },
+    "sync": {
+      "$ekey": {
+        ".read": true,
+        "$row": {
+          ".write": true,
+          "k": { ".validate": "newData.isString()" },
+          "v": { ".validate": "newData.isString()" }
+        }
+      }
+    },
+    "stats": {
+      ".read": true,
+      "courses":     { "$cid": { ".write": true } },
+      "leaderboard": { "$uid": { ".write": true } }
+    },
+    "payments": {
+      ".read": true,
+      "$claim": { ".write": true }
+    },
+    "premium": {
+      ".read": true,
+      "$ekey": { ".write": true }
+    }
+  }
+}

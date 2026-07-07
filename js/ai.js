@@ -1,38 +1,44 @@
 /* =====================================================================
    WebDev Academy — free AI helper (Google Gemini free tier)
 
-   The key comes from a FREE https://aistudio.google.com/apikey account.
-   It is stored in Firebase at stats/aiConfig — NOT in this public repo,
-   because Google scans public GitHub code and may disable exposed keys.
-   To change it:  PUT {"key":"...","model":"gemini-2.5-flash"}
-   to <databaseURL>/stats/aiConfig.json
+   Config lives in Firebase at stats/aiConfig (NOT in this public repo —
+   Google scans GitHub and may disable exposed keys):
+     { "proxyUrl": "https://....workers.dev" }   ← preferred
+     { "key": "AQ....", "model": "gemini-2.5-flash" }  ← direct mode
 
-   This powers the ✨ AI buttons in the course creator (admin) and the
-   @ai bot in the community chat. Without a key those features simply
-   show a "not set up yet" hint — nothing breaks.
+   WHY A PROXY: Google blocks the Gemini API in some countries
+   (including Myanmar) by the CALLER's location. A free Cloudflare
+   Worker (see tools/cloudflare-worker.js) relays requests from a
+   supported region and keeps the API key completely secret.
+   Direct mode still works from supported countries.
+
+   This powers the ✨ AI buttons in the course creator (admin), the
+   @ai bot in the community chat, and the 🎓 AI Tutor on lessons.
+   Without config those features just show a "not set up yet" hint.
    ===================================================================== */
 (function () {
   "use strict";
 
   const AI_CONFIG = {
-    apiKey: "", /* loaded from Firebase below (or paste one here to override) */
+    proxyUrl: "", /* Cloudflare Worker URL (key stays inside the worker) */
+    apiKey: "",   /* direct mode only — loaded from Firebase below */
     model: "gemini-2.5-flash", /* fast + generous free-tier limits */
   };
 
-  /* Fetch the key from Firebase at boot so it never sits in the repo */
-  if (!AI_CONFIG.apiKey && window.FIREBASE_CONFIG && FIREBASE_CONFIG.databaseURL) {
+  /* Fetch the config from Firebase at boot so secrets never sit in the repo */
+  if (window.FIREBASE_CONFIG && FIREBASE_CONFIG.databaseURL) {
     fetch(FIREBASE_CONFIG.databaseURL + "/stats/aiConfig.json")
       .then((r) => r.json())
       .then((v) => {
-        if (v && v.key) {
-          AI_CONFIG.apiKey = v.key;
-          if (v.model) AI_CONFIG.model = v.model;
-        }
+        if (!v) return;
+        if (v.proxyUrl) AI_CONFIG.proxyUrl = v.proxyUrl;
+        if (v.key) AI_CONFIG.apiKey = v.key;
+        if (v.model) AI_CONFIG.model = v.model;
       })
       .catch(() => {});
   }
 
-  const ready = () => !!AI_CONFIG.apiKey;
+  const ready = () => !!(AI_CONFIG.proxyUrl || AI_CONFIG.apiKey);
 
   /* Gemini wraps answers in ```html fences — strip them for direct use */
   function stripFences(text) {
@@ -47,9 +53,6 @@
   function complete(prompt, opts) {
     opts = opts || {};
     if (!ready()) return Promise.reject(new Error("no-key"));
-    const url =
-      "https://generativelanguage.googleapis.com/v1beta/models/" +
-      AI_CONFIG.model + ":generateContent?key=" + encodeURIComponent(AI_CONFIG.apiKey);
     const body = {
       contents: [{ role: "user", parts: [{ text: String(prompt) }] }],
       generationConfig: {
@@ -58,11 +61,22 @@
       },
     };
     if (opts.system) body.systemInstruction = { parts: [{ text: opts.system }] };
-    return fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    })
+    const req = AI_CONFIG.proxyUrl
+      ? fetch(AI_CONFIG.proxyUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ model: AI_CONFIG.model, body: body }),
+        })
+      : fetch(
+          "https://generativelanguage.googleapis.com/v1beta/models/" +
+            AI_CONFIG.model + ":generateContent?key=" + encodeURIComponent(AI_CONFIG.apiKey),
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+          }
+        );
+    return req
       .then((r) => {
         if (!r.ok)
           return r.json().catch(() => ({})).then((e) => {

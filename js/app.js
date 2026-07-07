@@ -2271,7 +2271,7 @@
       <div class="container" style="max-width:760px">
         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
           <h2 class="section-title">💳 ${t("admin_payments")}</h2>
-          <a class="btn btn-outline btn-sm" href="#/admin">← ${t("admin")}</a>
+          <a class="btn btn-outline btn-sm" href="#/admin/dashboard">📊 ${t("dash_admin_title")}</a>
         </div>
         <div id="pay-list"><div class="empty"><h2>⏳</h2></div></div>
       </div>`;
@@ -2322,6 +2322,79 @@
     }).catch(() => { mount.innerHTML = `<div class="empty"><h2>${t("lb_offline")}</h2></div>`; });
   }
 
+  /* Admin dashboard: one page of stats pulled from Firebase — students,
+     premium members, pending payments, most-popular courses, top learners */
+  function renderAdminDashboard() {
+    const base = statsBase();
+    app.innerHTML = `
+      <div class="container" style="max-width:900px">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+          <h2 class="section-title">📊 ${t("dash_admin_title")}</h2>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <a class="btn btn-outline btn-sm" href="#/admin">✏️ ${t("admin_title")}</a>
+            <a class="btn btn-outline btn-sm" href="#/admin/payments">💳 ${t("admin_payments")}</a>
+          </div>
+        </div>
+        <div id="dash-body"><div class="empty"><h2>⏳</h2></div></div>
+      </div>`;
+    const mount = document.getElementById("dash-body");
+    if (!base) { mount.innerHTML = `<div class="empty"><h2>${t("lb_offline")}</h2></div>`; return; }
+    Promise.all([
+      fetch(base + "/stats/leaderboard.json").then((r) => r.json()).catch(() => ({})),
+      fetch(base + "/stats/courses.json").then((r) => r.json()).catch(() => ({})),
+      fetch(base + "/payments.json").then((r) => r.json()).catch(() => ({})),
+      fetch(base + "/premium.json").then((r) => r.json()).catch(() => ({})),
+    ]).then(([lb, courses, payments, premium]) => {
+      const students = Object.values(lb || {}).filter((x) => x && (Number(x.xp) || 0) > 0);
+      const active = students.filter((x) => (Number(x.streak) || 0) > 0).length;
+      const premMembers = Object.keys(premium || {}).length;
+      const payArr = Object.values(payments || {}).filter(Boolean);
+      const pending = payArr.filter((p) => p.status === "pending").length;
+      const approved = payArr.filter((p) => p.status === "approved").length;
+      /* revenue estimate from approved claims × current promo price */
+      const revenue = approved * (PAYMENT_CONFIG.price || 0);
+
+      /* most popular courses by total views across all days */
+      const pop = Object.entries(courses || {}).map(([cid, days]) => {
+        const views = Object.values(days || {}).reduce((a, n) => a + (Number(n) || 0), 0);
+        const c = courseById(cid);
+        return { cid, title: c ? c.title : cid, icon: c ? c.icon : "📘", views };
+      }).filter((x) => x.views > 0).sort((a, b) => b.views - a.views).slice(0, 8);
+
+      const topStudents = students.slice().sort((a, b) => (Number(b.xp) || 0) - (Number(a.xp) || 0)).slice(0, 8);
+
+      const card = (icon, num, label) =>
+        `<div class="adash-card"><div class="adash-ic">${icon}</div><div class="adash-num">${num}</div><div class="adash-lbl">${label}</div></div>`;
+
+      mount.innerHTML = `
+        <div class="adash-grid">
+          ${card("👥", students.length, t("dash_students"))}
+          ${card("🔥", active, t("dash_active"))}
+          ${card("⭐", premMembers, t("dash_members"))}
+          ${card("⏳", pending, t("dash_pending"))}
+          ${card("✅", approved, t("dash_approved"))}
+          ${card("💰", fmt(revenue) + " Ks", t("dash_revenue"))}
+        </div>
+        ${pending ? `<div style="margin:10px 0"><a class="btn btn-primary btn-sm" href="#/admin/payments">💳 ${t("dash_review_pending").replace("{n}", pending)}</a></div>` : ""}
+        <div class="adash-cols">
+          <div class="panel">
+            <h3>🔥 ${t("dash_popular")}</h3>
+            ${pop.length ? `<div class="adash-list">${pop.map((c) =>
+              `<div class="adash-row"><a href="#/course/${c.cid}"><span>${c.icon}</span> ${escapeHtml(c.title)}</a><b>${c.views} ${t("dash_views")}</b></div>`).join("")}</div>`
+              : `<p class="muted">${t("dash_none")}</p>`}
+          </div>
+          <div class="panel">
+            <h3>🏆 ${t("dash_top_students")}</h3>
+            ${topStudents.length ? `<div class="adash-list">${topStudents.map((s, i) =>
+              `<div class="adash-row"><span>${i + 1}. ${escapeHtml(String(s.name || "?").slice(0, 30))}</span><b>⚡ ${Number(s.xp) || 0} · 📗 ${Number(s.lessons) || 0}</b></div>`).join("")}</div>`
+              : `<p class="muted">${t("dash_none")}</p>`}
+          </div>
+        </div>
+        <p class="muted" style="font-size:12px">${t("dash_note")}</p>`;
+    }).catch(() => { mount.innerHTML = `<div class="empty"><h2>${t("lb_offline")}</h2></div>`; });
+    window.scrollTo(0, 0);
+  }
+
   function renderAdmin(editId) {
     if (!loggedIn()) { location.hash = "#/"; if (window.Auth) window.Auth.openModal("login"); return; }
     if (!(window.Auth && window.Auth.isAdmin && window.Auth.isAdmin())) {
@@ -2333,6 +2406,7 @@
         </div></div>`;
       return;
     }
+    if (editId === "dashboard") return renderAdminDashboard();
     if (editId === "payments") return renderAdminPayments();
     const custom = loadCustomCourses();
     const editing = editId ? custom.find((c) => c.id === editId) : null;
@@ -2343,7 +2417,10 @@
       <div class="container" style="max-width:860px">
         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
           <h2 class="section-title">${t("admin_title")}</h2>
-          <a class="btn btn-outline btn-sm" href="#/admin/payments">💳 ${t("admin_payments")}</a>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <a class="btn btn-outline btn-sm" href="#/admin/dashboard">📊 ${t("dash_admin_title")}</a>
+            <a class="btn btn-outline btn-sm" href="#/admin/payments">💳 ${t("admin_payments")}</a>
+          </div>
         </div>
         <div class="panel">
           <form id="admin-form" class="auth-form">

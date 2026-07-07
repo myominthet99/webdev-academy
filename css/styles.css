@@ -750,6 +750,19 @@ button { font-family: inherit; cursor: pointer; }
   tab-size: 2;
 }
 .pg-result { border: 0; background: #fff; width: 100%; height: 100%; }
+/* 📊 Admin dashboard */
+.adash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin: 8px 0 16px; }
+.adash-card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; text-align: center; }
+.adash-ic { font-size: 24px; }
+.adash-num { font-size: 26px; font-weight: 800; margin: 4px 0; }
+.adash-lbl { font-size: 13px; color: var(--muted); }
+.adash-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 640px) { .adash-cols { grid-template-columns: 1fr; } }
+.adash-list { display: flex; flex-direction: column; }
+.adash-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+.adash-row:last-child { border-bottom: none; }
+.adash-row b { white-space: nowrap; color: var(--muted); font-size: 13px; }
+
 /* ✔ AI code-check result panel in the playground */
 .pg-check-panel {
   border-top: 1px solid var(--line); max-height: 260px; overflow-y: auto;

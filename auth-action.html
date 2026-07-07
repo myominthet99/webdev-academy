@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WebDev Academy — Account</title>
+  <!--
+    Self-hosted Firebase Auth action handler.
+    WHY: Firebase's default action page is on *.firebaseapp.com, which is
+    blocked / unresolvable on some Myanmar networks. This page lives on
+    github.io (which works there) and calls the Firebase Auth REST API on
+    identitytoolkit.googleapis.com (which also works) to finish password
+    resets and email verification.
+
+    Firebase console → Authentication → Templates → (edit any template) →
+    "Customize action URL" →
+       https://myominthet99.github.io/webdev-academy/auth-action.html
+  -->
+  <style>
+    :root { --purple:#654ea3; --pink:#eaafc8; --line:#e6e6ef; --ink:#1a1a2e; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Myanmar Text",sans-serif;
+      background:linear-gradient(135deg,#f6f3fb,#fdeef5); color:var(--ink); min-height:100vh;
+      display:flex; align-items:center; justify-content:center; padding:20px; }
+    .card { background:#fff; border:1px solid var(--line); border-radius:16px; padding:28px 24px;
+      max-width:400px; width:100%; box-shadow:0 10px 40px rgba(101,78,163,.12); }
+    .brand { font-weight:800; color:var(--purple); font-size:15px; margin-bottom:6px; }
+    h1 { font-size:22px; margin:0 0 6px; }
+    p { color:#666; font-size:14px; line-height:1.5; }
+    label { display:block; font-size:13px; font-weight:600; margin:14px 0 4px; }
+    input { width:100%; padding:12px; border:1px solid var(--line); border-radius:9px; font-size:16px; }
+    input:focus { outline:none; border-color:var(--purple); }
+    button { width:100%; margin-top:18px; padding:12px; border:none; border-radius:9px; cursor:pointer;
+      font-size:15px; font-weight:700; color:#fff; background:linear-gradient(135deg,var(--purple),var(--pink)); }
+    button:disabled { opacity:.6; }
+    .msg { margin-top:14px; padding:10px 12px; border-radius:9px; font-size:14px; }
+    .err { background:#fdecec; color:#c0392b; border:1px solid #f3c2c2; }
+    .ok  { background:#e9f9ef; color:#1a7f43; border:1px solid #bfe6cd; }
+    .site { display:inline-block; margin-top:16px; color:var(--purple); font-weight:700; text-decoration:none; }
+    .hide { display:none; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="brand">&lt;/&gt; WebDev Academy</div>
+    <div id="view"><p>⏳ Loading…</p></div>
+  </div>
+
+  <script>
+  (function () {
+    "use strict";
+    var SITE = "https://myominthet99.github.io/webdev-academy/";
+    var qs = new URLSearchParams(location.search);
+    var mode = qs.get("mode") || "";
+    var oobCode = qs.get("oobCode") || "";
+    var KEY = qs.get("apiKey") || "AIzaSyBUZO8zrCbJuR9HoJqhZeYtzQAGg6fc6JY";
+    var IDP = "https://identitytoolkit.googleapis.com/v1/accounts:";
+    var view = document.getElementById("view");
+    var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" })[c]; }); };
+    var backLink = '<a class="site" href="' + SITE + '">← Back to WebDev Academy</a>';
+
+    function post(method, body) {
+      return fetch(IDP + method + "?key=" + encodeURIComponent(KEY), {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body)
+      }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, data: j }; }); });
+    }
+    function fail(text) {
+      view.innerHTML = '<h1>Something went wrong</h1><p>' + esc(text) +
+        '</p><p>The link may have expired. Please request a new one from the login screen.</p>' + backLink;
+    }
+
+    if (!oobCode) { fail("This link is missing its security code."); return; }
+
+    /* ---------- password reset ---------- */
+    if (mode === "resetPassword") {
+      /* verify the code first to show whose account it is */
+      post("resetPassword", { oobCode: oobCode }).then(function (res) {
+        if (!res.ok) { fail((res.data.error && res.data.error.message) || "Invalid or expired link."); return; }
+        var email = res.data.email || "";
+        view.innerHTML =
+          '<h1>Set a new password</h1>' +
+          '<p>For <strong>' + esc(email) + '</strong></p>' +
+          '<label>New password (at least 6 characters)</label>' +
+          '<input id="pw" type="password" autocomplete="new-password">' +
+          '<label>Confirm new password</label>' +
+          '<input id="pw2" type="password" autocomplete="new-password">' +
+          '<div id="m" class="msg hide"></div>' +
+          '<button id="go" type="button">Save new password</button>';
+        var m = document.getElementById("m");
+        var btn = document.getElementById("go");
+        function show(cls, text) { m.className = "msg " + cls; m.textContent = text; m.classList.remove("hide"); }
+        btn.addEventListener("click", function () {
+          var pw = document.getElementById("pw").value, pw2 = document.getElementById("pw2").value;
+          if (pw.length < 6) { show("err", "Password must be at least 6 characters."); return; }
+          if (pw !== pw2) { show("err", "The two passwords do not match."); return; }
+          btn.disabled = true; show("ok", "Saving…");
+          post("resetPassword", { oobCode: oobCode, newPassword: pw }).then(function (r2) {
+            if (!r2.ok) { btn.disabled = false; show("err", (r2.data.error && r2.data.error.message) || "Could not reset. The link may have expired."); return; }
+            view.innerHTML = '<h1>✅ Password changed!</h1>' +
+              '<p>You can now log in with your new password.</p>' + backLink;
+          }).catch(function () { btn.disabled = false; show("err", "Network error — please try again."); });
+        });
+      }).catch(function () { fail("Network error — please check your connection."); });
+      return;
+    }
+
+    /* ---------- email verification ---------- */
+    if (mode === "verifyEmail") {
+      post("update", { oobCode: oobCode }).then(function (res) {
+        if (!res.ok) { fail((res.data.error && res.data.error.message) || "Invalid or expired link."); return; }
+        view.innerHTML = '<h1>✅ Email verified!</h1>' +
+          '<p>Thanks — your email <strong>' + esc(res.data.email || "") + '</strong> is confirmed. You can close this page and keep learning.</p>' + backLink;
+      }).catch(function () { fail("Network error — please check your connection."); });
+      return;
+    }
+
+    /* ---------- recover email (undo an email change) ---------- */
+    if (mode === "recoverEmail") {
+      post("update", { oobCode: oobCode }).then(function (res) {
+        if (!res.ok) { fail((res.data.error && res.data.error.message) || "Invalid or expired link."); return; }
+        view.innerHTML = '<h1>✅ Done</h1><p>Your email has been restored.</p>' + backLink;
+      }).catch(function () { fail("Network error."); });
+      return;
+    }
+
+    fail("Unknown action: " + mode);
+  })();
+  </script>
+</body>
+</html>

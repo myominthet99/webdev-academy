@@ -582,13 +582,36 @@ button { font-family: inherit; cursor: pointer; }
   cursor: pointer; opacity: .8; padding: 0 4px;
 }
 .chat-full:hover { opacity: 1; }
-/* fullscreen chat mode */
+/* fullscreen chat mode — a real chat app: edge-to-edge shell with a
+   centered conversation column, capped bubble width, roomier spacing */
 .chat-panel.full {
-  position: fixed; left: 12px; right: 12px; top: 12px; bottom: 12px;
+  position: fixed; inset: 0;
   width: auto; height: auto; max-width: none; max-height: none;
+  border-radius: 0; border: 0; z-index: 300;
 }
-.chat-panel.full .chat-msg { max-width: 70%; }
+.chat-panel.full .chat-head {
+  padding: 14px clamp(16px, calc((100% - 860px) / 2), 50vw);
+}
+.chat-panel.full .chat-title { font-size: 17px; font-weight: 700; }
+.chat-panel.full .chat-search { max-width: 220px; }
+.chat-panel.full .chat-list {
+  padding: 22px clamp(16px, calc((100% - 860px) / 2), 50vw);
+  gap: 12px;
+}
+.chat-panel.full .chat-msg { max-width: 560px; }
+.chat-panel.full .chat-bubble { padding: 10px 14px; border-radius: 14px; }
+.chat-panel.full .chat-text { font-size: 15px; line-height: 1.5; }
+.chat-panel.full .chat-avatar { width: 34px; height: 34px; font-size: 14px; }
 .chat-panel.full .chat-img { max-width: 340px; max-height: 340px; }
+.chat-panel.full .chat-quote { max-width: 420px; }
+.chat-panel.full .chat-typing {
+  padding: 6px clamp(16px, calc((100% - 860px) / 2), 50vw);
+}
+.chat-panel.full .chat-foot {
+  padding: 14px clamp(16px, calc((100% - 860px) / 2), 50vw) 18px;
+}
+.chat-panel.full .chat-form textarea { font-size: 15px; padding: 11px 16px; }
+.chat-panel.full .chat-send { width: 44px; height: 44px; font-size: 17px; }
 .chat-send { border: 0; background: var(--purple); color: #fff; width: 38px; border-radius: 50%; font-size: 15px; cursor: pointer; }
 .chat-send:hover { filter: brightness(1.06); }
 .chat-search { flex: 1; min-width: 60px; max-width: 150px; padding: 6px 10px; border: 1px solid var(--line); font-size: 13px; background: var(--surface-2); color: var(--ink); border-radius: 6px; margin: 0 8px; }

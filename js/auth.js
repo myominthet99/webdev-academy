@@ -26,6 +26,7 @@
   const listeners = [];
   let modalEl = null;
   let modalMode = "login";
+  let resetStep = "request"; /* "request" (send email) → "complete" (paste link) */
 
   const lang = () => (localStorage.getItem("wda_lang") === "my" ? "my" : "en");
   const t = (k) => (I18N.ui[lang()] && I18N.ui[lang()][k]) || I18N.ui.en[k] || k;
@@ -193,6 +194,29 @@
     }
   }
 
+  /* Finish a reset from a pasted link — works even when the link's page
+     (firebaseapp.com) is blocked, because we call the REST API directly
+     (identitytoolkit.googleapis.com), which is reachable. */
+  async function completeReset(pastedLink, newPass) {
+    const m = String(pastedLink || "").match(/[?&]oobCode=([^&\s]+)/);
+    if (!m) return { error: t("reset_no_code") };
+    if (!newPass || newPass.length < 6) return { error: t("auth_err_shortpass") };
+    const code = decodeURIComponent(m[1]);
+    const key = (cfg && cfg.apiKey) || "";
+    try {
+      const r = await fetch(
+        "https://identitytoolkit.googleapis.com/v1/accounts:resetPassword?key=" + encodeURIComponent(key),
+        { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ oobCode: code, newPassword: newPass }) }
+      );
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) {
+        const code2 = (j.error && j.error.message) || "";
+        return { error: (code2 === "INVALID_OOB_CODE" || code2 === "EXPIRED_OOB_CODE") ? t("reset_bad_code") : (code2 || t("auth_err_required")) };
+      }
+      return { ok: true };
+    } catch (e) { return { error: t("auth_err_network") }; }
+  }
+
   async function resendVerification() {
     if (!auth || !auth.currentUser) return { error: t("auth_err_required") };
     try { await fa.sendEmailVerification(auth.currentUser); return { ok: true }; }
@@ -249,6 +273,7 @@
 
   function openModal(mode) {
     modalMode = mode || "login";
+    if (modalMode === "reset") resetStep = "request";
     if (!modalEl) buildModal();
     renderModalBody();
     modalEl.classList.add("open");
@@ -265,6 +290,9 @@
     body.querySelectorAll("[data-switch]").forEach((a) =>
       a.addEventListener("click", () => { modalMode = a.dataset.switch; renderModalBody(); })
     );
+    body.querySelectorAll("[data-reset-step]").forEach((a) =>
+      a.addEventListener("click", () => { resetStep = a.dataset.resetStep; renderModalBody(); })
+    );
   }
 
   function renderModalBody() {
@@ -279,7 +307,41 @@
     });
     const body = modalEl.querySelector("#auth-body");
 
-    /* ----- password reset view (sends a real email) ----- */
+    /* ----- password reset, step 2: paste the link + set new password ----- */
+    if (isReset && resetStep === "complete") {
+      body.innerHTML =
+        '<h2 class="auth-title">' + t("reset_set_title") + "</h2>" +
+        '<p class="auth-note" style="text-align:left;margin-bottom:12px">' + t("reset_paste_help") + "</p>" +
+        '<div class="auth-err" hidden></div><div class="auth-ok" hidden></div>' +
+        '<form class="auth-form" novalidate>' +
+        "<label>" + t("reset_paste_label") + '</label>' +
+        '<textarea name="link" rows="3" placeholder="https://...oobCode=..." style="width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:12px;font-family:inherit"></textarea>' +
+        "<label>" + t("auth_new_password") + '</label><input name="pw" type="password" autocomplete="new-password">' +
+        "<label>" + t("reset_confirm") + '</label><input name="pw2" type="password" autocomplete="new-password">' +
+        '<button class="btn btn-primary btn-block" type="submit">' + t("reset_set_btn") + "</button>" +
+        "</form>" +
+        '<p class="auth-switch"><a data-reset-step="request">← ' + t("reset_back_email") + "</a></p>" +
+        '<p class="auth-switch"><a data-switch="login">' + t("auth_back_login") + "</a></p>";
+      const form = body.querySelector(".auth-form");
+      const errBox = body.querySelector(".auth-err");
+      const okBox = body.querySelector(".auth-ok");
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        errBox.hidden = true; okBox.hidden = true;
+        const d = new FormData(form);
+        if (d.get("pw") !== d.get("pw2")) { errBox.textContent = t("reset_mismatch"); errBox.hidden = false; return; }
+        const btn = form.querySelector("button[type=submit]");
+        btn.disabled = true;
+        const res = await completeReset(d.get("link"), d.get("pw"));
+        btn.disabled = false;
+        if (res && res.error) { errBox.textContent = res.error; errBox.hidden = false; }
+        else { okBox.textContent = t("reset_done"); okBox.hidden = false; form.reset(); }
+      });
+      bindSwitches(body);
+      return;
+    }
+
+    /* ----- password reset, step 1: send the email ----- */
     if (isReset) {
       body.innerHTML =
         '<h2 class="auth-title">' + t("auth_reset_title") + "</h2>" +
@@ -290,6 +352,7 @@
         "<label>" + t("auth_email") + '</label><input name="email" type="email" autocomplete="email">' +
         '<button class="btn btn-primary btn-block" type="submit">' + t("auth_reset_btn") + "</button>" +
         "</form>" +
+        '<p class="auth-switch" style="margin-top:12px"><a data-reset-step="complete">' + t("reset_have_link") + " →</a></p>" +
         '<p class="auth-switch"><a data-switch="login">' + t("auth_back_login") + "</a></p>";
       const form = body.querySelector(".auth-form");
       const errBox = body.querySelector(".auth-err");
@@ -302,7 +365,11 @@
         const res = await resetPassword(new FormData(form).get("email"));
         btn.disabled = false;
         if (res && res.error) { errBox.textContent = res.error; errBox.hidden = false; }
-        else { okBox.textContent = t("auth_reset_sent"); okBox.hidden = false; form.reset(); }
+        else {
+          /* move straight to the paste step so the user knows what's next */
+          okBox.textContent = t("auth_reset_sent"); okBox.hidden = false;
+          setTimeout(() => { resetStep = "complete"; renderModalBody(); }, 1600);
+        }
       });
       bindSwitches(body);
       return;
@@ -417,6 +484,7 @@
     updateProfile,
     changePassword,
     resetPassword,
+    completeReset,
     resendVerification,
     openModal,
     ready: () => authReady,

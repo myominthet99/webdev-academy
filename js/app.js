@@ -3084,4 +3084,27 @@
   updateStreak();
   router();
   loadAnnouncement();
+
+  /* 📲 PWA install: show an Install button when the browser offers it
+     (Android/desktop Chrome). iOS has no such event — users add via Share. */
+  let deferredInstall = null;
+  const installBtn = document.getElementById("install-btn");
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferredInstall = e;
+    if (installBtn && localStorage.getItem("wda_install_dismiss") !== "1") {
+      installBtn.textContent = "📲 " + t("install_app");
+      installBtn.hidden = false;
+    }
+  });
+  if (installBtn) installBtn.addEventListener("click", async () => {
+    if (!deferredInstall) return;
+    deferredInstall.prompt();
+    let outcome = "dismissed";
+    try { outcome = (await deferredInstall.userChoice).outcome; } catch (e) {}
+    deferredInstall = null;
+    installBtn.hidden = true;
+    if (outcome !== "accepted") localStorage.setItem("wda_install_dismiss", "1");
+  });
+  window.addEventListener("appinstalled", () => { if (installBtn) installBtn.hidden = true; });
 })();

@@ -5636,6 +5636,860 @@ end)</code></pre></li>
       },
     ],
   },
+  {
+    id: "fullstack",
+    title: "Full Stack Developer",
+    subtitle: "One journey from your first HTML tag to a complete app with a server and database.",
+    instructor: "Myo Min Thet",
+    category: "Career",
+    level: "Beginner",
+    rating: 4.9,
+    ratings: 2140,
+    students: 18420,
+    hours: 24,
+    price: "Free",
+    free: false,
+    color: "linear-gradient(135deg,#1a2980,#26d0ce)",
+    icon: "🥞",
+    description:
+      "Become the developer who can build EVERYTHING — the page users see, the server behind it, and the database that remembers. Every lesson uses simple English, flow-chart diagrams, and small steps, so beginners never get lost. You'll finish by building and shipping a real full stack app: My Notes.",
+    whatYouLearn: [
+      "See the whole picture: how frontend, backend and database work together",
+      "Build pages with HTML, CSS and JavaScript",
+      "Send and receive data with JSON and fetch()",
+      "Create your own server and REST API with Node.js and Express",
+      "Store data forever with SQL and SQLite",
+      "Build and deploy a complete full stack app to the internet",
+    ],
+    sections: [
+      {
+        title: "The Big Picture",
+        lessons: [
+          article("fs-what", "What is a Full Stack Developer?", "10 min", `
+<h3>🎯 The chef who can cook everything</h3>
+<p>A restaurant needs someone to decorate the dining room, someone to cook in the kitchen, and someone to manage the storeroom. A <strong>full stack developer</strong> is the person who can do all three — for apps.</p>
+<div class="flow">
+  <div class="flow-box">🎨 Frontend<br><small>what users SEE<br>HTML · CSS · JS</small></div>
+  <div class="flow-arrow" data-label="talks to"></div>
+  <div class="flow-box alt">⚙️ Backend<br><small>the LOGIC<br>Node.js server</small></div>
+  <div class="flow-arrow" data-label="saves in"></div>
+  <div class="flow-box warn">🗄️ Database<br><small>the MEMORY<br>SQL</small></div>
+</div>
+<h3>📝 The three layers</h3>
+<ul>
+  <li><strong>Frontend</strong> — everything in the user's browser: buttons, colors, text, forms. Built with HTML, CSS and JavaScript.</li>
+  <li><strong>Backend</strong> — a program running on a server computer. It receives requests, makes decisions, and applies rules ("is this password correct?").</li>
+  <li><strong>Database</strong> — where data lives permanently: accounts, messages, orders. Even when the server restarts, the database remembers.</li>
+</ul>
+<p>Example: when you send a chat message in this academy, the <em>frontend</em> takes your text, the <em>backend</em> (Firebase) accepts and shares it, and the <em>database</em> stores it so your friend sees it tomorrow too.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> open your favorite app (Facebook, TikTok, anything). Point at 3 things and say which layer they belong to: what you see = frontend, the rules = backend, what is remembered = database.</div>`),
+          article("fs-how-web", "How the Web Really Works", "10 min", `
+<h3>🎯 A polite conversation</h3>
+<p>The web is just two computers talking: your <strong>browser</strong> (the client) asks, and a <strong>server</strong> answers. Every page load is this conversation:</p>
+<div class="flow">
+  <div class="flow-box">🧑 Browser<br><small>client</small></div>
+  <div class="flow-arrow" data-label="1. request"></div>
+  <div class="flow-box alt">🖥️ Server<br><small>program</small></div>
+  <div class="flow-arrow" data-label="2. response"></div>
+  <div class="flow-box">🧑 Browser<br><small>shows page</small></div>
+</div>
+<h3>📝 What happens when you press Enter</h3>
+<ol>
+  <li>You type <code>myominthet99.github.io</code> and press Enter.</li>
+  <li><strong>DNS</strong> finds the server's <strong>IP address</strong> — like looking up a phone number.</li>
+  <li>Your browser sends an <strong>HTTP request</strong>: "GET me that page, please."</li>
+  <li>The server sends back a <strong>response</strong>: HTML, CSS, JavaScript files.</li>
+  <li>The browser draws the page. Total time: less than a second!</li>
+</ol>
+<h3>💻 Requests have types (verbs)</h3>
+<pre><code>GET    /courses      → "give me data"   (reading)
+POST   /login        → "here is data"   (creating/sending)
+PUT    /profile      → "update this"    (changing)
+DELETE /message/7    → "remove this"    (deleting)</code></pre>
+<p>Remember these four — the whole internet runs on them, and your own API in Section 4 will use them all.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> in Chrome, press F12 → Network tab → reload any page. Every row you see is one request! Click one and find its type (GET?) and status (200 = OK).</div>`),
+          article("fs-tools", "Your Developer Toolbox", "8 min", `
+<h3>🎯 Every craftsman needs tools</h3>
+<p>Good news: everything a full stack developer needs is <strong>free</strong>.</p>
+<h3>📝 The essential four</h3>
+<ul>
+  <li><strong>Browser + DevTools</strong> — Chrome or Edge. Press <code>F12</code>: the Console shows errors, the Network tab shows requests, the Elements tab shows live HTML.</li>
+  <li><strong>Code editor</strong> — <strong>VS Code</strong> (free). It colors your code and finds mistakes. On a phone? Use this site's Playground!</li>
+  <li><strong>Node.js</strong> — lets JavaScript run <em>outside</em> the browser. This is your backend engine (Section 4).</li>
+  <li><strong>Git + GitHub</strong> — saves versions of your code and puts it online. This academy itself lives on GitHub!</li>
+</ul>
+<h3>💻 Check your setup (later, on a computer)</h3>
+<pre><code># in a terminal:
+node --version     # v20.x.x  → Node is installed
+git --version      # git version 2.x  → Git is installed</code></pre>
+<div class="callout"><strong>No computer yet? No problem.</strong> Frontend lessons work 100% in this site's Playground on your phone. For the backend lessons, read along and learn the ideas — then practice when you get computer time (school lab, internet café, a friend's laptop).</div>
+<div class="callout tip"><strong>Try it yourself:</strong> press F12 on this page, open the Console tab, type <code>2 + 2</code> and press Enter. You just ran JavaScript in DevTools!</div>`),
+        ],
+      },
+      {
+        title: "Frontend — What Users See",
+        lessons: [
+          article("fs-html", "HTML in One Lesson", "12 min", `
+<h3>🎯 The skeleton of every page</h3>
+<p><strong>HTML</strong> gives a page its structure using <strong>tags</strong>. A tag wraps content and gives it meaning: <code>&lt;h1&gt;</code> means "big heading", <code>&lt;p&gt;</code> means "paragraph".</p>
+<h3>💻 A complete mini page</h3>
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;body&gt;
+    &lt;h1&gt;My Tea Shop&lt;/h1&gt;
+    &lt;p&gt;The best laphet yay in town.&lt;/p&gt;
+    &lt;img src="tea.jpg" alt="A cup of tea"&gt;
+    &lt;a href="menu.html"&gt;See the menu&lt;/a&gt;
+    &lt;button&gt;Order now&lt;/button&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<h3>📝 The tags you'll use every day</h3>
+<ul>
+  <li><code>&lt;h1&gt;…&lt;h6&gt;</code> headings · <code>&lt;p&gt;</code> paragraph · <code>&lt;a&gt;</code> link</li>
+  <li><code>&lt;img&gt;</code> image · <code>&lt;button&gt;</code> button · <code>&lt;input&gt;</code> text box</li>
+  <li><code>&lt;div&gt;</code> a box for grouping · <code>&lt;ul&gt;/&lt;li&gt;</code> lists</li>
+</ul>
+<p>Tags can have <strong>attributes</strong> — extra settings inside the opening tag: <code>src</code> tells an image which file to show, <code>href</code> tells a link where to go.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> open the 🧪 Playground and build a page about YOUR dream shop: one heading, one paragraph, one button. Then add a second heading with <code>&lt;h2&gt;</code>.</div>`),
+          article("fs-css", "CSS in One Lesson", "12 min", `
+<h3>🎯 The style of every page</h3>
+<p><strong>CSS</strong> decides how HTML looks: colors, sizes, spacing, position. A CSS rule has three parts:</p>
+<div class="flow">
+  <div class="flow-box">selector<br><small>WHO to style<br>h1, .card, #menu</small></div>
+  <div class="flow-arrow" data-label="then"></div>
+  <div class="flow-box alt">property<br><small>WHAT to change<br>color, font-size</small></div>
+  <div class="flow-arrow" data-label="gets"></div>
+  <div class="flow-box warn">value<br><small>the new look<br>purple, 24px</small></div>
+</div>
+<h3>💻 Styling our tea shop</h3>
+<pre><code>&lt;style&gt;
+  body   { font-family: sans-serif; background: #faf7f2; }
+  h1     { color: #654ea3; }
+  .card  {
+    background: white;
+    padding: 16px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.1);
+  }
+  button { background: #654ea3; color: white; border: none;
+           padding: 10px 20px; border-radius: 8px; }
+&lt;/style&gt;
+
+&lt;div class="card"&gt;
+  &lt;h1&gt;My Tea Shop&lt;/h1&gt;
+  &lt;button&gt;Order now&lt;/button&gt;
+&lt;/div&gt;</code></pre>
+<h3>📝 Three ways to select</h3>
+<ul>
+  <li><code>h1</code> — every h1 tag</li>
+  <li><code>.card</code> — every element with <code>class="card"</code> (reusable — most common!)</li>
+  <li><code>#menu</code> — the one element with <code>id="menu"</code></li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> paste the example into the Playground, then: 1) change the purple to your favorite color, 2) make the button text bigger with <code>font-size: 18px</code>, 3) round the corners more.</div>`),
+          article("fs-flex", "Page Layout with Flexbox", "10 min", `
+<h3>🎯 Arranging boxes like a pro</h3>
+<p>Real pages have things side by side: menus, cards, photo grids. <strong>Flexbox</strong> is the modern way — put <code>display: flex</code> on a parent box, and its children line up automatically.</p>
+<h3>💻 Three cards in a row</h3>
+<pre><code>&lt;style&gt;
+  .row {
+    display: flex;
+    gap: 12px;               /* space between children */
+    justify-content: center; /* left-right position */
+    align-items: center;     /* up-down position */
+    flex-wrap: wrap;         /* small screens: go to next line */
+  }
+  .box { background: #e8dff8; padding: 20px; border-radius: 10px; }
+&lt;/style&gt;
+
+&lt;div class="row"&gt;
+  &lt;div class="box"&gt;☕ Tea&lt;/div&gt;
+  &lt;div class="box"&gt;🍜 Noodles&lt;/div&gt;
+  &lt;div class="box"&gt;🍰 Cake&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+<h3>📝 The four you'll use constantly</h3>
+<ul>
+  <li><code>display: flex</code> — turn on flexbox (on the PARENT)</li>
+  <li><code>gap</code> — space between items (no more margin headaches)</li>
+  <li><code>justify-content</code> — main direction: <code>center</code>, <code>space-between</code>…</li>
+  <li><code>flex-wrap: wrap</code> — items flow to the next line on phones = responsive!</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> build the 3-card row in the Playground. Then change <code>justify-content</code> to <code>space-between</code> and shrink the preview window — watch the cards wrap like magic.</div>`),
+          article("fs-js", "JavaScript Basics", "14 min", `
+<h3>🎯 The brain of the page</h3>
+<p>HTML is structure, CSS is style — <strong>JavaScript</strong> is <em>logic</em>. It remembers values, makes decisions, and repeats work.</p>
+<h3>💻 The core moves</h3>
+<pre><code>// 1. variables — remember things
+let price = 1500;
+const shopName = "My Tea Shop";   // const = never changes
+
+// 2. decisions
+if (price &gt; 1000) {
+  console.log("A bit expensive");
+} else {
+  console.log("Cheap!");
+}
+
+// 3. loops — repeat work
+const menu = ["tea", "noodles", "cake"];
+for (const item of menu) {
+  console.log("We sell: " + item);
+}
+
+// 4. functions — reusable recipes
+function total(price, qty) {
+  return price * qty;
+}
+console.log(total(1500, 3));   // 4500</code></pre>
+<h3>📝 Objects — data with labels</h3>
+<pre><code>const drink = { name: "Laphet Yay", price: 1500, hot: true };
+console.log(drink.name);    // "Laphet Yay"
+drink.price = 1800;         // update a value</code></pre>
+<p>Objects are EVERYWHERE in full stack work — every user, message, and product is an object. Get comfortable with the <code>thing.property</code> style.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> in the Playground, make an object about yourself (name, age, favorite food) and print a sentence using its values. Then write a function <code>discount(price)</code> that returns the price minus 10%.</div>`),
+          article("fs-dom", "The DOM — Making Pages React", "12 min", `
+<h3>🎯 JavaScript meets HTML</h3>
+<p>The <strong>DOM</strong> (Document Object Model) is the live version of your page that JavaScript can touch: find an element, change it, or listen for clicks.</p>
+<div class="flow">
+  <div class="flow-box">👆 User clicks<br><small>event</small></div>
+  <div class="flow-arrow" data-label="triggers"></div>
+  <div class="flow-box alt">🧠 Your function<br><small>JavaScript</small></div>
+  <div class="flow-arrow" data-label="updates"></div>
+  <div class="flow-box">📄 The page<br><small>DOM change</small></div>
+</div>
+<h3>💻 A click counter</h3>
+<pre><code>&lt;h1 id="count"&gt;0&lt;/h1&gt;
+&lt;button id="btn"&gt;+1&lt;/button&gt;
+
+&lt;script&gt;
+  let clicks = 0;
+  const counter = document.querySelector("#count");
+  const button  = document.querySelector("#btn");
+
+  button.addEventListener("click", function () {
+    clicks = clicks + 1;
+    counter.textContent = clicks;
+  });
+&lt;/script&gt;</code></pre>
+<h3>📝 The three DOM superpowers</h3>
+<ul>
+  <li><strong>Find:</strong> <code>document.querySelector("#id")</code> or <code>(".class")</code></li>
+  <li><strong>Change:</strong> <code>el.textContent = "new text"</code>, <code>el.style.color = "red"</code></li>
+  <li><strong>Listen:</strong> <code>el.addEventListener("click", myFunction)</code></li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> build the counter in the Playground. Then add a second button that resets the count to 0. Bonus: turn the number red when it passes 10.</div>`),
+          quiz("fs-quiz1", "Quiz: Frontend Foundations", [
+            { q: "Which layer of an app does the user directly see and touch?", options: ["Database", "Backend", "Frontend", "The server"], answer: 2 },
+            { q: "In CSS, what does the selector .card target?", options: ["The tag &lt;card&gt;", "Every element with class=\"card\"", "The element with id=\"card\"", "All divs"], answer: 1 },
+            { q: "Which flexbox property pushes items to a new line on small screens?", options: ["gap", "align-items", "flex-wrap: wrap", "display: block"], answer: 2 },
+            { q: "What does document.querySelector(\"#count\") do?", options: ["Creates a new element", "Finds the element with id=\"count\"", "Counts all elements", "Deletes an element"], answer: 1 },
+            { q: "Which HTTP verb means 'give me data'?", options: ["POST", "GET", "DELETE", "PUT"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Talking to Servers",
+        lessons: [
+          article("fs-forms", "Forms — Collecting User Input", "10 min", `
+<h3>🎯 The doorway for data</h3>
+<p>Login boxes, search bars, comment fields — <strong>forms</strong> are how users give data to your app. Frontend collects it; later the backend will receive it.</p>
+<h3>💻 A signup form</h3>
+<pre><code>&lt;form id="signup"&gt;
+  &lt;input name="username" placeholder="Your name" required&gt;
+  &lt;input name="email" type="email" placeholder="Email" required&gt;
+  &lt;input name="password" type="password" minlength="6"&gt;
+  &lt;button type="submit"&gt;Create account&lt;/button&gt;
+&lt;/form&gt;
+
+&lt;script&gt;
+  const form = document.querySelector("#signup");
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();                 // stop the page reload
+    const data = new FormData(form);
+    console.log(data.get("username")); // read one field
+  });
+&lt;/script&gt;</code></pre>
+<h3>📝 Remember these</h3>
+<ul>
+  <li><code>type="email"</code>, <code>required</code>, <code>minlength</code> — the browser checks input for FREE before you write any code.</li>
+  <li><code>e.preventDefault()</code> — stops the old-style page reload so JavaScript can handle the data.</li>
+  <li><code>new FormData(form)</code> — collects every field by its <code>name</code> in one line.</li>
+</ul>
+<div class="callout"><strong>Golden rule of full stack:</strong> never trust frontend checks alone — a clever user can skip them. The backend must check AGAIN. You'll do exactly that in Section 4.</div>
+<div class="callout tip"><strong>Try it yourself:</strong> build a "contact us" form (name + message). On submit, show "Thank you, NAME!" in an &lt;h2&gt; below the form instead of console.log.</div>`),
+          article("fs-json", "JSON — The Language of Data", "8 min", `
+<h3>🎯 How computers share data</h3>
+<p>When frontend and backend talk, they need a shared format. That format is <strong>JSON</strong> (JavaScript Object Notation) — it looks almost exactly like a JavaScript object:</p>
+<h3>💻 JSON in real life</h3>
+<pre><code>{
+  "name": "Aung Aung",
+  "age": 16,
+  "premium": true,
+  "courses": ["HTML", "CSS", "Full Stack"]
+}</code></pre>
+<h3>📝 Only two rules differ from JS objects</h3>
+<ul>
+  <li>Keys must wear "double quotes"</li>
+  <li>No functions — only data: strings, numbers, true/false, arrays, objects</li>
+</ul>
+<h3>💻 Converting back and forth</h3>
+<pre><code>const student = { name: "Su Su", xp: 320 };
+
+// object → JSON text (to SEND over the internet)
+const text = JSON.stringify(student);
+// '{"name":"Su Su","xp":320}'
+
+// JSON text → object (when you RECEIVE)
+const back = JSON.parse(text);
+console.log(back.xp);   // 320</code></pre>
+<p>That's it. Every API you will ever use — weather, YouTube, your own — speaks JSON.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> in the Playground console, JSON.stringify an object describing your favorite meal, then JSON.parse it back and print one property.</div>`),
+          article("fs-fetch", "fetch() — Asking Servers for Data", "12 min", `
+<h3>🎯 Your frontend's telephone</h3>
+<p><code>fetch()</code> lets JavaScript call a server and get data — <em>without reloading the page</em>. This is how modern apps feel so fast.</p>
+<div class="flow">
+  <div class="flow-box">📄 Your page<br><small>fetch(url)</small></div>
+  <div class="flow-arrow" data-label="request"></div>
+  <div class="flow-box alt">🌐 API server<br><small>finds data</small></div>
+  <div class="flow-arrow" data-label="JSON"></div>
+  <div class="flow-box">📄 Your page<br><small>shows result</small></div>
+</div>
+<h3>💻 GET — reading data</h3>
+<pre><code>fetch("https://api.example.com/quote")
+  .then(function (res) { return res.json(); })
+  .then(function (data) {
+    document.querySelector("#quote").textContent = data.text;
+  })
+  .catch(function () {
+    console.log("Network problem!");
+  });</code></pre>
+<h3>💻 POST — sending data</h3>
+<pre><code>fetch("https://api.example.com/messages", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ text: "Hello server!" })
+});</code></pre>
+<h3>📝 The pattern to memorize</h3>
+<ul>
+  <li><code>fetch(url)</code> returns a <strong>Promise</strong> — "the answer will arrive soon"</li>
+  <li><code>.then(res =&gt; res.json())</code> — unwrap the JSON</li>
+  <li><code>.then(data =&gt; …)</code> — use the data</li>
+  <li><code>.catch(…)</code> — always handle failure kindly (bad internet happens!)</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> this academy's chat and AI tutor both use fetch under the hood. Press F12 → Network on this site, send a chat message, and watch the fetch request appear!</div>`),
+          article("fs-project1", "Mini Project: Quote Machine", "12 min", `
+<h3>🎯 Your first data-driven app</h3>
+<p>Let's combine everything from this section: a page that shows a random inspirational quote each time you press a button. (We'll use a local list now; in Section 4 you'll serve quotes from YOUR OWN server.)</p>
+<h3>💻 The complete app</h3>
+<pre><code>&lt;div class="card"&gt;
+  &lt;h2 id="quote"&gt;Press the button!&lt;/h2&gt;
+  &lt;p id="author"&gt;&lt;/p&gt;
+  &lt;button id="next"&gt;New quote ✨&lt;/button&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+  const quotes = [
+    { text: "The best way to learn is to build.", by: "Every developer" },
+    { text: "First, solve the problem. Then, write the code.", by: "John Johnson" },
+    { text: "Small steps every day.", by: "Unknown" }
+  ];
+
+  document.querySelector("#next").addEventListener("click", function () {
+    const q = quotes[Math.floor(Math.random() * quotes.length)];
+    document.querySelector("#quote").textContent = '"' + q.text + '"';
+    document.querySelector("#author").textContent = "— " + q.by;
+  });
+&lt;/script&gt;</code></pre>
+<h3>📝 What you just practiced</h3>
+<ul>
+  <li>Objects in an array — exactly how APIs return lists</li>
+  <li>Random selection with <code>Math.random()</code></li>
+  <li>DOM updates on click — the heart of every interactive app</li>
+</ul>
+<div class="callout tip"><strong>Level it up:</strong> 1) add 5 more quotes (Myanmar proverbs welcome!), 2) style the card with CSS, 3) add a "Copy" button that runs <code>navigator.clipboard.writeText(...)</code>. Save it in your Playground snippets — you'll upgrade it later!</div>`),
+          quiz("fs-quiz2", "Quiz: Data & APIs", [
+            { q: "Why do we call e.preventDefault() in a form's submit handler?", options: ["To delete the form", "To stop the page from reloading so JS can handle the data", "To make the form prettier", "To send the data twice"], answer: 1 },
+            { q: "Which is VALID Json?", options: ["{ name: 'Mya' }", "{ \"name\": \"Mya\" }", "{ name = \"Mya\" }", "(name: Mya)"], answer: 1 },
+            { q: "JSON.stringify(obj) does what?", options: ["Turns JSON text into an object", "Turns an object into JSON text for sending", "Deletes the object", "Checks for errors"], answer: 1 },
+            { q: "In the fetch pattern, what does .catch() handle?", options: ["Successful answers", "Slow styling", "Failures like network errors", "Button clicks"], answer: 2 },
+            { q: "Which layer must ALWAYS re-check user input, even if the frontend already did?", options: ["The browser", "The backend", "CSS", "Nobody"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Backend — The Server Side",
+        lessons: [
+          article("fs-node", "Node.js — JavaScript Outside the Browser", "10 min", `
+<h3>🎯 Same language, new powers</h3>
+<p>Great news: you already know the backend language — it's <strong>JavaScript</strong>! <strong>Node.js</strong> runs JS outside the browser, where it gains server superpowers: reading files, talking to databases, and answering web requests.</p>
+<h3>💻 Your first Node program</h3>
+<pre><code>// hello.js
+const name = "future full stack dev";
+console.log("Hello, " + name + "!");
+
+// run it in a terminal:
+//   node hello.js
+// → Hello, future full stack dev!</code></pre>
+<h3>📝 The Node world in 4 words</h3>
+<ul>
+  <li><strong>node</strong> — runs a JS file: <code>node server.js</code></li>
+  <li><strong>npm</strong> — installs helpful packages: <code>npm install express</code></li>
+  <li><strong>package.json</strong> — your project's ID card (name + package list); created by <code>npm init -y</code></li>
+  <li><strong>node_modules</strong> — the folder where packages live (never edit it)</li>
+</ul>
+<div class="flow">
+  <div class="flow-box">📁 your-app<br><small>server.js<br>package.json</small></div>
+  <div class="flow-arrow" data-label="npm install"></div>
+  <div class="flow-box alt">📦 node_modules<br><small>express, etc.</small></div>
+  <div class="flow-arrow" data-label="node server.js"></div>
+  <div class="flow-box warn">🚀 running<br><small>your server!</small></div>
+</div>
+<div class="callout tip"><strong>Try it yourself</strong> (computer time): install Node from nodejs.org, make hello.js, and run it. No computer today? Read on — every lesson shows the full code, and the ideas are what matter.</div>`),
+          article("fs-express", "Express — Your First Web Server", "12 min", `
+<h3>🎯 20 lines to a real server</h3>
+<p><strong>Express</strong> is the most popular Node framework — it makes answering web requests simple.</p>
+<h3>💻 A complete working server</h3>
+<pre><code>// 1) in a terminal:  npm init -y  &amp;&amp;  npm install express
+
+// 2) server.js
+const express = require("express");
+const app = express();
+
+app.get("/", function (req, res) {
+  res.send("&lt;h1&gt;Welcome to my server!&lt;/h1&gt;");
+});
+
+app.get("/api/hello", function (req, res) {
+  res.json({ message: "Hello from the backend!" });
+});
+
+app.listen(3000, function () {
+  console.log("Server running at http://localhost:3000");
+});
+
+// 3) run:  node server.js
+// 4) open http://localhost:3000 in your browser 🎉</code></pre>
+<h3>📝 Read it like a sentence</h3>
+<ul>
+  <li><code>app.get("/", handler)</code> — "when someone GETs the home page, run this"</li>
+  <li><code>req</code> — the REQuest (what the visitor asked, sent, who they are)</li>
+  <li><code>res</code> — the RESponse you send back: <code>res.send()</code> for HTML, <code>res.json()</code> for data</li>
+  <li><code>app.listen(3000)</code> — start listening on port 3000. A port is like a door number on your computer.</li>
+</ul>
+<div class="callout"><strong>localhost</strong> means "this same computer" — your private testing space. In the last lesson you'll put the server on the real internet.</div>
+<div class="callout tip"><strong>Try it yourself:</strong> add a route <code>app.get("/about", ...)</code> that sends your name. Then visit localhost:3000/about. You're officially a backend developer!</div>`),
+          article("fs-routes", "Routes — GET, POST and Friends", "12 min", `
+<h3>🎯 Different doors for different jobs</h3>
+<p>A <strong>route</strong> = an HTTP verb + a path. Together they describe every action your app supports:</p>
+<div class="flow">
+  <div class="flow-box">GET /quotes<br><small>read all</small></div>
+  <div class="flow-arrow" data-label=""></div>
+  <div class="flow-box alt">POST /quotes<br><small>add new</small></div>
+  <div class="flow-arrow" data-label=""></div>
+  <div class="flow-box warn">DELETE /quotes/2<br><small>remove #2</small></div>
+</div>
+<h3>💻 A quotes API (data in memory for now)</h3>
+<pre><code>const express = require("express");
+const app = express();
+app.use(express.json());   // ← lets Express READ JSON bodies
+
+let quotes = [
+  { id: 1, text: "Small steps every day." },
+  { id: 2, text: "Build to learn." }
+];
+
+// READ
+app.get("/quotes", function (req, res) {
+  res.json(quotes);
+});
+
+// CREATE — data arrives in req.body
+app.post("/quotes", function (req, res) {
+  if (!req.body.text) {
+    return res.status(400).json({ error: "text is required" });
+  }
+  const q = { id: Date.now(), text: req.body.text };
+  quotes.push(q);
+  res.status(201).json(q);
+});
+
+// DELETE — :id is a URL parameter → req.params.id
+app.delete("/quotes/:id", function (req, res) {
+  quotes = quotes.filter(function (q) { return q.id != req.params.id; });
+  res.json({ ok: true });
+});
+
+app.listen(3000);</code></pre>
+<h3>📝 New tools unlocked</h3>
+<ul>
+  <li><code>req.body</code> — JSON the client sent (needs <code>app.use(express.json())</code>)</li>
+  <li><code>req.params.id</code> — value from the <code>:id</code> part of the URL</li>
+  <li><strong>Status codes:</strong> 200 OK · 201 Created · 400 Bad request · 404 Not found</li>
+  <li>See the validation? <em>The backend checks input</em> — the golden rule in action.</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> add <code>GET /quotes/:id</code> that returns just one quote — and a 404 status if the id doesn't exist.</div>`),
+          article("fs-api", "Building a Real REST API", "14 min", `
+<h3>🎯 The pattern behind every app</h3>
+<p>A <strong>REST API</strong> is simply a well-organized set of routes around a "thing" (a <em>resource</em>). Todos, users, orders — same recipe every time:</p>
+<h3>📝 The REST recipe</h3>
+<pre><code>GET    /todos       → list all todos
+GET    /todos/:id   → get ONE todo
+POST   /todos       → create a todo
+PUT    /todos/:id   → update a todo
+DELETE /todos/:id   → delete a todo</code></pre>
+<h3>💻 The interesting parts of a Todo API</h3>
+<pre><code>let todos = [];
+let nextId = 1;
+
+app.post("/todos", function (req, res) {
+  const text = (req.body.text || "").trim();
+  if (!text) return res.status(400).json({ error: "text required" });
+  const todo = { id: nextId++, text: text, done: false };
+  todos.push(todo);
+  res.status(201).json(todo);
+});
+
+app.put("/todos/:id", function (req, res) {
+  const todo = todos.find(function (x) { return x.id == req.params.id; });
+  if (!todo) return res.status(404).json({ error: "not found" });
+  todo.done = !!req.body.done;      // update from the request
+  res.json(todo);
+});</code></pre>
+<h3>📝 Why REST wins</h3>
+<ul>
+  <li><strong>Predictable</strong> — any developer instantly understands your API</li>
+  <li><strong>Testable</strong> — try routes in the browser or with fetch()</li>
+  <li><strong>Reusable</strong> — the same API can serve your website, a phone app, even other developers</li>
+</ul>
+<div class="callout"><strong>One problem remains:</strong> our todos live in a variable — restart the server and POOF, all gone. That's exactly why we need a database → next section!</div>
+<div class="callout tip"><strong>Try it yourself:</strong> design (on paper is fine!) the REST routes for a school library app: books can be listed, added, borrowed (updated), and removed.</div>`),
+          article("fs-mid", "Middleware & Serving Your Frontend", "10 min", `
+<h3>🎯 The airport security line</h3>
+<p><strong>Middleware</strong> are functions every request passes through before reaching your route — like security checks at the airport:</p>
+<div class="flow">
+  <div class="flow-box">📨 Request<br><small>arrives</small></div>
+  <div class="flow-arrow" data-label="express.json"></div>
+  <div class="flow-box alt">🧾 logger<br><small>middleware</small></div>
+  <div class="flow-arrow" data-label="next()"></div>
+  <div class="flow-box warn">🎯 Your route<br><small>responds</small></div>
+</div>
+<h3>💻 Writing middleware + serving files</h3>
+<pre><code>// log every request — great for debugging
+app.use(function (req, res, next) {
+  console.log(req.method + " " + req.url);
+  next();   // ← "let the request continue"
+});
+
+// read JSON bodies (you know this one!)
+app.use(express.json());
+
+// serve your FRONTEND from a folder named "public"
+app.use(express.static("public"));
+// public/index.html  → http://localhost:3000/
+// public/style.css   → http://localhost:3000/style.css</code></pre>
+<h3>📝 Why express.static matters</h3>
+<p>This one line makes your Express app serve the frontend too — HTML, CSS, JS, images. <strong>One server, whole app:</strong> frontend files AND API routes together. That's the classic full stack setup you'll use in the final project.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> sketch your final project folder: public/index.html, public/app.js, server.js. Which URLs will serve which files?</div>`),
+          quiz("fs-quiz3", "Quiz: Backend Basics", [
+            { q: "What is Node.js?", options: ["A browser", "A way to run JavaScript outside the browser", "A database", "A CSS framework"], answer: 1 },
+            { q: "In app.get(\"/\", function(req, res){...}), what is res?", options: ["The visitor's request", "The response you send back", "A database row", "An error"], answer: 1 },
+            { q: "Where does JSON sent by the client appear (with express.json() on)?", options: ["req.params", "req.body", "res.json", "req.url"], answer: 1 },
+            { q: "Which status code means 'created successfully'?", options: ["404", "500", "201", "302"], answer: 2 },
+            { q: "What does app.use(express.static(\"public\")) do?", options: ["Blocks all requests", "Serves frontend files from the public folder", "Creates a database", "Encrypts passwords"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Databases — Remembering Things",
+        lessons: [
+          article("fs-db", "Why Apps Need Databases", "8 min", `
+<h3>🎯 Memory that survives</h3>
+<p>Our Todo API had a fatal flaw: restart the server and all todos vanish. Variables live in RAM — temporary by nature. A <strong>database</strong> stores data on disk, safely and permanently, and can search millions of rows in milliseconds.</p>
+<div class="flow">
+  <div class="flow-box">🎨 Frontend<br><small>fetch()</small></div>
+  <div class="flow-arrow" data-label="HTTP"></div>
+  <div class="flow-box alt">⚙️ Backend<br><small>Express</small></div>
+  <div class="flow-arrow" data-label="SQL"></div>
+  <div class="flow-box warn">🗄️ Database<br><small>tables on disk</small></div>
+</div>
+<h3>📝 Tables — spreadsheets with rules</h3>
+<p>A relational database organizes data in <strong>tables</strong>. A <code>users</code> table:</p>
+<pre><code>id | name      | email             | xp
+---+-----------+-------------------+----
+1  | Aung Aung | aung@mail.com     | 320
+2  | Su Su     | susu@mail.com     | 450</code></pre>
+<ul>
+  <li>Each <strong>row</strong> = one thing (one user)</li>
+  <li>Each <strong>column</strong> = one property (name, email…)</li>
+  <li><strong>id</strong> = unique number so rows can point to each other (user 2 wrote note 7)</li>
+</ul>
+<h3>📝 Which database?</h3>
+<ul>
+  <li><strong>SQLite</strong> — a whole database in one file. Zero setup. PERFECT for learning → we'll use it.</li>
+  <li><strong>MySQL / PostgreSQL</strong> — the big servers behind most companies. Same SQL language.</li>
+  <li><strong>MongoDB / Firebase</strong> — "NoSQL", stores JSON-like documents (this academy's chat uses Firebase!).</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> design a table for chat messages on paper: which columns would you need? (Hint: who, what, when.)</div>`),
+          article("fs-sql", "SQL in One Lesson", "12 min", `
+<h3>🎯 Four sentences run the world</h3>
+<p><strong>SQL</strong> is the language of databases — and it reads almost like English. Master four commands and you can handle 90% of real work:</p>
+<h3>💻 CRUD in SQL</h3>
+<pre><code>-- CREATE the table (once)
+CREATE TABLE notes (
+  id    INTEGER PRIMARY KEY AUTOINCREMENT,
+  text  TEXT NOT NULL,
+  done  INTEGER DEFAULT 0
+);
+
+-- C: add a row
+INSERT INTO notes (text) VALUES ('Learn SQL');
+
+-- R: read rows
+SELECT * FROM notes;
+SELECT text FROM notes WHERE done = 0 ORDER BY id DESC;
+
+-- U: change rows
+UPDATE notes SET done = 1 WHERE id = 1;
+
+-- D: remove rows
+DELETE FROM notes WHERE id = 1;</code></pre>
+<h3>📝 Reading the patterns</h3>
+<ul>
+  <li><code>SELECT columns FROM table WHERE condition</code> — the sentence you'll type most in your career</li>
+  <li><code>WHERE</code> filters rows — <strong>never forget it on UPDATE/DELETE</strong> or you change EVERY row! 😱</li>
+  <li><code>PRIMARY KEY AUTOINCREMENT</code> — the database numbers rows for you</li>
+  <li><code>ORDER BY id DESC</code> — newest first</li>
+</ul>
+<div class="callout"><strong>Fun fact:</strong> SQL is over 50 years old and still #1. Learn it once, use it everywhere — SQLite, MySQL, PostgreSQL all speak it.</div>
+<div class="callout tip"><strong>Try it yourself:</strong> write the SQL for your chat-messages table from last lesson: CREATE TABLE, INSERT one message, SELECT the last 10.</div>`),
+          article("fs-node-db", "Connecting Node to a Database", "12 min", `
+<h3>🎯 The final connection</h3>
+<p>Time to join the layers: Express routes that read and write <strong>SQLite</strong>. We'll use the friendly <code>better-sqlite3</code> package (<code>npm install better-sqlite3</code>).</p>
+<h3>💻 Todos that survive restarts</h3>
+<pre><code>const express = require("express");
+const Database = require("better-sqlite3");
+
+const app = express();
+app.use(express.json());
+
+const db = new Database("app.db");   // one file = whole database
+db.exec("CREATE TABLE IF NOT EXISTS todos (" +
+        "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+        "text TEXT NOT NULL, done INTEGER DEFAULT 0)");
+
+app.get("/todos", function (req, res) {
+  const rows = db.prepare("SELECT * FROM todos ORDER BY id DESC").all();
+  res.json(rows);
+});
+
+app.post("/todos", function (req, res) {
+  const text = (req.body.text || "").trim();
+  if (!text) return res.status(400).json({ error: "text required" });
+  const info = db.prepare("INSERT INTO todos (text) VALUES (?)").run(text);
+  res.status(201).json({ id: info.lastInsertRowid, text: text, done: 0 });
+});
+
+app.listen(3000);</code></pre>
+<h3>📝 The one rule that keeps you SAFE</h3>
+<p>See the <code>?</code> in the INSERT? That's a <strong>parameter placeholder</strong>. The database fills it in safely. <strong>NEVER</strong> glue user text into SQL with +:</p>
+<pre><code>// ☠️ DANGEROUS — a hacker types:  '); DROP TABLE todos; --
+db.exec("INSERT INTO todos (text) VALUES ('" + userText + "')");
+
+// ✅ SAFE — always use ? placeholders
+db.prepare("INSERT INTO todos (text) VALUES (?)").run(userText);</code></pre>
+<p>That attack is called <strong>SQL injection</strong> — the #1 classic hack. You now know how to block it. 🛡️</p>
+<div class="callout tip"><strong>Try it yourself:</strong> add DELETE /todos/:id using db.prepare("DELETE FROM todos WHERE id = ?").run(req.params.id) — then restart the server and confirm todos SURVIVE.</div>`),
+          article("fs-auth", "Login & Passwords — the Safe Way", "10 min", `
+<h3>🎯 The most important security lesson</h3>
+<p>Real apps have accounts — and accounts mean passwords. Rule number one: <strong>NEVER store the actual password.</strong> Store a <em>hash</em> — a scrambled fingerprint that can't be reversed.</p>
+<div class="flow">
+  <div class="flow-box">🔑 "myCat123"<br><small>user's password</small></div>
+  <div class="flow-arrow" data-label="bcrypt hash"></div>
+  <div class="flow-box warn">🔒 "a8f3xq9..."<br><small>stored in DB</small></div>
+  <div class="flow-arrow" data-label="login: compare"></div>
+  <div class="flow-box alt">✅ match?<br><small>let them in</small></div>
+</div>
+<h3>💻 Signup & login with bcrypt (npm install bcryptjs)</h3>
+<pre><code>const bcrypt = require("bcryptjs");
+
+app.post("/signup", function (req, res) {
+  const hash = bcrypt.hashSync(req.body.password, 10);
+  db.prepare("INSERT INTO users (email, pass) VALUES (?, ?)")
+    .run(req.body.email, hash);          // hash stored — never the password
+  res.status(201).json({ ok: true });
+});
+
+app.post("/login", function (req, res) {
+  const user = db.prepare("SELECT * FROM users WHERE email = ?")
+                 .get(req.body.email);
+  if (user &amp;&amp; bcrypt.compareSync(req.body.password, user.pass)) {
+    res.json({ ok: true });   // real apps also give a session/token here
+  } else {
+    res.status(401).json({ error: "Wrong email or password" });
+  }
+});</code></pre>
+<h3>📝 Remember-me: sessions & tokens</h3>
+<p>After login, the server gives the browser a <strong>token</strong> (a long random string). The browser shows it on every request — like a wristband at a festival — so users stay logged in. Libraries like <code>jsonwebtoken</code> handle this; this academy's login uses Firebase Authentication, which does hashing AND tokens for you.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> say out loud why storing plain passwords is dangerous, even for a small app. (Hint: people reuse passwords everywhere — a leak of YOUR site unlocks their bank email too.)</div>`),
+        ],
+      },
+      {
+        title: "Ship It! — Your Full Stack App",
+        lessons: [
+          article("fs-final1", "Final Project: My Notes — the Backend", "16 min", `
+<h3>🎯 Build the whole engine</h3>
+<p>Final project time! <strong>My Notes</strong> — users write notes, notes are saved forever, notes can be deleted. Today: the complete backend, using ONLY things you've learned.</p>
+<h3>💻 server.js — the complete backend</h3>
+<pre><code>const express = require("express");
+const Database = require("better-sqlite3");
+
+const app = express();
+app.use(express.json());
+app.use(express.static("public"));   // serves the frontend (next lesson)
+
+const db = new Database("notes.db");
+db.exec("CREATE TABLE IF NOT EXISTS notes (" +
+        "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+        "text TEXT NOT NULL, " +
+        "ts INTEGER)");
+
+app.get("/api/notes", function (req, res) {
+  res.json(db.prepare("SELECT * FROM notes ORDER BY id DESC").all());
+});
+
+app.post("/api/notes", function (req, res) {
+  const text = (req.body.text || "").trim();
+  if (!text) return res.status(400).json({ error: "Note text required" });
+  if (text.length &gt; 500) return res.status(400).json({ error: "Too long" });
+  const info = db.prepare("INSERT INTO notes (text, ts) VALUES (?, ?)")
+                 .run(text, Date.now());
+  res.status(201).json({ id: info.lastInsertRowid, text: text });
+});
+
+app.delete("/api/notes/:id", function (req, res) {
+  db.prepare("DELETE FROM notes WHERE id = ?").run(req.params.id);
+  res.json({ ok: true });
+});
+
+app.listen(3000, function () {
+  console.log("My Notes running → http://localhost:3000");
+});</code></pre>
+<h3>📝 Notice the professional habits</h3>
+<ul>
+  <li>API routes start with <code>/api/</code> — keeps them separate from pages</li>
+  <li>Input validated (empty? too long?) with clear error messages</li>
+  <li><code>?</code> placeholders everywhere — SQL injection blocked</li>
+  <li><code>ts</code> timestamp column — you could show "2 minutes ago" later</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> type this file yourself (don't copy-paste — typing builds memory!). Run it, then visit localhost:3000/api/notes — you should see [] (empty, for now…).</div>`),
+          article("fs-final2", "Final Project: My Notes — the Frontend", "16 min", `
+<h3>🎯 Connect the face to the engine</h3>
+<p>Now the frontend: one page in the <code>public</code> folder that talks to your API with fetch(). This diagram is your WHOLE app:</p>
+<div class="flow">
+  <div class="flow-box">📄 index.html<br><small>form + list</small></div>
+  <div class="flow-arrow" data-label="fetch /api/notes"></div>
+  <div class="flow-box alt">⚙️ server.js<br><small>Express routes</small></div>
+  <div class="flow-arrow" data-label="SQL ?"></div>
+  <div class="flow-box warn">🗄️ notes.db<br><small>SQLite file</small></div>
+</div>
+<h3>💻 public/index.html</h3>
+<pre><code>&lt;h1&gt;📝 My Notes&lt;/h1&gt;
+&lt;form id="f"&gt;
+  &lt;input id="txt" placeholder="Write a note..." maxlength="500"&gt;
+  &lt;button&gt;Save&lt;/button&gt;
+&lt;/form&gt;
+&lt;ul id="list"&gt;&lt;/ul&gt;
+
+&lt;script&gt;
+function load() {
+  fetch("/api/notes")
+    .then(function (r) { return r.json(); })
+    .then(function (notes) {
+      const list = document.querySelector("#list");
+      list.innerHTML = "";
+      notes.forEach(function (n) {
+        const li = document.createElement("li");
+        li.textContent = n.text + " ";
+        const del = document.createElement("button");
+        del.textContent = "🗑";
+        del.addEventListener("click", function () {
+          fetch("/api/notes/" + n.id, { method: "DELETE" }).then(load);
+        });
+        li.appendChild(del);
+        list.appendChild(li);
+      });
+    });
+}
+
+document.querySelector("#f").addEventListener("submit", function (e) {
+  e.preventDefault();
+  const box = document.querySelector("#txt");
+  fetch("/api/notes", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text: box.value })
+  }).then(function () { box.value = ""; load(); });
+});
+
+load();
+&lt;/script&gt;</code></pre>
+<h3>📝 What you just did</h3>
+<p>Look at that diagram again. You built every box and every arrow. Form → fetch POST → Express → SQL → disk, and back again. <strong>That is full stack development.</strong> Everything else in your career is this pattern with more detail. 🎓</p>
+<div class="callout tip"><strong>Level it up:</strong> 1) style it with your CSS skills, 2) show note count, 3) add an edit button (PUT route!), 4) show newest-first with a "time ago" label from ts.</div>`),
+          article("fs-deploy", "Put Your App on the Internet", "10 min", `
+<h3>🎯 From localhost to the world</h3>
+<p>An app on localhost is a rehearsal. <strong>Deployment</strong> is opening night — real users, real URL. The modern flow:</p>
+<div class="flow">
+  <div class="flow-box">💻 Your code<br><small>works locally</small></div>
+  <div class="flow-arrow" data-label="git push"></div>
+  <div class="flow-box alt">🐙 GitHub<br><small>code online</small></div>
+  <div class="flow-arrow" data-label="auto deploy"></div>
+  <div class="flow-box warn">🌍 Live URL<br><small>real users!</small></div>
+</div>
+<h3>📝 Where to host (free options)</h3>
+<ul>
+  <li><strong>Frontend only</strong> (HTML/CSS/JS): <strong>GitHub Pages</strong> — free, fast, this very academy runs on it!</li>
+  <li><strong>Full stack Node app</strong>: <strong>Render.com</strong> or <strong>Railway.app</strong> — connect your GitHub repo, they run <code>node server.js</code> in the cloud with a free tier.</li>
+  <li><strong>Database</strong>: SQLite works for small apps; bigger apps use hosted PostgreSQL (Render/Railway offer these too).</li>
+</ul>
+<h3>💻 The deploy checklist</h3>
+<pre><code>1. Push code to GitHub          (git add . / commit / push)
+2. Render → "New Web Service"   → pick your repo
+3. Start command: node server.js
+4. Use the PORT they give you:
+   app.listen(process.env.PORT || 3000);
+5. Share your URL with friends 🎉</code></pre>
+<div class="callout"><strong>Real-world tip:</strong> services sleep on free tiers (first visit is slow) — totally fine for portfolios and school projects. This academy uses GitHub Pages + Firebase + Cloudflare, all free — proof you can ship for $0.</div>
+<div class="callout tip"><strong>Try it yourself:</strong> deploy your My Notes app to Render when you have computer time. Put the live URL in your CV — employers LOVE a working link.</div>`),
+          article("fs-next", "Your Full Stack Career Path", "8 min", `
+<h3>🎯 You made it — now what?</h3>
+<p>Look back: browser ↔ server ↔ database, forms, APIs, SQL, security, deployment. You understand the WHOLE machine now. Here's how to grow from here:</p>
+<h3>📝 Your next 6 months</h3>
+<ol>
+  <li><strong>Build 3 portfolio projects</strong> — ideas: expense tracker, class attendance app, mini blog. Each one: your API + database + polished frontend, deployed with a live URL.</li>
+  <li><strong>Level up the frontend</strong> — take the <em>React</em> course here: it's how big apps organize their UI.</li>
+  <li><strong>Level up the backend</strong> — the <em>Node.js</em> and <em>SQL</em> courses here go deeper than this overview.</li>
+  <li><strong>Learn Git properly</strong> — branches, pull requests. Every job uses them daily.</li>
+  <li><strong>Read other people's code</strong> — this academy is open source on GitHub. Read it! You'll now recognize the patterns.</li>
+</ol>
+<h3>📝 The job landscape</h3>
+<ul>
+  <li><strong>Junior full stack developer</strong> — companies love juniors who can touch every layer</li>
+  <li><strong>Freelance</strong> — small shops in Myanmar need websites with ordering forms = exactly your skills</li>
+  <li><strong>Your own product</strong> — you can now build a complete app alone. That's rare and powerful.</li>
+</ul>
+<div class="callout tip"><strong>Graduation task:</strong> take the final quiz, download your certificate 🎓, and post it! Then start portfolio project #1 THIS WEEK — momentum is everything.</div>`),
+          quiz("fs-quiz4", "Final Quiz: Full Stack Developer", [
+            { q: "Which is the correct full stack data flow?", options: ["Database → CSS → HTML", "Frontend → Backend → Database (and back)", "Backend → Frontend → Backend", "JSON → CSS → SQL"], answer: 1 },
+            { q: "Why do we use ? placeholders in SQL queries?", options: ["They run faster", "To block SQL injection attacks", "They look professional", "SQLite requires them"], answer: 1 },
+            { q: "What should a server store instead of the user's actual password?", options: ["The password backwards", "Nothing", "A bcrypt hash of it", "The password in a secret file"], answer: 2 },
+            { q: "In our final app, what does express.static(\"public\") provide?", options: ["The database", "The frontend files (HTML/CSS/JS)", "Password hashing", "The REST routes"], answer: 1 },
+            { q: "Which free service can host a Node.js + Express app?", options: ["GitHub Pages only", "Render or Railway", "Google Docs", "Instagram"], answer: 1 },
+            { q: "A 201 status code means…", options: ["Server crashed", "Not found", "Created successfully", "Forbidden"], answer: 2 },
+          ]),
+        ],
+      },
+    ],
+  },
 ];
 
 /* Expose to the app */

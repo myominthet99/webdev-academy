@@ -549,6 +549,26 @@ button { font-family: inherit; cursor: pointer; }
 .chat-msg.bot .chat-name { color: #0a8a54; }
 [data-theme="dark"] .chat-msg.bot .chat-bubble { background: #123b2c; border-color: #1e5c44; }
 [data-theme="dark"] .chat-msg.bot .chat-name { color: #4cd99a; }
+
+/* 🎓 AI Tutor panel on the lesson page */
+.ai-tutor { margin-top: 28px; border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; background: var(--surface-2); }
+.tutor-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+.tutor-chips button {
+  border: 1px solid var(--line); background: var(--surface); color: inherit;
+  border-radius: 999px; padding: 6px 12px; font-size: 13px; cursor: pointer;
+}
+.tutor-chips button:hover { border-color: var(--purple); color: var(--purple); }
+.tutor-log { display: flex; flex-direction: column; gap: 8px; margin: 10px 0; max-height: 420px; overflow-y: auto; }
+.tutor-msg { border-radius: 10px; padding: 8px 12px; font-size: 14px; line-height: 1.5; max-width: 92%; word-break: break-word; }
+.tutor-msg.me { align-self: flex-end; background: #efe7fd; border: 1px solid #dcc9fb; }
+.tutor-msg.bot { align-self: flex-start; background: var(--surface); border: 1px solid var(--line); }
+[data-theme="dark"] .tutor-msg.me { background: #43306b; border-color: #5b4390; }
+.tutor-msg pre { margin: 8px 0; overflow-x: auto; }
+.tutor-form { display: flex; gap: 8px; }
+.tutor-form input {
+  flex: 1; min-width: 0; padding: 8px 10px; border: 1px solid var(--line);
+  border-radius: 8px; font-family: inherit; font-size: 14px; background: var(--surface); color: inherit;
+}
 .chat-name { font-size: 12px; font-weight: 700; color: var(--purple); margin-bottom: 2px; }
 .chat-text { font-size: 14px; line-height: 1.4; word-break: break-word; white-space: pre-wrap; }
 .chat-meta { display: flex; align-items: center; justify-content: flex-end; gap: 6px; margin-top: 2px; flex-wrap: wrap; }

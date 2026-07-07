@@ -1193,6 +1193,79 @@
   }
 
   /* ---------------- View: Learn / player ---------------- */
+  /* 🎓 AI Tutor on the lesson page — context-aware Q&A about the open
+     lesson (free Gemini via js/ai.js). Small chat log, quick-question
+     chips, short in-memory history for follow-ups. */
+  function wireAiTutor(course, lesson) {
+    const box = app.querySelector("#ai-tutor");
+    if (!box) return;
+    const log = box.querySelector(".tutor-log");
+    const form = box.querySelector(".tutor-form");
+    const inp = form.querySelector("input");
+    const history = [];
+    /* plain-text lesson body for context (tags stripped, capped) */
+    const tmp = document.createElement("div");
+    tmp.innerHTML = lesson.type === "quiz" ? "" : (lf(lesson, "content") || "");
+    const lessonText = (tmp.textContent || "").replace(/\s+/g, " ").trim().slice(0, 4000);
+
+    /* render the AI's markdown-ish reply safely: escape, then code blocks */
+    const fmt = (s) => {
+      let out = escapeHtml(String(s));
+      out = out.replace(/```([\s\S]*?)```/g, (m, code) => "<pre><code>" + code.replace(/^[a-zA-Z]+\n/, "").trim() + "</code></pre>");
+      out = out.replace(/`([^`\n]+)`/g, "<code>$1</code>");
+      out = out.replace(/\*\*([^*\n]+)\*\*/g, "<strong>$1</strong>");
+      return out.replace(/\n/g, "<br>");
+    };
+    const bubble = (who, html) => {
+      log.hidden = false;
+      const d = document.createElement("div");
+      d.className = "tutor-msg " + who;
+      d.innerHTML = html;
+      log.appendChild(d);
+      d.scrollIntoView({ block: "nearest" });
+      return d;
+    };
+    const ask = (question, displayText) => {
+      if (!(window.AI && window.AI.ready())) { bubble("bot", escapeHtml(t("ai_no_key"))); return; }
+      bubble("me", escapeHtml(displayText || question));
+      const wait = bubble("bot", "⏳ " + escapeHtml(t("tutor_thinking")));
+      const convo = history.slice(-6).map((h) => (h.me ? "Student" : "Tutor") + ": " + h.text).join("\n");
+      history.push({ me: true, text: question.slice(0, 300) });
+      window.AI.complete(
+        'The student is reading the lesson "' + lesson.title + '" in the course "' + course.title + '".\n' +
+          (lessonText ? "Lesson text:\n" + lessonText + "\n" : "") +
+          (convo ? "\nConversation so far:\n" + convo + "\n" : "") +
+          "\nStudent asks: " + question,
+        {
+          system:
+            "You are the patient AI tutor of WebDev Academy, helping Myanmar teenagers (ages 12-18) learn web development. " +
+            "Use very simple English; if the student writes Burmese or asks for Burmese, answer in Burmese but keep technical words (HTML, CSS, tag names) in English. " +
+            "Keep answers under 150 words unless showing code. Put code inside ```fences```. Be encouraging.",
+          maxTokens: 1500,
+        }
+      ).then((reply) => {
+        history.push({ me: false, text: String(reply).slice(0, 500) });
+        wait.innerHTML = fmt(reply);
+      }).catch((err) => { wait.innerHTML = "⚠ AI: " + escapeHtml((err && err.message) || String(err)); });
+    };
+    const chipQs = {
+      simple: "Explain this lesson in very simple words, like I am 12 years old.",
+      burmese: "Explain the main idea of this lesson in Burmese (Myanmar language). Keep technical words in English.",
+      example: "Show me one more small code example for this lesson, different from the one in the lesson, and explain it briefly.",
+      practice: "Give me one small practice exercise for this lesson. Do not show the solution — encourage me to try first.",
+    };
+    box.querySelectorAll("[data-tq]").forEach((b) =>
+      b.addEventListener("click", () => ask(chipQs[b.getAttribute("data-tq")], b.textContent.trim()))
+    );
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const q = inp.value.trim();
+      if (!q) return;
+      inp.value = "";
+      ask(q);
+    });
+  }
+
   function renderLearn(courseId, lessonId) {
     const c = courseById(courseId);
     if (!c) return renderNotFound();
@@ -1254,6 +1327,20 @@
             <h1>${lf(current, "title")}</h1>
             <p class="lesson-sub">${secTitle} · ${current.duration} · ⏱ ${t("spent")}: <span id="time-spent">${formatTime(loadLessonTime(current.id).total)}</span></p>
             ${body}
+            <div class="ai-tutor" id="ai-tutor">
+              <div class="notes-head"><strong>🎓 ${t("tutor_title")}</strong> <span class="muted" style="font-size:12px">${t("tutor_sub")}</span></div>
+              <div class="tutor-chips">
+                <button type="button" data-tq="simple">💡 ${t("tutor_simple")}</button>
+                <button type="button" data-tq="burmese">🇲🇲 ${t("tutor_burmese")}</button>
+                <button type="button" data-tq="example">💻 ${t("tutor_example")}</button>
+                <button type="button" data-tq="practice">🏋️ ${t("tutor_practice")}</button>
+              </div>
+              <div class="tutor-log" hidden></div>
+              <form class="tutor-form">
+                <input type="text" maxlength="300" placeholder="${escapeHtml(t("tutor_ph"))}">
+                <button class="btn btn-primary btn-sm" type="submit">${t("tutor_ask")}</button>
+              </form>
+            </div>
             <div class="notes">
               <div class="notes-head"><strong>${t("notes_title")}</strong> <span class="notes-status" id="notes-status"></span></div>
               <textarea id="lesson-notes" placeholder="${escapeHtml(t("notes_placeholder"))}">${escapeHtml(loadNotes()[current.id] || "")}</textarea>
@@ -1314,6 +1401,7 @@
 
     hydrateIdbVideos();
     addCopyButtons();
+    wireAiTutor(c, current);
 
     app.querySelectorAll("[data-goto]").forEach((b) =>
       b.addEventListener("click", () => {

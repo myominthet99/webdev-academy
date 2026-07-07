@@ -546,6 +546,10 @@ button { font-family: inherit; cursor: pointer; }
 .chat-name { font-size: 12px; font-weight: 700; color: var(--purple); margin-bottom: 2px; }
 .chat-text { font-size: 14px; line-height: 1.4; word-break: break-word; white-space: pre-wrap; }
 .chat-meta { display: flex; align-items: center; justify-content: flex-end; gap: 6px; margin-top: 2px; flex-wrap: wrap; }
+/* action icons stay hidden until the message is hovered (or tapped on touch) */
+.chat-actions { opacity: 0; transition: opacity .15s ease; }
+.chat-msg:hover .chat-actions,
+.chat-msg.show-actions .chat-actions { opacity: 1; }
 .chat-time { font-size: 10px; color: var(--muted); }
 .chat-del { border: 0; background: transparent; cursor: pointer; font-size: 12px; line-height: 1; opacity: .5; padding: 0; }
 .chat-del:hover { opacity: 1; }

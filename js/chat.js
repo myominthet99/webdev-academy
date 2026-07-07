@@ -15,7 +15,7 @@
   const I18N = window.I18N;
   const KEY = "wda_chat_v1";
   const MAX = 200;
-  const BUILD = "v10"; /* shown in the chat header — bump with releases */
+  const BUILD = "v11"; /* shown in the chat header — bump with releases */
 
   /* ============ Firebase config (optional) ============
      Configured centrally in js/firebase-config.js — paste your config
@@ -536,6 +536,16 @@
     );
     listEl.querySelectorAll(".chat-img").forEach((im) =>
       im.addEventListener("click", () => showImageFull(im.src))
+    );
+    /* touch devices have no hover — tapping a bubble reveals its actions */
+    listEl.querySelectorAll(".chat-bubble").forEach((bb) =>
+      bb.addEventListener("click", (e) => {
+        if (e.target.closest("button, a, img")) return;
+        const msg = bb.closest(".chat-msg");
+        const was = msg.classList.contains("show-actions");
+        listEl.querySelectorAll(".chat-msg.show-actions").forEach((m) => m.classList.remove("show-actions"));
+        if (!was) msg.classList.add("show-actions");
+      })
     );
     wireRoomBar();
   }

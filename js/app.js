@@ -708,6 +708,26 @@
      data or no Firebase. Needs "stats" allowed in the database rules. */
   const statsBase = () => (window.FIREBASE_CONFIG && window.FIREBASE_CONFIG.databaseURL) || null;
   const dateKey = (offset) => new Date(Date.now() - offset * 86400000).toISOString().slice(0, 10);
+
+  /* 📢 Site-wide announcement banner: the admin posts one message
+     (stats/announcement); every student sees it until they dismiss it. */
+  function loadAnnouncement() {
+    const base = statsBase();
+    const bar = document.getElementById("announce-bar");
+    if (!base || !bar) return;
+    fetch(base + "/stats/announcement.json").then((r) => r.json()).then((a) => {
+      if (!a || !a.text || !String(a.text).trim()) { bar.hidden = true; bar.innerHTML = ""; return; }
+      const ts = String(a.ts || "");
+      if (localStorage.getItem("wda_announce_dismiss") === ts) { bar.hidden = true; return; }
+      bar.innerHTML = '<span class="announce-text">📢 ' + escapeHtml(String(a.text).slice(0, 300)) + "</span>" +
+        '<button class="announce-x" type="button" aria-label="Dismiss">✕</button>';
+      bar.hidden = false;
+      bar.querySelector(".announce-x").addEventListener("click", () => {
+        localStorage.setItem("wda_announce_dismiss", ts);
+        bar.hidden = true;
+      });
+    }).catch(() => {});
+  }
   function trackCourseView(courseId) {
     const base = statsBase();
     if (!base) return;
@@ -2465,7 +2485,8 @@
       fetch(base + "/stats/courses.json").then((r) => r.json()).catch(() => ({})),
       fetch(base + "/payments.json").then((r) => r.json()).catch(() => ({})),
       fetch(base + "/premium.json").then((r) => r.json()).catch(() => ({})),
-    ]).then(([lb, courses, payments, premium]) => {
+      fetch(base + "/stats/announcement.json").then((r) => r.json()).catch(() => null),
+    ]).then(([lb, courses, payments, premium, announce]) => {
       const students = Object.values(lb || {}).filter((x) => x && (Number(x.xp) || 0) > 0);
       const active = students.filter((x) => (Number(x.streak) || 0) > 0).length;
       const premMembers = Object.keys(premium || {}).length;
@@ -2497,6 +2518,16 @@
           ${card("💰", fmt(revenue) + " Ks", t("dash_revenue"))}
         </div>
         ${pending ? `<div style="margin:10px 0"><a class="btn btn-primary btn-sm" href="#/admin/payments">💳 ${t("dash_review_pending").replace("{n}", pending)}</a></div>` : ""}
+        <div class="panel">
+          <h3>📢 ${t("ann_title")}</h3>
+          <p class="muted" style="margin:0 0 8px;font-size:13px">${t("ann_help")}</p>
+          <textarea id="ann-text" rows="2" maxlength="300" style="width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font-family:inherit">${escapeHtml((announce && announce.text) || "")}</textarea>
+          <div style="display:flex;gap:8px;margin-top:8px;align-items:center;flex-wrap:wrap">
+            <button class="btn btn-primary btn-sm" id="ann-post">${t("ann_post")}</button>
+            <button class="btn btn-outline btn-sm" id="ann-clear">${t("ann_clear")}</button>
+            <span class="muted" id="ann-status" style="font-size:13px"></span>
+          </div>
+        </div>
         <div class="adash-cols">
           <div class="panel">
             <h3>🔥 ${t("dash_popular")}</h3>
@@ -2512,6 +2543,24 @@
           </div>
         </div>
         <p class="muted" style="font-size:12px">${t("dash_note")}</p>`;
+
+      /* announcement post/clear */
+      const annStatus = document.getElementById("ann-status");
+      const setAnn = (body, msg) =>
+        fetch(base + "/stats/announcement.json", { method: "PUT", body: JSON.stringify(body) })
+          .then((r) => { if (!r.ok) throw new Error("write"); if (annStatus) annStatus.textContent = msg; loadAnnouncement(); })
+          .catch(() => { if (annStatus) annStatus.textContent = t("ann_err"); });
+      const postBtn = document.getElementById("ann-post");
+      if (postBtn) postBtn.addEventListener("click", () => {
+        const text = (document.getElementById("ann-text").value || "").trim().slice(0, 300);
+        if (!text) { if (annStatus) annStatus.textContent = t("ann_empty"); return; }
+        setAnn({ text, ts: Date.now() }, "✓ " + t("ann_posted"));
+      });
+      const clearBtn = document.getElementById("ann-clear");
+      if (clearBtn) clearBtn.addEventListener("click", () => {
+        document.getElementById("ann-text").value = "";
+        setAnn(null, "✓ " + t("ann_cleared"));
+      });
     }).catch(() => { mount.innerHTML = `<div class="empty"><h2>${t("lb_offline")}</h2></div>`; });
     window.scrollTo(0, 0);
   }
@@ -3034,4 +3083,5 @@
   applyChrome();
   updateStreak();
   router();
+  loadAnnouncement();
 })();

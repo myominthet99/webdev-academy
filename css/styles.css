@@ -753,6 +753,19 @@ button { font-family: inherit; cursor: pointer; }
   tab-size: 2;
 }
 .pg-result { border: 0; background: #fff; width: 100%; height: 100%; }
+/* 📢 Site-wide announcement banner */
+.announce-bar {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 16px; font-size: 14px; font-weight: 600;
+  background: linear-gradient(135deg, #654ea3, #a535f0); color: #fff;
+}
+.announce-text { flex: 1; min-width: 0; }
+.announce-x {
+  flex: none; background: rgba(255,255,255,.25); color: #fff; border: none;
+  width: 26px; height: 26px; border-radius: 50%; cursor: pointer; font-size: 13px; line-height: 1;
+}
+.announce-x:hover { background: rgba(255,255,255,.4); }
+
 /* 📊 Lesson flow-chart diagrams (used in course content) */
 .flow {
   display: flex; align-items: center; justify-content: center; flex-wrap: wrap;

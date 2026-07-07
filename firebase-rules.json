@@ -28,6 +28,11 @@
     },
     "stats": {
       ".read": true,
+      "announcement": {
+        ".write": true,
+        "text": { ".validate": "newData.isString() && newData.val().length <= 300" },
+        "ts":   { ".validate": "newData.isNumber()" }
+      },
       "courses":     { "$cid": { ".write": true } },
       "leaderboard": {
         "$uid": {

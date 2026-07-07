@@ -504,6 +504,7 @@
       <div class="pg-head">
         <div class="pg-tools">
           <button class="btn btn-primary btn-sm" data-pg-run>▶ ${t("pg_run")}</button>
+          <button class="btn btn-outline btn-sm" data-pg-check>✔ ${t("pg_check")}</button>
           <label class="pg-auto"><input type="checkbox" data-pg-auto checked> ${t("pg_auto")}</label>
           <button class="btn btn-outline btn-sm" data-pg-save>💾 ${t("pg_save")}</button>
           <select class="pg-snippets" data-pg-snippets></select>
@@ -516,6 +517,7 @@
         <textarea class="pg-code" spellcheck="false"></textarea>
         <iframe class="pg-result" sandbox="allow-scripts" title="Result"></iframe>
       </div>
+      <div class="pg-check-panel" data-pg-check-panel hidden></div>
       <div class="pg-console-wrap">
         <div class="pg-console-head">${t("pg_console")}</div>
         <div class="pg-console" data-pg-console></div>
@@ -554,6 +556,38 @@
     });
 
     mount.querySelector("[data-pg-run]").addEventListener("click", run);
+
+    /* ✔ AI code check — a friendly review of the student's code (premium) */
+    const checkPanel = mount.querySelector("[data-pg-check-panel]");
+    const checkBtn = mount.querySelector("[data-pg-check]");
+    const showCheck = (html) => { checkPanel.hidden = false; checkPanel.innerHTML = html; };
+    checkBtn.addEventListener("click", () => {
+      if (!window.AI) { showCheck('<p class="muted">' + escapeHtml(t("ai_no_key")) + "</p>"); return; }
+      if (window.WDA && window.WDA.isPremium && !window.WDA.isPremium()) {
+        showCheck('<p class="muted">🔒 ' + escapeHtml(t("pg_check_premium")) + '</p><a class="btn btn-primary btn-sm" href="#/premium">⭐ ' + t("prem_go") + "</a>");
+        return;
+      }
+      const code = ta.value.trim();
+      if (!code) { showCheck('<p class="muted">' + escapeHtml(t("pg_check_empty")) + "</p>"); return; }
+      const old = checkBtn.textContent;
+      checkBtn.disabled = true;
+      checkBtn.textContent = "✔ " + t("ai_working");
+      showCheck('<p class="muted">⏳ ' + escapeHtml(t("pg_check_working")) + "</p>");
+      window.AI.complete(
+        "Review this beginner's web code (HTML/CSS/JavaScript). Code:\n```\n" + code.slice(0, 6000) + "\n```",
+        {
+          system:
+            "You are a kind coding teacher at WebDev Academy for Myanmar teenagers learning web development. Review the student's code in simple English (or Burmese if they wrote comments in Burmese). Output plain HTML only (no markdown): start with one <p> of encouragement, then <h4>✅ What's good</h4> + a short <ul>, then <h4>🔧 How to improve</h4> + a short <ul> (each item: the problem and the fix, with <code> for code bits). If there is a bug, point to it kindly. Keep it under 250 words. Be positive.",
+          maxTokens: 2000,
+          temperature: 0.5,
+        }
+      ).then((html) => showCheck('<div class="reader">' + window.AI.stripFences(html) + "</div>"))
+        .catch((err) => {
+          const m = (err && err.message) || String(err);
+          showCheck('<p class="muted">' + (m === "no-key" ? escapeHtml(t("ai_no_key")) : "⚠ AI: " + escapeHtml(m)) + "</p>");
+        })
+        .finally(() => { checkBtn.disabled = false; checkBtn.textContent = old; });
+    });
 
     /* download as a standalone .html file */
     mount.querySelector("[data-pg-dl]").addEventListener("click", () => {
@@ -1124,12 +1158,18 @@
       })
       .join("");
 
+    /* a premium course lets a logged-in non-member read the first few
+       lessons free before the paywall — invite them to start the preview */
+    const canPreview = !isFree(c) && loggedIn() && !isPremiumUser() && firstLesson;
     const enrollLabel =
       !isFree(c) && !loggedIn() ? t("login_to_enroll")
       : !isFree(c) && !isPremiumUser() ? "⭐ " + t("prem_go")
       : `${t("enroll_now")} ${priceText(c)}`;
     const cta = enrolled
       ? `<a class="btn btn-primary btn-block" href="#/learn/${c.id}/${firstLesson}">${pct > 0 ? t("continue_learning") : t("start_course")}</a>`
+      : canPreview
+      ? `<a class="btn btn-primary btn-block" href="#/learn/${c.id}/${firstLesson}">🎁 ${t("preview_start")}</a>
+         <a class="btn btn-outline btn-block" style="margin-top:8px" href="#/premium">⭐ ${t("prem_go")}</a>`
       : `<button class="btn btn-primary btn-block" data-enroll="${c.id}">${enrollLabel}</button>`;
 
     app.innerHTML = `
@@ -1290,46 +1330,63 @@
     });
   }
 
+  const PREVIEW_LESSONS = 2; /* free taste of a premium course before the paywall */
+
   function renderLearn(courseId, lessonId) {
     const c = courseById(courseId);
     if (!c) return renderNotFound();
-    if (!isFree(c) && !loggedIn()) {
-      pendingAction = () => { location.hash = `#/learn/${courseId}/${lessonId}`; };
-      location.hash = `#/course/${courseId}`;
-      window.Auth.openModal("login");
-      return;
-    }
-    if (!isFree(c) && !isPremiumUser()) {
-      /* Membership lookup may still be in flight on a hard reload — wait for
-         it instead of bouncing a paying member to the premium page */
-      if (!premiumChecked && loggedIn()) {
-        app.innerHTML = `<div class="container"><div class="empty"><h2>⏳</h2><p class="muted">${t("prem_checking")}</p></div></div>`;
-        return;
-      }
-      location.hash = "#/premium";
-      return;
-    }
-    if (!isEnrolled(c.id)) enroll(c.id);
 
     const flat = lessonsOf(c);
     let idx = flat.findIndex((x) => x.lesson.id === lessonId);
     if (idx === -1) idx = 0;
+
+    const locked = !isFree(c) && !isPremiumUser();
+    let previewMode = false;
+    if (locked) {
+      if (!loggedIn()) {
+        pendingAction = () => { location.hash = `#/learn/${courseId}/${lessonId}`; };
+        location.hash = `#/course/${courseId}`;
+        window.Auth.openModal("login");
+        return;
+      }
+      /* Membership lookup may still be in flight on a hard reload — wait for
+         it instead of bouncing a paying member to the premium page */
+      if (!premiumChecked) {
+        app.innerHTML = `<div class="container"><div class="empty"><h2>⏳</h2><p class="muted">${t("prem_checking")}</p></div></div>`;
+        return;
+      }
+      /* free preview: the first PREVIEW_LESSONS are open; deeper lessons paywall */
+      if (idx >= PREVIEW_LESSONS) { location.hash = "#/premium"; return; }
+      previewMode = true;
+    }
+    if (!isEnrolled(c.id)) enroll(c.id);
+
     const current = flat[idx].lesson;
+    /* in preview, the "next" lesson is only reachable if it's still free */
+    const nextLocked = previewMode && (idx + 1) >= PREVIEW_LESSONS;
     const done = completedSet(c.id);
     const pct = progressPct(c);
 
-    /* sidebar */
+    /* sidebar (in preview, lessons past the free window show a 🔒) */
     let sidebar = "";
+    let flatN = 0;
     c.sections.forEach((sec, si) => {
       sidebar += `<div class="side-sec-title">${secName(c, si)}</div>`;
       sec.lessons.forEach((l) => {
         const isDone = done.has(l.id);
-        sidebar += `
-          <button class="side-lesson ${l.id === current.id ? "active" : ""}" data-goto="${l.id}">
-            <span class="s-check ${isDone ? "" : "todo"}">${isDone ? "✓" : "○"}</span>
-            <span class="s-ttl">${lf(l, "title")}</span>
-            <span class="s-dur">${l.duration}</span>
-          </button>`;
+        const lLocked = previewMode && flatN >= PREVIEW_LESSONS;
+        flatN++;
+        sidebar += lLocked
+          ? `<a class="side-lesson locked" href="#/premium" title="${escapeHtml(t("preview_locked"))}">
+               <span class="s-check">🔒</span>
+               <span class="s-ttl">${lf(l, "title")}</span>
+               <span class="s-dur">${l.duration}</span>
+             </a>`
+          : `<button class="side-lesson ${l.id === current.id ? "active" : ""}" data-goto="${l.id}">
+               <span class="s-check ${isDone ? "" : "todo"}">${isDone ? "✓" : "○"}</span>
+               <span class="s-ttl">${lf(l, "title")}</span>
+               <span class="s-dur">${l.duration}</span>
+             </button>`;
       });
     });
 
@@ -1359,6 +1416,7 @@
             <div class="muted" style="font-size:13px"><a href="#/course/${c.id}">← ${cf(c, "title")}</a></div>
             <h1>${lf(current, "title")}</h1>
             <p class="lesson-sub">${secTitle} · ${current.duration} · ⏱ ${t("spent")}: <span id="time-spent">${formatTime(loadLessonTime(current.id).total)}</span></p>
+            ${previewMode ? `<div class="preview-banner">🎁 ${t("preview_free").replace("{n}", PREVIEW_LESSONS)} · <a href="#/premium">⭐ ${t("preview_unlock")}</a></div>` : ""}
             ${body}
             <div class="ai-tutor" id="ai-tutor">
               <div class="notes-head"><strong>🎓 ${t("tutor_title")}</strong> <span class="muted" style="font-size:12px">${t("tutor_sub")}</span></div>
@@ -1416,7 +1474,9 @@
                     : ""
                 }
                 ${
-                  next
+                  nextLocked
+                    ? `<a class="btn btn-primary btn-sm" href="#/premium">🔒 ${t("preview_unlock")}</a>`
+                    : next
                     ? `<a class="btn btn-primary btn-sm" data-next href="#/learn/${c.id}/${next}">${t("next_lesson")}</a>`
                     : `<a class="btn btn-primary btn-sm" href="#/course/${c.id}">${t("finish")}</a>`
                 }

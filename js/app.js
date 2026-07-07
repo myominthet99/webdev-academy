@@ -1866,6 +1866,116 @@
   }
 
   /* ---------------- View: My Learning ---------------- */
+  /* ---------------- AI Daily Review Quiz ---------------- */
+  /* Gather the lessons this student has already completed (skip quizzes). */
+  function collectCompletedLessons() {
+    const out = [];
+    COURSES.forEach((c) => {
+      const done = completedSet(c.id);
+      if (!done.size) return;
+      lessonsOf(c).forEach((x) => {
+        if (x.lesson.type !== "quiz" && done.has(x.lesson.id))
+          out.push({ course: cf(c, "title"), title: lf(x.lesson, "title") });
+      });
+    });
+    return out;
+  }
+
+  function renderReview() {
+    if (!loggedIn()) { location.hash = "#/"; if (window.Auth) window.Auth.openModal("login"); return; }
+    app.innerHTML = `
+      <div class="container" style="max-width:680px">
+        <h2 class="section-title">🧠 ${t("review_title")}</h2>
+        <p class="section-sub">${t("review_sub")}</p>
+        <div id="review-body"></div>
+      </div>`;
+    const mount = document.getElementById("review-body");
+    if (!isPremiumUser()) {
+      mount.innerHTML = `<div class="panel"><p class="muted" style="margin:0 0 10px">🔒 ${t("review_premium")}</p><a class="btn btn-primary" href="#/premium">⭐ ${t("prem_go")}</a></div>`;
+      return;
+    }
+    if (!window.AI) { mount.innerHTML = `<div class="panel"><p class="muted">${escapeHtml(t("ai_no_key"))}</p></div>`; return; }
+    const done = collectCompletedLessons();
+    if (done.length < 3) {
+      mount.innerHTML = `<div class="empty"><h2>📚</h2><p>${t("review_need")}</p><a class="btn btn-primary" href="#/courses">${t("browse_courses")}</a></div>`;
+      return;
+    }
+    mount.innerHTML = `<div class="panel">
+      <p>${t("review_ready").replace("{n}", done.length)}</p>
+      <button class="btn btn-primary" id="review-start">✨ ${t("review_start")}</button>
+    </div>`;
+    document.getElementById("review-start").addEventListener("click", () => startReview(mount, done));
+    window.scrollTo(0, 0);
+  }
+
+  function startReview(mount, done) {
+    /* pick up to 6 completed lessons at random for today's set */
+    const pick = done.slice().sort(() => Math.random() - 0.5).slice(0, 6);
+    const list = pick.map((x) => "- " + x.title + " (from " + x.course + ")").join("\n");
+    mount.innerHTML = `<div class="panel"><p class="muted">⏳ ${t("review_making")}</p></div>`;
+    window.AI.complete(
+      "A student has completed these web-development lessons:\n" + list +
+        '\n\nCreate 5 multiple-choice review questions testing the key ideas from these lessons. Reply with ONLY a JSON array, no markdown: [{"q":"question","options":["a","b","c","d"],"answer":0}] where answer is the index (0-3) of the correct option.',
+      {
+        system: "You are a kind quiz-maker for Myanmar teenagers learning web development. Use simple, clear English. Keep questions fair — not too hard, not trick questions.",
+        maxTokens: 2000, temperature: 0.6,
+      }
+    ).then((raw) => {
+      let qs;
+      try { qs = JSON.parse(window.AI.stripFences(raw)); } catch (e) { throw new Error(t("ai_bad_reply")); }
+      if (!Array.isArray(qs) || !qs.length) throw new Error(t("ai_bad_reply"));
+      renderReviewQuiz(mount, qs);
+    }).catch((err) => {
+      const m = (err && err.message) || String(err);
+      mount.innerHTML = `<div class="panel"><p class="muted" style="margin:0 0 10px">${m === "no-key" ? escapeHtml(t("ai_no_key")) : "⚠ AI: " + escapeHtml(m)}</p><button class="btn btn-outline btn-sm" id="review-retry">${t("review_start")}</button></div>`;
+      const r = document.getElementById("review-retry");
+      if (r) r.addEventListener("click", () => renderReview());
+    });
+  }
+
+  function renderReviewQuiz(mount, qs) {
+    qs = qs.map((q) => ({
+      q: String(q.q || ""),
+      options: (q.options || []).slice(0, 4).map(String),
+      answer: Math.min(3, Math.max(0, Number(q.answer) || 0)),
+    })).filter((q) => q.q && q.options.length >= 2).slice(0, 8);
+    if (!qs.length) { mount.innerHTML = `<div class="panel"><p class="muted">${escapeHtml(t("ai_bad_reply"))}</p></div>`; return; }
+    const html = qs.map((q, qi) => `
+      <div class="q-block" data-q="${qi}">
+        <div class="q">${qi + 1}. ${escapeHtml(q.q)}</div>
+        ${q.options.map((opt, oi) =>
+          `<label class="q-opt" data-opt="${oi}"><input type="radio" name="rq${qi}" value="${oi}"> <span>${escapeHtml(opt)}</span></label>`).join("")}
+      </div>`).join("");
+    mount.innerHTML = `<div class="quiz">${html}
+      <div id="review-result"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-primary" id="review-check">${t("check_answers")}</button>
+        <button class="btn btn-outline" id="review-again">🔄 ${t("review_again")}</button>
+      </div></div>`;
+    document.getElementById("review-check").addEventListener("click", () => {
+      let score = 0;
+      qs.forEach((q, qi) => {
+        const block = mount.querySelector(`.q-block[data-q="${qi}"]`);
+        const picked = block.querySelector(`input[name="rq${qi}"]:checked`);
+        block.querySelectorAll(".q-opt").forEach((o) => o.classList.remove("correct", "wrong"));
+        const correctEl = block.querySelector(`.q-opt[data-opt="${q.answer}"]`);
+        if (correctEl) correctEl.classList.add("correct");
+        if (picked) {
+          const pi = Number(picked.value);
+          if (pi === q.answer) score++;
+          else { const w = block.querySelector(`.q-opt[data-opt="${pi}"]`); if (w) w.classList.add("wrong"); }
+        }
+      });
+      const pct = Math.round((score / qs.length) * 100);
+      mount.querySelector("#review-result").innerHTML =
+        `<div class="quiz-score ${pct >= 60 ? "pass" : "fail"}">${pct >= 60 ? "🎉" : "💪"} ${t("review_score").replace("{s}", score).replace("{t}", qs.length)}</div>`;
+      bumpDayStreak(); /* reviewing counts as studying today */
+      saveState();
+    });
+    document.getElementById("review-again").addEventListener("click", () => renderReview());
+    window.scrollTo(0, 0);
+  }
+
   function renderMyLearning() {
     const mine = COURSES.filter((c) => isEnrolled(c.id));
     const rows = mine
@@ -1892,7 +2002,10 @@
       <div class="container">
         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
           <h2 class="section-title">${t("dash_title")}</h2>
-          <a class="btn btn-outline btn-sm" href="#/leaderboard">🏆 ${t("lb_title")}</a>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <a class="btn btn-outline btn-sm" href="#/review">🧠 ${t("review_title")}</a>
+            <a class="btn btn-outline btn-sm" href="#/leaderboard">🏆 ${t("lb_title")}</a>
+          </div>
         </div>
         ${statsHeader()}
         <h2 class="section-title">${t("my_learning")}</h2>
@@ -2742,6 +2855,7 @@
     else if (parts[0] === "search") renderSearch(decodeURIComponent(parts[1] || ""));
     else if (parts[0] === "playground") renderPlayground();
     else if (parts[0] === "leaderboard") renderLeaderboard();
+    else if (parts[0] === "review") renderReview();
     else if (parts[0] === "premium") renderPremium();
     else if (parts[0] === "roadmap") renderRoadmap();
     else if (parts[0] === "my-learning") renderMyLearning();

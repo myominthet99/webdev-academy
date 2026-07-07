@@ -753,6 +753,13 @@ button { font-family: inherit; cursor: pointer; }
   tab-size: 2;
 }
 .pg-result { border: 0; background: #fff; width: 100%; height: 100%; }
+/* 🧠 Daily review score badge */
+.quiz-score { margin: 14px 0; padding: 12px 16px; border-radius: 10px; font-weight: 700; font-size: 16px; text-align: center; }
+.quiz-score.pass { background: #e9f9ef; color: #1a7f43; border: 1px solid #bfe6cd; }
+.quiz-score.fail { background: #fff4e0; color: #a86400; border: 1px solid #ffd9a8; }
+[data-theme="dark"] .quiz-score.pass { background: #14331f; color: #7fe0a2; border-color: #245c39; }
+[data-theme="dark"] .quiz-score.fail { background: #3a2a12; color: #ffd9a8; border-color: #5c4522; }
+
 /* 📊 Admin dashboard */
 .adash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin: 8px 0 16px; }
 .adash-card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; text-align: center; }

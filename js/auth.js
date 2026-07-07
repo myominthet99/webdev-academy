@@ -375,13 +375,14 @@
       return;
     }
 
-    /* ----- login / signup view ----- */
+    /* ----- login / signup view -----
+       email+password is primary (works on every network); Google is offered
+       below as a secondary option with a hint, because its popup relies on a
+       domain that is blocked on some Myanmar networks. */
     body.innerHTML =
       '<h2 class="auth-title">' + (isSignup ? t("auth_signup_title") : t("auth_login_title")) + "</h2>" +
       '<div class="auth-err" hidden></div>' +
       '<div class="auth-ok" hidden></div>' +
-      '<div class="google-slot"></div>' +
-      '<div class="auth-divider"><span>' + t("auth_or") + "</span></div>" +
       '<form class="auth-form" novalidate>' +
       (isSignup ? "<label>" + t("auth_name") + '</label><input name="name" type="text" autocomplete="name">' : "") +
       "<label>" + t("auth_email") + '</label><input name="email" type="email" autocomplete="email">' +
@@ -391,6 +392,9 @@
       (isSignup ? t("auth_signup_btn") : t("auth_login_btn")) + "</button>" +
       "</form>" +
       (isSignup ? "" : '<p class="auth-switch" style="margin:10px 0 0"><a data-switch="reset">' + t("auth_forgot") + "</a></p>") +
+      '<div class="auth-divider"><span>' + t("auth_or") + "</span></div>" +
+      '<div class="google-slot"></div>' +
+      '<p class="auth-note" style="margin-top:6px">' + t("auth_google_hint") + "</p>" +
       '<p class="auth-switch">' + (isSignup ? t("auth_have_account") : t("auth_no_account")) +
       ' <a data-switch="' + (isSignup ? "login" : "signup") + '">' +
       (isSignup ? t("auth_switch_login") : t("auth_switch_signup")) + "</a></p>";

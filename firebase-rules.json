@@ -44,6 +44,15 @@
           "streak":  { ".validate": "newData.isNumber()" },
           "ts":      { ".validate": "newData.isNumber()" }
         }
+      },
+      "promo": {
+        "$code": {
+          ".write": true,
+          "days": { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 3650" },
+          "max":  { ".validate": "newData.isNumber() && newData.val() >= 1" },
+          "used": { ".validate": "newData.isNumber() && newData.val() >= 0" },
+          "ts":   { ".validate": "newData.isNumber()" }
+        }
       }
     },
     "payments": {

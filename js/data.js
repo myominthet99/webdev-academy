@@ -18,6 +18,12 @@ function article(id, title, duration, content) {
 function quiz(id, title, questions) {
   return { id, title, duration: "Quiz", type: "quiz", questions };
 }
+/* Auto-checked coding exercise: `starter` prefills the editor, `check`
+   runs inside the sandboxed preview after the student's code and must
+   call __exDone(pass, hint). */
+function exercise(id, title, duration, content, starter, check) {
+  return { id, title, duration, type: "exercise", content, starter, check };
+}
 
 const COURSES = [
   {
@@ -1010,6 +1016,94 @@ btn.addEventListener("click", () =&gt; {
 <div class="callout tip"><strong>Try it, then make it yours:</strong> change the name, colors, and list items. Add a photo with <code>&lt;img&gt;</code>. This is your page now!</div>
 <h3>🎓 You did it</h3>
 <p>You just built a real, interactive web page using all three core languages. Mark this lesson complete to reach 100%. Next up, dive into the <strong>Complete Web Development Bootcamp</strong> to go deeper!</p>`),
+        ],
+      },
+      {
+        title: "🏋️ Practice Zone — Prove Your Skills",
+        lessons: [
+          exercise("wbx-html", "Exercise: Build a Mini Profile Page", "10 min", `
+<h3>🏋️ Your task</h3>
+<p>Write a small HTML page that contains <strong>all three</strong> of these elements:</p>
+<ul>
+  <li>an <code>&lt;h1&gt;</code> heading with your name</li>
+  <li>a <code>&lt;p&gt;</code> paragraph about yourself</li>
+  <li>a <code>&lt;button&gt;</code> that says anything you like</li>
+</ul>
+<p>Press <strong>▶ Run &amp; Check</strong> — the checker looks at your page and tells you what's missing. Pass it to earn <strong>+15 XP</strong> and complete the lesson! 🎉</p>`,
+`<!DOCTYPE html>
+<html>
+  <body>
+    <!-- 1. Add an <h1> with your name -->
+
+    <!-- 2. Add a <p> about yourself -->
+
+    <!-- 3. Add a <button> -->
+
+  </body>
+</html>`,
+`var h1 = document.querySelector("h1");
+var p = document.querySelector("p");
+var btn = document.querySelector("button");
+if (!h1) __exDone(false, "Add an <h1> heading with your name.");
+else if (!h1.textContent.trim()) __exDone(false, "Your <h1> is empty - write your name inside it.");
+else if (!p) __exDone(false, "Add a <p> paragraph about yourself.");
+else if (!btn) __exDone(false, "Add a <button> element.");
+else __exDone(true, "");`),
+          exercise("wbx-css", "Exercise: Style the Box", "10 min", `
+<h3>🏋️ Your task</h3>
+<p>The page below has a box with <code>id="box"</code>. Use CSS inside the <code>&lt;style&gt;</code> tag to make it:</p>
+<ul>
+  <li><strong>red</strong> — set <code>background-color: red;</code></li>
+  <li><strong>round-cornered</strong> — set <code>border-radius</code> to <code>16px</code> or more</li>
+</ul>
+<p>Remember the CSS pattern: <code>#box { property: value; }</code></p>`,
+`<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      /* style the box here */
+      #box {
+
+      }
+    </style>
+  </head>
+  <body>
+    <div id="box" style="width:120px;height:120px">Style me!</div>
+  </body>
+</html>`,
+`var b = document.getElementById("box");
+if (!b) { __exDone(false, "Keep the div with id=\\"box\\" on the page!"); }
+else {
+  var cs = getComputedStyle(b);
+  var red = cs.backgroundColor === "rgb(255, 0, 0)";
+  var round = parseFloat(cs.borderRadius) >= 16;
+  if (!red) __exDone(false, "Make the background red: background-color: red;");
+  else if (!round) __exDone(false, "Round the corners: border-radius: 16px;");
+  else __exDone(true, "");
+}`),
+          exercise("wbx-js", "Exercise: Write the add() Function", "10 min", `
+<h3>🏋️ Your task</h3>
+<p>Inside the <code>&lt;script&gt;</code> tag, write a function called <code>add</code> that takes two numbers and <strong>returns</strong> their sum:</p>
+<pre><code>add(2, 3)   → should return 5
+add(10, 20) → should return 30</code></pre>
+<p>The pattern: <code>function add(a, b) { return ...; }</code>. The checker will call your function with different numbers — no cheating with fixed answers! 😄</p>`,
+`<!DOCTYPE html>
+<html>
+  <body>
+    <p>Open the check to test your function!</p>
+    <script>
+      // write your function here:
+      function add(a, b) {
+
+      }
+    </script>
+  </body>
+</html>`,
+`if (typeof add !== "function") __exDone(false, "Define a function called add.");
+else if (add(2, 3) !== 5) __exDone(false, "add(2, 3) should return 5 - use the return keyword!");
+else if (add(10, 20) !== 30) __exDone(false, "add(10, 20) should return 30 - add the two parameters.");
+else if (add(-1, 1) !== 0) __exDone(false, "add(-1, 1) should return 0.");
+else __exDone(true, "");`),
         ],
       },
     ],

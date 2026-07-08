@@ -501,6 +501,58 @@ a.lesson-row:hover .ttl { color: var(--purple); }
 
 .related-wrap { margin-bottom: 40px; }
 
+/* ---------- 🏅 Badge toast ---------- */
+.badge-toast {
+  position: fixed; top: 74px; right: 16px; z-index: 900;
+  display: flex; align-items: center; gap: 12px;
+  background: var(--surface); border: 1px solid var(--purple); border-radius: 14px;
+  padding: 12px 18px 12px 14px; box-shadow: 0 12px 34px rgba(0, 0, 0, .22);
+  animation: btIn .35s cubic-bezier(.2, .9, .3, 1.2); max-width: 320px;
+}
+.badge-toast .bt-ic { font-size: 30px; }
+.badge-toast b { font-size: 13px; color: var(--purple); }
+.badge-toast span { font-size: 13px; }
+.badge-toast.out { transition: opacity .5s ease, transform .5s ease; opacity: 0; transform: translateX(20px); }
+@keyframes btIn { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .badge-toast { animation: none; } }
+
+/* level progress line on the dashboard */
+.lvl-line { display: flex; align-items: center; gap: 10px; margin: 10px 0 4px; }
+.lvl-chip {
+  background: linear-gradient(135deg, #654ea3, #a435f0); color: #fff;
+  font-size: 12px; font-weight: 800; border-radius: 999px; padding: 3px 12px;
+}
+
+/* ---------- 🎯 Daily challenge ---------- */
+.daily-card {
+  display: flex; align-items: center; gap: 14px; text-decoration: none; color: inherit;
+  background: linear-gradient(120deg, rgba(164, 53, 240, .1), rgba(101, 78, 163, .06));
+  border: 1px solid rgba(164, 53, 240, .35); border-radius: 14px;
+  padding: 12px 16px; margin: 18px 0 6px;
+}
+.daily-card:hover { border-color: var(--purple); }
+.daily-card.done { background: var(--surface); border-color: var(--line); }
+.daily-card .dc-ic { font-size: 28px; }
+.daily-card .dc-txt { flex: 1; display: flex; flex-direction: column; }
+.daily-card .dc-txt b { font-size: 15px; }
+.daily-card .dc-txt .muted { font-size: 12.5px; }
+.daily-card .btn { flex: none; }
+.daily-panel .qc-q { font-weight: 700; margin: 14px 0; line-height: 1.55; }
+.daily-meta {
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+  font-size: 13px; color: var(--muted); margin-bottom: 4px;
+}
+
+/* ---------- 🏋️ Code exercises ---------- */
+.ex-head {
+  display: flex; align-items: center; justify-content: space-between;
+  font-weight: 800; font-size: 14px; margin: 16px 0 8px;
+}
+.ex-frame {
+  width: 100%; height: 200px; border: 1px solid var(--line); border-radius: 10px;
+  background: #fff; margin-top: 12px;
+}
+
 /* ---------- Learn / player ---------- */
 .learn-wrap { display: grid; grid-template-columns: 1fr 360px; min-height: calc(100vh - 120px); }
 .player-main { background: #0f1113; color: #e9eaec; }

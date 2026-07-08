@@ -172,6 +172,10 @@
   const loadQuizScores = () => jget(ns("wda_quiz"), {});
   const saveQuizScore = (id, score, total) => { const q = loadQuizScores(); const p = q[id]; if (!p || score > p.score) q[id] = { score, total, ts: Date.now() }; jset(ns("wda_quiz"), q); };
 
+  /* Bonus XP earned outside lessons (daily challenge, code exercises) */
+  const bonusXp = () => Number(jget(ns("wda_xtra"), 0)) || 0;
+  const addBonusXp = (n) => jset(ns("wda_xtra"), bonusXp() + n);
+
   /* Day-streak: bumped when a lesson is completed */
   function bumpDayStreak() {
     const key = ns("wda_streak");
@@ -354,6 +358,7 @@
     if (done) bumpDayStreak();
     saveState();
     if (typeof pushLeaderboard === "function") pushLeaderboard();
+    if (done) setTimeout(maybeToastBadges, 500);
   }
   function enroll(courseId) {
     if (!isEnrolled(courseId)) {
@@ -371,7 +376,7 @@
     return `<span class="stars">${s}</span>`;
   }
   const lessonIcon = (type) =>
-    type === "quiz" ? "❓" : type === "article" ? "📄" : "▶";
+    type === "quiz" ? "❓" : type === "exercise" ? "🏋️" : type === "article" ? "📄" : "▶";
 
   /* Build a real player from a lesson's video src (file / YouTube / Vimeo). */
   /* ---------------- Local video store (IndexedDB) ----------------
@@ -858,7 +863,7 @@
     });
     const qs = loadQuizScores();
     const passes = Object.values(qs).filter((q) => q.score >= Math.ceil(q.total * 0.6)).length;
-    const xp = lessons * 10 + passes * 5;
+    const xp = lessons * 10 + passes * 5 + bonusXp();
     return { lessons, coursesDone, xp, level: Math.floor(xp / 100) + 1 };
   }
   function pushLeaderboard() {
@@ -988,7 +993,8 @@
       .then((v) => {
         const was = premiumStatus;
         const first = !premiumChecked;
-        premiumStatus = !!v;
+        /* promo-code memberships carry an expiry: {until, via} */
+        premiumStatus = !!v && !(typeof v === "object" && v.until && v.until <= Date.now());
         premiumChecked = true;
         /* re-render once the answer is in, so deep-linked premium lessons load */
         if (premiumStatus !== was || first) window.dispatchEvent(new Event("hashchange"));
@@ -1038,10 +1044,51 @@
     /* pending claim already submitted? Claims are keyed by the user's own
        email key, so we fetch ONE row — never the whole collection (other
        people's emails/phones must not download to every visitor) */
+    /* 🎟️ promo code redemption — shared by both states below */
+    const redeemHtml = `
+      <div class="panel">
+        <h2>🎟️ ${t("redeem_title")}</h2>
+        <div class="tl-row">
+          <input class="tl-in" id="redeem-code" placeholder="${escapeHtml(t("redeem_ph"))}" style="flex:1;min-width:140px;text-transform:uppercase" maxlength="24">
+          <button class="btn btn-primary" id="redeem-btn">${t("redeem_btn")}</button>
+        </div>
+        <div class="tl-status" id="redeem-status"></div>
+      </div>`;
+    const wireRedeem = () => {
+      const btn = document.getElementById("redeem-btn");
+      if (!btn) return;
+      btn.addEventListener("click", () => {
+        const status = document.getElementById("redeem-status");
+        const code = (document.getElementById("redeem-code").value || "").trim().toUpperCase().replace(/[^A-Z0-9_-]/g, "");
+        if (!code) return;
+        status.className = "tl-status"; status.textContent = "⏳";
+        fetch(base + "/stats/promo/" + code + ".json")
+          .then((r) => r.json())
+          .then((v) => {
+            if (!v || !v.days || (v.max && (Number(v.used) || 0) >= Number(v.max))) throw new Error("invalid");
+            const until = Date.now() + Number(v.days) * 864e5;
+            return fetch(base + "/stats/promo/" + code + "/used.json", {
+              method: "PUT", body: JSON.stringify((Number(v.used) || 0) + 1),
+            }).then(() => fetch(base + "/premium/" + emailKey(u.email) + ".json", {
+              method: "PUT",
+              body: JSON.stringify({ until, via: code, ts: Date.now() }),
+            })).then((r) => {
+              if (!r.ok) throw new Error("write");
+              premiumStatus = true; premiumChecked = true;
+              status.className = "tl-status ok";
+              status.textContent = t("redeem_ok").replace("{d}", new Date(until).toLocaleDateString());
+              setTimeout(() => renderPremium(), 1400);
+            });
+          })
+          .catch(() => { status.className = "tl-status bad"; status.textContent = t("redeem_invalid"); });
+      });
+    };
+
     fetch(base + "/payments/" + emailKey(u.email) + ".json").then((r) => r.json()).then((p) => {
       const mine = p && p.status === "pending" ? [p] : [];
       if (mine.length) {
-        mount.innerHTML = `<div class="panel"><h2>⏳ ${t("prem_pending")}</h2><p class="muted">${t("prem_pending_sub")}</p></div>`;
+        mount.innerHTML = `<div class="panel"><h2>⏳ ${t("prem_pending")}</h2><p class="muted">${t("prem_pending_sub")}</p></div>` + redeemHtml;
+        wireRedeem();
         return;
       }
       mount.innerHTML = `
@@ -1068,7 +1115,8 @@
             <div class="auth-err" hidden></div>
             <button class="btn btn-primary btn-block" type="submit" style="margin-top:14px">${t("prem_submit")}</button>
           </form>
-        </div>`;
+        </div>` + redeemHtml;
+      wireRedeem();
       const form = mount.querySelector("#prem-form");
       form.addEventListener("submit", (e) => {
         e.preventDefault();
@@ -1172,6 +1220,7 @@
       </section>
 
       <div class="container">
+        ${dailyHomeCard()}
         ${resumeBanner()}
         ${fresh.length ? `
         <h2 class="section-title">🆕 ${t("new_title")}</h2>
@@ -1764,6 +1813,7 @@
     }
     const body =
       current.type === "quiz" ? renderQuizHtml(current)
+      : current.type === "exercise" ? renderExerciseHtml(current)
       : useSteps
       ? `<div class="steps-wrap">
            <div class="steps-head">
@@ -2080,6 +2130,7 @@
     }
 
     if (current.type === "quiz") wireQuiz(current, c);
+    if (current.type === "exercise") wireExercise(current, c);
 
     /* Time tracking: start timer for this lesson */
     startLessonTimer(current.id);
@@ -2183,6 +2234,93 @@
     });
   }
 
+  /* ---------------- Auto-checked code exercises ----------------
+     The student's code runs in a sandboxed iframe; the lesson's hidden
+     check script inspects the result and posts pass/fail back to us. */
+  let exRunSeq = 0;
+  function renderExerciseHtml(lesson) {
+    return `
+      <div class="exercise">
+        <div class="reader">${lf(lesson, "content") || ""}</div>
+        <div class="ex-head">
+          <span>💻 ${t("ex_editor")}</span>
+          <button class="btn btn-outline btn-sm" id="ex-reset">↺ ${t("ex_reset")}</button>
+        </div>
+        <textarea id="ex-code" class="tl-ta" rows="12" spellcheck="false" autocapitalize="off" autocomplete="off"></textarea>
+        <div class="tl-row">
+          <button class="btn btn-primary" id="ex-run">▶ ${t("ex_run")}</button>
+          <span class="tl-status" id="ex-status"></span>
+        </div>
+        <iframe id="ex-frame" class="ex-frame" sandbox="allow-scripts" title="preview"></iframe>
+      </div>`;
+  }
+  function wireExercise(lesson, course) {
+    const ta = document.getElementById("ex-code");
+    const frame = document.getElementById("ex-frame");
+    const status = document.getElementById("ex-status");
+    if (!ta || !frame) return;
+    const saved = jget(ns("wda_ex_code"), {});
+    ta.value = saved[lesson.id] != null ? saved[lesson.id] : (lesson.starter || "");
+    document.getElementById("ex-reset").addEventListener("click", () => { ta.value = lesson.starter || ""; });
+
+    let timer = null;
+    const onMsg = (e) => {
+      const d = e.data;
+      if (!d || !d.__ex || d.run !== exRunSeq) return;
+      clearTimeout(timer);
+      if (d.pass) {
+        status.className = "tl-status ok";
+        status.textContent = "✅ " + t("ex_pass");
+        const done = jget(ns("wda_ex"), {});
+        const firstPass = !done[lesson.id];
+        if (firstPass) {
+          done[lesson.id] = Date.now();
+          jset(ns("wda_ex"), done);
+          addBonusXp(15);
+        }
+        const already = completedSet(course.id).has(lesson.id);
+        if (!already) {
+          markComplete(course.id, lesson.id, true);
+          const flat = lessonsOf(course);
+          const i = flat.findIndex((x) => x.lesson.id === lesson.id);
+          const nx = i >= 0 && i < flat.length - 1 ? `#/learn/${course.id}/${flat[i + 1].lesson.id}` : null;
+          showCelebration(nx);
+        }
+        pushLeaderboard();
+        setTimeout(maybeToastBadges, 600);
+      } else {
+        status.className = "tl-status bad";
+        status.textContent = "✗ " + t("ex_fail") + " " + (d.msg || "");
+      }
+    };
+    window.addEventListener("message", onMsg);
+    window.addEventListener("hashchange", () => window.removeEventListener("message", onMsg), { once: true });
+
+    document.getElementById("ex-run").addEventListener("click", () => {
+      const code = ta.value;
+      const store = jget(ns("wda_ex_code"), {});
+      store[lesson.id] = code;
+      jset(ns("wda_ex_code"), store);
+      const run = ++exRunSeq;
+      status.className = "tl-status";
+      status.textContent = "⏳";
+      const shim =
+        '<script>window.__exDone=function(p,m){try{parent.postMessage({__ex:1,run:' + run +
+        ',pass:!!p,msg:String(m||"")},"*")}catch(e){}};' +
+        'window.addEventListener("error",function(e){window.__exDone(false,e.message)});</scr' + 'ipt>';
+      const check =
+        '<script>setTimeout(function(){try{' + (lesson.check || "__exDone(false, 'no check')") +
+        '}catch(e){__exDone(false,e.message)}},60);</scr' + 'ipt>';
+      frame.srcdoc = code + shim + check;
+      timer = setTimeout(() => {
+        if (status.textContent === "⏳") {
+          status.className = "tl-status bad";
+          status.textContent = "✗ " + t("ex_timeout");
+        }
+      }, 3000);
+    });
+  }
+
   /* Resume-where-you-left-off banner */
   function resumeBanner() {
     const last = getLast();
@@ -2199,22 +2337,20 @@
   }
 
   /* Dashboard stats + badges (gamification) */
-  function statsHeader() {
-    let lessons = 0, coursesDone = 0, totalTime = 0;
+  function earnedBadgesList() {
+    let lessons = 0, coursesDone = 0;
     COURSES.forEach((c) => {
       const cc = completedCount(c), tot = totalLessons(c);
       lessons += cc;
       if (tot > 0 && cc === tot && isEnrolled(c.id)) coursesDone++;
-      if (isEnrolled(c.id)) totalTime += getTotalTimeSpent(c.id);
     });
     const qs = loadQuizScores();
-    const passes = Object.values(qs).filter((q) => q.score >= Math.ceil(q.total * 0.6)).length;
     const perfect = Object.values(qs).some((q) => q.total > 0 && q.score === q.total);
-    const xp = lessons * 10 + passes * 5;
-    const level = Math.floor(xp / 100) + 1;
     const bilingual = localStorage.getItem("wda_bilingual") === "1";
     const streak = dayStreak();
-    const badges = [
+    const daily = jget(ns("wda_daily"), {});
+    const exDone = Object.keys(jget(ns("wda_ex"), {})).length;
+    return [
       { key: "badge_first_lesson", earned: lessons >= 1, icon: "👣" },
       { key: "badge_ten_lessons", earned: lessons >= 10, icon: "📚" },
       { key: "badge_fifty_lessons", earned: lessons >= 50, icon: "🚀" },
@@ -2225,13 +2361,57 @@
       { key: "badge_streak30", earned: streak >= 30, icon: "💎" },
       { key: "badge_quiz_ace", earned: perfect, icon: "🧠" },
       { key: "badge_bilingual", earned: bilingual, icon: "🌐" },
+      { key: "badge_daily3", earned: (Number(daily.streak) || 0) >= 3, icon: "🎯" },
+      { key: "badge_exercise", earned: exDone >= 1, icon: "🏋️" },
     ];
+  }
+
+  /* Small slide-in toast when a badge is newly earned */
+  function showBadgeToast(b) {
+    const el = document.createElement("div");
+    el.className = "badge-toast";
+    el.innerHTML = `<span class="bt-ic">${b.icon}</span><div><b>🏅 ${t("badge_earned")}</b><br><span>${t(b.key)}</span></div>`;
+    document.body.appendChild(el);
+    setTimeout(() => el.classList.add("out"), 2800);
+    setTimeout(() => el.remove(), 3400);
+  }
+  function maybeToastBadges() {
+    const seen = jget(ns("wda_badges_seen"), []);
+    const earned = earnedBadgesList().filter((b) => b.earned);
+    const fresh = earned.filter((b) => seen.indexOf(b.key) === -1);
+    if (!fresh.length) return;
+    jset(ns("wda_badges_seen"), earned.map((b) => b.key));
+    /* a returning user's very first check would flood — swallow it silently */
+    if (!seen.length && fresh.length > 1) return;
+    fresh.slice(0, 2).forEach((b, i) => setTimeout(() => showBadgeToast(b), i * 1700));
+  }
+
+  function statsHeader() {
+    let lessons = 0, coursesDone = 0, totalTime = 0;
+    COURSES.forEach((c) => {
+      const cc = completedCount(c), tot = totalLessons(c);
+      lessons += cc;
+      if (tot > 0 && cc === tot && isEnrolled(c.id)) coursesDone++;
+      if (isEnrolled(c.id)) totalTime += getTotalTimeSpent(c.id);
+    });
+    const qs = loadQuizScores();
+    const passes = Object.values(qs).filter((q) => q.score >= Math.ceil(q.total * 0.6)).length;
+    const xp = lessons * 10 + passes * 5 + bonusXp();
+    const level = Math.floor(xp / 100) + 1;
+    const inLvl = xp % 100;
+    const streak = dayStreak();
+    const badges = earnedBadgesList();
     const stat = (v, l) => `<div class="dstat"><b>${v}</b><span>${l}</span></div>`;
     return `
       <div class="dash">
         <div class="dash-stats">
           ${stat(level, t("stat_level"))}${stat(xp, t("stat_xp"))}${stat(lessons, t("stat_completed"))}
           ${stat(coursesDone, t("stat_courses_done"))}${stat("🔥 " + streak, t("stat_streak"))}${stat(formatTime(totalTime), "⏱ " + t("spent"))}
+        </div>
+        <div class="lvl-line">
+          <span class="lvl-chip">Lv ${level}</span>
+          <div class="progress thin" style="flex:1"><span style="width:${inLvl}%"></span></div>
+          <span class="muted" style="font-size:12px">${t("lvl_next").replace("{n}", 100 - inLvl).replace("{l}", level + 1)}</span>
         </div>
         <div class="badges">
           ${badges.map((b) => `<div class="badge ${b.earned ? "on" : ""}" title="${b.earned ? t(b.key) : t("badge_locked")}"><span>${b.earned ? b.icon : "🔒"}</span><small>${t(b.key)}</small></div>`).join("")}
@@ -3016,6 +3196,90 @@
     }
   }
 
+  /* ---------------- View: Daily Challenge ---------------- */
+  /* Same question for everyone, picked deterministically from the whole
+     catalog's quiz bank by today's LOCAL date. One try per day, +20 XP. */
+  function todayKey(offsetDays) {
+    const d = new Date(Date.now() + (offsetDays || 0) * 864e5);
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  }
+  function dailyQuestion() {
+    const bank = [];
+    COURSES.forEach((c) => c.sections.forEach((s) => s.lessons.forEach((l) => {
+      if (l.type === "quiz" && Array.isArray(l.questions)) l.questions.forEach((q) => bank.push(q));
+    })));
+    if (!bank.length) return null;
+    const date = todayKey();
+    let h = 0;
+    for (const ch of date) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+    return bank[h % bank.length];
+  }
+  function dailyHomeCard() {
+    const st = jget(ns("wda_daily"), {});
+    const done = st.date === todayKey();
+    return `
+      <a class="daily-card ${done ? "done" : ""}" href="#/daily">
+        <span class="dc-ic">🎯</span>
+        <div class="dc-txt"><b>${t("daily_title")}</b><span class="muted">${done ? t("daily_done_short") : t("daily_cta")}</span></div>
+        <span class="btn ${done ? "btn-outline" : "btn-primary"} btn-sm">${done ? "✓" : "+20 XP"}</span>
+      </a>`;
+  }
+  function renderDaily() {
+    const q = dailyQuestion();
+    if (!q) return renderNotFound();
+    const date = todayKey();
+    const st = jget(ns("wda_daily"), {});
+    const answered = st.date === date;
+    const hoursLeft = Math.max(1, Math.ceil((new Date(todayKey(1) + "T00:00:00") - Date.now()) / 36e5));
+
+    const optHtml = (highlight) => q.options.map((o, i) => {
+      let cls = "qc-opt";
+      if (highlight) {
+        if (i === q.answer) cls += " right";
+        else if (answered && st.picked === i) cls += " wrong";
+      }
+      return `<button type="button" class="${cls}" data-daily-opt="${i}" ${highlight ? "disabled" : ""}>${o}</button>`;
+    }).join("");
+
+    app.innerHTML = `
+      <div class="container" style="max-width:620px">
+        <h2 class="section-title">🎯 ${t("daily_title")}</h2>
+        <p class="section-sub">${t("daily_sub")}</p>
+        <div class="panel daily-panel">
+          <div class="daily-meta">
+            <span>📅 ${date}</span>
+            <span>🔥 ${t("daily_streak")}: <b>${Number(st.streak) || 0}</b></span>
+          </div>
+          <div class="qc-q" style="font-size:17px">${q.q}</div>
+          <div class="qc-opts" id="daily-opts">${optHtml(answered)}</div>
+          <div class="tl-status" id="daily-fb">${answered
+            ? (st.correct ? "✅ " + t("daily_correct") : "❌ " + t("daily_wrong")) + " · " + t("daily_back").replace("{h}", hoursLeft)
+            : "💡 " + t("daily_hint")}</div>
+        </div>
+        <p style="text-align:center"><a class="btn btn-outline btn-sm" href="#/leaderboard">🏆 ${t("lb_title")}</a></p>
+      </div>`;
+
+    if (answered) return;
+    document.getElementById("daily-opts").addEventListener("click", (e) => {
+      const b = e.target.closest("[data-daily-opt]");
+      if (!b) return;
+      const cur = jget(ns("wda_daily"), {});
+      if (cur.date === date) return; /* double-click guard */
+      const picked = Number(b.getAttribute("data-daily-opt"));
+      const correct = picked === q.answer;
+      const streak = correct
+        ? ((cur.date === todayKey(-1) && cur.correct) ? (Number(cur.streak) || 0) + 1 : 1)
+        : 0;
+      jset(ns("wda_daily"), { date, picked, correct, streak });
+      if (correct) {
+        addBonusXp(20);
+        pushLeaderboard();
+        setTimeout(maybeToastBadges, 400);
+      }
+      renderDaily();
+    });
+  }
+
   /* ---------------- View: My Account ---------------- */
   function renderAccount(flash) {
     const u = loggedIn() ? window.Auth.current() : null;
@@ -3455,7 +3719,8 @@
       fetch(base + "/payments.json").then((r) => r.json()).catch(() => ({})),
       fetch(base + "/premium.json").then((r) => r.json()).catch(() => ({})),
       fetch(base + "/stats/announcement.json").then((r) => r.json()).catch(() => null),
-    ]).then(([lb, courses, payments, premium, announce]) => {
+      fetch(base + "/stats/promo.json").then((r) => r.json()).catch(() => null),
+    ]).then(([lb, courses, payments, premium, announce, promos]) => {
       const students = Object.values(lb || {}).filter((x) => x && (Number(x.xp) || 0) > 0);
       const active = students.filter((x) => (Number(x.streak) || 0) > 0).length;
       const premMembers = Object.keys(premium || {}).length;
@@ -3497,6 +3762,25 @@
             <span class="muted" id="ann-status" style="font-size:13px"></span>
           </div>
         </div>
+        <div class="panel">
+          <h3>🎟️ ${t("promo_title")}</h3>
+          <p class="muted" style="margin:0 0 8px;font-size:13px">${t("promo_help")}</p>
+          <div class="tl-row">
+            <input class="tl-in" id="pc-code" placeholder="LAUNCH20" style="flex:1;min-width:120px;text-transform:uppercase" maxlength="24">
+            <input class="tl-in" id="pc-days" type="number" value="30" min="1" style="width:76px" title="${t("promo_days")}"> ${t("promo_days")}
+            <input class="tl-in" id="pc-max" type="number" value="20" min="1" style="width:76px" title="${t("promo_uses")}"> ${t("promo_uses")}
+            <button class="btn btn-primary btn-sm" id="pc-create">${t("promo_create")}</button>
+            <span class="muted" id="pc-status" style="font-size:13px"></span>
+          </div>
+          <div class="adash-list" id="pc-list">
+            ${Object.entries(promos || {}).map(([code, v]) => v ? `
+              <div class="adash-row">
+                <span><b>${escapeHtml(code)}</b> · ${Number(v.days) || 0} ${t("promo_days")}</span>
+                <b>${Number(v.used) || 0}/${Number(v.max) || 0} ${t("promo_uses")}
+                  <button class="btn btn-outline btn-sm" data-pc-del="${escapeHtml(code)}" style="margin-left:8px">🗑</button></b>
+              </div>` : "").join("") || `<p class="muted">${t("dash_none")}</p>`}
+          </div>
+        </div>
         <div class="adash-cols">
           <div class="panel">
             <h3>🔥 ${t("dash_popular")}</h3>
@@ -3529,6 +3813,32 @@
       if (clearBtn) clearBtn.addEventListener("click", () => {
         document.getElementById("ann-text").value = "";
         setAnn(null, "✓ " + t("ann_cleared"));
+      });
+
+      /* 🎟️ promo codes: create + delete */
+      const pcStatus = document.getElementById("pc-status");
+      const pcCreate = document.getElementById("pc-create");
+      if (pcCreate) pcCreate.addEventListener("click", () => {
+        const code = (document.getElementById("pc-code").value || "").trim().toUpperCase().replace(/[^A-Z0-9_-]/g, "");
+        const days = Math.max(1, Number(document.getElementById("pc-days").value) || 30);
+        const max = Math.max(1, Number(document.getElementById("pc-max").value) || 20);
+        if (!code) { pcStatus.textContent = "?"; return; }
+        fetch(base + "/stats/promo/" + code + ".json", {
+          method: "PUT",
+          body: JSON.stringify({ days, max, used: 0, ts: Date.now() }),
+        }).then((r) => {
+          if (!r.ok) throw new Error("write");
+          pcStatus.textContent = "✓ " + t("promo_created");
+          renderAdminDashboard();
+        }).catch(() => { pcStatus.textContent = t("promo_err"); });
+      });
+      const pcList = document.getElementById("pc-list");
+      if (pcList) pcList.addEventListener("click", (e) => {
+        const b = e.target.closest("[data-pc-del]");
+        if (!b) return;
+        fetch(base + "/stats/promo/" + b.getAttribute("data-pc-del") + ".json", { method: "DELETE" })
+          .then(() => renderAdminDashboard())
+          .catch(() => {});
       });
     }).catch(() => { mount.innerHTML = `<div class="empty"><h2>${t("lb_offline")}</h2></div>`; });
     window.scrollTo(0, 0);
@@ -3864,6 +4174,7 @@
       : ["courses", "course", "learn", "search", "roadmap"].indexOf(parts[0]) >= 0 ? "courses"
       : parts[0] === "playground" ? "playground"
       : parts[0] === "tools" ? "tools"
+      : parts[0] === "daily" ? "home"
       : ["my-learning", "review", "leaderboard", "account", "certificate"].indexOf(parts[0]) >= 0 ? "me"
       : "";
     document.querySelectorAll("#tabbar a").forEach((a) =>
@@ -3885,6 +4196,7 @@
     else if (parts[0] === "search") renderSearch(decodeURIComponent(parts[1] || ""));
     else if (parts[0] === "playground") renderPlayground(parts[1]);
     else if (parts[0] === "tools") renderTools(parts[1]);
+    else if (parts[0] === "daily") renderDaily();
     else if (parts[0] === "leaderboard") renderLeaderboard();
     else if (parts[0] === "review") renderReview();
     else if (parts[0] === "premium") renderPremium();

@@ -6627,6 +6627,553 @@ load();
       },
     ],
   },
+  {
+    id: "n8n-automation",
+    title: "n8n Automation & AI Agents",
+    subtitle: "Build powerful automations and AI agents visually — connect apps, APIs and LLMs without boilerplate code.",
+    instructor: "Myo Min Thet",
+    category: "AI",
+    level: "Intermediate",
+    rating: 4.9,
+    ratings: 860,
+    students: 7420,
+    hours: 14,
+    price: "Free",
+    free: false,
+    color: "linear-gradient(135deg,#ea4b71,#6b21a8)",
+    icon: "⚡",
+    description:
+      "n8n is the hottest automation tool of 2026 — a visual canvas where you connect triggers, apps, APIs and AI models like LEGO blocks, and drop in real JavaScript whenever you need power. In this course you go from your very first workflow to building AI agents that read emails, do research and talk to databases. Every lesson uses simple English, flow-chart diagrams and three real mini-projects.",
+    whatYouLearn: [
+      "Understand nodes, triggers and how data flows through a workflow",
+      "Receive webhooks and call any API with the HTTP Request node",
+      "Route data with IF/Switch, loops, and professional error handling",
+      "Connect Claude and Gemini to build AI-powered workflows",
+      "Build real AI agents: email parser, research bot, RAG knowledge base",
+      "Sell automation as a service — the fastest-growing freelance skill",
+    ],
+    sections: [
+      {
+        title: "n8n Essentials",
+        lessons: [
+          article("n8n-what", "What is n8n?", "10 min", `
+<h3>🎯 A robot assistant you build yourself</h3>
+<p>Imagine a helper who watches your email 24/7, copies order details into a spreadsheet, and messages you on Telegram when something important happens — without ever getting tired. That is an <strong>automation</strong>, and <strong>n8n</strong> is the tool for building them.</p>
+<div class="flow">
+  <div class="flow-box">⏰ Trigger<br><small>something happens<br>(new email, 9:00 AM, webhook)</small></div>
+  <div class="flow-arrow" data-label="starts"></div>
+  <div class="flow-box alt">⚙️ Nodes<br><small>steps that work<br>(read, decide, transform)</small></div>
+  <div class="flow-arrow" data-label="ends in"></div>
+  <div class="flow-box warn">🎯 Action<br><small>result<br>(message, row, reply)</small></div>
+</div>
+<h3>📝 Why developers love it in 2026</h3>
+<ul>
+  <li><strong>Visual</strong> — you drag nodes onto a canvas and connect them. A whole backend pipeline, no boilerplate.</li>
+  <li><strong>But still code-friendly</strong> — any node can run raw JavaScript or Python when you need real power.</li>
+  <li><strong>AI-native</strong> — official nodes for Claude, Gemini, OpenAI, agents, vector stores and RAG.</li>
+  <li><strong>400+ integrations</strong> — Gmail, Telegram, Google Sheets, Discord, databases, and any API via HTTP.</li>
+</ul>
+<p>Companies pay real money for people who can automate boring work. One good workflow can save a business hours every single day.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> write down 3 boring, repeated tasks from your life or a shop you know (example: "copy Facebook orders into a notebook"). By the end of this course you will know how to automate all 3.</div>`),
+          article("n8n-install", "Get n8n Running — 3 Ways", "10 min", `
+<h3>🎯 Choose your setup</h3>
+<p>n8n can run in the cloud (nothing to install) or on your own computer. All three ways give you the same canvas.</p>
+<h3>☁️ Way 1: n8n Cloud (easiest)</h3>
+<p>Go to <strong>n8n.io</strong> → Start free trial. You get a hosted n8n in your browser — perfect for learning on any device, even a phone.</p>
+<h3>💻 Way 2: npm (on your computer)</h3>
+<pre><code># needs Node.js installed
+npx n8n
+
+# then open in your browser:
+# http://localhost:5678</code></pre>
+<h3>🐳 Way 3: Docker (clean &amp; isolated)</h3>
+<pre><code>docker run -it --rm \
+  -p 5678:5678 \
+  -v n8n_data:/home/node/.n8n \
+  docker.n8n.io/n8nio/n8n</code></pre>
+<p>Docker keeps n8n in its own box with its data saved in a volume — this is how professionals run it on a server.</p>
+<div class="callout"><strong>On a phone right now?</strong> Use Way 1 (cloud) — or simply read along. Every lesson shows the exact nodes and settings, so you can rebuild everything later in one sitting.</div>
+<div class="callout tip"><strong>Try it yourself:</strong> open n8n (any way) and create a blank workflow named "My First Automation". That empty canvas is where everything in this course happens.</div>`),
+          article("n8n-canvas", "The Canvas: Nodes, Connections, Executions", "10 min", `
+<h3>🎯 The three words you need</h3>
+<ul>
+  <li><strong>Node</strong> — one step: a box that does one job (read email, call API, run code).</li>
+  <li><strong>Connection</strong> — the line between nodes. Data flows left → right along it.</li>
+  <li><strong>Execution</strong> — one complete run of the workflow, from trigger to the end.</li>
+</ul>
+<div class="flow">
+  <div class="flow-box">▶️ Trigger node<br><small>every workflow<br>starts with one</small></div>
+  <div class="flow-arrow" data-label="output → input"></div>
+  <div class="flow-box alt">🔧 Regular nodes<br><small>each transforms<br>the data</small></div>
+  <div class="flow-arrow" data-label="saved as"></div>
+  <div class="flow-box">🧾 Execution log<br><small>every run is recorded —<br>your best debugging friend</small></div>
+</div>
+<h3>📝 Anatomy of a node</h3>
+<p>Double-click any node and you see: <strong>Parameters</strong> (its settings), <strong>Input</strong> (data coming in, left panel) and <strong>Output</strong> (data going out, right panel). Press <strong>Execute step</strong> to test just that node — you don't have to run the whole workflow every time.</p>
+<h3>🧪 Useful canvas tricks</h3>
+<ul>
+  <li><strong>Tab</strong> or <strong>+</strong> — open the node search and add a node</li>
+  <li><strong>Pin data</strong> 📌 — freeze a node's output so you can build the next steps without re-calling an API</li>
+  <li><strong>Executions tab</strong> — see every past run, what data moved, and where it failed</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> add a "Manual Trigger" node, connect an "Edit Fields (Set)" node after it, create a field called <code>greeting</code> with value "Mingalaba!", and execute. Look at the output panel — that JSON is your first flowing data.</div>`),
+          article("n8n-first", "Your First Workflow (in 5 Minutes)", "12 min", `
+<h3>🎯 The plan</h3>
+<p>Let's build the classic starter: <strong>every morning at 8:00, fetch an inspirational quote and send it to yourself</strong>.</p>
+<div class="flow">
+  <div class="flow-box">⏰ Schedule Trigger<br><small>every day 08:00</small></div>
+  <div class="flow-arrow" data-label="then"></div>
+  <div class="flow-box alt">🌐 HTTP Request<br><small>GET a random quote API</small></div>
+  <div class="flow-arrow" data-label="then"></div>
+  <div class="flow-box warn">✈️ Telegram<br><small>send me the quote</small></div>
+</div>
+<h3>📝 Step by step</h3>
+<ol>
+  <li>Add <strong>Schedule Trigger</strong> → set Interval to Days, at 08:00.</li>
+  <li>Add <strong>HTTP Request</strong> → Method GET → URL a free quote API (search "free quotes API" — zenquotes.io works well).</li>
+  <li>Add <strong>Telegram</strong> node → operation "Send Message". (Create a free bot with @BotFather in Telegram to get a token — takes 2 minutes. Discord or email work too.)</li>
+  <li>In the message text, click the little gears icon → Add Expression, and drag the quote field from the input panel into the text box.</li>
+  <li>Press <strong>Execute workflow</strong> to test → then flip the <strong>Active</strong> switch ON. Done — it now runs every morning without you!</li>
+</ol>
+<h3>💡 What you just learned</h3>
+<p>This tiny workflow already contains the whole n8n idea: a <strong>trigger</strong>, an <strong>API call</strong>, a <strong>mapped field</strong>, and an <strong>action</strong>. Everything else in this course is these four moves, repeated with more power.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> change the schedule to every 1 minute while testing (so you don't wait until tomorrow!), execute, then set it back to daily.</div>`),
+          article("n8n-data", "How Data Flows: Items & JSON", "12 min", `
+<h3>🎯 Everything is items</h3>
+<p>Data in n8n travels as a list of <strong>items</strong>, and every item is a JSON object. If a node outputs 5 items, the next node runs its job <strong>once per item</strong> — automatically. That is n8n's built-in loop.</p>
+<div class="flow">
+  <div class="flow-box">📥 Node output<br><small>[ item, item, item ]</small></div>
+  <div class="flow-arrow" data-label="each item"></div>
+  <div class="flow-box alt">⚙️ Next node<br><small>runs once<br>per item</small></div>
+  <div class="flow-arrow" data-label="produces"></div>
+  <div class="flow-box">📤 New items<br><small>transformed JSON</small></div>
+</div>
+<h3>💻 What an item looks like</h3>
+<pre><code>[
+  { "json": { "name": "Aung", "order": "2x Milk Tea", "total": 5000 } },
+  { "json": { "name": "Su",   "order": "1x Coffee",  "total": 2500 } }
+]</code></pre>
+<h3>📝 Mapping fields</h3>
+<p>To use a value from a previous node, you <strong>map</strong> it: open the target node, and drag a field from the left input panel into a parameter box. n8n writes the reference for you. The "Edit Fields (Set)" node is your everyday tool for renaming, picking and cleaning fields before sending data onward.</p>
+<div class="callout"><strong>Golden habit:</strong> after every node, look at the OUTPUT panel and ask: "how many items, and what fields?" 90% of beginner confusion is fixed by looking at the real data.</div>
+<div class="callout tip"><strong>Try it yourself:</strong> add a Code node with "Run Once for Each Item" mode and return the item unchanged. Then switch it to "Run Once for All Items" and notice the difference in how data arrives.</div>`),
+          quiz("n8n-quiz1", "Quiz: n8n Essentials", [
+            { q: "Every n8n workflow must start with…", options: ["A database", "A trigger node", "An AI node", "A webhook only"], answer: 1 },
+            { q: "Data flows through a workflow as…", options: ["CSS files", "A list of JSON items", "Plain text only", "Images"], answer: 1 },
+            { q: "What does the Executions tab show?", options: ["Other users", "Every past run and its data — great for debugging", "Only errors", "The node store"], answer: 1 },
+            { q: "If a node receives 5 items, the next node…", options: ["Runs once total", "Runs once per item (5 times)", "Crashes", "Picks one randomly"], answer: 1 },
+            { q: "Which is NOT a way to run n8n?", options: ["n8n Cloud", "npx n8n", "Docker", "Inside Microsoft Word"], answer: 3 },
+          ]),
+        ],
+      },
+      {
+        title: "Triggers, Webhooks & APIs",
+        lessons: [
+          article("n8n-triggers", "Triggers — When Should It Run?", "10 min", `
+<h3>🎯 Four ways a workflow wakes up</h3>
+<div class="flow">
+  <div class="flow-box">👆 Manual<br><small>you press the button —<br>for testing</small></div>
+  <div class="flow-arrow" data-label="or"></div>
+  <div class="flow-box alt">⏰ Schedule<br><small>every hour / day /<br>cron pattern</small></div>
+  <div class="flow-arrow" data-label="or"></div>
+  <div class="flow-box alt">🪝 Webhook<br><small>another system<br>calls YOUR URL</small></div>
+  <div class="flow-arrow" data-label="or"></div>
+  <div class="flow-box warn">📱 App events<br><small>new email, new row,<br>new Telegram message</small></div>
+</div>
+<h3>📝 Choosing the right one</h3>
+<ul>
+  <li><strong>Manual</strong> — while building. Always test manually before activating.</li>
+  <li><strong>Schedule</strong> — reports, backups, daily digests. Uses cron underneath: <code>0 8 * * 1-5</code> means 08:00 on weekdays.</li>
+  <li><strong>Webhook</strong> — instant reactions. A form, an app, or your own code POSTs to n8n the moment something happens. Fastest and most powerful.</li>
+  <li><strong>App triggers</strong> — ready-made watchers: "On new Gmail", "On new Google Sheets row", "On Telegram message".</li>
+</ul>
+<h3>💡 Polling vs instant</h3>
+<p>App triggers often <strong>poll</strong> (check every minute). Webhooks are <strong>instant</strong> (the other side pushes to you). When both are possible, professionals prefer webhooks — no delay, no wasted checks.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> read this cron pattern like a sentence: <code>30 21 * * 0</code>. (Answer: 21:30 every Sunday.) Now write one for "06:15 every day".</div>`),
+          article("n8n-webhook", "Project 1: Webhook → Chat Notification", "15 min", `
+<h3>🎯 What we're building</h3>
+<p>Your own <strong>API endpoint</strong> that receives JSON and instantly posts a notification to Discord (or Telegram). This exact pattern powers order alerts, payment notifications and monitoring systems.</p>
+<div class="flow">
+  <div class="flow-box">💻 Terminal<br><small>curl sends POST<br>with JSON body</small></div>
+  <div class="flow-arrow" data-label="hits"></div>
+  <div class="flow-box alt">🪝 Webhook node<br><small>your custom URL<br>catches the payload</small></div>
+  <div class="flow-arrow" data-label="maps to"></div>
+  <div class="flow-box warn">💬 Discord node<br><small>formatted message<br>in your server</small></div>
+</div>
+<h3>📝 Build it</h3>
+<ol>
+  <li>Add a <strong>Webhook</strong> node → Method POST → copy its <strong>Test URL</strong>.</li>
+  <li>Press "Listen for test event", then fire a request from your terminal:</li>
+</ol>
+<pre><code>curl -X POST -H "Content-Type: application/json" \
+  -d '{"customer":"Aung Aung","item":"Milk Tea x2","total":5000}' \
+  https://YOUR-N8N-URL/webhook-test/abc123</code></pre>
+<ol start="3">
+  <li>Watch the payload appear in the Webhook node's output — your data arrives under <code>body</code>.</li>
+  <li>Add a <strong>Discord</strong> node (webhook URL from your server settings → Integrations) and map: "New order from <em>customer</em>: <em>item</em> — <em>total</em> Ks 🎉" using dragged fields.</li>
+  <li>Execute → check Discord → 🎉. Activate the workflow and switch to the <strong>Production URL</strong>.</li>
+</ol>
+<h3>🔒 A taste of webhook security</h3>
+<p>Anyone who knows your URL can call it. Minimum protection: add a secret header in the sender, and an IF node right after the webhook that checks it and stops strangers. (More in the Credentials lesson.)</p>
+<div class="callout tip"><strong>Try it yourself:</strong> send the curl again with a different customer name and watch the new message appear — you built a real-time notification API in 10 minutes.</div>`),
+          article("n8n-http", "HTTP Request — Call Any API", "12 min", `
+<h3>🎯 The most powerful node in n8n</h3>
+<p>No official integration for a service? No problem. If it has an API, the <strong>HTTP Request</strong> node can talk to it. This is why developers never feel locked in.</p>
+<h3>📝 The settings that matter</h3>
+<ul>
+  <li><strong>Method</strong> — GET (read), POST (create/send), PUT/PATCH (update), DELETE (remove). Same verbs as the whole web.</li>
+  <li><strong>URL</strong> — the endpoint, e.g. <code>https://api.example.com/v1/orders</code></li>
+  <li><strong>Headers</strong> — extra info like <code>Authorization: Bearer YOUR_TOKEN</code> or <code>Content-Type: application/json</code></li>
+  <li><strong>Body</strong> — the JSON you send with POST/PUT.</li>
+  <li><strong>Authentication</strong> — plug in saved credentials instead of pasting keys (next section!).</li>
+</ul>
+<h3>💻 Example: exchange rates for Kyat</h3>
+<pre><code>Method:  GET
+URL:     https://open.er-api.com/v6/latest/USD
+
+# response arrives as items — rates.MMK is
+# the dollar price in Kyat, ready to map</code></pre>
+<h3>💡 Pagination tip</h3>
+<p>Big APIs return data in pages. The HTTP Request node has a built-in <strong>Pagination</strong> setting that keeps requesting until all pages arrive — a task that costs 30 lines in normal code.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> build Manual Trigger → HTTP Request with the exchange-rate URL above → Edit Fields keeping only <code>rates.MMK</code>. Execute — you now know today's real dollar rate via your own workflow.</div>`),
+          article("n8n-expr", "Expressions — The Magic Double Braces", "12 min", `
+<h3>🎯 Making parameters dynamic</h3>
+<p>Any parameter box in n8n can hold an <strong>expression</strong> instead of fixed text. Expressions live inside double curly braces and can reach ANY data from earlier nodes.</p>
+<pre><code>Hello {{ $json.customer }}, your order
+{{ $json.item }} costs {{ $json.total }} Ks!</code></pre>
+<h3>📝 The references you'll use daily</h3>
+<ul>
+  <li><code>{{ $json.field }}</code> — a field from the CURRENT item</li>
+  <li><code>{{ $json.body.name }}</code> — nested fields use dots</li>
+  <li><code>{{ $('Webhook').item.json.total }}</code> — reach back to ANY earlier node by name</li>
+  <li><code>{{ $now }}</code> — current date-time; <code>{{ $now.format('yyyy-MM-dd') }}</code> formats it</li>
+</ul>
+<h3>💻 Expressions are JavaScript</h3>
+<pre><code>{{ $json.total &gt; 10000 ? 'VIP order 🎉' : 'normal order' }}
+{{ $json.name.toUpperCase() }}
+{{ $json.items.length }}</code></pre>
+<h3>🧑‍💻 And when expressions aren't enough → Code node</h3>
+<pre><code>// Code node: full JavaScript on all items
+const out = [];
+for (const item of $input.all()) {
+  const total = item.json.total;
+  out.push({ json: { ...item.json, vip: total &gt; 10000 } });
+}
+return out;</code></pre>
+<div class="callout tip"><strong>Try it yourself:</strong> in any workflow add an Edit Fields node and create a field <code>shout</code> with the expression <code>{{ $json.customer.toUpperCase() }}</code>. Execute and check the output.</div>`),
+          quiz("n8n-quiz2", "Quiz: Triggers & APIs", [
+            { q: "Which trigger reacts INSTANTLY when another system pushes data to your URL?", options: ["Schedule", "Manual", "Webhook", "Polling"], answer: 2 },
+            { q: "The cron pattern 0 8 * * 1-5 means…", options: ["Every 8 minutes", "08:00 on weekdays", "8th day monthly", "Every 5 hours"], answer: 1 },
+            { q: "Which HTTP method SENDS new data to an API?", options: ["GET", "POST", "DELETE", "FETCH"], answer: 1 },
+            { q: "In an expression, how do you read the field name from the current item?", options: ["{{ name }}", "{{ $json.name }}", "[name]", "$name$"], answer: 1 },
+            { q: "Webhook test URL vs production URL — what's true?", options: ["They are identical", "Test listens once while building; production works when the workflow is Active", "Production is slower", "Test is more secure"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Services, Logic & Errors",
+        lessons: [
+          article("n8n-creds", "Credentials — Keep Secrets Safe", "8 min", `
+<h3>🎯 Never paste keys into nodes</h3>
+<p>API keys and passwords are money. n8n has a <strong>Credentials</strong> system: you save a secret ONCE (encrypted), and nodes reference it by name.</p>
+<h3>📝 How it works</h3>
+<ol>
+  <li>Open a node that needs access (Gmail, Telegram, HTTP Request…).</li>
+  <li>Credential dropdown → <strong>Create new</strong> → paste the key/token → save with a clear name like "Shop Telegram Bot".</li>
+  <li>The credential is encrypted in n8n's database. Workflow exports do NOT contain it.</li>
+</ol>
+<h3>🔒 Security habits that make you look professional</h3>
+<ul>
+  <li>One credential per service per project — easy to revoke if leaked.</li>
+  <li>Give bots the MINIMUM permission they need (a read-only key cannot destroy data).</li>
+  <li>Protect webhooks: require a secret header, check it with an IF node, and reject requests without it.</li>
+  <li>Never screenshot keys. Never commit them to GitHub. (Google's scanners find leaked keys within minutes!)</li>
+</ul>
+<div class="callout"><strong>Story time:</strong> this academy's own AI runs through a relay that keeps its API keys as encrypted secrets — the key never appears in the public code. Same principle, different tool.</div>
+<div class="callout tip"><strong>Try it yourself:</strong> create your first credential (the Telegram bot token from Section 1 is perfect) and rename it clearly. Future-you will say thanks.</div>`),
+          article("n8n-formdb", "Project 2: Form → Database", "15 min", `
+<h3>🎯 What we're building</h3>
+<p>A customer feedback form whose answers land <strong>directly in a database table</strong> — no copy-paste human in the middle.</p>
+<div class="flow">
+  <div class="flow-box">📝 n8n Form<br><small>hosted form page —<br>n8n generates the URL</small></div>
+  <div class="flow-arrow" data-label="on submit"></div>
+  <div class="flow-box alt">🔧 Edit Fields<br><small>clean + add<br>submitted_at time</small></div>
+  <div class="flow-arrow" data-label="insert row"></div>
+  <div class="flow-box warn">🗄️ Database<br><small>Google Sheets, Postgres<br>or SQLite table</small></div>
+</div>
+<h3>📝 Build it</h3>
+<ol>
+  <li>Add an <strong>n8n Form Trigger</strong> → add fields: Name (text), Rating (dropdown 1–5), Comment (textarea). n8n gives you a ready form URL — open it, it's a real webpage!</li>
+  <li>Add <strong>Edit Fields</strong> → keep name/rating/comment and add <code>submitted_at</code> with the expression <code>{{ $now }}</code>.</li>
+  <li>Easiest database: <strong>Google Sheets</strong> node → operation "Append Row" → map the four fields to columns.</li>
+  <li>Real SQL instead? Use the <strong>Postgres</strong> node → Insert. Same mapping idea, real table.</li>
+</ol>
+<h3>💡 Why this matters</h3>
+<p>Forms-to-database is the single most requested small automation by businesses: job applications, orders, surveys, sign-ups. You can now deliver it in 15 minutes.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> submit your own form 3 times, then check the sheet. Add an IF node: rating below 3 → ALSO send a Telegram alert "😟 Unhappy customer!" — now the owner reacts fast.</div>`),
+          article("n8n-logic", "IF & Switch — Smart Routing", "10 min", `
+<h3>🎯 Workflows that make decisions</h3>
+<p>Real automations branch: VIP orders get special treatment, complaints alert a human, spam gets dropped. Two nodes handle all of it.</p>
+<div class="flow">
+  <div class="flow-box">📥 Incoming item<br><small>order, message, row</small></div>
+  <div class="flow-arrow" data-label="IF total &gt; 10000"></div>
+  <div class="flow-box alt">✅ True branch<br><small>VIP: personal thank-you<br>+ priority handling</small></div>
+  <div class="flow-arrow" data-label="else"></div>
+  <div class="flow-box warn">➡️ False branch<br><small>normal: standard<br>confirmation</small></div>
+</div>
+<h3>📝 IF node</h3>
+<p>Two outputs: <strong>true</strong> and <strong>false</strong>. Conditions compare numbers, strings, booleans, dates — and you can stack multiple conditions with AND/OR.</p>
+<h3>📝 Switch node</h3>
+<p>Many outputs — like a train station routing by destination. Example: route by <code>intent</code> field → "order" / "complaint" / "question" / fallback. (Remember this — our AI email agent will use exactly this pattern!)</p>
+<h3>💡 Filter node — the bouncer</h3>
+<p>Only lets matching items pass, silently dropping the rest. Perfect for "ignore messages that don't contain #order".</p>
+<div class="callout tip"><strong>Try it yourself:</strong> extend Project 2: after the form, add a Switch on rating → 5 goes to a "fan!" branch, 1–2 to an "alert" branch, everything else to normal logging.</div>`),
+          article("n8n-loops", "Loops, Merge & Batches", "10 min", `
+<h3>🎯 Remember: items already loop</h3>
+<p>If 20 items enter a node, it processes all 20 — no loop node needed. You only reach for special nodes in three cases:</p>
+<h3>📝 Case 1: Rate limits → Loop Over Items (Split in Batches)</h3>
+<p>An API allows 10 requests per minute but you have 200 items? <strong>Loop Over Items</strong> with batch size 10 + a <strong>Wait</strong> node of 60 seconds inside the loop = polite, unbanned automation.</p>
+<div class="flow">
+  <div class="flow-box">📦 200 items</div>
+  <div class="flow-arrow" data-label="batch of 10"></div>
+  <div class="flow-box alt">🌐 API call<br><small>+ Wait 60s</small></div>
+  <div class="flow-arrow" data-label="repeat until done"></div>
+  <div class="flow-box">✅ All processed</div>
+</div>
+<h3>📝 Case 2: Combining sources → Merge</h3>
+<p>The <strong>Merge</strong> node joins two branches: append (stack both lists), or <strong>combine by matching field</strong> — like SQL JOIN: match orders with customers on <code>customer_id</code>.</p>
+<h3>📝 Case 3: Squashing many → one → Aggregate</h3>
+<p><strong>Aggregate</strong> turns 50 items into 1 item containing a list — perfect for "collect today's 50 orders into ONE daily summary message".</p>
+<div class="callout tip"><strong>Try it yourself:</strong> take your quote workflow, fetch 5 quotes, Aggregate them, and send ONE Telegram message with all 5 — instead of 5 separate pings.</div>`),
+          article("n8n-errors", "Error Handling Like a Pro", "10 min", `
+<h3>🎯 Production means: things WILL fail</h3>
+<p>APIs go down, networks hiccup, someone renames a spreadsheet column. Amateur workflows die silently. Professional workflows <strong>notice, retry, and report</strong>.</p>
+<div class="flow">
+  <div class="flow-box warn">💥 Node fails<br><small>API timeout, 500,<br>bad data</small></div>
+  <div class="flow-arrow" data-label="retry ×3"></div>
+  <div class="flow-box alt">🔁 Still failing?<br><small>node settings:<br>Retry On Fail</small></div>
+  <div class="flow-arrow" data-label="triggers"></div>
+  <div class="flow-box">🚨 Error Workflow<br><small>Telegram alert to you<br>with workflow + error</small></div>
+</div>
+<h3>📝 Three layers of protection</h3>
+<ol>
+  <li><strong>Node level</strong> — open any node's Settings tab: <strong>Retry On Fail</strong> (e.g. 3 tries, 5s apart) and <strong>On Error → Continue</strong> when one bad item shouldn't kill the other 99.</li>
+  <li><strong>Workflow level</strong> — build one workflow starting with an <strong>Error Trigger</strong> node that messages you the failed workflow's name and error. Then set it as the "Error workflow" in every other workflow's settings. One alarm system for everything.</li>
+  <li><strong>Data level</strong> — validate early: an IF right after the trigger that checks required fields exist, routing garbage to a "bad data" log instead of crashing later.</li>
+</ol>
+<div class="callout"><strong>Rule of thumb:</strong> a workflow isn't finished when it works — it's finished when you know it will TELL YOU when it stops working.</div>
+<div class="callout tip"><strong>Try it yourself:</strong> build the Error Trigger → Telegram alert workflow now (2 nodes!). Set it as error workflow for your Project 1. Then break Project 1 on purpose (wrong URL) and enjoy getting the alert.</div>`),
+          quiz("n8n-quiz3", "Quiz: Logic & Reliability", [
+            { q: "Where should API keys live in n8n?", options: ["Pasted in each node", "In encrypted Credentials, referenced by nodes", "In a text file on the desktop", "In the workflow name"], answer: 1 },
+            { q: "An IF node has how many outputs?", options: ["One", "Two: true and false", "Ten", "It depends on the data"], answer: 1 },
+            { q: "You must call an API limited to 10 requests/min for 200 items. Best tool?", options: ["Just run it fast", "Loop Over Items (batches of 10) + Wait node", "Delete 190 items", "Ask the API nicely"], answer: 1 },
+            { q: "Which node works like a SQL JOIN, combining items by a matching field?", options: ["IF", "Merge (combine mode)", "Wait", "Webhook"], answer: 1 },
+            { q: "What does an Error Trigger workflow do?", options: ["Prevents all errors", "Runs when another workflow fails, so you can get an alert", "Deletes failed data", "Restarts n8n"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "AI Automation & Agents",
+        lessons: [
+          article("n8n-ai", "AI Nodes — Connect Claude & Gemini", "12 min", `
+<h3>🎯 Drop an LLM into any workflow</h3>
+<p>n8n has first-class AI nodes: give them a prompt and data, get intelligence back — summaries, translations, classifications, decisions. Any workflow you built so far becomes 10× smarter with one extra node.</p>
+<div class="flow">
+  <div class="flow-box">📥 Any data<br><small>email, review,<br>webhook payload</small></div>
+  <div class="flow-arrow" data-label="prompt +"></div>
+  <div class="flow-box alt">🤖 LLM node<br><small>Claude / Gemini —<br>instructions in, JSON out</small></div>
+  <div class="flow-arrow" data-label="structured"></div>
+  <div class="flow-box warn">📤 Usable fields<br><small>category, summary,<br>reply text</small></div>
+</div>
+<h3>📝 The pieces</h3>
+<ul>
+  <li><strong>Basic LLM Chain</strong> — one prompt, one answer. Your everyday AI node.</li>
+  <li><strong>Model sub-node</strong> — plug in the brain: Anthropic (Claude), Google (Gemini), OpenAI, or a local model via Ollama. Swapping models = swapping one node.</li>
+  <li><strong>Structured Output Parser</strong> — forces the AI to answer in exact JSON fields you define. THIS is the difference between a toy and a system: the next node can rely on <code>category</code> always existing.</li>
+</ul>
+<h3>💻 A prompt that returns clean JSON</h3>
+<pre><code>You are a review analyst for a Yangon tea shop.
+Analyze this review and reply ONLY in JSON:
+{ "sentiment": "positive|neutral|negative",
+  "summary": "one short sentence",
+  "reply_suggestion": "polite reply in Burmese" }
+
+Review: {{ $json.review_text }}</code></pre>
+<div class="callout tip"><strong>Try it yourself:</strong> build Manual Trigger → Edit Fields (a fake review text) → LLM Chain with the prompt above + Structured Output Parser. Execute and watch clean JSON come out.</div>`),
+          article("n8n-agent", "Build Your First AI Agent", "14 min", `
+<h3>🎯 Chain vs Agent — the big difference</h3>
+<p>A <strong>chain</strong> follows YOUR fixed steps. An <strong>agent</strong> gets a GOAL and <strong>tools</strong>, then decides its own steps: think → pick a tool → look at the result → think again → answer.</p>
+<div class="flow">
+  <div class="flow-box">🎯 Goal<br><small>"What did we sell<br>most this week?"</small></div>
+  <div class="flow-arrow" data-label="thinks"></div>
+  <div class="flow-box alt">🤖 AI Agent<br><small>reasoning loop —<br>chooses tools itself</small></div>
+  <div class="flow-arrow" data-label="calls"></div>
+  <div class="flow-box">🧰 Tools<br><small>Sheets · HTTP · Code<br>· other workflows!</small></div>
+  <div class="flow-arrow" data-label="then answers"></div>
+  <div class="flow-box warn">💬 Final answer<br><small>with real data<br>it fetched itself</small></div>
+</div>
+<h3>📝 The AI Agent node's sockets</h3>
+<ul>
+  <li><strong>Chat Model</strong> — the brain (Claude, Gemini…).</li>
+  <li><strong>Memory</strong> — remembers the conversation, so "and last month?" makes sense as a follow-up.</li>
+  <li><strong>Tools</strong> — the superpower. Attach a Google Sheets tool, an HTTP tool, a Calculator, a Code tool — or ANY of your existing workflows as a callable tool.</li>
+</ul>
+<h3>📝 Build a shop assistant agent</h3>
+<ol>
+  <li>Add a <strong>Chat Trigger</strong> (n8n gives you a hosted chat page!).</li>
+  <li>Add an <strong>AI Agent</strong> node → attach a model + Simple Memory.</li>
+  <li>Attach a Google Sheets tool pointing at your Project 2 sheet. In the tool description write clearly WHAT it contains — agents choose tools by reading descriptions!</li>
+  <li>System message: "You are a helpful shop analyst. Use the sheet tool for any data question. Answer briefly in the user's language."</li>
+  <li>Open the chat and ask: "How many 5-star ratings do we have?" — watch the agent decide to read the sheet, count, and answer.</li>
+</ol>
+<div class="callout"><strong>Tool descriptions are prompts.</strong> If the agent picks the wrong tool or none at all, improve the tool's description before touching anything else. That fixes 80% of agent problems.</div>
+<div class="callout tip"><strong>Try it yourself:</strong> add a second tool (Calculator) and ask "what is the average rating multiplied by 100?" — watch it use BOTH tools in one answer.</div>`),
+          article("n8n-email", "Project 3: The Email-Parsing Agent", "15 min", `
+<h3>🎯 What we're building</h3>
+<p>An inbox robot: reads incoming email, uses AI to understand it, extracts the important parts, and files a task — no human sorting.</p>
+<div class="flow">
+  <div class="flow-box">📧 Gmail Trigger<br><small>on new email</small></div>
+  <div class="flow-arrow" data-label="text goes to"></div>
+  <div class="flow-box alt">🤖 LLM + Parser<br><small>intent, urgency,<br>extracted fields</small></div>
+  <div class="flow-arrow" data-label="Switch on intent"></div>
+  <div class="flow-box">🔀 Routes<br><small>order → task board<br>complaint → alert<br>spam → archive</small></div>
+  <div class="flow-arrow" data-label="e.g."></div>
+  <div class="flow-box warn">📋 Task created<br><small>Trello / Notion /<br>Sheets row</small></div>
+</div>
+<h3>📝 Build it</h3>
+<ol>
+  <li><strong>Gmail Trigger</strong> → on message received (or IMAP node for any mail provider).</li>
+  <li><strong>LLM Chain</strong> with Structured Output Parser. Prompt:</li>
+</ol>
+<pre><code>Classify this email. Reply ONLY in JSON:
+{ "intent": "order|complaint|question|spam",
+  "urgency": "high|normal|low",
+  "customer_name": "...",
+  "summary": "one sentence",
+  "key_details": "items, amounts, dates found" }
+
+Subject: {{ $json.subject }}
+Body: {{ $json.text }}</code></pre>
+<ol start="3">
+  <li><strong>Switch</strong> on <code>intent</code> → four branches.</li>
+  <li>Order/question → create a card or row (Trello, Notion, Sheets) with the extracted fields. Complaint + high urgency → instant Telegram alert. Spam → label and archive.</li>
+</ol>
+<h3>💡 Why this is a real product</h3>
+<p>You just built what companies call "intelligent document processing" — agencies sell exactly this to clinics, shops and agencies for hundreds of dollars per month. You: one evening, ~7 nodes.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> send yourself 3 test emails (a fake order, a complaint, a question) and watch them route to different places. Save the execution — it's portfolio evidence!</div>`),
+          article("n8n-rag", "RAG — Give Your AI Knowledge", "12 min", `
+<h3>🎯 The problem: AI doesn't know YOUR data</h3>
+<p>Ask a plain LLM "what is our refund policy?" and it will guess. <strong>RAG</strong> (Retrieval-Augmented Generation) fixes this: store your documents in a special database first, then let the AI <em>look things up</em> before answering.</p>
+<div class="flow">
+  <div class="flow-box">📄 Your docs<br><small>policy, menu, FAQ,<br>price list</small></div>
+  <div class="flow-arrow" data-label="split + embed"></div>
+  <div class="flow-box alt">🧮 Vector store<br><small>text stored as numbers<br>that capture MEANING</small></div>
+  <div class="flow-arrow" data-label="question finds"></div>
+  <div class="flow-box">🔍 Top matches<br><small>most similar<br>chunks retrieved</small></div>
+  <div class="flow-arrow" data-label="fed into"></div>
+  <div class="flow-box warn">🤖 LLM answer<br><small>grounded in YOUR<br>real documents</small></div>
+</div>
+<h3>📝 The two workflows of every RAG system</h3>
+<ol>
+  <li><strong>Ingest (once, or on file change):</strong> read documents → split into chunks (~500 characters) → Embeddings node turns each chunk into a vector → insert into a Vector Store (n8n's Simple Vector Store is fine to learn; Pinecone/Qdrant for production).</li>
+  <li><strong>Ask (every question):</strong> user question → embed it too → the store returns the most similar chunks → LLM answers using ONLY those chunks as context.</li>
+</ol>
+<h3>💡 Embeddings in one sentence</h3>
+<p>An embedding is a list of numbers describing MEANING — so "price of milk tea" and "how much is laphet yay?" land close together even though they share almost no words. That's why RAG finds the right chunk.</p>
+<div class="callout"><strong>Agent + RAG =</strong> attach the vector store as a TOOL on your agent from the last lesson. Now your shop assistant answers policy questions from real documents AND counts real orders. That is a production-grade AI assistant.</div>
+<div class="callout tip"><strong>Try it yourself:</strong> write a 10-line FAQ for an imaginary tea shop, ingest it, and ask the agent a question whose answer is ONLY in your FAQ. Correct answer = your first RAG system works.</div>`),
+          article("n8n-multi", "Multi-Agent Systems & MCP", "12 min", `
+<h3>🎯 One agent good, a team better</h3>
+<p>Big tasks overwhelm one agent with too many tools and instructions. The professional pattern for 2026: a <strong>manager agent</strong> that delegates to small <strong>specialist agents</strong> — just like a real team.</p>
+<div class="flow">
+  <div class="flow-box">🧑‍💼 Manager agent<br><small>understands the goal,<br>splits the work</small></div>
+  <div class="flow-arrow" data-label="delegates"></div>
+  <div class="flow-box alt">🔎 Researcher<br><small>searches web,<br>gathers facts</small></div>
+  <div class="flow-arrow" data-label="and"></div>
+  <div class="flow-box alt">✍️ Writer<br><small>drafts the report<br>from findings</small></div>
+  <div class="flow-arrow" data-label="then"></div>
+  <div class="flow-box warn">✅ Reviewer<br><small>checks quality,<br>returns final result</small></div>
+</div>
+<h3>📝 How to wire it in n8n</h3>
+<p>Each specialist is its own workflow (an AI Agent with 1–3 tools and ONE clear job). The manager calls them with the <strong>Call n8n Workflow Tool</strong> — to the manager, each specialist is just another tool with a good description. Start with 2 agents; only add more when a job is clearly too big.</p>
+<h3>🔌 MCP — the USB port for AI tools</h3>
+<p><strong>Model Context Protocol</strong> is an open standard: instead of custom code for every tool, any MCP server (database, browser, file system, this-or-that SaaS) plugs into any MCP-speaking AI. n8n speaks both sides:</p>
+<ul>
+  <li><strong>MCP Client node</strong> — your n8n agent uses external MCP servers as ready-made tool boxes.</li>
+  <li><strong>MCP Server Trigger</strong> — your n8n workflows become tools that OTHER AIs (like Claude) can call. Your automations become products!</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself (design only):</strong> sketch on paper a 3-agent team for "monitor tech news and post a Burmese summary to my channel daily". Which agent needs which tools? Where does it run — schedule or webhook?</div>`),
+          quiz("n8n-quiz4", "Quiz: AI & Agents", [
+            { q: "What makes an AI Agent different from a simple LLM chain?", options: ["It's faster", "It chooses its own steps and uses tools to reach a goal", "It's free", "It only works with OpenAI"], answer: 1 },
+            { q: "What does a Structured Output Parser guarantee?", options: ["Prettier text", "The AI answers in exact JSON fields the next node can rely on", "No API cost", "Longer answers"], answer: 1 },
+            { q: "An agent keeps picking the wrong tool. Fix number one?", options: ["Buy a bigger model", "Improve the tool's description — agents choose by reading them", "Add 10 more tools", "Restart n8n"], answer: 1 },
+            { q: "In RAG, what is stored in the vector database?", options: ["Passwords", "Text chunks as embeddings (meaning-numbers) for similarity search", "Images only", "The LLM itself"], answer: 1 },
+            { q: "MCP is best described as…", options: ["A new programming language", "An open standard that lets any AI plug into any tool server", "A database", "n8n's paid plan"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Production & Career",
+        lessons: [
+          article("n8n-prod", "Debugging, Testing & Production Habits", "10 min", `
+<h3>🎯 From "it ran once" to "it runs every day"</h3>
+<h3>🔍 Debugging toolkit</h3>
+<ul>
+  <li><strong>Executions tab</strong> — open any failed run and click through node by node; the exact input that broke it is right there.</li>
+  <li><strong>Pin data 📌</strong> — freeze a good input on the trigger, then rebuild downstream nodes without spamming real APIs.</li>
+  <li><strong>Execute step</strong> — test ONE node at a time. Small steps, fast feedback.</li>
+  <li><strong>Edit Fields as a probe</strong> — drop one anywhere to see exactly what the data looks like mid-flow.</li>
+</ul>
+<h3>📝 Organizing like a professional</h3>
+<ul>
+  <li><strong>Name every node</strong> by its job: "Get today's orders", not "HTTP Request 3".</li>
+  <li><strong>Sticky notes</strong> on the canvas explain WHY — your future self is a stranger.</li>
+  <li><strong>Sub-workflows</strong> — repeated logic (like "send formatted alert") becomes one workflow called by others via Execute Workflow. Fix it once, every caller benefits.</li>
+  <li><strong>Test with bad data on purpose</strong> — empty fields, wrong types, huge lists. If it survives your attacks, it survives real users.</li>
+</ul>
+<h3>🚀 Before flipping Active ON</h3>
+<ol>
+  <li>Error workflow connected? (Section 3!)</li>
+  <li>Credentials — not test tokens?</li>
+  <li>Webhook senders switched to the production URL?</li>
+  <li>One full happy-path execution saved as proof?</li>
+</ol>
+<div class="callout tip"><strong>Try it yourself:</strong> open your messiest workflow, rename every node properly and add 2 sticky notes. Feel the difference when you read it tomorrow.</div>`),
+          article("n8n-career", "Earn With n8n — Freelance & Sell Automations", "12 min", `
+<h3>🎯 Why this skill pays</h3>
+<p>Every business drowns in repeated work, and very few people can automate it. "AI Automation Specialist" is one of the fastest-growing freelance categories — and it's location-independent: you can serve clients worldwide from Myanmar with just a laptop and internet.</p>
+<h3>📝 What clients actually buy (with typical global prices)</h3>
+<ul>
+  <li><strong>Lead capture</strong> — form → CRM → notification ($100–300 per build)</li>
+  <li><strong>Order alerts &amp; daily summaries</strong> — exactly your Projects 1 + 2</li>
+  <li><strong>AI email/document sorting</strong> — your Project 3! ($300–800, plus monthly care)</li>
+  <li><strong>Content pipelines</strong> — research → AI draft → schedule posts</li>
+  <li><strong>Customer-support RAG bots</strong> — answer from the company's own documents</li>
+</ul>
+<h3>💡 The winning offer: automation as a SERVICE</h3>
+<p>Don't sell "an n8n workflow" — sell the outcome plus care: "I keep your order alerts running, monitored and updated — monthly fee." Recurring income, and error handling (Section 3) is literally the feature you're paid for.</p>
+<h3>📝 Your 30-day plan</h3>
+<ol>
+  <li>Polish your 3 course projects; screenshot canvases and results.</li>
+  <li>Automate something REAL for one local shop or friend — free, in exchange for a testimonial.</li>
+  <li>Post the before/after story (time saved!) on Facebook/LinkedIn — in Burmese AND English.</li>
+  <li>List two fixed-price services on Upwork/Fiverr using the price ranges above.</li>
+  <li>Deliver fast, ask for reviews, raise prices every 3 projects.</li>
+</ol>
+<div class="callout"><strong>Your unfair advantage:</strong> you now combine web-dev knowledge (this academy!) with visual automation AND AI agents. Most freelancers have only one of the three.</div>
+<div class="callout tip"><strong>Graduation task:</strong> take the final quiz, grab your certificate 🎓, then message ONE local business this week: "I can make your order notifications automatic — want to see a demo?" That message is how careers start.</div>`),
+          quiz("n8n-final", "Final Quiz: n8n Automation & AI Agents", [
+            { q: "The correct picture of every n8n workflow is…", options: ["Database → CSS → HTML", "Trigger → nodes transform items → action", "Agent → agent → agent", "Form → quiz → certificate"], answer: 1 },
+            { q: "A client's API allows 20 calls/min; you have 500 records. You use…", options: ["Hope", "Loop Over Items in batches + Wait node", "500 workflows", "A bigger server"], answer: 1 },
+            { q: "Which combo turns messy email text into fields your workflow can rely on?", options: ["IF + Merge", "LLM node + Structured Output Parser", "Webhook + Wait", "Schedule + Code"], answer: 1 },
+            { q: "RAG makes an AI assistant better because…", options: ["It types faster", "It retrieves your real documents so answers are grounded, not guessed", "It removes the need for prompts", "It is always free"], answer: 1 },
+            { q: "With MCP Server Trigger, your n8n workflows can…", options: ["Only run manually", "Become tools that other AIs like Claude can call", "Replace the internet", "Edit CSS"], answer: 1 },
+            { q: "The most professional way to sell automation is…", options: ["One-time file delivery, goodbye", "Outcome + monitoring as a monthly service", "Free forever", "Selling screenshots"], answer: 1 },
+          ]),
+        ],
+      },
+    ],
+  },
 ];
 
 /* Expose to the app */

@@ -470,12 +470,36 @@ button { font-family: inherit; cursor: pointer; }
 .lesson-row {
   display: flex; align-items: center; gap: 12px;
   padding: 10px 18px; font-size: 14px; border-top: 1px solid #f0f2f4;
+  color: inherit; text-decoration: none;
 }
+a.lesson-row:hover { background: var(--bg); }
+a.lesson-row:hover .ttl { color: var(--purple); }
+.lesson-row.locked { opacity: .65; }
 .lesson-row .ic { width: 18px; text-align: center; color: var(--muted); }
 .lesson-row .ttl { flex: 1; }
 .lesson-row .dur { color: var(--muted); font-size: 13px; }
 .lesson-row.done .ttl { color: var(--muted); }
 .lesson-row .check { color: var(--green); }
+.prev-chip {
+  display: inline-block; font-size: 10.5px; font-weight: 800; color: var(--purple);
+  background: rgba(164, 53, 240, .12); border-radius: 999px; padding: 2px 8px; margin-left: 6px;
+}
+.sec-done { color: var(--green); font-weight: 700; }
+.faq-a { padding: 12px 18px 16px; font-size: 14px; color: var(--muted); line-height: 1.65; }
+
+/* mini certificate teaser (course sidebar) */
+.cert-teaser {
+  border: 2px solid var(--purple); border-radius: 12px; padding: 16px 12px;
+  text-align: center; background:
+    radial-gradient(220px 90px at 50% -30%, rgba(164, 53, 240, .18), transparent),
+    var(--bg);
+}
+.cert-teaser .ct-brand { font-family: Consolas, monospace; font-weight: 800; font-size: 12px; color: var(--purple); }
+.cert-teaser .ct-cert { font-size: 10px; font-weight: 800; letter-spacing: 4px; color: var(--muted); margin: 6px 0 8px; }
+.cert-teaser .ct-name { font-size: 19px; font-weight: 800; }
+.cert-teaser .ct-course { font-size: 12.5px; color: var(--muted); margin-top: 4px; }
+
+.related-wrap { margin-bottom: 40px; }
 
 /* ---------- Learn / player ---------- */
 .learn-wrap { display: grid; grid-template-columns: 1fr 360px; min-height: calc(100vh - 120px); }

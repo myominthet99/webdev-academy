@@ -1303,23 +1303,41 @@
       ? [t("who_1_beg"), t("who_2")]
       : [t("who_1_adv").replace("{cat}", catName(c.category)), t("who_2")];
 
+    /* resume at the first lesson not yet completed */
+    const firstOpen = flat.find((x) => !done.has(x.lesson.id));
+    const resumeLesson = firstOpen ? firstOpen.lesson.id : firstLesson;
+    const resumeSec = firstOpen ? c.sections.findIndex((s) => s.lessons.some((l) => l.id === firstOpen.lesson.id)) : 0;
+
+    /* curriculum rows link straight into the player; premium courses show
+       🎁 on the free-preview lessons and 🔒 (→ premium page) past them */
+    const premLocked = !isFree(c) && !isPremiumUser();
+    let flatIdx = 0;
     const curriculum = c.sections
       .map((sec, si) => {
+        let doneInSec = 0;
         const rows = sec.lessons
           .map((l) => {
             const isDone = done.has(l.id);
+            if (isDone) doneInSec++;
+            const lLocked = premLocked && flatIdx >= PREVIEW_LESSONS;
+            const isPrev = premLocked && flatIdx < PREVIEW_LESSONS;
+            flatIdx++;
             return `
-              <div class="lesson-row ${isDone ? "done" : ""}">
-                <span class="ic">${isDone ? '<span class="check">✓</span>' : lessonIcon(l.type)}</span>
-                <span class="ttl">${lf(l, "title")}</span>
+              <a class="lesson-row ${isDone ? "done" : ""} ${lLocked ? "locked" : ""}"
+                 href="${lLocked ? "#/premium" : `#/learn/${c.id}/${l.id}`}">
+                <span class="ic">${isDone ? '<span class="check">✓</span>' : lLocked ? "🔒" : lessonIcon(l.type)}</span>
+                <span class="ttl">${lf(l, "title")}${isPrev ? ` <span class="prev-chip">🎁 ${t("lesson_preview")}</span>` : ""}</span>
                 <span class="dur">${l.duration}</span>
-              </div>`;
+              </a>`;
           })
           .join("");
+        const prog = enrolled && doneInSec
+          ? ` · <span class="sec-done">✓ ${doneInSec}/${sec.lessons.length}</span>`
+          : ` · ${sec.lessons.length} ${t("lessons_word")}`;
         return `
-          <div class="acc-section ${si === 0 ? "open" : ""}">
+          <div class="acc-section ${si === 0 || (enrolled && pct > 0 && si === resumeSec) ? "open" : ""}">
             <button class="acc-head" data-acc>
-              <span>${secName(c, si)} <span class="meta">· ${sec.lessons.length} ${t("lessons_word")}</span></span>
+              <span>${secName(c, si)} <span class="meta">${prog}</span></span>
               <span class="caret">▾</span>
             </button>
             <div class="acc-body">${rows}</div>
@@ -1335,7 +1353,7 @@
       : !isFree(c) && !isPremiumUser() ? "⭐ " + t("prem_go")
       : `${t("enroll_now")} ${priceText(c)}`;
     const cta = enrolled
-      ? `<a class="btn btn-primary btn-block" href="#/learn/${c.id}/${firstLesson}">${pct > 0 ? t("continue_learning") : t("start_course")}</a>`
+      ? `<a class="btn btn-primary btn-block" href="#/learn/${c.id}/${pct > 0 ? resumeLesson : firstLesson}">${pct > 0 ? t("continue_learning") : t("start_course")}</a>`
       : canPreview
       ? `<a class="btn btn-primary btn-block" href="#/learn/${c.id}/${firstLesson}">🎁 ${t("preview_start")}</a>
          <a class="btn btn-outline btn-block" style="margin-top:8px" href="#/premium">⭐ ${t("prem_go")}</a>`
@@ -1412,6 +1430,18 @@
               <div class="accordion">${curriculum}</div>
             </div>
             ${reviewsPanel(c)}
+            <div class="panel">
+              <h2>💬 ${t("faq_title")}</h2>
+              <div class="accordion">
+                ${[1, 2, 3, 4].map((i) => `
+                  <div class="acc-section">
+                    <button class="acc-head" data-acc>
+                      <span>${t("faq_q" + i)}</span><span class="caret">▾</span>
+                    </button>
+                    <div class="acc-body faq-a">${t("faq_a" + i)}</div>
+                  </div>`).join("")}
+              </div>
+            </div>
           </div>
 
           <aside>
@@ -1424,12 +1454,44 @@
               <p class="muted" style="margin-top:12px">${t("instructor_bio")}</p>
             </div>
             <div class="panel">
+              <h2>🎓 ${t("cert_teaser_title")}</h2>
+              <div class="cert-teaser">
+                <div class="ct-brand">&lt;/&gt; WebDev Academy</div>
+                <div class="ct-cert">CERTIFICATE</div>
+                <div class="ct-name">${escapeHtml((loggedIn() && window.Auth.current() && window.Auth.current().name) || t("cert_your_name"))}</div>
+                <div class="ct-course">${cf(c, "title")}</div>
+              </div>
+              ${pct === 100
+                ? `<a class="btn btn-primary btn-block" style="margin-top:12px" href="#/certificate/${c.id}">🎓 ${t("cert_view")}</a>`
+                : `<p class="muted" style="margin-top:10px;font-size:13px">${t("cert_teaser_note")}${enrolled && pct > 0 ? ` (${pct}%)` : ""}</p>`}
+            </div>
+            <div class="panel">
               <h2>${t("share_course")}</h2>
               <button class="btn btn-outline btn-block" id="course-share" type="button">🔗 ${t("cert_copy")}</button>
             </div>
           </aside>
         </div>
-      </section>`;
+      </section>
+
+      ${(() => {
+        /* same category first; small categories fill up with same-level,
+           then most-popular courses so the strip never sits empty */
+        const related = COURSES.filter((x) => x.id !== c.id && x.category === c.category).slice(0, 3);
+        const sameCat = related.length;
+        const fill = (pool) => pool.forEach((x) => {
+          if (related.length < 3 && x.id !== c.id && related.indexOf(x) === -1) related.push(x);
+        });
+        fill(COURSES.filter((x) => x.level === c.level));
+        fill(COURSES.slice().sort((a, b) => (b.students || 0) - (a.students || 0)));
+        const title = sameCat >= 3
+          ? t("related_title").replace("{cat}", catName(c.category))
+          : t("related_generic");
+        return related.length ? `
+          <div class="container related-wrap">
+            <h2 class="section-title">${title}</h2>
+            <div class="grid">${related.map(courseCard).join("")}</div>
+          </div>` : "";
+      })()}`;
 
     app.querySelectorAll("[data-acc]").forEach((h) =>
       h.addEventListener("click", () => h.parentElement.classList.toggle("open"))

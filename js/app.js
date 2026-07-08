@@ -1492,6 +1492,41 @@
 
   const PREVIEW_LESSONS = 2; /* free taste of a premium course before the paywall */
 
+  /* 🎉 SoloLearn-style celebration when a lesson is completed:
+     confetti + XP + streak, then continue */
+  function showCelebration(nextHash) {
+    const old = document.querySelector(".cele-overlay");
+    if (old) old.remove();
+    const colors = ["#a435f0", "#654ea3", "#eaafc8", "#3bb78f", "#ffd166", "#ff6b6b"];
+    const confetti = Array.from({ length: 40 }, (_, i) => {
+      const left = Math.random() * 100;
+      const delay = (Math.random() * 0.5).toFixed(2);
+      const dur = (1.7 + Math.random() * 1.5).toFixed(2);
+      const size = Math.round(7 + Math.random() * 7);
+      const rot = Math.round(Math.random() * 360);
+      return `<i style="left:${left}%;width:${size}px;height:${Math.round(size * .45)}px;background:${colors[i % colors.length]};animation-delay:${delay}s;animation-duration:${dur}s;transform:rotate(${rot}deg)"></i>`;
+    }).join("");
+    const wrap = document.createElement("div");
+    wrap.className = "cele-overlay";
+    wrap.innerHTML = `
+      <div class="cele-confetti" aria-hidden="true">${confetti}</div>
+      <div class="cele-card">
+        <div class="cele-emoji">🎉</div>
+        <h2>${t("cele_done")}</h2>
+        <div class="cele-xp">+10 XP</div>
+        <div class="cele-streak">🔥 ${dayStreak()} ${t("stat_streak")}</div>
+        <button class="btn btn-primary btn-block" id="cele-next">${nextHash ? t("next_lesson") : t("finish")} →</button>
+      </div>`;
+    document.body.appendChild(wrap);
+    const go = () => {
+      wrap.remove();
+      if (nextHash) location.hash = nextHash;
+      else window.dispatchEvent(new Event("hashchange"));
+    };
+    wrap.querySelector("#cele-next").addEventListener("click", go);
+    wrap.addEventListener("click", (e) => { if (e.target === wrap) go(); });
+  }
+
   /* SoloLearn-style Step Mode: split an article's HTML into bite-sized
      cards at each <h3> heading. Returns an array of HTML strings. */
   function splitLessonSteps(html) {
@@ -1807,9 +1842,12 @@
       nextB.addEventListener("click", () => {
         if (si < steps.length - 1) { stopAuto(); show(si + 1); return; }
         stopAuto();
-        /* last card: complete the lesson and move on */
-        if (!isDoneAlready()) markComplete(c.id, current.id, true);
-        if (next) location.hash = `#/learn/${c.id}/${next}`;
+        /* last card: complete the lesson and celebrate 🎉 */
+        const wasNew = !isDoneAlready();
+        if (wasNew) markComplete(c.id, current.id, true);
+        const dest = next ? `#/learn/${c.id}/${next}` : null;
+        if (wasNew) showCelebration(dest);
+        else if (dest) location.hash = dest;
         else renderLearn(courseId, lessonId);
       });
       show(0);
@@ -1865,8 +1903,10 @@
     const completeBtn = app.querySelector("[data-complete]");
     if (completeBtn) {
       completeBtn.addEventListener("click", () => {
-        markComplete(c.id, current.id, !done.has(current.id));
-        renderLearn(courseId, lessonId);
+        const marking = !done.has(current.id);
+        markComplete(c.id, current.id, marking);
+        if (marking) showCelebration(next ? `#/learn/${c.id}/${next}` : null);
+        else renderLearn(courseId, lessonId);
       });
     }
 
@@ -3179,6 +3219,17 @@
     const raw = (location.hash || "#/").replace(/^#\/?/, "");
     const parts = raw.split("/").filter(Boolean);
 
+    /* highlight the matching bottom tab (mobile app bar) */
+    const tabOf =
+      !parts[0] ? "home"
+      : ["courses", "course", "learn", "search", "roadmap"].indexOf(parts[0]) >= 0 ? "courses"
+      : parts[0] === "playground" ? "playground"
+      : ["my-learning", "review", "leaderboard", "account", "certificate"].indexOf(parts[0]) >= 0 ? "me"
+      : "";
+    document.querySelectorAll("#tabbar a").forEach((a) =>
+      a.classList.toggle("active", a.getAttribute("data-tab") === tabOf)
+    );
+
     /* Point the chat at this course's room, or the global community room */
     if (window.Chat && window.Chat.setRoom) {
       if ((parts[0] === "course" || parts[0] === "learn") && parts[1]) {
@@ -3218,6 +3269,10 @@
     set("nav-roadmap", t("nav_roadmap"));
     set("nav-playground", t("nav_playground"));
     set("nav-mylearning", t("nav_mylearning"));
+    set("tab-home", t("tab_home"));
+    set("tab-courses", t("nav_courses"));
+    set("tab-play", t("nav_playground"));
+    set("tab-me", t("tab_me"));
     set("footer-tag", t("footer_tag"));
     set("footer-saved", t("footer_saved"));
 

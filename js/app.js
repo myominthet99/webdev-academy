@@ -1128,10 +1128,14 @@
   }
 
   /* ---------------- View: Home ---------------- */
+  /* Courses to spotlight in the home "New & trending" strip */
+  const NEW_COURSE_IDS = ["n8n-automation", "ai-engineering", "cloud-computing", "devops"];
+
   function renderHome() {
     const featured = COURSES.slice(0, 4);
+    const fresh = NEW_COURSE_IDS.map(courseById).filter(Boolean);
     /* Trending: most-enrolled courses not already shown in Featured */
-    const trending = COURSES.filter((c) => featured.indexOf(c) === -1)
+    const trending = COURSES.filter((c) => featured.indexOf(c) === -1 && fresh.indexOf(c) === -1)
       .sort((a, b) => (b.students || 0) - (a.students || 0))
       .slice(0, 3);
     app.innerHTML = `
@@ -1169,6 +1173,11 @@
 
       <div class="container">
         ${resumeBanner()}
+        ${fresh.length ? `
+        <h2 class="section-title">🆕 ${t("new_title")}</h2>
+        <p class="section-sub">${t("new_sub")}</p>
+        <div class="grid">${fresh.map(courseCard).join("")}</div>` : ""}
+
         <h2 class="section-title">${t("featured")}</h2>
         <p class="section-sub">${t("featured_sub")}</p>
         <div class="grid">${featured.map(courseCard).join("")}</div>

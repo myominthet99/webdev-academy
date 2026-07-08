@@ -1356,6 +1356,14 @@ body { font-family: sans-serif; color: var(--ink); padding: 24px; }
   <li><code>&lt;section&gt;</code> — a themed group of content with a heading</li>
   <li><code>&lt;aside&gt;</code> — side content (related links, ads)</li>
 </ul>
+<div style="border:2px solid #654ea3;border-radius:10px;overflow:hidden;max-width:340px;margin:16px auto;font-size:13px;font-weight:700;text-align:center">
+  <div style="background:#654ea3;color:#fff;padding:8px">&lt;header&gt; + &lt;nav&gt;</div>
+  <div style="display:flex">
+    <div style="flex:2;background:#eadff8;color:#333;padding:22px 8px;border-right:1px solid #d9cff2">&lt;main&gt;<br>&lt;article&gt;</div>
+    <div style="flex:1;background:#f4eefb;color:#555;padding:22px 8px">&lt;aside&gt;</div>
+  </div>
+  <div style="background:#3bb78f;color:#fff;padding:8px">&lt;footer&gt;</div>
+</div>
 <h3>💻 Example</h3>
 <pre><code>&lt;body&gt;
   &lt;header&gt;
@@ -1425,6 +1433,13 @@ body { font-family: sans-serif; color: var(--ink); padding: 24px; }
   <li>Use the right <code>type</code>: <code>email</code>, <code>number</code>, <code>date</code>, <code>password</code> — mobile keyboards adapt automatically</li>
   <li><code>required</code>, <code>min</code>, <code>max</code>, <code>pattern</code> give you free validation</li>
 </ul>
+<div class="flow">
+  <div class="flow-box">✍️ User fills form</div>
+  <div class="flow-arrow" data-label="clicks submit"></div>
+  <div class="flow-box warn">✅ Browser checks<br><small>required, type…</small></div>
+  <div class="flow-arrow" data-label="if valid"></div>
+  <div class="flow-box alt">📨 Data is sent</div>
+</div>
 <h3>💻 Example</h3>
 <pre><code>&lt;form&gt;
   &lt;label for="email"&gt;Email&lt;/label&gt;

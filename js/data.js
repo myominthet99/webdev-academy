@@ -57,6 +57,13 @@ const COURSES = [
   <li><strong>CSS</strong> — the <em>presentation</em> (colors, spacing, layout, fonts).</li>
   <li><strong>JavaScript</strong> — the <em>behavior</em> (clicks, forms, animation, logic).</li>
 </ul>
+<div class="flow">
+  <div class="flow-box">🧱 HTML<br><small>structure</small></div>
+  <div class="flow-arrow" data-label="styled by"></div>
+  <div class="flow-box alt">🎨 CSS<br><small>looks</small></div>
+  <div class="flow-arrow" data-label="powered by"></div>
+  <div class="flow-box warn">⚡ JavaScript<br><small>behavior</small></div>
+</div>
 <p>A helpful analogy: if a web page were a house, HTML is the framing and rooms, CSS is the paint and furniture, and JavaScript is the electricity that makes things <em>do</em> something.</p>
 <div class="callout tip"><strong>Front-end vs back-end:</strong> Front-end is what runs in the user's browser (the three languages above). Back-end is the server, database, and logic behind the scenes. This course focuses on the front-end — the best place to start.</div>
 <p>By the end of this course you'll be able to read, write, and confidently build real web pages. Let's go!</p>`),
@@ -70,6 +77,13 @@ const COURSES = [
   <li>The server responds with files: HTML, CSS, JavaScript, images.</li>
   <li>The browser <em>renders</em> those files into the page you see.</li>
 </ol>
+<div class="flow">
+  <div class="flow-box">🧑 Browser<br><small>client</small></div>
+  <div class="flow-arrow" data-label="HTTP request"></div>
+  <div class="flow-box alt">🖥️ Server<br><small>responds</small></div>
+  <div class="flow-arrow" data-label="HTML/CSS/JS"></div>
+  <div class="flow-box">🖼️ Rendered page<br><small>you see it</small></div>
+</div>
 <h3>Key vocabulary</h3>
 <ul>
   <li><strong>HTTP/HTTPS</strong> — the protocol browsers and servers speak. HTTPS is the encrypted, secure version.</li>
@@ -554,11 +568,25 @@ toggle.addEventListener("click", () =&gt; {
   <li>The server sends back some files — mostly <strong>HTML</strong>, <strong>CSS</strong>, and <strong>JavaScript</strong>.</li>
   <li>Your browser reads those files and <em>draws</em> the page you see.</li>
 </ol>
+<div class="flow">
+  <div class="flow-box">🧑 You + Browser<br><small>the client</small></div>
+  <div class="flow-arrow" data-label="1. asks for page"></div>
+  <div class="flow-box alt">🖥️ Server<br><small>a computer online</small></div>
+  <div class="flow-arrow" data-label="2. sends files"></div>
+  <div class="flow-box">🖼️ Page appears<br><small>HTML · CSS · JS</small></div>
+</div>
 <h3>The key idea</h3>
 <p>A website is really just a bundle of text files that your browser knows how to display. That's it! When you build a site, you're writing those text files.</p>
-<div class="callout"><strong>Client &amp; server:</strong> the "client" is your browser asking for things. The "server" is the computer answering. This back-and-forth happens in a fraction of a second.</div>`),
+<div class="callout"><strong>Client &amp; server:</strong> the "client" is your browser asking for things. The "server" is the computer answering. This back-and-forth happens in a fraction of a second.</div>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> open Chrome, press <code>F12</code> → the <strong>Network</strong> tab → reload this page. Every row you see is one file your browser downloaded from the server. Count how many there are!</div>`),
           article("wb-frontback", "Front-End vs Back-End", "5 min", `
 <p>You'll hear these two terms a lot. Here's the simple version.</p>
+<div class="flow">
+  <div class="flow-box">🎨 Front-end<br><small>what you SEE<br>HTML · CSS · JS</small></div>
+  <div class="flow-arrow" data-label="talks to"></div>
+  <div class="flow-box alt">⚙️ Back-end<br><small>behind the scenes<br>server · database</small></div>
+</div>
 <h3>Front-end — what you can see</h3>
 <p>Everything that appears in the browser: text, buttons, colors, layout, animations. It's built with the three languages we'll learn:</p>
 <ul>
@@ -568,7 +596,9 @@ toggle.addEventListener("click", () =&gt; {
 </ul>
 <h3>Back-end — the behind-the-scenes</h3>
 <p>The server, databases, and logic you <em>don't</em> see — things like saving your account or processing a payment.</p>
-<div class="callout tip">This course is 100% <strong>front-end</strong>. It's the friendliest place to start, and you get to see your results instantly.</div>`),
+<div class="callout tip">This course is 100% <strong>front-end</strong>. It's the friendliest place to start, and you get to see your results instantly.</div>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> think of an app you love (Facebook, TikTok…). Name <strong>two things</strong> that are front-end (things you can see and tap) and <strong>one thing</strong> that's back-end (something saved or processed behind the scenes, like your login).</div>`),
           article("wb-tools", "The Tools You Need", "6 min", `
 <p>Good news: getting set up is free and takes five minutes.</p>
 <h3>1. A code editor</h3>
@@ -609,7 +639,9 @@ toggle.addEventListener("click", () =&gt; {
 <h3>Tags come in pairs</h3>
 <pre><code>&lt;p&gt;This is content&lt;/p&gt;
  ^opening tag    ^closing tag (note the /)</code></pre>
-<div class="callout tip">Save this as <code>index.html</code> and open it — you just built a web page from scratch! 🎉</div>`,
+<div class="callout tip">Save this as <code>index.html</code> and open it — you just built a web page from scratch! 🎉</div>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> in the 🧪 Playground, type out the full HTML page above. Then change the <code>&lt;h1&gt;</code> to your own name, and add a second <code>&lt;p&gt;</code> about your favorite hobby.</div>`,
           "https://www.w3schools.com/html/mov_bbb.mp4"), // demo video — swap for "videos/your-file.mp4"
           video("wb-text", "Headings, Paragraphs & Text", "8 min", `
 <h3>Headings</h3>
@@ -621,7 +653,9 @@ toggle.addEventListener("click", () =&gt; {
 <pre><code>&lt;p&gt;This is a paragraph of text.&lt;/p&gt;
 &lt;p&gt;You can make words &lt;strong&gt;bold&lt;/strong&gt;
    or &lt;em&gt;italic&lt;/em&gt; for emphasis.&lt;/p&gt;</code></pre>
-<div class="callout">Headings aren't just "big text" — they give your page an outline that search engines and screen readers rely on. Use them in order.</div>`),
+<div class="callout">Headings aren't just "big text" — they give your page an outline that search engines and screen readers rely on. Use them in order.</div>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> in the 🧪 Playground, build a mini blog: an <code>&lt;h1&gt;</code> title, an <code>&lt;h2&gt;</code> post heading, and a paragraph with one <strong>bold</strong> word and one <em>italic</em> word.</div>`),
           video("wb-links", "Links & Navigation", "8 min", `
 <p>Links are what make the web a <em>web</em>. They use the anchor tag <code>&lt;a&gt;</code> with an <code>href</code> ("hypertext reference") attribute.</p>
 <pre><code>&lt;a href="https://wikipedia.org"&gt;Visit Wikipedia&lt;/a&gt;
@@ -633,7 +667,9 @@ toggle.addEventListener("click", () =&gt; {
 &lt;a href="https://google.com" target="_blank"&gt;Google&lt;/a&gt;</code></pre>
 <h3>What is an attribute?</h3>
 <p>An <strong>attribute</strong> is extra information inside the opening tag, written as <code>name="value"</code>. Here <code>href</code> and <code>target</code> are attributes.</p>
-<div class="callout tip">A link's text should describe where it goes. "Click here" is unhelpful; "Read the docs" is clear.</div>`),
+<div class="callout tip">A link's text should describe where it goes. "Click here" is unhelpful; "Read the docs" is clear.</div>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> in the 🧪 Playground, create a link to your favorite website that opens in a new tab (<code>target="_blank"</code>) — and give it clear text that says where it goes.</div>`),
           video("wb-images", "Images & Media", "7 min", `
 <p>Add pictures with the <code>&lt;img&gt;</code> tag. It's <strong>self-closing</strong> — there's no <code>&lt;/img&gt;</code>.</p>
 <pre><code>&lt;img src="photo.jpg" alt="A golden retriever puppy" width="400"&gt;</code></pre>
@@ -643,7 +679,9 @@ toggle.addEventListener("click", () =&gt; {
   <li><code>alt</code> — a text description, read aloud by screen readers and shown if the image fails to load.</li>
   <li><code>width</code> / <code>height</code> — optional size in pixels.</li>
 </ul>
-<div class="callout"><strong>Always write good <code>alt</code> text.</strong> It makes your site usable for people who can't see the image — and it's good for SEO.</div>`),
+<div class="callout"><strong>Always write good <code>alt</code> text.</strong> It makes your site usable for people who can't see the image — and it's good for SEO.</div>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> in the 🧪 Playground, add an image using a full URL (any image link you know), give it good <code>alt</code> text describing the picture, and set <code>width="300"</code>.</div>`),
           video("wb-lists", "Lists", "6 min", `
 <p>Two everyday list types:</p>
 <pre><code>&lt;!-- bulleted list --&gt;
@@ -660,7 +698,9 @@ toggle.addEventListener("click", () =&gt; {
   &lt;li&gt;Bake for 20 minutes&lt;/li&gt;
 &lt;/ol&gt;</code></pre>
 <p><code>&lt;ul&gt;</code> = <em>unordered</em> (bullets), <code>&lt;ol&gt;</code> = <em>ordered</em> (numbers). Each item goes in an <code>&lt;li&gt;</code> ("list item").</p>
-<div class="callout tip">Navigation menus are usually built as a <code>&lt;ul&gt;</code> of links — lists are everywhere once you notice them.</div>`),
+<div class="callout tip">Navigation menus are usually built as a <code>&lt;ul&gt;</code> of links — lists are everywhere once you notice them.</div>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> in the 🧪 Playground, make a bulleted <code>&lt;ul&gt;</code> shopping list (3 items) and a numbered <code>&lt;ol&gt;</code> of steps to make tea.</div>`),
           quiz("wb-html-quiz", "Quiz: HTML Basics", [
             {
               q: "Which tag holds the content you actually see on the page?",
@@ -707,7 +747,24 @@ toggle.addEventListener("click", () =&gt; {
 }
 /*  ^selector   ^property: value; */</code></pre>
 <p>This says: "find every <code>&lt;h1&gt;</code>, make it navy and 40px."</p>
-<div class="callout"><strong>Selectors</strong> pick <em>what</em> to style. Common ones: <code>h1</code> (by tag), <code>.intro</code> (by class), <code>#header</code> (by id).</p></div>`),
+<div class="flow">
+  <div class="flow-box">h1<br><small>selector<br>WHAT to style</small></div>
+  <div class="flow-arrow" data-label="set its"></div>
+  <div class="flow-box alt">color<br><small>property<br>WHAT to change</small></div>
+  <div class="flow-arrow" data-label="to"></div>
+  <div class="flow-box warn">navy<br><small>value<br>the new look</small></div>
+</div>
+<div class="callout"><strong>Selectors</strong> pick <em>what</em> to style. Common ones: <code>h1</code> (by tag), <code>.intro</code> (by class), <code>#header</code> (by id).</p></div>
+<h3>💻 Example</h3>
+<pre><code>&lt;h1&gt;My Shop&lt;/h1&gt;
+&lt;p class="intro"&gt;Welcome!&lt;/p&gt;
+
+&lt;style&gt;
+  h1     { color: purple; }
+  .intro { color: gray; font-size: 20px; }
+&lt;/style&gt;</code></pre>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> in the 🧪 Playground, add an <code>&lt;h1&gt;</code> and write a style rule that makes it your favorite color and <code>50px</code> big. Then add a paragraph and give it a different color.</div>`),
           video("wb-css-color", "Colors & Backgrounds", "7 min", `
 <pre><code>body {
   background-color: #f4f4f4;   /* light gray page */
@@ -723,7 +780,9 @@ toggle.addEventListener("click", () =&gt; {
   <li><strong>Hex:</strong> <code>#a435f0</code> (used most in practice)</li>
   <li><strong>RGB:</strong> <code>rgb(164, 53, 240)</code></li>
 </ul>
-<div class="callout tip">Try free palette tools like coolors.co to pick colors that look good together.</div>`),
+<div class="callout tip">Try free palette tools like coolors.co to pick colors that look good together.</div>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> in the 🧪 Playground, give your page a soft <code>background</code> color, make the <code>&lt;h1&gt;</code> a bold color, and give a <code>&lt;button&gt;</code> a colored background with white text.</div>`),
           video("wb-css-text", "Text & Fonts", "7 min", `
 <pre><code>body {
   font-family: "Segoe UI", Arial, sans-serif;
@@ -736,7 +795,9 @@ h1 {
 }</code></pre>
 <h3>Font stacks</h3>
 <p>List several fonts as fallbacks. The browser uses the first one it has, ending with a generic family like <code>sans-serif</code>.</p>
-<div class="callout">Comfortable body text is around <code>16px</code> with a <code>line-height</code> of <code>1.5</code>–<code>1.6</code>. Cramped text is hard to read.</div>`),
+<div class="callout">Comfortable body text is around <code>16px</code> with a <code>line-height</code> of <code>1.5</code>–<code>1.6</code>. Cramped text is hard to read.</div>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> in the 🧪 Playground, add a paragraph of text, then change its <code>font-family</code>, set <code>font-size: 18px</code>, and <code>line-height: 1.6</code>. Notice how much easier it is to read.</div>`),
           video("wb-css-box", "Spacing & the Box Model", "9 min", `
 <p>Every element is a rectangular <strong>box</strong>. Understanding its layers is the key to controlling spacing.</p>
 <ul>
@@ -745,13 +806,24 @@ h1 {
   <li><strong>border</strong> — the edge line</li>
   <li><strong>margin</strong> — space <em>outside</em> the box, pushing other elements away</li>
 </ul>
+<div class="flow">
+  <div class="flow-box">content</div>
+  <div class="flow-arrow" data-label="wrapped in"></div>
+  <div class="flow-box alt">padding</div>
+  <div class="flow-arrow" data-label="then"></div>
+  <div class="flow-box warn">border</div>
+  <div class="flow-arrow" data-label="then"></div>
+  <div class="flow-box">margin</div>
+</div>
 <pre><code>.card {
   padding: 20px;                 /* breathing room inside */
   border: 1px solid #ddd;        /* thin gray edge */
   margin: 16px;                  /* gap around the card */
   border-radius: 8px;            /* rounded corners */
 }</code></pre>
-<div class="callout tip">Add this near the top of your CSS to make sizes behave intuitively:<br><code>* { box-sizing: border-box; }</code></div>`),
+<div class="callout tip">Add this near the top of your CSS to make sizes behave intuitively:<br><code>* { box-sizing: border-box; }</code></div>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> in the 🧪 Playground, make a <code>&lt;div class="card"&gt;</code> with some text, then give <code>.card</code> a background color, <code>padding: 24px</code>, a <code>2px</code> border, and <code>margin: 20px</code>. Change each number and watch the spacing move!</div>`),
           video("wb-css-flex", "Simple Layouts with Flexbox", "10 min", `
 <p>To place items side by side (like a navigation bar), use <strong>Flexbox</strong>.</p>
 <pre><code>.navbar {
@@ -767,7 +839,9 @@ h1 {
   align-items: center;      /* vertical center */
   height: 300px;
 }</code></pre>
-<div class="callout">Flexbox is one of the most useful things in all of CSS. Just three lines can center content that used to take real effort.</div>`),
+<div class="callout">Flexbox is one of the most useful things in all of CSS. Just three lines can center content that used to take real effort.</div>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> in the 🧪 Playground, put three <code>&lt;div&gt;</code> boxes inside a parent, then give the parent <code>display: flex; gap: 12px; justify-content: center;</code> — watch them line up in a neat row.</div>`),
           quiz("wb-css-quiz", "Quiz: CSS Basics", [
             {
               q: "How do you link an external stylesheet?",
@@ -808,7 +882,9 @@ h1 {
 <p>In <code>script.js</code>, try:</p>
 <pre><code>console.log("Hello from JavaScript!");
 alert("The page is alive!");</code></pre>
-<div class="callout tip">Press <strong>F12</strong> in your browser and open the <em>Console</em> tab to see <code>console.log</code> output — it's how developers check what their code is doing.</div>`),
+<div class="callout tip">Press <strong>F12</strong> in your browser and open the <em>Console</em> tab to see <code>console.log</code> output — it's how developers check what their code is doing.</div>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> in the 🧪 Playground, use <code>console.log</code> to print your name, then print the result of <code>7 * 8</code>. Check the Console panel below the result.</div>`),
           video("wb-js-vars", "Variables & Values", "8 min", `
 <p>A <strong>variable</strong> is a named box that stores a value.</p>
 <pre><code>const name = "Sara";     // text (a "string")
@@ -821,7 +897,9 @@ let isLearning = true;   // true / false (a "boolean")</code></pre>
 <h3>Using them</h3>
 <pre><code>console.log("Hi, " + name);   // Hi, Sara
 age = age + 1;                // now 26</code></pre>
-<div class="callout">Think of variables as labels on jars. The label (name) stays the same; you can change what's inside a <code>let</code> jar, but not a <code>const</code> one.</div>`),
+<div class="callout">Think of variables as labels on jars. The label (name) stays the same; you can change what's inside a <code>let</code> jar, but not a <code>const</code> one.</div>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> in the 🧪 Playground, make a <code>let</code> variable for your age and a <code>const</code> for your name, then <code>console.log</code> a sentence like "My name is ... and I am ... years old."</div>`),
           video("wb-js-click", "Responding to Clicks", "10 min", `
 <p>This is where it gets fun — making a button actually do something.</p>
 <h3>The HTML</h3>
@@ -835,7 +913,16 @@ button.addEventListener("click", () =&gt; {
   output.textContent = "You clicked the button!";
 });</code></pre>
 <p>The pattern is always: <strong>find an element → listen for an event → change something.</strong> Every interactive site is built on this idea.</p>
-<div class="callout tip"><code>querySelector</code> uses CSS-style selectors: <code>"#id"</code>, <code>".class"</code>, <code>"tag"</code>. Learn selectors once, use them in both CSS and JavaScript.</div>`),
+<div class="flow">
+  <div class="flow-box">👆 Click<br><small>an event</small></div>
+  <div class="flow-arrow" data-label="runs"></div>
+  <div class="flow-box alt">🧠 Your function<br><small>JavaScript</small></div>
+  <div class="flow-arrow" data-label="changes"></div>
+  <div class="flow-box">📄 The page<br><small>textContent</small></div>
+</div>
+<div class="callout tip"><code>querySelector</code> uses CSS-style selectors: <code>"#id"</code>, <code>".class"</code>, <code>"tag"</code>. Learn selectors once, use them in both CSS and JavaScript.</div>
+<h3>🏋️ Practice Task</h3>
+<div class="callout tip"><strong>Try it yourself:</strong> in the 🧪 Playground, build a button that shows "Hello!" in a paragraph when clicked. <strong>Bonus:</strong> make a counter that goes up by 1 every time you click.</div>`),
           quiz("wb-js-quiz", "Quiz: JavaScript Basics", [
             {
               q: "Which keyword declares a value that should NOT change?",

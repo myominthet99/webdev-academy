@@ -1588,6 +1588,13 @@ console.log(typeof name, typeof price, typeof isEnrolled);
   <li>Combine with <code>&amp;&amp;</code> (and), <code>||</code> (or), <code>!</code> (not)</li>
   <li>Ternary for tiny choices: <code>cond ? a : b</code></li>
 </ul>
+<div class="flow">
+  <div class="flow-box warn">❓ if (condition)</div>
+  <div class="flow-arrow" data-label="true → run"></div>
+  <div class="flow-box alt">if block</div>
+  <div class="flow-arrow" data-label="false → run"></div>
+  <div class="flow-box">else block</div>
+</div>
 <h3>💻 Example</h3>
 <pre><code>const score = 72;
 
@@ -1626,6 +1633,13 @@ console.log(5 === "5");   // false (strict — correct)</code></pre>
   <li><code>for (const item of array)</code> — walk arrays cleanly</li>
   <li><code>while (condition)</code> — repeat until something changes</li>
 </ul>
+<div class="flow">
+  <div class="flow-box">start<br><small>i = 1</small></div>
+  <div class="flow-arrow" data-label="i ≤ 5 ?"></div>
+  <div class="flow-box alt">run the body</div>
+  <div class="flow-arrow" data-label="then i++ ↺"></div>
+  <div class="flow-box warn">check again</div>
+</div>
 <h3>💻 Example</h3>
 <pre><code>for (let i = 1; i &lt;= 5; i++) {
   console.log("Line " + i);
@@ -1647,6 +1661,13 @@ for (const fruit of fruits) {
   <li><code>.filter()</code> keeps items that pass a test</li>
   <li><code>.reduce()</code> boils a list down to one value</li>
 </ul>
+<div class="flow">
+  <div class="flow-box">[1,2,3,4]<br><small>array</small></div>
+  <div class="flow-arrow" data-label=".map(×2)"></div>
+  <div class="flow-box alt">[2,4,6,8]</div>
+  <div class="flow-arrow" data-label=".filter(&gt;4)"></div>
+  <div class="flow-box warn">[6,8]</div>
+</div>
 <h3>💻 Example</h3>
 <pre><code>const scores = [75, 92, 58, 88];
 
@@ -1669,6 +1690,13 @@ console.log(total / scores.length); // 78.25</code></pre>
   <li>Default parameters: <code>(name = "friend")</code></li>
   <li>Small, single-purpose functions = readable programs</li>
 </ul>
+<div class="flow">
+  <div class="flow-box">📥 inputs<br><small>a, b</small></div>
+  <div class="flow-arrow" data-label="do work"></div>
+  <div class="flow-box alt">⚙️ function<br><small>add(a, b)</small></div>
+  <div class="flow-arrow" data-label="return"></div>
+  <div class="flow-box">📤 output<br><small>a + b</small></div>
+</div>
 <h3>💻 Example</h3>
 <pre><code>function grade(score) {
   if (score &gt;= 80) return "A";
@@ -1752,6 +1780,13 @@ for (const note of document.querySelectorAll(".note")) {
   <li>Input events: read <code>e.target.value</code> live</li>
   <li>Forms: listen to "submit" + <code>e.preventDefault()</code></li>
 </ul>
+<div class="flow">
+  <div class="flow-box">👆 User acts<br><small>click / type</small></div>
+  <div class="flow-arrow" data-label="fires event"></div>
+  <div class="flow-box alt">🧠 Your listener<br><small>function</small></div>
+  <div class="flow-arrow" data-label="updates"></div>
+  <div class="flow-box">📄 The page</div>
+</div>
 <h3>💻 Example</h3>
 <pre><code>&lt;input id="name" placeholder="Type your name"&gt;
 &lt;button id="btn"&gt;Greet&lt;/button&gt;

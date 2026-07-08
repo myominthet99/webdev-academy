@@ -1237,9 +1237,17 @@
     trackCourseView(c.id);
     const enrolled = isEnrolled(c.id);
     const pct = progressPct(c);
-    const firstFlat = lessonsOf(c)[0]; /* imported/malformed course may be empty */
+    const flat = lessonsOf(c);
+    const firstFlat = flat[0]; /* imported/malformed course may be empty */
     const firstLesson = firstFlat ? firstFlat.lesson.id : "";
     const done = completedSet(c.id);
+    const quizCount = flat.filter((x) => x.lesson.type === "quiz").length;
+    const contentCount = flat.length - quizCount;
+    const isBeg = c.level === "Beginner" || c.category === "Kids";
+    const reqs = isBeg ? [t("req_none"), t("req_device")] : [t("req_basics"), t("req_device")];
+    const audience = isBeg
+      ? [t("who_1_beg"), t("who_2")]
+      : [t("who_1_adv").replace("{cat}", catName(c.category)), t("who_2")];
 
     const curriculum = c.sections
       .map((sec, si) => {
@@ -1290,7 +1298,12 @@
               <span class="rating"><b>${c.rating.toFixed(1)}</b> ${stars(c.rating)} (${fmt(c.ratings)} ${t("ratings")})</span>
               <span>· ${fmt(c.students)} ${t("students")}</span>
               <span>· ${t("created_by")} <strong>${c.instructor}</strong></span>
-              <span>· ${levelName(c.level)}</span>
+            </div>
+            <div class="detail-badges">
+              <span class="dbadge">🎯 ${levelName(c.level)}</span>
+              <span class="dbadge">🌐 English + မြန်မာ</span>
+              <span class="dbadge">📲 ${t("inc_offline")}</span>
+              <span class="dbadge">🎓 ${t("inc_cert")}</span>
             </div>
           </div>
 
@@ -1301,11 +1314,15 @@
               ${enrolled && pct > 0 ? `<div class="progress" style="margin-bottom:14px"><span style="width:${pct}%"></span></div><div class="muted" style="margin-bottom:14px">${pct}% ${t("pct_complete_word")} · ⏱ ${formatTime(getTotalTimeSpent(c.id))}</div>` : ""}
               ${cta}
               ${enrolled && pct === 100 ? `<a class="btn btn-ghost btn-block" style="margin-top:10px" href="#/certificate/${c.id}">🎓 ${t("cert_view")}</a>` : ""}
-              <ul>
-                <li>${c.hours} ${t("hours_content")}</li>
-                <li>${totalLessons(c)} ${t("lessons_quizzes")}</li>
-                <li>${enrolled ? `⏱ ${formatTime(getTotalTimeSpent(c.id))} ${t("spent")}` : t("pace")}</li>
-                <li>${t("saved_auto")}</li>
+              <div class="includes-title">${t("includes_title")}</div>
+              <ul class="includes">
+                <li>📚 ${contentCount} ${t("lessons_word")}${quizCount ? ` · ❓ ${quizCount} ${t("quizzes_word")}` : ""}</li>
+                <li>⏱ ${c.hours} ${t("hours_content")}</li>
+                <li>🎓 ${t("inc_cert")}</li>
+                <li>📲 ${t("inc_offline")}</li>
+                <li>🌐 ${t("inc_bilingual")}</li>
+                <li>♾️ ${t("inc_lifetime")}</li>
+                ${enrolled ? `<li>✅ ${formatTime(getTotalTimeSpent(c.id))} ${t("spent")}</li>` : ""}
               </ul>
             </div>
           </aside>
@@ -1318,6 +1335,16 @@
             <div class="panel">
               <h2>${t("what_learn")}</h2>
               <ul class="learn-grid">${cf(c, "whatYouLearn").map((x) => `<li>${x}</li>`).join("")}</ul>
+            </div>
+            <div class="panel two-col">
+              <div>
+                <h2>${t("requirements")}</h2>
+                <ul class="req-list">${reqs.map((x) => `<li>${escapeHtml(x)}</li>`).join("")}</ul>
+              </div>
+              <div>
+                <h2>${t("who_for")}</h2>
+                <ul class="req-list">${audience.map((x) => `<li>${escapeHtml(x)}</li>`).join("")}</ul>
+              </div>
             </div>
             <div class="panel">
               <h2>${t("description")}</h2>
@@ -1334,8 +1361,15 @@
           <aside>
             <div class="panel">
               <h2>${t("instructor")}</h2>
-              <p><strong>${c.instructor}</strong></p>
-              <p class="muted">${t("instructor_bio")}</p>
+              <div class="instructor-card">
+                <span class="instructor-avatar">${escapeHtml((c.instructor || "?").charAt(0).toUpperCase())}</span>
+                <div><strong>${escapeHtml(c.instructor)}</strong><br><span class="muted" style="font-size:13px">${catName(c.category)} ${t("instructor_role")}</span></div>
+              </div>
+              <p class="muted" style="margin-top:12px">${t("instructor_bio")}</p>
+            </div>
+            <div class="panel">
+              <h2>${t("share_course")}</h2>
+              <button class="btn btn-outline btn-block" id="course-share" type="button">🔗 ${t("cert_copy")}</button>
             </div>
           </aside>
         </div>
@@ -1355,6 +1389,13 @@
         else requireAuth(() => { if (isPremiumUser()) go(); else location.hash = "#/premium"; });
       });
     }
+    const shareBtn = app.querySelector("#course-share");
+    if (shareBtn) shareBtn.addEventListener("click", () => {
+      const link = location.origin + location.pathname + "#/course/" + c.id;
+      const done = () => { shareBtn.textContent = "✓ " + t("cert_copied"); };
+      if (navigator.clipboard) navigator.clipboard.writeText(link).then(done).catch(() => fallbackCopy(link, done));
+      else fallbackCopy(link, done);
+    });
     wireReviews(c);
     window.scrollTo(0, 0);
   }

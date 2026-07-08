@@ -767,6 +767,25 @@ button { font-family: inherit; cursor: pointer; }
 .pg-seg button:first-child { border-left: 0; }
 .pg-seg button.on { background: var(--purple); color: #fff; }
 .pg-seg button:hover:not(.on) { background: var(--surface-2); }
+/* 🎓 Course detail page enrichments */
+.detail-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.dbadge { font-size: 13px; font-weight: 600; padding: 5px 11px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); }
+.buybox .includes-title { font-weight: 800; font-size: 13px; margin: 16px 0 4px; }
+.buybox ul.includes { list-style: none; padding: 0; margin: 0; }
+.buybox ul.includes li { padding: 6px 0; font-size: 14px; border-top: 1px solid var(--line); }
+.buybox ul.includes li:first-child { border-top: 0; }
+.req-list { list-style: none; margin: 0; padding: 0; }
+.req-list li { position: relative; padding: 6px 0 6px 26px; font-size: 14.5px; line-height: 1.5; }
+.req-list li::before { content: "✓"; position: absolute; left: 0; top: 6px; color: #1a7f43; font-weight: 800; }
+[data-theme="dark"] .req-list li::before { color: #4cd99a; }
+.panel.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+@media (max-width: 640px) { .panel.two-col { grid-template-columns: 1fr; gap: 8px; } }
+.instructor-card { display: flex; align-items: center; gap: 12px; }
+.instructor-avatar {
+  width: 46px; height: 46px; border-radius: 50%; flex: none; display: grid; place-items: center;
+  background: linear-gradient(135deg, #654ea3, #a535f0); color: #fff; font-weight: 800; font-size: 20px;
+}
+
 /* 📲 PWA install button (nav) */
 .install-btn {
   border: none; cursor: pointer; border-radius: 999px; padding: 6px 12px;

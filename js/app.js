@@ -458,6 +458,29 @@
     'window.onerror=function(msg,src,line){send("error",[msg+" (line "+line+")"]);};' +
     "})();</scr" + "ipt>";
 
+  /* Ready-made starter examples students can load and tinker with */
+  const PG_EXAMPLES = [
+    { name: "📄 HTML page", code: "<!DOCTYPE html>\n<html>\n<body>\n\n<h1>My Page</h1>\n<p>Hello, world!</p>\n<button>Click me</button>\n\n</body>\n</html>" },
+    { name: "🎨 Styled card (CSS)", code: "<!DOCTYPE html>\n<html>\n<head>\n<style>\n  body { font-family: sans-serif; background:#f4f1ea; }\n  .card { background:#fff; max-width:260px; margin:30px auto; padding:20px;\n          border-radius:14px; box-shadow:0 6px 20px rgba(0,0,0,.12); }\n  .card h2 { color:#654ea3; margin:0 0 6px; }\n</style>\n</head>\n<body>\n  <div class=\"card\">\n    <h2>Tea Shop</h2>\n    <p>The best laphet yay in town.</p>\n  </div>\n</body>\n</html>" },
+    { name: "✨ Button animation", code: "<!DOCTYPE html>\n<html>\n<head>\n<style>\n  body{display:grid;place-items:center;height:100vh;margin:0;background:#1a1a2e}\n  button{padding:14px 28px;font-size:18px;border:none;border-radius:10px;color:#fff;\n         background:#654ea3;cursor:pointer;transition:transform .2s, box-shadow .2s}\n  button:hover{transform:translateY(-4px) scale(1.05);box-shadow:0 10px 24px rgba(101,78,163,.6)}\n</style>\n</head>\n<body>\n  <button>Hover me!</button>\n</body>\n</html>" },
+    { name: "🔢 Click counter (JS)", code: "<!DOCTYPE html>\n<html>\n<body style=\"font-family:sans-serif;text-align:center;padding:40px\">\n\n<h1 id=\"count\">0</h1>\n<button id=\"btn\">+1</button>\n\n<script>\n  let n = 0;\n  const out = document.querySelector(\"#count\");\n  document.querySelector(\"#btn\").addEventListener(\"click\", function () {\n    n = n + 1;\n    out.textContent = n;\n  });\n<\/script>\n\n</body>\n</html>" },
+    { name: "🌈 Color changer (JS)", code: "<!DOCTYPE html>\n<html>\n<body style=\"font-family:sans-serif;text-align:center;padding:40px\">\n\n<h2>Tap the button!</h2>\n<button id=\"btn\">Random color</button>\n\n<script>\n  document.querySelector(\"#btn\").addEventListener(\"click\", function () {\n    const c = \"#\" + Math.floor(Math.random()*16777215).toString(16);\n    document.body.style.background = c;\n    console.log(\"New color: \" + c);\n  });\n<\/script>\n\n</body>\n</html>" },
+    { name: "📝 Form", code: "<!DOCTYPE html>\n<html>\n<body style=\"font-family:sans-serif;padding:30px\">\n\n<h2>Contact us</h2>\n<form id=\"f\">\n  <input name=\"name\" placeholder=\"Your name\" required>\n  <button>Send</button>\n</form>\n<p id=\"out\"></p>\n\n<script>\n  document.querySelector(\"#f\").addEventListener(\"submit\", function (e) {\n    e.preventDefault();\n    document.querySelector(\"#out\").textContent = \"Thank you, \" + e.target.name.value + \"!\";\n  });\n<\/script>\n\n</body>\n</html>" },
+  ];
+  /* URL-safe base64 of playground code for share links — only [A-Za-z0-9-_]
+     so it never contains "/" (which the hash router splits on) */
+  function pgEncode(code) {
+    try { return btoa(unescape(encodeURIComponent(code))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); }
+    catch (e) { return ""; }
+  }
+  function pgDecode(enc) {
+    try {
+      let b = String(enc).replace(/-/g, "+").replace(/_/g, "/");
+      while (b.length % 4) b += "=";
+      return decodeURIComponent(escape(atob(b)));
+    } catch (e) { return null; }
+  }
+
   function buildRunnableDoc(code) {
     if (/<html[\s>]/i.test(code)) {
       /* full document: inject the console shim right after <head> if possible */
@@ -506,10 +529,25 @@
           <button class="btn btn-primary btn-sm" data-pg-run>▶ ${t("pg_run")}</button>
           <button class="btn btn-outline btn-sm" data-pg-check>✔ ${t("pg_check")}</button>
           <label class="pg-auto"><input type="checkbox" data-pg-auto checked> ${t("pg_auto")}</label>
-          <button class="btn btn-outline btn-sm" data-pg-save>💾 ${t("pg_save")}</button>
+          <select class="pg-snippets" data-pg-examples>
+            <option value="">💡 ${t("pg_examples")}</option>
+            ${PG_EXAMPLES.map((x, i) => `<option value="${i}">${escapeHtml(x.name)}</option>`).join("")}
+          </select>
           <select class="pg-snippets" data-pg-snippets></select>
-          <button class="btn btn-outline btn-sm" data-pg-del title="Delete snippet">🗑</button>
+          <button class="btn btn-outline btn-sm" data-pg-save>💾 ${t("pg_save")}</button>
+          <button class="btn btn-outline btn-sm" data-pg-del title="${escapeHtml(t("pg_del_snippet"))}">🗑</button>
+          <button class="btn btn-outline btn-sm" data-pg-clear title="${escapeHtml(t("pg_clear"))}">🧹</button>
+          <button class="btn btn-outline btn-sm" data-pg-share title="${escapeHtml(t("pg_share"))}">🔗</button>
           <button class="btn btn-outline btn-sm" data-pg-dl>⬇ ${t("pg_download")}</button>
+          <span class="pg-seg">
+            <button type="button" data-pg-font="-" title="${escapeHtml(t("pg_smaller"))}">A−</button>
+            <button type="button" data-pg-font="+" title="${escapeHtml(t("pg_bigger"))}">A+</button>
+          </span>
+          <span class="pg-seg pg-viewctl">
+            <button type="button" data-pg-view="code" title="${escapeHtml(t("pg_view_code"))}">&lt;/&gt;</button>
+            <button type="button" data-pg-view="split" class="on" title="${escapeHtml(t("pg_view_split"))}">⇔</button>
+            <button type="button" data-pg-view="preview" title="${escapeHtml(t("pg_view_preview"))}">👁</button>
+          </span>
         </div>
         <span data-pg-extra></span>
       </div>
@@ -528,8 +566,56 @@
     const auto = mount.querySelector("[data-pg-auto]");
     const consoleEl = mount.querySelector("[data-pg-console]");
     const sel = mount.querySelector("[data-pg-snippets]");
+    const body = mount.querySelector(".pg-body");
     ta.value = initialCode || "";
     pgConsoleEl = consoleEl;
+
+    /* editor font size (persisted) */
+    let fontPx = Math.min(22, Math.max(11, Number(localStorage.getItem("wda_pg_font")) || 14));
+    const applyFont = () => { ta.style.fontSize = fontPx + "px"; };
+    applyFont();
+    mount.querySelectorAll("[data-pg-font]").forEach((b) =>
+      b.addEventListener("click", () => {
+        fontPx = Math.min(22, Math.max(11, fontPx + (b.getAttribute("data-pg-font") === "+" ? 2 : -2)));
+        localStorage.setItem("wda_pg_font", fontPx);
+        applyFont();
+      })
+    );
+
+    /* view toggle: code / split / preview (great on phones) */
+    mount.querySelectorAll("[data-pg-view]").forEach((b) =>
+      b.addEventListener("click", () => {
+        const v = b.getAttribute("data-pg-view");
+        body.classList.remove("view-code", "view-preview");
+        if (v === "code") body.classList.add("view-code");
+        else if (v === "preview") body.classList.add("view-preview");
+        mount.querySelectorAll("[data-pg-view]").forEach((x) => x.classList.toggle("on", x === b));
+      })
+    );
+
+    /* load a ready-made example */
+    const examplesSel = mount.querySelector("[data-pg-examples]");
+    if (examplesSel) examplesSel.addEventListener("change", () => {
+      const ex = PG_EXAMPLES[Number(examplesSel.value)];
+      if (ex) { ta.value = ex.code; run(); ta.focus(); }
+      examplesSel.value = "";
+    });
+
+    /* clear the editor */
+    mount.querySelector("[data-pg-clear]").addEventListener("click", () => {
+      if (!ta.value.trim() || confirm(t("pg_clear_confirm"))) { ta.value = ""; run(); ta.focus(); }
+    });
+
+    /* share: copy a link that reopens the playground with this code */
+    mount.querySelector("[data-pg-share]").addEventListener("click", (e) => {
+      const enc = pgEncode(ta.value);
+      if (!enc) return;
+      const link = location.origin + location.pathname + "#/playground/" + enc;
+      const btn = e.currentTarget;
+      const done = () => { const o = btn.textContent; btn.textContent = "✓ " + t("copied"); setTimeout(() => { btn.textContent = o; }, 1500); };
+      if (navigator.clipboard) navigator.clipboard.writeText(link).then(done).catch(() => fallbackCopy(link, done));
+      else fallbackCopy(link, done);
+    });
 
     const run = () => {
       consoleEl.innerHTML = "";
@@ -647,9 +733,10 @@
     wrap.addEventListener("click", (e) => { if (e.target === wrap) wrap.remove(); });
   }
 
-  /* Standalone playground page (#/playground) */
-  function renderPlayground() {
-    const starter = localStorage.getItem("wda_pg_last") ||
+  /* Standalone playground page (#/playground[/<sharedCode>]) */
+  function renderPlayground(shared) {
+    const fromShare = shared ? pgDecode(shared) : null;
+    const starter = fromShare || localStorage.getItem("wda_pg_last") ||
       "<!DOCTYPE html>\n<html>\n<body>\n\n<h1>My First Heading</h1>\n<p>My first paragraph.</p>\n\n<script>\nconsole.log(\"Hello from the console!\");\n<\/script>\n\n</body>\n</html>";
     app.innerHTML = `
       <div class="container" style="max-width:1100px">
@@ -2902,7 +2989,7 @@
     if (parts.length === 0) renderHome();
     else if (parts[0] === "courses") renderCatalog();
     else if (parts[0] === "search") renderSearch(decodeURIComponent(parts[1] || ""));
-    else if (parts[0] === "playground") renderPlayground();
+    else if (parts[0] === "playground") renderPlayground(parts[1]);
     else if (parts[0] === "leaderboard") renderLeaderboard();
     else if (parts[0] === "review") renderReview();
     else if (parts[0] === "premium") renderPremium();

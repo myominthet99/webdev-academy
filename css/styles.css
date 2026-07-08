@@ -188,6 +188,38 @@ button { font-family: inherit; cursor: pointer; }
 .hero-art .str { color: #ffa657; }
 .hero-art .cm { color: #8b949e; }
 
+/* ⚡ Quick-check question inside Step Mode cards */
+.qc { text-align: left; }
+.qc-tag {
+  display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: .5px;
+  color: #fff; background: linear-gradient(135deg, #654ea3, #a535f0);
+  padding: 4px 12px; border-radius: 999px; margin-bottom: 12px;
+}
+.qc-q { font-size: 18px; font-weight: 700; line-height: 1.5; margin-bottom: 14px; }
+.qc-opts { display: flex; flex-direction: column; gap: 9px; }
+.qc-opt {
+  text-align: left; padding: 13px 15px; font-size: 15px; cursor: pointer;
+  background: var(--surface-2); color: var(--ink);
+  border: 2px solid var(--line); border-radius: 12px;
+  transition: border-color .15s ease, transform .08s ease;
+}
+.qc-opt:hover:not(:disabled) { border-color: var(--purple); }
+.qc-opt:active { transform: scale(.98); }
+.qc-opt.right { border-color: #1a7f43; background: #e9f9ef; color: #1a7f43; font-weight: 700; }
+[data-theme="dark"] .qc-opt.right { background: #14331f; color: #7fe0a2; border-color: #245c39; }
+.qc-opt.wrong { border-color: #c0392b; animation: qcShake .4s ease; }
+@keyframes qcShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-7px); }
+  50% { transform: translateX(6px); }
+  75% { transform: translateX(-4px); }
+}
+.qc-fb { margin-top: 12px; font-weight: 700; font-size: 15px; }
+.qc-fb.ok { color: #1a7f43; }
+[data-theme="dark"] .qc-fb.ok { color: #7fe0a2; }
+.qc-fb.no { color: #c0392b; }
+@media (prefers-reduced-motion: reduce) { .qc-opt.wrong { animation: none; } }
+
 /* 🎉 Lesson-complete celebration */
 .cele-overlay {
   position: fixed; inset: 0; z-index: 500; display: grid; place-items: center;

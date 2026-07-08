@@ -1622,6 +1622,31 @@
       if (all.length >= 2) steps = all;
     }
     const useSteps = !!steps && localStorage.getItem("wda_lesson_mode") !== "full";
+
+    /* ⚡ SoloLearn-style quick check: weave one tappable question into the
+       cards, picked deterministically from this course's own quiz bank */
+    let qc = null, qcIndex = -1;
+    if (useSteps) {
+      const bank = flat
+        .filter((x) => x.lesson.type === "quiz")
+        .flatMap((x) => x.lesson.questions || [])
+        .filter((q) => q && q.q && (q.options || []).length >= 2);
+      if (bank.length) {
+        let h = 0;
+        for (const ch of current.id) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+        qc = bank[h % bank.length];
+        qcIndex = Math.min(steps.length, Math.max(1, Math.ceil(steps.length / 2)));
+        steps.splice(qcIndex, 0, `
+          <div class="qc">
+            <div class="qc-tag">⚡ ${t("qc_title")}</div>
+            <div class="qc-q">${qc.q}</div>
+            <div class="qc-opts">
+              ${qc.options.map((o, i) => `<button type="button" class="qc-opt" data-qc-opt="${i}">${o}</button>`).join("")}
+            </div>
+            <div class="qc-fb" hidden></div>
+          </div>`);
+      }
+    }
     const body =
       current.type === "quiz" ? renderQuizHtml(current)
       : useSteps
@@ -1764,6 +1789,7 @@
       const numEl = app.querySelector("#step-num");
       const barEl = app.querySelector("#steps-bar");
       let si = 0;
+      let qcOk = !qc; /* quick-check answered? (true when there is none) */
       const isDoneAlready = () => completedSet(c.id).has(current.id);
       const show = (i, dir) => {
         si = Math.max(0, Math.min(steps.length - 1, i));
@@ -1779,9 +1805,30 @@
         nextB.innerHTML = si === steps.length - 1
           ? (next ? "✓ " + t("step_finish") : "✓ " + t("mark_complete"))
           : t("next_step") + " →";
+        /* the quick-check gates Next until it's answered correctly */
+        nextB.disabled = si === qcIndex && !qcOk;
         addCopyButtons();
         card.scrollIntoView({ block: "nearest" });
       };
+
+      /* answer taps on the quick-check card (delegated — card re-renders) */
+      card.addEventListener("click", (e) => {
+        const opt = e.target.closest("[data-qc-opt]");
+        if (!opt || qcOk || si !== qcIndex) return;
+        const fb = card.querySelector(".qc-fb");
+        if (Number(opt.getAttribute("data-qc-opt")) === Number(qc.answer)) {
+          qcOk = true;
+          opt.classList.add("right");
+          card.querySelectorAll(".qc-opt").forEach((b) => { b.disabled = true; });
+          if (fb) { fb.hidden = false; fb.className = "qc-fb ok"; fb.textContent = "✅ " + t("qc_correct"); }
+          nextB.disabled = false;
+          setTimeout(() => { if (si === qcIndex) show(si + 1); }, 950);
+        } else {
+          opt.classList.add("wrong");
+          setTimeout(() => opt.classList.remove("wrong"), 500);
+          if (fb) { fb.hidden = false; fb.className = "qc-fb no"; fb.textContent = "❌ " + t("qc_wrong"); }
+        }
+      });
       /* ▶ Auto-play: the lesson plays itself like a short video — cards
          advance on a timer, or (🔊) after the browser's built-in voice
          finishes reading the card aloud. No video files needed. */
@@ -1809,6 +1856,8 @@
       };
       const playStep = () => {
         if (!playing) return;
+        /* auto-play stops at the quick-check — the student must answer */
+        if (si === qcIndex && !qcOk) { stopAuto(); return; }
         if (voiceOn() && window.speechSynthesis) {
           try {
             speechSynthesis.cancel();

@@ -1185,6 +1185,12 @@
             .map((cat) => `<a class="chip" href="#/courses" data-cat="${cat}">${catName(cat)}</a>`)
             .join("")}
         </div>
+
+        <h2 class="section-title">🧰 ${t("tools_title")}</h2>
+        <p class="section-sub">${t("tools_sub")}</p>
+        <div class="chips">
+          ${TOOLS.map((tl) => `<a class="chip" href="#/tools/${tl.id}">${tl.ic} ${t("tool_" + tl.id)}</a>`).join("")}
+        </div>
       </div>`;
 
     app.querySelectorAll(".chip[data-cat]").forEach((chip) =>
@@ -2464,6 +2470,481 @@
       </div></div>`;
   }
 
+  /* ---------------- View: Student Tools (free utilities) ---------------- */
+  const TOOLS = [
+    { id: "color", ic: "🎨" },
+    { id: "gradient", ic: "🌈" },
+    { id: "shadow", ic: "📦" },
+    { id: "json", ic: "🧾" },
+    { id: "regex", ic: "🔍" },
+    { id: "units", ic: "📏" },
+    { id: "case", ic: "🔠" },
+    { id: "count", ic: "🧮" },
+    { id: "lorem", ic: "📄" },
+    { id: "typing", ic: "⌨️" },
+    { id: "timer", ic: "⏱️" },
+  ];
+
+  function tlCopy(btn, text) {
+    const old = btn.textContent;
+    const done = () => { btn.textContent = "✓ " + t("copied"); setTimeout(() => { btn.textContent = old; }, 1200); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+    } else fallbackCopy(text, done);
+  }
+  /* Buttons with data-copy="#selector" copy that element's text/value */
+  function wireCopyBtns() {
+    app.querySelectorAll("[data-copy]").forEach((b) =>
+      b.addEventListener("click", () => {
+        const el = document.querySelector(b.getAttribute("data-copy"));
+        if (!el) return;
+        tlCopy(b, el.tagName === "TEXTAREA" || el.tagName === "INPUT" ? el.value : el.textContent);
+      })
+    );
+  }
+
+  function hexToRgb(hex) {
+    const n = parseInt(hex.slice(1), 16);
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  }
+  function rgbToHsl(r, g, b) {
+    r /= 255; g /= 255; b /= 255;
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
+    let h = 0, s = 0;
+    const l = (max + min) / 2;
+    if (max !== min) {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      if (max === r) h = (g - b) / d + (g < b ? 6 : 0);
+      else if (max === g) h = (b - r) / d + 2;
+      else h = (r - g) / d + 4;
+      h /= 6;
+    }
+    return [Math.round(h * 360), Math.round(s * 100), Math.round(l * 100)];
+  }
+  function shadeHex(hex, f) {
+    const mix = (c) => Math.max(0, Math.min(255, Math.round(f >= 0 ? c + (255 - c) * f : c * (1 + f))));
+    return "#" + hexToRgb(hex).map((c) => mix(c).toString(16).padStart(2, "0")).join("");
+  }
+
+  function renderTools(toolId) {
+    const tool = TOOLS.find((x) => x.id === toolId);
+    if (toolId && !tool) return renderNotFound();
+
+    if (!tool) {
+      app.innerHTML = `
+        <div class="container">
+          <h1 class="tool-h">🧰 ${t("tools_title")}</h1>
+          <p class="section-sub">${t("tools_sub")}</p>
+          <div class="grid tools-grid">
+            ${TOOLS.map((tl) => `
+              <a class="card tool-card" href="#/tools/${tl.id}">
+                <div class="tool-ic">${tl.ic}</div>
+                <h3>${t("tool_" + tl.id)}</h3>
+                <p>${t("tool_" + tl.id + "_d")}</p>
+              </a>`).join("")}
+          </div>
+        </div>`;
+      return;
+    }
+
+    app.innerHTML = `
+      <div class="container tool-wrap">
+        <a class="tool-back" href="#/tools">${t("tool_back")}</a>
+        <h1 class="tool-h">${tool.ic} ${t("tool_" + tool.id)}</h1>
+        <p class="section-sub">${t("tool_" + tool.id + "_d")}</p>
+        <div class="tool-body">${toolBody(tool.id)}</div>
+      </div>`;
+    wireTool(tool.id);
+    wireCopyBtns();
+  }
+
+  function toolBody(id) {
+    switch (id) {
+      case "color": return `
+        <div class="tl-row">
+          <input type="color" id="cp-in" value="#a435f0" class="tl-color-big">
+          <div style="flex:1;min-width:200px">
+            <div class="tl-out"><span>HEX</span><code id="cp-hex"></code><button class="btn btn-outline btn-sm" data-copy="#cp-hex">📋</button></div>
+            <div class="tl-out"><span>RGB</span><code id="cp-rgb"></code><button class="btn btn-outline btn-sm" data-copy="#cp-rgb">📋</button></div>
+            <div class="tl-out"><span>HSL</span><code id="cp-hsl"></code><button class="btn btn-outline btn-sm" data-copy="#cp-hsl">📋</button></div>
+          </div>
+        </div>
+        <div class="tl-lab">${t("tl_shades")}</div>
+        <div class="tl-swatches" id="cp-shades"></div>`;
+
+      case "gradient": return `
+        <div class="tl-row">
+          <label class="tl-mini">1 <input type="color" id="gr-a" value="#a435f0"></label>
+          <label class="tl-mini">2 <input type="color" id="gr-b" value="#38bdf8"></label>
+        </div>
+        <div class="tl-lab">${t("tl_angle")} <span id="gr-av">135°</span></div>
+        <input type="range" class="tl-range" id="gr-ang" min="0" max="360" value="135">
+        <div class="tl-preview" id="gr-prev"></div>
+        <div class="tl-out"><code id="gr-css"></code><button class="btn btn-primary btn-sm" data-copy="#gr-css">📋 ${t("tl_copy")}</button></div>`;
+
+      case "shadow": return `
+        <div class="tl-shadow-stage"><div class="tl-shadow-box" id="sh-box"></div></div>
+        <div class="tl-cols">
+          <div><div class="tl-lab">X <span id="sh-xv"></span></div><input type="range" class="tl-range" id="sh-x" min="-50" max="50" value="0"></div>
+          <div><div class="tl-lab">Y <span id="sh-yv"></span></div><input type="range" class="tl-range" id="sh-y" min="-50" max="50" value="10"></div>
+          <div><div class="tl-lab">Blur <span id="sh-bv"></span></div><input type="range" class="tl-range" id="sh-b" min="0" max="100" value="28"></div>
+          <div><div class="tl-lab">Spread <span id="sh-sv"></span></div><input type="range" class="tl-range" id="sh-s" min="-50" max="50" value="0"></div>
+          <div><div class="tl-lab">Opacity <span id="sh-ov"></span></div><input type="range" class="tl-range" id="sh-o" min="0" max="100" value="25"></div>
+          <div><div class="tl-lab">Color</div><input type="color" id="sh-c" value="#000000"></div>
+        </div>
+        <div class="tl-out"><code id="sh-css"></code><button class="btn btn-primary btn-sm" data-copy="#sh-css">📋 ${t("tl_copy")}</button></div>`;
+
+      case "json": return `
+        <textarea class="tl-ta" id="js-in" rows="10" placeholder="${t("tl_json_ph")}"></textarea>
+        <div class="tl-row">
+          <button class="btn btn-primary btn-sm" id="js-fmt">${t("tl_format")}</button>
+          <button class="btn btn-outline btn-sm" id="js-min">${t("tl_minify")}</button>
+          <button class="btn btn-outline btn-sm" data-copy="#js-in">📋 ${t("tl_copy")}</button>
+          <button class="btn btn-outline btn-sm" id="js-clr">${t("tl_clear")}</button>
+        </div>
+        <div class="tl-status" id="js-status"></div>`;
+
+      case "regex": return `
+        <div class="tl-row">
+          <input class="tl-in" id="rx-p" style="flex:3;min-width:160px" placeholder="${t("tl_pattern")}  e.g. [a-z]+@[a-z]+\\.com">
+          <input class="tl-in" id="rx-f" style="flex:1;min-width:60px" value="gi" placeholder="${t("tl_flags")}">
+        </div>
+        <textarea class="tl-ta" id="rx-t" rows="5" placeholder="${t("tl_test_text")}">Email me at mya@gmail.com or ko.aung@yahoo.com today!</textarea>
+        <div class="tl-status" id="rx-n"></div>
+        <div class="rx-out" id="rx-out"></div>`;
+
+      case "units": return `
+        <div class="tl-lab">${t("tl_base")}</div>
+        <div class="tl-row"><input class="tl-in" id="u-base" type="number" value="16" min="1" style="width:110px"></div>
+        <div class="tl-cols">
+          <div><div class="tl-lab">px → rem</div>
+            <div class="tl-row"><input class="tl-in" id="u-px" type="number" value="24" style="width:110px"><code id="u-px-out" class="tl-big"></code></div></div>
+          <div><div class="tl-lab">rem → px</div>
+            <div class="tl-row"><input class="tl-in" id="u-rem" type="number" value="1.5" step="0.25" style="width:110px"><code id="u-rem-out" class="tl-big"></code></div></div>
+        </div>
+        <div class="rx-out" id="u-table" style="white-space:normal"></div>`;
+
+      case "case": return `
+        <textarea class="tl-ta" id="cs-in" rows="3" placeholder="my student portfolio page">my student portfolio page</textarea>
+        <div id="cs-out"></div>`;
+
+      case "count": return `
+        <textarea class="tl-ta" id="ct-in" rows="8" placeholder="${t("tl_test_text")}"></textarea>
+        <div class="tl-stats">
+          <div class="tl-stat"><strong id="ct-w">0</strong><span>${t("tl_words")}</span></div>
+          <div class="tl-stat"><strong id="ct-c">0</strong><span>${t("tl_chars")}</span></div>
+          <div class="tl-stat"><strong id="ct-cn">0</strong><span>${t("tl_chars_ns")}</span></div>
+          <div class="tl-stat"><strong id="ct-l">0</strong><span>${t("tl_lines")}</span></div>
+          <div class="tl-stat"><strong id="ct-r">0 ${t("tl_min")}</strong><span>${t("tl_read")}</span></div>
+        </div>`;
+
+      case "lorem": return `
+        <div class="tl-row">
+          <label class="tl-lab" style="margin:0">${t("tl_paras")}</label>
+          <select class="tl-in" id="lo-n"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option></select>
+          <button class="btn btn-primary btn-sm" id="lo-go">${t("tl_generate")}</button>
+          <button class="btn btn-outline btn-sm" data-copy="#lo-out">📋 ${t("tl_copy")}</button>
+        </div>
+        <div class="rx-out" id="lo-out" style="white-space:normal;font-family:inherit"></div>`;
+
+      case "typing": return `
+        <div class="type-target" id="tt-target"></div>
+        <textarea class="tl-ta" id="tt-in" rows="3" placeholder="${t("tl_type_here")}" autocapitalize="off" autocomplete="off" spellcheck="false"></textarea>
+        <div class="tl-status">${t("tl_start_typing")}</div>
+        <div class="tl-stats">
+          <div class="tl-stat"><strong id="tt-wpm">0</strong><span>${t("tl_wpm")}</span></div>
+          <div class="tl-stat"><strong id="tt-acc">100%</strong><span>${t("tl_acc")}</span></div>
+          <div class="tl-stat"><strong id="tt-time">0s</strong><span>⏱</span></div>
+        </div>
+        <div class="tl-row" style="margin-top:12px"><button class="btn btn-outline btn-sm" id="tt-new">🔄 ${t("tl_new_text")}</button></div>`;
+
+      case "timer": return `
+        <div class="pomo-mode" id="pm-mode"></div>
+        <div class="pomo-time" id="pm-time">25:00</div>
+        <div class="pomo-btns">
+          <button class="btn btn-primary" id="pm-start">▶ ${t("tl_start")}</button>
+          <button class="btn btn-outline" id="pm-reset">${t("tl_reset")}</button>
+        </div>
+        <div class="pomo-btns">
+          <button class="btn btn-outline btn-sm" id="pm-focus">🎯 ${t("tl_focus")} 25:00</button>
+          <button class="btn btn-outline btn-sm" id="pm-break">☕ ${t("tl_break")} 5:00</button>
+        </div>
+        <div class="pomo-sessions" id="pm-count"></div>`;
+    }
+    return "";
+  }
+
+  function wireTool(id) {
+    const $ = (sel) => document.querySelector(sel);
+
+    if (id === "color") {
+      const inp = $("#cp-in");
+      const update = () => {
+        const hex = inp.value;
+        const [r, g, b] = hexToRgb(hex);
+        const [h, s, l] = rgbToHsl(r, g, b);
+        $("#cp-hex").textContent = hex;
+        $("#cp-rgb").textContent = `rgb(${r}, ${g}, ${b})`;
+        $("#cp-hsl").textContent = `hsl(${h}, ${s}%, ${l}%)`;
+        $("#cp-shades").innerHTML = [-0.6, -0.4, -0.2, 0, 0.2, 0.4, 0.6]
+          .map((f) => { const c = shadeHex(hex, f); return `<button class="tl-swatch" data-hex="${c}" title="${c}" style="background:${c}"></button>`; })
+          .join("");
+      };
+      inp.addEventListener("input", update);
+      $("#cp-shades").addEventListener("click", (e) => {
+        const b = e.target.closest("[data-hex]");
+        if (b) { inp.value = b.dataset.hex; update(); }
+      });
+      update();
+    }
+
+    if (id === "gradient") {
+      const upd = () => {
+        const css = `linear-gradient(${$("#gr-ang").value}deg, ${$("#gr-a").value} 0%, ${$("#gr-b").value} 100%)`;
+        $("#gr-av").textContent = $("#gr-ang").value + "°";
+        $("#gr-prev").style.background = css;
+        $("#gr-css").textContent = "background: " + css + ";";
+      };
+      ["#gr-a", "#gr-b", "#gr-ang"].forEach((s) => $(s).addEventListener("input", upd));
+      upd();
+    }
+
+    if (id === "shadow") {
+      const upd = () => {
+        const x = $("#sh-x").value, y = $("#sh-y").value, bl = $("#sh-b").value, sp = $("#sh-s").value, op = $("#sh-o").value;
+        const [r, g, b] = hexToRgb($("#sh-c").value);
+        const css = `${x}px ${y}px ${bl}px ${sp}px rgba(${r}, ${g}, ${b}, ${(op / 100).toFixed(2)})`;
+        $("#sh-xv").textContent = x + "px"; $("#sh-yv").textContent = y + "px";
+        $("#sh-bv").textContent = bl + "px"; $("#sh-sv").textContent = sp + "px";
+        $("#sh-ov").textContent = op + "%";
+        $("#sh-box").style.boxShadow = css;
+        $("#sh-css").textContent = "box-shadow: " + css + ";";
+      };
+      ["#sh-x", "#sh-y", "#sh-b", "#sh-s", "#sh-o", "#sh-c"].forEach((s) => $(s).addEventListener("input", upd));
+      upd();
+    }
+
+    if (id === "json") {
+      const ta = $("#js-in"), st = $("#js-status");
+      const run = (space) => {
+        if (!ta.value.trim()) { st.textContent = ""; return; }
+        try {
+          ta.value = JSON.stringify(JSON.parse(ta.value), null, space);
+          st.textContent = t("tl_valid"); st.className = "tl-status ok";
+        } catch (e) {
+          st.textContent = t("tl_invalid") + e.message; st.className = "tl-status bad";
+        }
+      };
+      $("#js-fmt").addEventListener("click", () => run(2));
+      $("#js-min").addEventListener("click", () => run(0));
+      $("#js-clr").addEventListener("click", () => { ta.value = ""; st.textContent = ""; });
+    }
+
+    if (id === "regex") {
+      const run = () => {
+        const pat = $("#rx-p").value, text = $("#rx-t").value, out = $("#rx-out"), n = $("#rx-n");
+        if (!pat) { out.innerHTML = escapeHtml(text); n.textContent = ""; return; }
+        let re;
+        try {
+          let flags = $("#rx-f").value.replace(/[^gimsuy]/g, "");
+          if (flags.indexOf("g") < 0) flags += "g";
+          re = new RegExp(pat, flags);
+        } catch (e) { n.textContent = "✗ " + e.message; n.className = "tl-status bad"; return; }
+        let html = "", last = 0, count = 0;
+        for (const m of text.matchAll(re)) {
+          if (count >= 500) break;
+          html += escapeHtml(text.slice(last, m.index)) + "<mark>" + (m[0] ? escapeHtml(m[0]) : "∅") + "</mark>";
+          last = m.index + m[0].length;
+          count++;
+        }
+        html += escapeHtml(text.slice(last));
+        $("#rx-out").innerHTML = html;
+        n.textContent = count + " " + t("tl_matches"); n.className = "tl-status " + (count ? "ok" : "");
+      };
+      ["#rx-p", "#rx-f", "#rx-t"].forEach((s) => $(s).addEventListener("input", run));
+      run();
+    }
+
+    if (id === "units") {
+      const upd = () => {
+        const base = parseFloat($("#u-base").value) || 16;
+        const px = parseFloat($("#u-px").value) || 0;
+        const rem = parseFloat($("#u-rem").value) || 0;
+        $("#u-px-out").textContent = "= " + parseFloat((px / base).toFixed(4)) + "rem";
+        $("#u-rem-out").textContent = "= " + parseFloat((rem * base).toFixed(2)) + "px";
+        $("#u-table").innerHTML = [12, 14, 16, 18, 20, 24, 32, 48]
+          .map((p) => `<span class="u-cell"><strong>${p}px</strong> = ${parseFloat((p / base).toFixed(4))}rem</span>`)
+          .join(" ");
+      };
+      ["#u-base", "#u-px", "#u-rem"].forEach((s) => $(s).addEventListener("input", upd));
+      upd();
+    }
+
+    if (id === "case") {
+      const inp = $("#cs-in"), out = $("#cs-out");
+      const cap = (w) => w.charAt(0).toUpperCase() + w.slice(1);
+      const upd = () => {
+        const s = inp.value;
+        const words = s.replace(/([a-z0-9])([A-Z])/g, "$1 $2").split(/[^A-Za-z0-9က-႟]+/).filter(Boolean);
+        const rows = [
+          ["UPPERCASE", s.toUpperCase()],
+          ["lowercase", s.toLowerCase()],
+          ["Title Case", s.toLowerCase().replace(/\b[a-z]/g, (c) => c.toUpperCase())],
+          ["camelCase", words.map((w, i) => (i ? cap(w.toLowerCase()) : w.toLowerCase())).join("")],
+          ["snake_case", words.join("_").toLowerCase()],
+          ["kebab-case", words.join("-").toLowerCase()],
+        ];
+        out.innerHTML = rows.map(([lab, val]) =>
+          `<div class="tl-out"><span style="width:76px">${lab}</span><code>${escapeHtml(val)}</code><button class="btn btn-outline btn-sm" data-cpc>📋</button></div>`).join("");
+      };
+      inp.addEventListener("input", upd);
+      out.addEventListener("click", (e) => {
+        const b = e.target.closest("[data-cpc]");
+        if (b) tlCopy(b, b.parentElement.querySelector("code").textContent);
+      });
+      upd();
+    }
+
+    if (id === "count") {
+      const ta = $("#ct-in");
+      const upd = () => {
+        const s = ta.value;
+        const words = s.trim() ? s.trim().split(/\s+/).length : 0;
+        $("#ct-w").textContent = words;
+        $("#ct-c").textContent = s.length;
+        $("#ct-cn").textContent = s.replace(/\s/g, "").length;
+        $("#ct-l").textContent = s ? s.split("\n").length : 0;
+        $("#ct-r").textContent = Math.max(words ? 1 : 0, Math.ceil(words / 200)) + " " + t("tl_min");
+      };
+      ta.addEventListener("input", upd);
+      upd();
+    }
+
+    if (id === "lorem") {
+      const POOL = [
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
+        "Duis aute irure dolor in reprehenderit in voluptate velit esse.",
+        "Excepteur sint occaecat cupidatat non proident, sunt in culpa.",
+        "Nisi ut aliquip ex ea commodo consequat in pariatur.",
+        "Qui officia deserunt mollit anim id est laborum et dolorum.",
+        "Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit.",
+      ];
+      const gen = () => {
+        const n = parseInt($("#lo-n").value, 10) || 2;
+        const paras = [];
+        for (let p = 0; p < n; p++) {
+          const cnt = 3 + Math.floor(Math.random() * 3);
+          const parts = [];
+          for (let i = 0; i < cnt; i++) parts.push(POOL[Math.floor(Math.random() * POOL.length)]);
+          paras.push(parts.join(" "));
+        }
+        $("#lo-out").innerHTML = paras.map((x) => "<p>" + x + "</p>").join("");
+      };
+      $("#lo-go").addEventListener("click", gen);
+      gen();
+    }
+
+    if (id === "typing") {
+      const TEXTS = [
+        'const message = "Hello, world!";',
+        "let total = price * quantity;",
+        "for (let i = 0; i < 10; i++) console.log(i);",
+        "function add(a, b) { return a + b; }",
+        'if (score >= 80) alert("You passed!");',
+        "The quick brown fox jumps over the lazy dog.",
+        "Practice a little every day and you will improve fast.",
+        'document.querySelector("h1").textContent = "Done";',
+      ];
+      const ta = $("#tt-in"), tgt = $("#tt-target");
+      let target = "", start = 0, done = false;
+      const paint = () => {
+        const typed = ta.value;
+        tgt.innerHTML = target.split("").map((ch, i) => {
+          const cls = i >= typed.length ? "" : typed[i] === ch ? "ok" : "bad";
+          return `<span class="${cls}">${escapeHtml(ch)}</span>`;
+        }).join("");
+      };
+      const fresh = () => {
+        target = TEXTS[Math.floor(Math.random() * TEXTS.length)];
+        start = 0; done = false;
+        ta.value = ""; ta.disabled = false; ta.focus();
+        $("#tt-wpm").textContent = "0"; $("#tt-acc").textContent = "100%"; $("#tt-time").textContent = "0s";
+        paint();
+      };
+      ta.addEventListener("input", () => {
+        if (done) return;
+        if (!start) start = Date.now();
+        paint();
+        const typed = ta.value;
+        const secs = Math.max(1, (Date.now() - start) / 1000);
+        let good = 0;
+        for (let i = 0; i < typed.length && i < target.length; i++) if (typed[i] === target[i]) good++;
+        $("#tt-wpm").textContent = Math.round((typed.length / 5) / (secs / 60));
+        $("#tt-acc").textContent = (typed.length ? Math.round((good / typed.length) * 100) : 100) + "%";
+        $("#tt-time").textContent = Math.round(secs) + "s";
+        if (typed.length >= target.length) { done = true; ta.disabled = true; }
+      });
+      $("#tt-new").addEventListener("click", fresh);
+      fresh();
+    }
+
+    if (id === "timer") {
+      const LENGTHS = { focus: 25 * 60, break: 5 * 60 };
+      let mode = "focus", left = LENGTHS.focus, tid = null;
+      const today = new Date().toISOString().slice(0, 10);
+      const readCount = () => {
+        try { const s = JSON.parse(localStorage.getItem("wda_pomo")); return s && s.d === today ? s.n : 0; } catch (e) { return 0; }
+      };
+      const beep = () => {
+        try {
+          const ctx = new (window.AudioContext || window.webkitAudioContext)();
+          const o = ctx.createOscillator(), g = ctx.createGain();
+          o.connect(g); g.connect(ctx.destination);
+          o.frequency.value = 880; g.gain.value = 0.15;
+          o.start(); o.stop(ctx.currentTime + 0.35);
+        } catch (e) {}
+      };
+      const paint = () => {
+        const m = Math.floor(left / 60), s = left % 60;
+        $("#pm-time").textContent = m + ":" + String(s).padStart(2, "0");
+        $("#pm-mode").textContent = mode === "focus" ? "🎯 " + t("tl_focus") : "☕ " + t("tl_break");
+        $("#pm-count").textContent = t("tl_sessions") + ": " + readCount();
+      };
+      const stop = () => {
+        if (tid) { clearInterval(tid); tid = null; }
+        /* may run from hashchange after the page was re-rendered */
+        const b = $("#pm-start");
+        if (b) b.textContent = "▶ " + t("tl_start");
+      };
+      const setMode = (m) => { mode = m; left = LENGTHS[m]; stop(); paint(); };
+      const tick = () => {
+        left--;
+        if (left <= 0) {
+          beep();
+          if (mode === "focus") {
+            localStorage.setItem("wda_pomo", JSON.stringify({ d: today, n: readCount() + 1 }));
+            setMode("break");
+          } else setMode("focus");
+          return;
+        }
+        paint();
+      };
+      $("#pm-start").addEventListener("click", () => {
+        if (tid) { stop(); return; }
+        tid = setInterval(tick, 1000);
+        $("#pm-start").textContent = "⏸ " + t("pause");
+      });
+      $("#pm-reset").addEventListener("click", () => setMode(mode));
+      $("#pm-focus").addEventListener("click", () => setMode("focus"));
+      $("#pm-break").addEventListener("click", () => setMode("break"));
+      window.addEventListener("hashchange", stop, { once: true });
+      paint();
+    }
+  }
+
   /* ---------------- View: My Account ---------------- */
   function renderAccount(flash) {
     const u = loggedIn() ? window.Auth.current() : null;
@@ -3311,6 +3792,7 @@
       !parts[0] ? "home"
       : ["courses", "course", "learn", "search", "roadmap"].indexOf(parts[0]) >= 0 ? "courses"
       : parts[0] === "playground" ? "playground"
+      : parts[0] === "tools" ? "tools"
       : ["my-learning", "review", "leaderboard", "account", "certificate"].indexOf(parts[0]) >= 0 ? "me"
       : "";
     document.querySelectorAll("#tabbar a").forEach((a) =>
@@ -3331,6 +3813,7 @@
     else if (parts[0] === "courses") renderCatalog();
     else if (parts[0] === "search") renderSearch(decodeURIComponent(parts[1] || ""));
     else if (parts[0] === "playground") renderPlayground(parts[1]);
+    else if (parts[0] === "tools") renderTools(parts[1]);
     else if (parts[0] === "leaderboard") renderLeaderboard();
     else if (parts[0] === "review") renderReview();
     else if (parts[0] === "premium") renderPremium();
@@ -3355,10 +3838,12 @@
     set("nav-courses", t("nav_courses"));
     set("nav-roadmap", t("nav_roadmap"));
     set("nav-playground", t("nav_playground"));
+    set("nav-tools", t("nav_tools"));
     set("nav-mylearning", t("nav_mylearning"));
     set("tab-home", t("tab_home"));
     set("tab-courses", t("nav_courses"));
     set("tab-play", t("nav_playground"));
+    set("tab-tools", t("nav_tools"));
     set("tab-me", t("tab_me"));
     set("footer-tag", t("footer_tag"));
     set("footer-saved", t("footer_saved"));

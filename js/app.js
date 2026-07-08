@@ -332,6 +332,8 @@
     return list;
   }
   const totalLessons = (course) => lessonsOf(course).length;
+  /* starter-size courses get an honest "more coming soon" badge */
+  const isStarterCourse = (course) => totalLessons(course) < 6;
 
   const completedSet = (courseId) => new Set(state.completed[courseId] || []);
   function completedCount(course) {
@@ -1062,6 +1064,7 @@
       <a class="card" href="#/course/${c.id}">
         <div class="card-thumb" style="background:${c.color}${c.image ? `;background-image:url('${escapeHtml(c.image)}');background-size:cover;background-position:center` : ""}">
           <span class="lvl">${levelName(c.level)}</span>
+          ${isStarterCourse(c) ? `<span class="soon-badge">🚧 ${t("soon_badge")}</span>` : ""}
           ${c.image ? "" : `<span>${c.icon}</span>`}
         </div>
         <div class="card-body">
@@ -1311,6 +1314,7 @@
               <span class="dbadge">🌐 English + မြန်မာ</span>
               <span class="dbadge">📲 ${t("inc_offline")}</span>
               <span class="dbadge">🎓 ${t("inc_cert")}</span>
+              ${isStarterCourse(c) ? `<span class="dbadge soon">🚧 ${t("soon_badge")}</span>` : ""}
             </div>
           </div>
 
@@ -1360,6 +1364,7 @@
             <div class="panel">
               <h2>${t("course_content")}</h2>
               <p class="muted" style="margin-top:-6px">${c.sections.length} ${t("sections_word")} · ${totalLessons(c)} ${t("lessons_word")} · ${c.hours} ${t("hours_word")}</p>
+              ${isStarterCourse(c) ? `<div class="callout">${t("soon_note")}</div>` : ""}
               <div class="accordion">${curriculum}</div>
             </div>
             ${reviewsPanel(c)}

@@ -1514,6 +1514,8 @@
   }
 
   function renderLearn(courseId, lessonId) {
+    /* stop any auto-play narration from a previous render */
+    try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (e) {}
     const c = courseById(courseId);
     if (!c) return renderNotFound();
 
@@ -1591,7 +1593,11 @@
       ? `<div class="steps-wrap">
            <div class="steps-head">
              <span class="muted" style="font-size:13px">${t("step_word")} <b id="step-num">1</b> / ${steps.length}</span>
-             <button class="btn btn-outline btn-sm" data-lesson-mode="full">📄 ${t("full_view")}</button>
+             <span style="display:flex;gap:6px;flex-wrap:wrap">
+               <button class="btn btn-primary btn-sm" id="step-play">▶ ${t("autoplay")}</button>
+               <button class="btn btn-outline btn-sm" id="step-voice" title="${escapeHtml(t("voice_read"))}">${localStorage.getItem("wda_voice") === "1" ? "🔊" : "🔇"}</button>
+               <button class="btn btn-outline btn-sm" data-lesson-mode="full">📄 ${t("full_view")}</button>
+             </span>
            </div>
            <div class="progress thin"><span id="steps-bar" style="width:${Math.round(100 / steps.length)}%"></span></div>
            <div class="step-card" id="step-card"></div>
@@ -1741,9 +1747,66 @@
         addCopyButtons();
         card.scrollIntoView({ block: "nearest" });
       };
-      backB.addEventListener("click", () => show(si - 1, "back"));
+      /* ▶ Auto-play: the lesson plays itself like a short video — cards
+         advance on a timer, or (🔊) after the browser's built-in voice
+         finishes reading the card aloud. No video files needed. */
+      const playB = app.querySelector("#step-play");
+      const voiceB = app.querySelector("#step-voice");
+      let playing = false, autoTimer = null;
+      const voiceOn = () => localStorage.getItem("wda_voice") === "1";
+      const speakText = () => {
+        const d = card.cloneNode(true);
+        d.querySelectorAll("pre, .copy-btn").forEach((n) => n.remove()); /* don't read code aloud */
+        return (d.textContent || "").replace(/\s+/g, " ").trim();
+      };
+      const readingDelay = () => Math.min(22000, 3500 + speakText().split(" ").length * 190);
+      const stopAuto = () => {
+        playing = false;
+        clearTimeout(autoTimer);
+        autoTimer = null;
+        try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (e) {}
+        if (playB) playB.innerHTML = "▶ " + t("autoplay");
+      };
+      const advance = () => {
+        if (!playing) return;
+        if (si < steps.length - 1) { show(si + 1); playStep(); }
+        else stopAuto();
+      };
+      const playStep = () => {
+        if (!playing) return;
+        if (voiceOn() && window.speechSynthesis) {
+          try {
+            speechSynthesis.cancel();
+            const u = new SpeechSynthesisUtterance(speakText());
+            u.lang = "en-US";
+            u.rate = 1;
+            u.onend = () => { if (playing) autoTimer = setTimeout(advance, 700); };
+            u.onerror = () => { if (playing) autoTimer = setTimeout(advance, readingDelay()); };
+            speechSynthesis.speak(u);
+            return;
+          } catch (e) {}
+        }
+        autoTimer = setTimeout(advance, readingDelay());
+      };
+      if (playB) playB.addEventListener("click", () => {
+        if (playing) { stopAuto(); return; }
+        playing = true;
+        playB.innerHTML = "⏸ " + t("pause");
+        playStep();
+      });
+      if (voiceB) voiceB.addEventListener("click", () => {
+        const on = !voiceOn();
+        localStorage.setItem("wda_voice", on ? "1" : "0");
+        voiceB.textContent = on ? "🔊" : "🔇";
+        if (playing) { try { speechSynthesis.cancel(); } catch (e) {} clearTimeout(autoTimer); playStep(); }
+      });
+      /* any navigation stops the playback + narration */
+      window.addEventListener("hashchange", stopAuto, { once: true });
+
+      backB.addEventListener("click", () => { stopAuto(); show(si - 1, "back"); });
       nextB.addEventListener("click", () => {
-        if (si < steps.length - 1) { show(si + 1); return; }
+        if (si < steps.length - 1) { stopAuto(); show(si + 1); return; }
+        stopAuto();
         /* last card: complete the lesson and move on */
         if (!isDoneAlready()) markComplete(c.id, current.id, true);
         if (next) location.hash = `#/learn/${c.id}/${next}`;

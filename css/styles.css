@@ -1138,6 +1138,42 @@ button { font-family: inherit; cursor: pointer; }
 .prem-qr-name { font-weight: 700; margin-top: 6px; }
 
 /* ---------- Leaderboard ---------- */
+/* 🏆 podium for the top 3 */
+.podium { display: flex; align-items: flex-end; justify-content: center; gap: 14px; margin: 18px 0 22px; }
+.pod { display: flex; flex-direction: column; align-items: center; gap: 5px; width: 108px; animation: fadeInUp .5s ease both; }
+.pod.second { animation-delay: .1s; }
+.pod.third { animation-delay: .2s; }
+.pod.first { animation-delay: 0s; }
+.pod-crown { font-size: 26px; animation: celePop .6s cubic-bezier(.2,1.6,.4,1) .4s both; }
+.lb-av {
+  width: 34px; height: 34px; border-radius: 50%; flex: none;
+  display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 15px;
+}
+.lb-av.big { width: 58px; height: 58px; font-size: 24px; border: 3px solid var(--surface); box-shadow: 0 4px 14px rgba(0,0,0,.18); }
+.pod.first .lb-av.big { width: 72px; height: 72px; font-size: 30px; }
+.pod-name { font-weight: 800; font-size: 13.5px; max-width: 108px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pod-xp { font-size: 12.5px; color: var(--muted); font-weight: 700; }
+.pod-block {
+  width: 100%; border-radius: 10px 10px 0 0; display: grid; place-items: center;
+  color: #fff; font-size: 26px; font-weight: 900;
+  background: linear-gradient(180deg, #a535f0, #654ea3);
+}
+.pod.first .pod-block { height: 86px; }
+.pod.second .pod-block { height: 62px; opacity: .85; }
+.pod.third .pod-block { height: 46px; opacity: .7; }
+.pod.me .pod-name { color: var(--purple); }
+.lb-me-banner {
+  background: linear-gradient(135deg, #654ea3, #a535f0); color: #fff;
+  border-radius: 12px; padding: 10px 16px; font-size: 14.5px; margin-bottom: 6px;
+}
+.lb-sub { display: block; font-weight: 500; font-size: 12px; color: var(--muted); }
+.lb-lvl {
+  flex: none; font-size: 12px; font-weight: 800; color: var(--purple);
+  border: 1px solid var(--purple); border-radius: 999px; padding: 2px 9px;
+}
+.lb-xp { flex: none; font-weight: 800; font-size: 14.5px; }
+.lb-dots { text-align: center; color: var(--muted); font-weight: 800; letter-spacing: 4px; }
+
 .lb-table { display: flex; flex-direction: column; gap: 8px; }
 .lb-row {
   display: flex; align-items: center; gap: 12px;

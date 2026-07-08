@@ -876,23 +876,40 @@
       }),
     }).catch(() => {});
   }
-  function renderLeaderboard() {
+  function renderLeaderboard(tab) {
+    tab = tab === "week" ? "week" : "all";
     app.innerHTML = `
       <div class="container" style="max-width:680px">
         <h2 class="section-title">🏆 ${t("lb_title")}</h2>
         <p class="section-sub">${t("lb_sub")}</p>
+        <div class="chips" style="margin-bottom:14px">
+          <button class="chip ${tab === "all" ? "active" : ""}" data-lb-tab="all">🌍 ${t("lb_all")}</button>
+          <button class="chip ${tab === "week" ? "active" : ""}" data-lb-tab="week">📅 ${t("lb_week")}</button>
+        </div>
         <div id="lb-list"><div class="empty"><h2>⏳</h2></div></div>
       </div>`;
+    app.querySelectorAll("[data-lb-tab]").forEach((b) =>
+      b.addEventListener("click", () => renderLeaderboard(b.getAttribute("data-lb-tab")))
+    );
     const base = statsBase();
     const mount = document.getElementById("lb-list");
     if (!base) { mount.innerHTML = `<div class="empty"><h2>${t("lb_offline")}</h2></div>`; return; }
     const u = window.Auth && window.Auth.current ? window.Auth.current() : null;
+    /* SoloLearn-style colorful avatar: name → stable hue */
+    const avColor = (name) => {
+      let h = 0;
+      for (const ch of name) h = (h * 33 + ch.charCodeAt(0)) % 360;
+      return `hsl(${h},62%,48%)`;
+    };
+    const av = (x, cls) =>
+      `<span class="lb-av ${cls || ""}" style="background:${avColor(x.name)}">${escapeHtml(x.name.charAt(0).toUpperCase())}</span>`;
     fetch(base + "/stats/leaderboard.json")
       .then((r) => r.json())
       .then((val) => {
         /* Coerce every field to a safe type — the DB is world-writable, so
            a crafted row must never reach innerHTML as markup */
-        const rows = Object.entries(val || {})
+        const weekAgo = Date.now() - 7 * 86400000;
+        let rows = Object.entries(val || {})
           .map(([id, x]) => ({
             id,
             name: String((x && x.name) || "?").slice(0, 40),
@@ -900,26 +917,47 @@
             lessons: Number(x && x.lessons) || 0,
             courses: Number(x && x.courses) || 0,
             streak: Number(x && x.streak) || 0,
+            ts: Number(x && x.ts) || 0,
           }))
           .filter((x) => x.xp > 0)
-          .sort((a, b) => b.xp - a.xp)
-          .slice(0, 20);
+          .sort((a, b) => b.xp - a.xp);
+        if (tab === "week") rows = rows.filter((x) => x.ts >= weekAgo);
         if (!rows.length) {
           mount.innerHTML = `<div class="empty"><h2>${t("lb_empty")}</h2><p>${t("lb_empty_sub")}</p></div>`;
           return;
         }
-        const medal = (i) => (i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `${i + 1}.`);
-        mount.innerHTML = `
-          <div class="lb-table">
-            ${rows.map((x, i) => `
-              <div class="lb-row ${u && x.id === u.id ? "me" : ""}">
-                <span class="lb-rank">${medal(i)}</span>
-                <span class="lb-name">${escapeHtml(x.name || "?")}${u && x.id === u.id ? ` <em>(${t("lb_you")})</em>` : ""}</span>
-                <span class="lb-stat">⚡ ${x.xp} XP</span>
-                <span class="lb-stat">📗 ${x.lessons}</span>
-                <span class="lb-stat">🎓 ${x.courses || 0}</span>
-                <span class="lb-stat">🔥 ${x.streak || 0}</span>
+        const myRank = u ? rows.findIndex((x) => x.id === u.id) : -1;
+        const top3 = rows.slice(0, 3);
+        const rest = rows.slice(3, 20);
+        /* podium: 2nd — 1st — 3rd */
+        const podOrder = [top3[1], top3[0], top3[2]].filter(Boolean);
+        const podCls = top3.length >= 2 ? ["second", "first", "third"] : ["first"];
+        const podium = `
+          <div class="podium">
+            ${podOrder.map((x, k) => `
+              <div class="pod ${podCls[k] || ""} ${u && x.id === u.id ? "me" : ""}">
+                ${podCls[k] === "first" ? '<div class="pod-crown">👑</div>' : ""}
+                ${av(x, "big")}
+                <div class="pod-name">${escapeHtml(x.name)}</div>
+                <div class="pod-xp">⚡ ${x.xp}</div>
+                <div class="pod-block">${podCls[k] === "first" ? "1" : podCls[k] === "second" ? "2" : "3"}</div>
               </div>`).join("")}
+          </div>`;
+        const rowHtml = (x, rank) => `
+          <div class="lb-row ${u && x.id === u.id ? "me" : ""}">
+            <span class="lb-rank">${rank}</span>
+            ${av(x)}
+            <span class="lb-name">${escapeHtml(x.name)}${u && x.id === u.id ? ` <em>(${t("lb_you")})</em>` : ""}
+              <span class="lb-sub">📗 ${x.lessons} · 🎓 ${x.courses} · 🔥 ${x.streak}</span></span>
+            <span class="lb-lvl">Lv ${Math.floor(x.xp / 100) + 1}</span>
+            <span class="lb-xp">⚡ ${x.xp}</span>
+          </div>`;
+        mount.innerHTML = `
+          ${myRank >= 0 ? `<div class="lb-me-banner">${t("lb_yourrank")}: <b>#${myRank + 1}</b> / ${rows.length} · ⚡ ${rows[myRank].xp} XP</div>` : ""}
+          ${podium}
+          <div class="lb-table">
+            ${rest.map((x, i) => rowHtml(x, i + 4)).join("")}
+            ${myRank >= 20 ? `<div class="lb-dots">···</div>` + rowHtml(rows[myRank], myRank + 1) : ""}
           </div>
           <p class="muted" style="font-size:12px">${t("lb_note")}</p>`;
       })

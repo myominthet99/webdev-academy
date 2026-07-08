@@ -1487,6 +1487,27 @@
 
   const PREVIEW_LESSONS = 2; /* free taste of a premium course before the paywall */
 
+  /* SoloLearn-style Step Mode: split an article's HTML into bite-sized
+     cards at each <h3> heading. Returns an array of HTML strings. */
+  function splitLessonSteps(html) {
+    const tmp = document.createElement("div");
+    tmp.innerHTML = html;
+    const groups = [];
+    let cur = [];
+    [...tmp.childNodes].forEach((n) => {
+      if (n.nodeType === 1 && n.tagName === "H3" && cur.length) { groups.push(cur); cur = [n]; }
+      else cur.push(n);
+    });
+    if (cur.length) groups.push(cur);
+    return groups
+      .map((nodes) => {
+        const d = document.createElement("div");
+        nodes.forEach((n) => d.appendChild(n));
+        return d.innerHTML;
+      })
+      .filter((s) => s.replace(/\s|&nbsp;/g, "").length > 0);
+  }
+
   function renderLearn(courseId, lessonId) {
     const c = courseById(courseId);
     if (!c) return renderNotFound();
@@ -1551,9 +1572,32 @@
       });
     });
 
-    /* main content */
+    /* main content — articles default to SoloLearn-style Step Mode (small
+       cards with a progress bar) when they have 2+ sections */
+    let steps = null;
+    if (current.type === "article") {
+      const all = splitLessonSteps(lf(current, "content") || "");
+      if (all.length >= 2) steps = all;
+    }
+    const useSteps = !!steps && localStorage.getItem("wda_lesson_mode") !== "full";
     const body =
-      current.type === "quiz" ? renderQuizHtml(current) : lf(current, "content") || "<p>—</p>";
+      current.type === "quiz" ? renderQuizHtml(current)
+      : useSteps
+      ? `<div class="steps-wrap">
+           <div class="steps-head">
+             <span class="muted" style="font-size:13px">${t("step_word")} <b id="step-num">1</b> / ${steps.length}</span>
+             <button class="btn btn-outline btn-sm" data-lesson-mode="full">📄 ${t("full_view")}</button>
+           </div>
+           <div class="progress thin"><span id="steps-bar" style="width:${Math.round(100 / steps.length)}%"></span></div>
+           <div class="step-card" id="step-card"></div>
+           <div class="steps-nav">
+             <button class="btn btn-outline" id="step-back" disabled>←</button>
+             <button class="btn btn-primary" id="step-next">${t("next_step")} →</button>
+           </div>
+         </div>`
+      : (steps
+          ? `<div class="steps-head" style="justify-content:flex-end"><button class="btn btn-outline btn-sm" data-lesson-mode="steps">🃏 ${t("step_mode")}</button></div>`
+          : "") + (lf(current, "content") || "<p>—</p>");
 
     const prev = idx > 0 ? flat[idx - 1].lesson.id : null;
     const next = idx < flat.length - 1 ? flat[idx + 1].lesson.id : null;
@@ -1659,6 +1703,49 @@
     hydrateIdbVideos();
     addCopyButtons();
     wireAiTutor(c, current);
+
+    /* Step Mode wiring: show one card at a time with progress + nav */
+    app.querySelectorAll("[data-lesson-mode]").forEach((b) =>
+      b.addEventListener("click", () => {
+        localStorage.setItem("wda_lesson_mode", b.getAttribute("data-lesson-mode"));
+        renderLearn(courseId, lessonId);
+      })
+    );
+    if (useSteps) {
+      const card = app.querySelector("#step-card");
+      const backB = app.querySelector("#step-back");
+      const nextB = app.querySelector("#step-next");
+      const numEl = app.querySelector("#step-num");
+      const barEl = app.querySelector("#steps-bar");
+      let si = 0;
+      const isDoneAlready = () => completedSet(c.id).has(current.id);
+      const show = (i, dir) => {
+        si = Math.max(0, Math.min(steps.length - 1, i));
+        card.innerHTML = steps[si];
+        /* SoloLearn-style swipe: forward slides in from the right,
+           back slides in from the left */
+        card.classList.remove("step-in", "step-in-back");
+        void card.offsetWidth; /* restart the entrance animation */
+        card.classList.add(dir === "back" ? "step-in-back" : "step-in");
+        numEl.textContent = si + 1;
+        barEl.style.width = Math.round(((si + 1) / steps.length) * 100) + "%";
+        backB.disabled = si === 0;
+        nextB.innerHTML = si === steps.length - 1
+          ? (next ? "✓ " + t("step_finish") : "✓ " + t("mark_complete"))
+          : t("next_step") + " →";
+        addCopyButtons();
+        card.scrollIntoView({ block: "nearest" });
+      };
+      backB.addEventListener("click", () => show(si - 1, "back"));
+      nextB.addEventListener("click", () => {
+        if (si < steps.length - 1) { show(si + 1); return; }
+        /* last card: complete the lesson and move on */
+        if (!isDoneAlready()) markComplete(c.id, current.id, true);
+        if (next) location.hash = `#/learn/${c.id}/${next}`;
+        else renderLearn(courseId, lessonId);
+      });
+      show(0);
+    }
 
     app.querySelectorAll("[data-goto]").forEach((b) =>
       b.addEventListener("click", () => {

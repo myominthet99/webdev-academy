@@ -188,6 +188,25 @@ button { font-family: inherit; cursor: pointer; }
 .hero-art .str { color: #ffa657; }
 .hero-art .cm { color: #8b949e; }
 
+/* 🃏 SoloLearn-style Step Mode (bite-sized lesson cards) */
+.steps-wrap { margin: 8px 0 4px; }
+.steps-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+.step-card {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
+  padding: 20px 18px; margin: 14px 0; min-height: 220px;
+  box-shadow: 0 4px 18px rgba(101, 78, 163, .08);
+}
+.step-card > :first-child { margin-top: 0; }
+@keyframes stepInR { from { opacity: 0; transform: translateX(46px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes stepInL { from { opacity: 0; transform: translateX(-46px); } to { opacity: 1; transform: translateX(0); } }
+.step-card.step-in { animation: stepInR .3s ease both; }
+.step-card.step-in-back { animation: stepInL .3s ease both; }
+.steps-nav { display: flex; gap: 10px; }
+.steps-nav .btn { flex: 1; padding: 13px 16px; font-size: 16px; border-radius: 12px; transition: transform .08s ease; }
+.steps-nav .btn:active { transform: scale(.97); }
+.steps-nav #step-back { flex: 0 0 84px; }
+@media (prefers-reduced-motion: reduce) { .step-card.step-in, .step-card.step-in-back { animation: none !important; } }
+
 /* ✨ Animated cover page */
 .hero { position: relative; overflow: hidden; }
 .hero .container { position: relative; z-index: 1; }

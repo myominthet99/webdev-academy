@@ -1095,6 +1095,13 @@
       .slice(0, 3);
     app.innerHTML = `
       <section class="hero">
+        <div class="hero-float" aria-hidden="true">
+          <span style="left:5%;top:16%;animation-duration:9s">&lt;/&gt;</span>
+          <span style="left:87%;top:10%;animation-duration:12s">{ }</span>
+          <span style="left:74%;top:76%;animation-duration:8s">⚡</span>
+          <span style="left:12%;top:80%;animation-duration:11s">🎨</span>
+          <span style="left:44%;top:6%;animation-duration:10s">✨</span>
+        </div>
         <div class="container">
           <div>
             <h1>${t("hero_h1")}</h1>
@@ -1114,7 +1121,7 @@
 <div class="cline"><span class="tag">&lt;button</span> <span class="attr">onclick=</span><span class="str">"party()"</span><span class="tag">&gt;</span>🎉<span class="tag">&lt;/button&gt;</span></div>
 <div class="cline">&nbsp;</div>
 <div class="cline"><span class="cm">// bring it to life</span></div>
-<div class="cline"><span class="attr">const</span> party = () =&gt; alert(<span class="str">"You built this!"</span>);</div>
+<div class="cline"><span class="attr">const</span> party = () =&gt; alert(<span class="str">"You built this!"</span>);<span class="caret-blink"></span></div>
           </div>
         </div>
       </section>

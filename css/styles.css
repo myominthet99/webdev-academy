@@ -188,6 +188,42 @@ button { font-family: inherit; cursor: pointer; }
 .hero-art .str { color: #ffa657; }
 .hero-art .cm { color: #8b949e; }
 
+/* ✨ Animated cover page */
+.hero { position: relative; overflow: hidden; }
+.hero .container { position: relative; z-index: 1; }
+.hero::after { /* slowly drifting purple glow */
+  content: ""; position: absolute; inset: -40%;
+  background: radial-gradient(620px 320px at 30% 30%, rgba(164, 53, 240, .20), transparent 70%);
+  animation: heroGlow 14s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+@keyframes heroGlow { from { transform: translate(0, 0); } to { transform: translate(16%, 12%); } }
+.hero-float span {
+  position: absolute; font-size: 26px; font-weight: 700; opacity: .18; color: #fff;
+  font-family: Consolas, Monaco, monospace; pointer-events: none;
+  animation: floatY 10s ease-in-out infinite;
+}
+@keyframes floatY {
+  0%, 100% { transform: translateY(0) rotate(-5deg); }
+  50% { transform: translateY(-18px) rotate(5deg); }
+}
+.hero h1 { animation: fadeInUp .55s ease both; }
+.hero p { animation: fadeInUp .55s ease .08s both; }
+.hero .btn { animation: fadeInUp .55s ease .16s both; }
+.hero-badges { animation: fadeInUp .55s ease .26s both; }
+.hero-art { animation: fadeInUp .6s ease .2s both, heroBob 7s ease-in-out 1.2s infinite; }
+@keyframes heroBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+.caret-blink {
+  display: inline-block; width: 8px; height: 15px; margin-left: 2px; vertical-align: -2px;
+  background: #e8e8f0; animation: caretBlink 1s steps(1) infinite;
+}
+@keyframes caretBlink { 50% { opacity: 0; } }
+@media (max-width: 700px) { .hero-float span { display: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .hero::after, .hero-float span, .hero h1, .hero p, .hero .btn,
+  .hero-badges, .hero-art, .caret-blink { animation: none !important; }
+}
+
 /* ---------- Buttons ---------- */
 .btn {
   display: inline-flex;

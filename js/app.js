@@ -31,6 +31,8 @@
     phone: "",                  // optional fallback if no QR image
     price: 50000,               // current (promotion) price in Kyat
     listPrice: 100000,          // regular price shown crossed out ("" or 0 to hide)
+    coursePrice: 15000,         // buy ONE premium course only (1 course = 1 premium)
+    listCoursePrice: 30000,     // crossed-out single-course price (0 to hide)
   };
 
   /* ---------------- Courses (built-in + admin-created) ---------------- */
@@ -976,25 +978,43 @@
   /* Firebase paths forbid . # $ [ ] / — swap them for commas (one-way is fine) */
   const emailKey = (e) => String(e || "").toLowerCase().replace(/[.#$\[\]\/%]/g, ",");
   let premiumStatus = false;
+  let premiumCoursesMap = {}; /* single-course purchases: courseId -> true */
   let premiumChecked = false; /* true once the membership lookup finished */
   function isPremiumUser() {
     return premiumStatus || (window.Auth && window.Auth.isAdmin && window.Auth.isAdmin());
   }
+  /* all-access members get every course; others may own individual ones */
+  function hasCourseAccess(courseId) {
+    return isPremiumUser() || !!premiumCoursesMap[courseId];
+  }
   /* chat.js gates the @ai bot on premium too */
   window.WDA = window.WDA || {};
   window.WDA.isPremium = isPremiumUser;
+  /* chat is for paying students: all-access OR at least one bought course */
+  window.WDA.isPaying = () => isPremiumUser() || Object.keys(premiumCoursesMap).length > 0;
   function refreshPremium() {
     const base = statsBase();
     const u = window.Auth && window.Auth.current ? window.Auth.current() : null;
-    if (!base || !u || !u.email) { premiumStatus = false; premiumChecked = true; return; }
+    if (!base || !u || !u.email) { premiumStatus = false; premiumCoursesMap = {}; premiumChecked = true; return; }
     premiumChecked = false;
     fetch(base + "/premium/" + emailKey(u.email) + ".json")
       .then((r) => r.json())
       .then((v) => {
         const was = premiumStatus;
         const first = !premiumChecked;
-        /* promo-code memberships carry an expiry: {until, via} */
-        premiumStatus = !!v && !(typeof v === "object" && v.until && v.until <= Date.now());
+        /* membership shapes: true / {since,by} (admin) / {until,via}
+           (promo, expires) / {courses:{cid:true}} (single purchases) —
+           and combinations of the object forms */
+        if (!v) {
+          premiumStatus = false; premiumCoursesMap = {};
+        } else if (v === true) {
+          premiumStatus = true; premiumCoursesMap = {};
+        } else {
+          premiumCoursesMap = v.courses || {};
+          const hasAllGrant = !!(v.since || v.by || v.until || v.via);
+          const expired = v.until && v.until <= Date.now();
+          premiumStatus = hasAllGrant && !expired;
+        }
         premiumChecked = true;
         /* re-render once the answer is in, so deep-linked premium lessons load */
         if (premiumStatus !== was || first) window.dispatchEvent(new Event("hashchange"));
@@ -1002,26 +1022,36 @@
       .catch(() => { premiumChecked = true; window.dispatchEvent(new Event("hashchange")); });
   }
 
-  function renderPremium() {
+  function renderPremium(courseId) {
     const u = loggedIn() ? window.Auth.current() : null;
     const premiumCourses = COURSES.filter((c) => !isFree(c));
+    /* "1 course = 1 premium": #/premium/<courseId> sells just that course */
+    const target = courseId ? courseById(courseId) : null;
+    const single = target && !isFree(target) ? target : null;
+    const price = single ? (PAYMENT_CONFIG.coursePrice || PAYMENT_CONFIG.price) : PAYMENT_CONFIG.price;
+    const listPrice = single ? PAYMENT_CONFIG.listCoursePrice : PAYMENT_CONFIG.listPrice;
     app.innerHTML = `
       <div class="container" style="max-width:620px">
-        <h2 class="section-title">⭐ ${t("prem_title")}</h2>
-        <p class="section-sub">${t("prem_sub")}</p>
+        <h2 class="section-title">${single ? "🎫 " + t("prem_one_title") : "⭐ " + t("prem_title")}</h2>
+        <p class="section-sub">${single ? cf(single, "title") : t("prem_sub")}</p>
         <div class="panel">
-          ${PAYMENT_CONFIG.listPrice && PAYMENT_CONFIG.listPrice > PAYMENT_CONFIG.price
-            ? `<div class="prem-promo-badge">🎉 ${t("prem_promo")} −${Math.round((1 - PAYMENT_CONFIG.price / PAYMENT_CONFIG.listPrice) * 100)}%</div>`
+          ${listPrice && listPrice > price
+            ? `<div class="prem-promo-badge">🎉 ${t("prem_promo")} −${Math.round((1 - price / listPrice) * 100)}%</div>`
             : ""}
           <div class="prem-price">
-            ${PAYMENT_CONFIG.listPrice && PAYMENT_CONFIG.listPrice > PAYMENT_CONFIG.price ? `<s class="prem-oldprice">${fmt(PAYMENT_CONFIG.listPrice)} Ks</s> ` : ""}
-            ${fmt(PAYMENT_CONFIG.price)} Ks <span class="muted">· ${t("prem_once")}</span>
+            ${listPrice && listPrice > price ? `<s class="prem-oldprice">${fmt(listPrice)} Ks</s> ` : ""}
+            ${fmt(price)} Ks <span class="muted">· ${t("prem_once")}</span>
           </div>
           <ul class="learn-grid" style="grid-template-columns:1fr">
-            <li>${premiumCourses.length} ${t("prem_benefit_courses")}</li>
-            <li>${t("prem_benefit_future")}</li>
-            <li>${t("prem_benefit_cert")}</li>
+            ${single ? `
+              <li>${single.icon} ${cf(single, "title")} — ${totalLessons(single)} ${t("lessons_word")}</li>
+              <li>${t("prem_benefit_cert")}</li>
+              <li>${t("inc_lifetime")}</li>` : `
+              <li>${premiumCourses.length} ${t("prem_benefit_courses")}</li>
+              <li>${t("prem_benefit_future")}</li>
+              <li>${t("prem_benefit_cert")}</li>`}
           </ul>
+          ${single ? `<a class="btn btn-outline btn-block" href="#/premium">⭐ ${t("prem_or_all")} · ${fmt(PAYMENT_CONFIG.price)} Ks</a>` : ""}
         </div>
         <div id="prem-state"><div class="empty"><h2>⏳</h2></div></div>
       </div>`;
@@ -1033,13 +1063,16 @@
       mount.querySelector("#prem-login").addEventListener("click", () => window.Auth.openModal("login"));
       return;
     }
-    if (isPremiumUser()) {
-      mount.innerHTML = `<div class="panel"><h2>🎉 ${t("prem_active")}</h2><p class="muted">${t("prem_active_sub")}</p>
-        <a class="btn btn-primary" href="#/courses">${t("browse_courses")}</a></div>`;
+    if (single ? hasCourseAccess(single.id) : isPremiumUser()) {
+      mount.innerHTML = `<div class="panel"><h2>🎉 ${single ? "✓ " + t("purchased") : t("prem_active")}</h2><p class="muted">${t("prem_active_sub")}</p>
+        <a class="btn btn-primary" href="${single ? "#/course/" + single.id : "#/courses"}">${single ? t("start_course") : t("browse_courses")}</a></div>`;
       return;
     }
     const base = statsBase();
     if (!base) { mount.innerHTML = `<div class="panel"><p>${t("lb_offline")}</p></div>`; return; }
+    /* course claims get their own slot so they never clobber an
+       all-access claim (and vice versa) */
+    const claimKey = emailKey(u.email) + (single ? "," + single.id : "");
 
     /* pending claim already submitted? Claims are keyed by the user's own
        email key, so we fetch ONE row — never the whole collection (other
@@ -1070,7 +1103,7 @@
             return fetch(base + "/stats/promo/" + code + "/used.json", {
               method: "PUT", body: JSON.stringify((Number(v.used) || 0) + 1),
             }).then(() => fetch(base + "/premium/" + emailKey(u.email) + ".json", {
-              method: "PUT",
+              method: "PATCH", /* merge — must not wipe single-course purchases */
               body: JSON.stringify({ until, via: code, ts: Date.now() }),
             })).then((r) => {
               if (!r.ok) throw new Error("write");
@@ -1084,7 +1117,7 @@
       });
     };
 
-    fetch(base + "/payments/" + emailKey(u.email) + ".json").then((r) => r.json()).then((p) => {
+    fetch(base + "/payments/" + claimKey + ".json").then((r) => r.json()).then((p) => {
       const mine = p && p.status === "pending" ? [p] : [];
       if (mine.length) {
         mount.innerHTML = `<div class="panel"><h2>⏳ ${t("prem_pending")}</h2><p class="muted">${t("prem_pending_sub")}</p></div>` + redeemHtml;
@@ -1102,8 +1135,8 @@
           </div>` : ""}
           <ol style="line-height:2">
             <li>${PAYMENT_CONFIG.qrImage
-              ? `${t("prem_step1_qr")} <strong>${escapeHtml(PAYMENT_CONFIG.method)}</strong> → ${t("prem_step1")} <strong>${fmt(PAYMENT_CONFIG.price)} Ks</strong>`
-              : `${t("prem_step1")} <strong>${fmt(PAYMENT_CONFIG.price)} Ks</strong> → <strong>${escapeHtml(PAYMENT_CONFIG.method)}</strong>: <strong>${escapeHtml(PAYMENT_CONFIG.phone)}</strong> (${escapeHtml(PAYMENT_CONFIG.accountName)})`}</li>
+              ? `${t("prem_step1_qr")} <strong>${escapeHtml(PAYMENT_CONFIG.method)}</strong> → ${t("prem_step1")} <strong>${fmt(price)} Ks</strong>`
+              : `${t("prem_step1")} <strong>${fmt(price)} Ks</strong> → <strong>${escapeHtml(PAYMENT_CONFIG.method)}</strong>: <strong>${escapeHtml(PAYMENT_CONFIG.phone)}</strong> (${escapeHtml(PAYMENT_CONFIG.accountName)})`}</li>
             <li>${t("prem_step2")}</li>
             <li>${t("prem_step3")}</li>
           </ol>
@@ -1122,15 +1155,15 @@
         e.preventDefault();
         const phone = form.phone.value.trim(), txn = form.txn.value.trim();
         if (!phone || !txn) return;
-        fetch(base + "/payments/" + emailKey(u.email) + ".json", {
-          method: "PUT", /* one claim per account, keyed by email */
-          body: JSON.stringify({
+        fetch(base + "/payments/" + claimKey + ".json", {
+          method: "PUT", /* one claim per account (per course for singles) */
+          body: JSON.stringify(Object.assign({
             email: u.email.toLowerCase(), name: u.name || "",
             phone, txn, ts: Date.now(), status: "pending",
-          }),
+          }, single ? { courseId: single.id, courseTitle: single.title } : {})),
         }).then((r) => {
           if (!r.ok) throw new Error("post failed");
-          renderPremium(); /* shows the pending state */
+          renderPremium(courseId); /* shows the pending state */
         }).catch(() => {
           const err = form.querySelector(".auth-err");
           err.hidden = false; err.textContent = t("chat_send_err");
@@ -1368,7 +1401,7 @@
 
     /* curriculum rows link straight into the player; premium courses show
        🎁 on the free-preview lessons and 🔒 (→ premium page) past them */
-    const premLocked = !isFree(c) && !isPremiumUser();
+    const premLocked = !isFree(c) && !hasCourseAccess(c.id);
     let flatIdx = 0;
     const curriculum = c.sections
       .map((sec, si) => {
@@ -1405,10 +1438,10 @@
 
     /* a premium course lets a logged-in non-member read the first few
        lessons free before the paywall — invite them to start the preview */
-    const canPreview = !isFree(c) && loggedIn() && !isPremiumUser() && firstLesson;
+    const canPreview = !isFree(c) && loggedIn() && !hasCourseAccess(c.id) && firstLesson;
     const enrollLabel =
       !isFree(c) && !loggedIn() ? t("login_to_enroll")
-      : !isFree(c) && !isPremiumUser() ? "⭐ " + t("prem_go")
+      : !isFree(c) && !hasCourseAccess(c.id) ? "⭐ " + t("prem_go")
       : `${t("enroll_now")} ${priceText(c)}`;
     const cta = enrolled
       ? `<a class="btn btn-primary btn-block" href="#/learn/${c.id}/${pct > 0 ? resumeLesson : firstLesson}">${pct > 0 ? t("continue_learning") : t("start_course")}</a>`
@@ -1416,6 +1449,10 @@
       ? `<a class="btn btn-primary btn-block" href="#/learn/${c.id}/${firstLesson}">🎁 ${t("preview_start")}</a>
          <a class="btn btn-outline btn-block" style="margin-top:8px" href="#/premium">⭐ ${t("prem_go")}</a>`
       : `<button class="btn btn-primary btn-block" data-enroll="${c.id}">${enrollLabel}</button>`;
+    /* 1 course = 1 premium: cheaper single-course unlock */
+    const buyOne = premLocked && PAYMENT_CONFIG.coursePrice
+      ? `<a class="btn btn-ghost btn-block" style="margin-top:8px" href="#/premium/${c.id}">🎫 ${t("buy_course")} · ${fmt(PAYMENT_CONFIG.coursePrice)} Ks</a>`
+      : "";
 
     app.innerHTML = `
       <section class="detail-hero">
@@ -1443,7 +1480,8 @@
             <div class="pad">
               <div class="price ${isFree(c) ? "" : "premium"}">${priceTag(c)}</div>
               ${enrolled && pct > 0 ? `<div class="progress" style="margin-bottom:14px"><span style="width:${pct}%"></span></div><div class="muted" style="margin-bottom:14px">${pct}% ${t("pct_complete_word")} · ⏱ ${formatTime(getTotalTimeSpent(c.id))}</div>` : ""}
-              ${cta}
+              ${cta}${buyOne}
+              ${!isFree(c) && !isPremiumUser() && premiumCoursesMap[c.id] ? `<div class="tl-status ok" style="text-align:center">✓ ${t("purchased")}</div>` : ""}
               ${enrolled && pct === 100 ? `<a class="btn btn-ghost btn-block" style="margin-top:10px" href="#/certificate/${c.id}">🎓 ${t("cert_view")}</a>` : ""}
               <div class="includes-title">${t("includes_title")}</div>
               <ul class="includes">
@@ -1562,7 +1600,7 @@
           location.hash = `#/learn/${c.id}/${firstLesson}`;
         };
         if (isFree(c)) go();
-        else requireAuth(() => { if (isPremiumUser()) go(); else location.hash = "#/premium"; });
+        else requireAuth(() => { if (hasCourseAccess(c.id)) go(); else location.hash = "#/premium"; });
       });
     }
     const shareBtn = app.querySelector("#course-share");
@@ -1722,7 +1760,7 @@
     let idx = flat.findIndex((x) => x.lesson.id === lessonId);
     if (idx === -1) idx = 0;
 
-    const locked = !isFree(c) && !isPremiumUser();
+    const locked = !isFree(c) && !hasCourseAccess(c.id);
     let previewMode = false;
     if (locked) {
       /* wait for Firebase to restore the session before deciding to redirect
@@ -1861,7 +1899,7 @@
             ${body}
             <div class="ai-tutor" id="ai-tutor">
               <div class="notes-head"><strong>🎓 ${t("tutor_title")}</strong> <span class="muted" style="font-size:12px">${t("tutor_sub")}</span></div>
-              ${isPremiumUser()
+              ${(isPremiumUser() || (!isFree(c) && hasCourseAccess(c.id)))
                 ? `<div class="tutor-chips">
                      <button type="button" data-tq="simple">💡 ${t("tutor_simple")}</button>
                      <button type="button" data-tq="burmese">🇲🇲 ${t("tutor_burmese")}</button>
@@ -3663,12 +3701,13 @@
         <div class="panel" style="margin-bottom:12px">
           <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:center">
             <div>
-              <strong>${escapeHtml(p.name || "?")}</strong> · ${escapeHtml(p.email || "")}<br>
+              <strong>${escapeHtml(p.name || "?")}</strong> · ${escapeHtml(p.email || "")}
+              <span class="lb-lvl" style="margin-left:6px">${p.courseId ? "🎫 " + escapeHtml(p.courseTitle || p.courseId) : "⭐ " + t("prem_all_label")}</span><br>
               <span class="muted" style="font-size:13px">KBZPay: ${escapeHtml(p.phone || "")} · ${t("prem_txn_label")}: ${escapeHtml(p.txn || "")} · ${new Date(p.ts || 0).toLocaleString()}</span>
             </div>
             <div style="display:flex;gap:8px;align-items:center">
               ${p.status === "pending"
-                ? `<button class="btn btn-primary btn-sm" data-approve="${escapeHtml(p.key)}" data-email="${escapeHtml(p.email || "")}">✓ ${t("admin_approve")}</button>
+                ? `<button class="btn btn-primary btn-sm" data-approve="${escapeHtml(p.key)}" data-email="${escapeHtml(p.email || "")}" data-course="${escapeHtml(p.courseId || "")}">✓ ${t("admin_approve")}</button>
                    <button class="btn btn-outline btn-sm" data-reject="${escapeHtml(p.key)}">✕ ${t("admin_reject")}</button>`
                 : `<span class="role-badge" style="background:${p.status === "approved" ? "var(--green)" : "#888"}">${escapeHtml(p.status)}</span>`}
             </div>
@@ -3679,10 +3718,18 @@
       mount.querySelectorAll("[data-approve]").forEach((b) =>
         b.addEventListener("click", () => {
           const email = b.getAttribute("data-email");
-          fetch(base + "/premium/" + emailKey(email) + ".json", {
-            method: "PUT",
-            body: JSON.stringify({ since: Date.now(), by: (window.Auth.current() || {}).email || "admin" }),
-          })
+          const cid = b.getAttribute("data-course");
+          /* single-course claim → grant just that course; otherwise grant
+             all-access. PATCH/child-PUT so grants never wipe each other. */
+          const grant = cid
+            ? fetch(base + "/premium/" + emailKey(email) + "/courses/" + cid + ".json", {
+                method: "PUT", body: "true",
+              })
+            : fetch(base + "/premium/" + emailKey(email) + ".json", {
+                method: "PATCH",
+                body: JSON.stringify({ since: Date.now(), by: (window.Auth.current() || {}).email || "admin" }),
+              });
+          grant
             .then(() => setStatus(b.getAttribute("data-approve"), "approved"))
             .then(() => renderAdminPayments())
             .catch(() => alert(t("chat_send_err")));
@@ -4199,7 +4246,7 @@
     else if (parts[0] === "daily") renderDaily();
     else if (parts[0] === "leaderboard") renderLeaderboard();
     else if (parts[0] === "review") renderReview();
-    else if (parts[0] === "premium") renderPremium();
+    else if (parts[0] === "premium") renderPremium(parts[1]);
     else if (parts[0] === "roadmap") renderRoadmap();
     else if (parts[0] === "my-learning") renderMyLearning();
     else if (parts[0] === "account") renderAccount();

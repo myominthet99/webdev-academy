@@ -15,7 +15,7 @@
   const I18N = window.I18N;
   const KEY = "wda_chat_v1";
   const MAX = 200;
-  const BUILD = "v13"; /* shown in the chat header — bump with releases */
+  const BUILD = "v14"; /* shown in the chat header — bump with releases */
 
   /* ============ Firebase config (optional) ============
      Configured centrally in js/firebase-config.js — paste your config
@@ -574,12 +574,29 @@
   }
   function scrollBottom() { if (listEl) listEl.scrollTop = listEl.scrollHeight; }
 
+  /* Free accounts can READ the chat but only paying students may write.
+     Premium status loads async — re-render the composer when it flips. */
+  const isPaying = () => !!(window.WDA && window.WDA.isPaying && window.WDA.isPaying());
+  let lastPaying = null;
+  window.addEventListener("hashchange", () => {
+    const p = isPaying();
+    if (lastPaying !== null && p !== lastPaying) renderFoot();
+  });
+
   function renderFoot() {
     if (!footEl) return;
     const u = me();
     if (!u) {
+      lastPaying = null;
       footEl.innerHTML = '<button class="btn btn-primary btn-block" id="chat-login" type="button">' + t("chat_login") + "</button>";
       footEl.querySelector("#chat-login").addEventListener("click", () => { if (window.Auth) window.Auth.openModal("login"); });
+      return;
+    }
+    lastPaying = isPaying();
+    if (!lastPaying) {
+      footEl.innerHTML =
+        '<div class="chat-locked">🔒 ' + esc(t("chat_premium_only")) +
+        ' <a href="#/premium" class="btn btn-primary btn-sm">⭐ ' + esc(t("prem_go")) + "</a></div>";
       return;
     }
     footEl.innerHTML =
@@ -627,6 +644,7 @@
     if (!text && !img) return;
     const u = me();
     if (!u) { showStatus(t("chat_login")); return; }
+    if (!isPaying()) { showStatus("🔒 " + t("chat_premium_only")); return; }
     if (!rateOk()) { showStatus("⚠ " + t("chat_slow_down")); return; }
     text = moderate(text.slice(0, 500));
     const label = (u.name || u.email || "?").trim();

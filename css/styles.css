@@ -543,6 +543,14 @@ a.lesson-row:hover .ttl { color: var(--purple); }
   font-size: 13px; color: var(--muted); margin-bottom: 4px;
 }
 
+/* chat composer lock for free accounts */
+.chat-locked {
+  display: flex; align-items: center; gap: 10px; justify-content: space-between;
+  font-size: 12.5px; line-height: 1.5; padding: 10px 12px;
+  background: var(--bg); border-radius: 10px;
+}
+.chat-locked .btn { flex: none; }
+
 /* ---------- 🏋️ Code exercises ---------- */
 .ex-head {
   display: flex; align-items: center; justify-content: space-between;

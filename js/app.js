@@ -1210,7 +1210,7 @@
 
   /* ---------------- View: Home ---------------- */
   /* Courses to spotlight in the home "New & trending" strip */
-  const NEW_COURSE_IDS = ["n8n-automation", "ai-engineering", "cloud-computing", "devops"];
+  const NEW_COURSE_IDS = ["zero-to-hero", "n8n-automation", "ai-engineering", "cloud-computing"];
 
   function renderHome() {
     const featured = COURSES.slice(0, 4);

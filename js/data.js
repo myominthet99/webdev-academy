@@ -8512,6 +8512,720 @@ kubectl rollout undo deployment my-shop          # instant rollback</code></pre>
       },
     ],
   },
+  {
+    id: "zero-to-hero",
+    title: "Web Developer: Zero to Hero",
+    subtitle: "The complete guided journey — from never-written-a-line to a live portfolio, real projects and your first income.",
+    instructor: "Myo Min Thet",
+    category: "Career",
+    level: "Beginner",
+    rating: 4.9,
+    ratings: 1980,
+    students: 15200,
+    hours: 26,
+    price: "Free",
+    free: false,
+    color: "linear-gradient(135deg,#f7971e,#a435f0)",
+    icon: "🦸",
+    description:
+      "One course, the WHOLE journey. Eight levels take you from absolute zero — no experience, just a phone or laptop — to hero: a live website on the internet, real projects in your portfolio, and a plan for your first developer income. Every level ends with a checkpoint (quiz or hands-on coding exercise that checks your code automatically), so you always know you're ready for the next level. Simple English, flow-chart diagrams, Myanmar-friendly examples.",
+    whatYouLearn: [
+      "Build real pages with HTML, style them with CSS, make them interactive with JavaScript",
+      "Make sites that look great on any phone, tablet or laptop",
+      "Use Git and GitHub like a professional — and put your site LIVE on the internet for free",
+      "Fetch live data from APIs and build a real data-driven mini app",
+      "Understand what servers and databases do (your bridge to full stack)",
+      "Turn skills into income: portfolio, freelancing and your first developer job",
+    ],
+    sections: [
+      {
+        title: "Level 0 — Absolute Zero",
+        lessons: [
+          article("z-mindset", "You CAN Learn to Code", "8 min", `
+<h3>🎯 The truth about coding</h3>
+<p>Nobody is born a developer. Every hero you admire started exactly where you are now: level zero. Coding is not magic and not math genius — it's a <strong>craft</strong>, learned by doing small things daily.</p>
+<div class="flow">
+  <div class="flow-box">🌱 Zero<br><small>today: curiosity<br>+ a phone</small></div>
+  <div class="flow-arrow" data-label="8 levels"></div>
+  <div class="flow-box alt">🔨 Builder<br><small>pages, styles,<br>interactivity</small></div>
+  <div class="flow-arrow" data-label="projects"></div>
+  <div class="flow-box alt">🌍 Shipped<br><small>your site LIVE<br>on the internet</small></div>
+  <div class="flow-arrow" data-label="then"></div>
+  <div class="flow-box warn">🦸 Hero<br><small>portfolio + first<br>income plan</small></div>
+</div>
+<h3>📝 How this course works</h3>
+<ul>
+  <li><strong>8 levels</strong> — each unlocks the next skill. No level assumes anything you haven't learned here.</li>
+  <li><strong>Checkpoints</strong> — quizzes and auto-checked coding exercises prove you're ready to level up.</li>
+  <li><strong>Projects</strong> — you'll BUILD at every level: profile page → styled portfolio → interactive app → live website.</li>
+  <li><strong>20–30 minutes a day</strong> beats 5 hours on Sunday. Your 🔥 streak is your best friend.</li>
+</ul>
+<div class="callout tip"><strong>Level 0 task:</strong> say it out loud: "In a few weeks, my own website will be on the internet." That's not motivation talk — it's literally Level 4 of this course.</div>`),
+          article("z-how-web", "How Websites Actually Work", "10 min", `
+<h3>🎯 The 10-second version</h3>
+<p>A website is just <strong>files</strong> (text!) sitting on a computer called a <strong>server</strong>. Your browser downloads them and draws the page.</p>
+<div class="flow">
+  <div class="flow-box">🧑 You<br><small>type an address,<br>tap Enter</small></div>
+  <div class="flow-arrow" data-label="request"></div>
+  <div class="flow-box alt">🖥️ Server<br><small>a computer that<br>holds the files</small></div>
+  <div class="flow-arrow" data-label="response"></div>
+  <div class="flow-box warn">🎨 Browser<br><small>reads the files,<br>draws the page</small></div>
+</div>
+<h3>📝 The three languages of every page</h3>
+<ul>
+  <li><strong>HTML</strong> — the skeleton 🦴: headings, paragraphs, images, buttons. (Level 1)</li>
+  <li><strong>CSS</strong> — the skin and clothes 🎨: colors, sizes, layout. (Level 2)</li>
+  <li><strong>JavaScript</strong> — the muscles 💪: reactions, logic, life. (Level 3)</li>
+</ul>
+<p>This very academy is built with exactly these three — nothing else. By Level 3 you'll read its code and UNDERSTAND it.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> on this page press F12 (computer) and peek at the Elements tab — that's real HTML you're about to learn. On a phone? Long-press any text on a website and choose "inspect" if available — or just proceed to Level 1!</div>`),
+          article("z-tools", "Your Free Toolkit", "8 min", `
+<h3>🎯 Everything you need costs 0 Ks</h3>
+<ul>
+  <li><strong>This academy's 🧪 Playground</strong> — write HTML/CSS/JS and see results instantly. Works on ANY phone. This is your main tool for Levels 1–3.</li>
+  <li><strong>A browser</strong> — Chrome, Edge or Firefox. Press <code>F12</code> on a computer: DevTools, the developer's X-ray machine.</li>
+  <li><strong>VS Code</strong> (when you get computer time) — the free editor almost every professional uses.</li>
+  <li><strong>GitHub account</strong> (Level 4) — free code storage AND free website hosting. Yes, free hosting!</li>
+</ul>
+<h3>📝 Phone-first learners: your path is real</h3>
+<p>You can complete Levels 0–3 entirely on a phone with the Playground. For Levels 4–7, read along and practice the commands when you get computer access (school lab, internet café, a friend's laptop). Many Myanmar developers started exactly this way.</p>
+<div class="callout tip"><strong>Level 0 checkpoint:</strong> open the 🧪 Playground (bottom tab or top menu), type <code>Hello, hero!</code> anywhere, and see it appear in the preview. Done? You just used a developer tool. Level 0 complete — 🦸 journey begins!</div>`),
+        ],
+      },
+      {
+        title: "Level 1 — First Page (HTML)",
+        lessons: [
+          article("z-html1", "HTML: Tags Are Everything", "12 min", `
+<h3>🎯 The pattern behind every website</h3>
+<p>HTML wraps content in <strong>tags</strong> that give it meaning:</p>
+<pre><code>&lt;h1&gt;My Tea Shop&lt;/h1&gt;          ← big heading
+&lt;p&gt;Best laphet yay in town.&lt;/p&gt; ← paragraph</code></pre>
+<div class="flow">
+  <div class="flow-box">&lt;tag&gt;<br><small>opening</small></div>
+  <div class="flow-arrow" data-label="wraps"></div>
+  <div class="flow-box alt">content<br><small>your text</small></div>
+  <div class="flow-arrow" data-label="closed by"></div>
+  <div class="flow-box">&lt;/tag&gt;<br><small>closing (note the /)</small></div>
+</div>
+<h3>💻 A complete page — type this in the Playground</h3>
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;body&gt;
+    &lt;h1&gt;Hello, I am learning HTML!&lt;/h1&gt;
+    &lt;p&gt;This is my very first web page.&lt;/p&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<h3>📝 Starter tag pack</h3>
+<ul>
+  <li><code>&lt;h1&gt;</code>…<code>&lt;h6&gt;</code> — headings, biggest to smallest</li>
+  <li><code>&lt;p&gt;</code> — paragraph · <code>&lt;br&gt;</code> — line break (no closing tag)</li>
+  <li><code>&lt;strong&gt;</code> — <strong>bold</strong> · <code>&lt;em&gt;</code> — <em>italic</em></li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> build a page with an h1 (your name), an h2 (your town), and two paragraphs about your favorite food. Make one word bold.</div>`),
+          article("z-html2", "Links, Images & Attributes", "12 min", `
+<h3>🎯 Attributes = settings inside a tag</h3>
+<pre><code>&lt;a href="https://google.com"&gt;Search here&lt;/a&gt;
+&lt;img src="cat.jpg" alt="A sleepy cat"&gt;</code></pre>
+<p><code>href</code> tells the link WHERE to go; <code>src</code> tells the image WHAT to show; <code>alt</code> describes the image (shown if it can't load, read by screen readers).</p>
+<h3>📝 The web's superpower: the link</h3>
+<ul>
+  <li>Link to a website: <code>href="https://..."</code></li>
+  <li>Link to another of YOUR pages: <code>href="menu.html"</code></li>
+  <li>Link that opens a new tab: add <code>target="_blank"</code></li>
+</ul>
+<h3>💻 Free practice images</h3>
+<pre><code>&lt;img src="https://picsum.photos/300/200" alt="Random photo"&gt;</code></pre>
+<p>picsum.photos gives you random placeholder photos at any size — perfect while learning.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> make a "My Favorites" page — 3 links to sites you love and 2 images. Bonus: make one link open in a new tab.</div>`),
+          article("z-html3", "Lists, Buttons & Forms", "12 min", `
+<h3>🎯 Structure for real content</h3>
+<h3>💻 Lists — menus, steps, features</h3>
+<pre><code>&lt;ul&gt;              ← bullets
+  &lt;li&gt;Milk tea&lt;/li&gt;
+  &lt;li&gt;Coffee&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;ol&gt;              ← numbered
+  &lt;li&gt;Boil water&lt;/li&gt;
+  &lt;li&gt;Add tea&lt;/li&gt;
+&lt;/ol&gt;</code></pre>
+<h3>💻 Buttons and inputs — where apps begin</h3>
+<pre><code>&lt;input type="text" placeholder="Your name"&gt;
+&lt;button&gt;Order now&lt;/button&gt;</code></pre>
+<p>They don't DO anything yet — that's JavaScript's job in Level 3. But every app you've ever used is built from these pieces.</p>
+<h3>📝 Grouping with &lt;div&gt;</h3>
+<p><code>&lt;div&gt;</code> is an invisible box for grouping things — a card, a header, a section. In Level 2, CSS will turn these boxes into beautiful layouts.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> build a tea shop menu page: h1 shop name, ul with 4 drinks, an input for the customer's name and an "Order" button.</div>`),
+          exercise("z-ex-html", "Checkpoint: Build Your Profile Page", "12 min", `
+<h3>🦸 Level 1 exercise</h3>
+<p>Prove your HTML powers! Build a small profile page that has ALL of these:</p>
+<ul>
+  <li>an <code>&lt;h1&gt;</code> with your name</li>
+  <li>a link (<code>&lt;a&gt;</code> with an <code>href</code>) to any website you like</li>
+  <li>a <code>&lt;ul&gt;</code> list with at least <strong>2</strong> <code>&lt;li&gt;</code> items (your hobbies!)</li>
+</ul>
+<p>Press <strong>▶ Run &amp; Check</strong> — the robot checker will tell you exactly what's missing. Pass = Level 1 badge in your pocket. 🥇</p>`,
+`<!DOCTYPE html>
+<html>
+  <body>
+    <!-- your h1 name here -->
+
+    <!-- a link to a site you like -->
+
+    <!-- a ul list with 2+ hobbies -->
+
+  </body>
+</html>`,
+`var h1 = document.querySelector("h1");
+var a = document.querySelector("a[href]");
+var lis = document.querySelectorAll("ul li");
+if (!h1 || !h1.textContent.trim()) __exDone(false, "Add an <h1> with your name inside.");
+else if (!a) __exDone(false, "Add a link: <a href=\\"https://...\\">text</a>");
+else if (lis.length < 2) __exDone(false, "Add a <ul> with at least 2 <li> items.");
+else __exDone(true, "");`),
+          quiz("z-quiz1", "Level 1 Quiz: HTML", [
+            { q: "Which is a correct heading?", options: ["&lt;heading&gt;Hi&lt;/heading&gt;", "&lt;h1&gt;Hi&lt;/h1&gt;", "&lt;head&gt;Hi&lt;/head&gt;", "(h1) Hi (h1)"], answer: 1 },
+            { q: "A link's destination goes in…", options: ["src", "alt", "href", "link"], answer: 2 },
+            { q: "What does alt on an image do?", options: ["Makes it bigger", "Describes the image if it can't load", "Adds a border", "Nothing"], answer: 1 },
+            { q: "Bulleted list = ?", options: ["&lt;ol&gt;", "&lt;ul&gt; with &lt;li&gt; items", "&lt;list&gt;", "&lt;bullets&gt;"], answer: 1 },
+            { q: "&lt;div&gt; is used for…", options: ["Dividing numbers", "Grouping content into a box", "Making text bold", "Videos"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Level 2 — Make It Beautiful (CSS)",
+        lessons: [
+          article("z-css1", "CSS: Selectors, Colors & Text", "12 min", `
+<h3>🎯 One pattern rules all of CSS</h3>
+<div class="flow">
+  <div class="flow-box">WHO<br><small>selector:<br>h1, .card, #menu</small></div>
+  <div class="flow-arrow" data-label="{"></div>
+  <div class="flow-box alt">WHAT<br><small>property:<br>color, font-size</small></div>
+  <div class="flow-arrow" data-label=":"></div>
+  <div class="flow-box warn">VALUE<br><small>purple, 20px,<br>center</small></div>
+</div>
+<h3>💻 Add a &lt;style&gt; tag to your page</h3>
+<pre><code>&lt;style&gt;
+  h1   { color: purple; }
+  p    { font-size: 18px; color: #444; }
+  .special { background: gold; }   /* class= "special" */
+&lt;/style&gt;</code></pre>
+<h3>📝 The three selectors you'll use forever</h3>
+<ul>
+  <li><code>h1</code> — every h1 tag</li>
+  <li><code>.card</code> — everything with <code>class="card"</code> (reusable — the workhorse!)</li>
+  <li><code>#menu</code> — the ONE element with <code>id="menu"</code></li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> take your Level 1 profile page and style it: h1 purple, paragraphs 18px, and give one hobby <code>class="special"</code> with a gold background.</div>`),
+          article("z-css2", "The Box Model — Everything Is a Box", "12 min", `
+<h3>🎯 The most important CSS idea</h3>
+<p>Every element is a rectangular box with four layers:</p>
+<div class="flow">
+  <div class="flow-box">📄 Content<br><small>the text/image</small></div>
+  <div class="flow-arrow" data-label="wrapped by"></div>
+  <div class="flow-box alt">🛋️ Padding<br><small>space INSIDE<br>the border</small></div>
+  <div class="flow-arrow" data-label="then"></div>
+  <div class="flow-box alt">🖼️ Border<br><small>the visible edge</small></div>
+  <div class="flow-arrow" data-label="then"></div>
+  <div class="flow-box warn">🌌 Margin<br><small>space OUTSIDE —<br>pushes others away</small></div>
+</div>
+<h3>💻 Your first beautiful card</h3>
+<pre><code>.card {
+  background: white;
+  padding: 20px;              /* breathing room inside */
+  border: 1px solid #ddd;
+  border-radius: 12px;        /* round corners */
+  margin: 16px;               /* space from neighbors */
+  box-shadow: 0 4px 12px rgba(0,0,0,.08);
+}</code></pre>
+<p>Wrap anything in <code>&lt;div class="card"&gt;…&lt;/div&gt;</code> and it instantly looks professional. This one class pattern powers half the modern web.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> turn each hobby in your profile page into a .card. Play with padding 10px vs 30px — FEEL the difference.</div>`),
+          article("z-css3", "Flexbox — Arrange Anything", "12 min", `
+<h3>🎯 The layout tool</h3>
+<p>Put <code>display: flex</code> on a parent box and its children line up in a row, controllable with two magic properties:</p>
+<pre><code>.row {
+  display: flex;
+  justify-content: space-between;  /* ↔ horizontal spread */
+  align-items: center;             /* ↕ vertical centering */
+  gap: 12px;                       /* space between items */
+}</code></pre>
+<h3>📝 The three layouts you now own</h3>
+<ul>
+  <li><strong>Navbar</strong> — logo left, links right: <code>justify-content: space-between</code></li>
+  <li><strong>Perfect center</strong> — <code>justify-content: center; align-items: center</code> (the interview classic!)</li>
+  <li><strong>Card row that wraps</strong> — add <code>flex-wrap: wrap</code> so cards flow to the next line on small screens</li>
+</ul>
+<h3>💻 Try the card row</h3>
+<pre><code>&lt;div class="row"&gt;
+  &lt;div class="card"&gt;One&lt;/div&gt;
+  &lt;div class="card"&gt;Two&lt;/div&gt;
+  &lt;div class="card"&gt;Three&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+<div class="callout tip"><strong>Try it yourself:</strong> arrange your profile page's hobby cards in a flex row with gap 12px and flex-wrap. Resize the preview — watch them wrap!</div>`),
+          article("z-css4", "Responsive — One Site, Every Screen", "12 min", `
+<h3>🎯 Most of your users are on phones</h3>
+<p>A <strong>media query</strong> applies CSS only when the screen matches a condition:</p>
+<pre><code>/* phones (small screens) */
+@media (max-width: 600px) {
+  .row  { flex-direction: column; }  /* stack the cards */
+  h1    { font-size: 24px; }         /* smaller heading */
+}</code></pre>
+<div class="flow">
+  <div class="flow-box">💻 Wide screen<br><small>cards in a row</small></div>
+  <div class="flow-arrow" data-label="max-width: 600px"></div>
+  <div class="flow-box warn">📱 Phone<br><small>same cards,<br>stacked in a column</small></div>
+</div>
+<h3>📝 The responsive starter kit</h3>
+<ul>
+  <li><strong>Always</strong> put this in your <code>&lt;head&gt;</code>: <code>&lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;</code> — without it phones pretend to be desktops.</li>
+  <li>Use <strong>%</strong> and <strong>max-width</strong> instead of fixed px for big boxes: <code>img { max-width: 100%; }</code> stops image overflow forever.</li>
+  <li>Design for the phone FIRST, then add media queries for bigger screens — easier than the reverse.</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> add the media query above to your profile page. Drag the preview narrow and wide — your first responsive site! (This academy does exactly this — try rotating your phone.)</div>`),
+          quiz("z-quiz2", "Level 2 Quiz: CSS", [
+            { q: "In CSS, .card selects…", options: ["The tag &lt;card&gt;", "Every element with class=\"card\"", "The id card", "Nothing"], answer: 1 },
+            { q: "Space INSIDE the border is…", options: ["margin", "padding", "gap", "spacing"], answer: 1 },
+            { q: "Perfect centering with flexbox:", options: ["text-align: middle", "justify-content: center; align-items: center", "position: center", "margin: center"], answer: 1 },
+            { q: "@media (max-width: 600px) applies when…", options: ["Screen is wider than 600px", "Screen is 600px or narrower", "Always", "Only on desktops"], answer: 1 },
+            { q: "img { max-width: 100%; } prevents…", options: ["Blurry photos", "Images overflowing their container on small screens", "Slow loading", "Copyright issues"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Level 3 — Make It Alive (JavaScript)",
+        lessons: [
+          article("z-js1", "Variables & Types", "12 min", `
+<h3>🎯 A program is data + decisions</h3>
+<p>JavaScript stores data in <strong>variables</strong>:</p>
+<pre><code>&lt;script&gt;
+  const shopName = "Shwe Tea";   // text (string) — never changes
+  let price = 1500;              // number — can change
+  let isOpen = true;             // true/false (boolean)
+
+  console.log(shopName, price, isOpen);
+&lt;/script&gt;</code></pre>
+<h3>📝 The rules that save beginners</h3>
+<ul>
+  <li><code>const</code> = cannot be reassigned. <code>let</code> = can. Start with const; switch to let only when needed.</li>
+  <li>Strings wear quotes: <code>"hello"</code>. Numbers don't: <code>1500</code>.</li>
+  <li><code>console.log(...)</code> prints to the console — your #1 debugging tool. In the Playground, the console panel shows it instantly.</li>
+</ul>
+<h3>💻 Math just works</h3>
+<pre><code>let cups = 3;
+let total = cups * price;        // 4500
+console.log("Total: " + total + " Ks");</code></pre>
+<div class="callout tip"><strong>Try it yourself:</strong> in the Playground make variables for your name, age and favorite number. Log a sentence combining all three with +.</div>`),
+          article("z-js2", "Functions & Events — Buttons That Work", "12 min", `
+<h3>🎯 Finally: make the button DO something</h3>
+<pre><code>&lt;button id="hello-btn"&gt;Say hello&lt;/button&gt;
+
+&lt;script&gt;
+  function sayHello() {
+    alert("Mingalaba! 🎉");
+  }
+
+  document.getElementById("hello-btn")
+          .addEventListener("click", sayHello);
+&lt;/script&gt;</code></pre>
+<div class="flow">
+  <div class="flow-box">👆 Event<br><small>user clicks<br>the button</small></div>
+  <div class="flow-arrow" data-label="triggers"></div>
+  <div class="flow-box alt">⚙️ Function<br><small>your recipe<br>of steps</small></div>
+  <div class="flow-arrow" data-label="changes"></div>
+  <div class="flow-box warn">🎨 Page<br><small>alert, new text,<br>new colors…</small></div>
+</div>
+<h3>📝 Read it like a sentence</h3>
+<p>"Find the element with id <em>hello-btn</em>, and when it hears a <em>click</em>, run <em>sayHello</em>." Every interactive thing on the web — likes, menus, dark mode — is this exact pattern.</p>
+<h3>💻 Functions take ingredients</h3>
+<pre><code>function greet(name) {
+  alert("Hello, " + name + "!");
+}
+greet("Aung");   // Hello, Aung!
+greet("Su");     // Hello, Su!</code></pre>
+<div class="callout tip"><strong>Try it yourself:</strong> one button that alerts your shop's name, and a greet(name) function you call twice with different friends' names.</div>`),
+          article("z-js3", "The DOM — Change the Page Live", "12 min", `
+<h3>🎯 alert() is baby steps — change the PAGE</h3>
+<pre><code>&lt;h1 id="title"&gt;My Shop&lt;/h1&gt;
+&lt;button id="btn"&gt;Night mode&lt;/button&gt;
+
+&lt;script&gt;
+  const title = document.getElementById("title");
+  const btn = document.getElementById("btn");
+
+  btn.addEventListener("click", () =&gt; {
+    title.textContent = "My Shop 🌙";          // change text
+    document.body.style.background = "#222";   // change style
+    document.body.style.color = "white";
+  });
+&lt;/script&gt;</code></pre>
+<h3>📝 Your DOM toolkit</h3>
+<ul>
+  <li><code>document.getElementById("x")</code> — grab an element</li>
+  <li><code>el.textContent = "..."</code> — change its text</li>
+  <li><code>el.style.background = "..."</code> — change a style</li>
+  <li><code>el.classList.toggle("dark")</code> — the pro move: flip a CSS class on/off</li>
+</ul>
+<p>You just understood how this academy's 🌙 dark-mode button works. For real.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> build a mood page: two buttons — 😀 sets a yellow background and happy title, 😴 sets dark background and sleepy title.</div>`),
+          article("z-js4", "Decisions & Loops", "12 min", `
+<h3>🎯 if/else — programs that think</h3>
+<pre><code>let age = 15;
+
+if (age &gt;= 18) {
+  console.log("You can vote!");
+} else {
+  console.log("Not yet — " + (18 - age) + " years to go.");
+}</code></pre>
+<h3>🎯 Loops — never repeat yourself</h3>
+<pre><code>const menu = ["Milk tea", "Coffee", "Juice"];
+
+for (const drink of menu) {
+  console.log("We serve: " + drink);
+}</code></pre>
+<h3>💻 Together: the order checker</h3>
+<pre><code>const order = 3;
+let total = order * 1500;
+
+if (total &gt; 4000) {
+  console.log("Big order! Free cookie 🍪");
+}
+console.log("Pay: " + total + " Ks");</code></pre>
+<p>Condition + loop + variable = you can now express real business rules. That's programming — the rest is vocabulary.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> loop over a list of 4 friends; for each, log "VIP" if the name is longer than 4 letters, otherwise "Regular".</div>`),
+          exercise("z-ex-js", "Checkpoint: The Click Counter", "12 min", `
+<h3>🦸 Level 3 exercise</h3>
+<p>Build the classic first app: a <strong>click counter</strong>. The page has a button and a number. Every click must add 1 to the number on screen.</p>
+<ul>
+  <li>Keep the button (<code>id="btn"</code>) and the counter (<code>id="count"</code>)</li>
+  <li>Add a click listener that increases the number and updates the text</li>
+</ul>
+<p>Hints: keep a <code>let clicks = 0;</code> variable → on click do <code>clicks = clicks + 1;</code> → then <code>count.textContent = clicks;</code></p>
+<p>The checker will click your button twice and expect to see <strong>2</strong>. 🤖</p>`,
+`<!DOCTYPE html>
+<html>
+  <body>
+    <button id="btn">Click me</button>
+    <p>Clicks: <span id="count">0</span></p>
+    <script>
+      // your code here
+
+    </script>
+  </body>
+</html>`,
+`var b = document.getElementById("btn");
+var c = document.getElementById("count");
+if (!b || !c) { __exDone(false, "Keep the button id=\\"btn\\" and the span id=\\"count\\"."); }
+else {
+  b.click(); b.click();
+  var n = parseInt(c.textContent, 10);
+  if (n === 2) __exDone(true, "");
+  else __exDone(false, "After 2 clicks the counter shows \\"" + c.textContent + "\\" but should show 2. Update count.textContent inside your click listener.");
+}`),
+          quiz("z-quiz3", "Level 3 Quiz: JavaScript", [
+            { q: "Which variable CANNOT be reassigned?", options: ["let", "var", "const", "static"], answer: 2 },
+            { q: "addEventListener(\"click\", fn) means…", options: ["Click immediately", "Run fn every time the element is clicked", "Delete the element", "Style the element"], answer: 1 },
+            { q: "Change an element's text with…", options: ["el.text()", "el.textContent = \"...\"", "el.html", "el.write()"], answer: 1 },
+            { q: "if (total > 4000) { ... } runs when…", options: ["Always", "total is greater than 4000", "total equals 4000", "Never"], answer: 1 },
+            { q: "for (const x of list) does what?", options: ["Deletes the list", "Runs the block once for each item in the list", "Sorts the list", "Creates a function"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Level 4 — Ship It: Git, GitHub & Going Live",
+        lessons: [
+          article("z-git", "Git — Save Points for Your Code", "10 min", `
+<h3>🎯 Like game save points, for projects</h3>
+<p><strong>Git</strong> records snapshots (<strong>commits</strong>) of your project. Broke something? Travel back. It's the #1 tool employers expect — and it's simple at the start:</p>
+<pre><code>git init                     # start tracking this folder (once)
+git add .                    # stage all changed files
+git commit -m "Add menu page"  # snapshot with a message
+git log --oneline            # see your history</code></pre>
+<div class="flow">
+  <div class="flow-box">✍️ Edit files</div>
+  <div class="flow-arrow" data-label="git add"></div>
+  <div class="flow-box alt">📦 Staged<br><small>chosen for the<br>next snapshot</small></div>
+  <div class="flow-arrow" data-label="git commit"></div>
+  <div class="flow-box warn">📚 History<br><small>permanent save point<br>with your message</small></div>
+</div>
+<h3>📝 Commit message habit</h3>
+<p>Write what the change DOES: "Add order form", "Fix menu prices". Future-you (and every teammate) reads these like a diary of the project.</p>
+<div class="callout"><strong>Phone learner?</strong> Read the commands like vocabulary now; type them in your first computer session. They'll feel familiar instead of scary.</div>
+<div class="callout tip"><strong>Try it yourself (computer):</strong> make a folder, put your profile page in it, and make your first two commits. There is no feeling like your first <code>git log</code>.</div>`),
+          article("z-github", "GitHub — Your Code in the Cloud", "10 min", `
+<h3>🎯 Git on your machine + GitHub online = safety + visibility</h3>
+<pre><code># connect your folder to a GitHub repo (once)
+git remote add origin https://github.com/YOU/my-site.git
+git push -u origin main      # upload your commits
+
+# after every new commit:
+git push</code></pre>
+<h3>📝 Why GitHub matters for YOUR career</h3>
+<ul>
+  <li><strong>Backup</strong> — laptop dies, code lives.</li>
+  <li><strong>Portfolio</strong> — employers open your GitHub before your CV. Green activity squares = proof you actually build.</li>
+  <li><strong>Collaboration</strong> — pull requests are how every dev team on Earth works (the DevOps course goes deep).</li>
+  <li><strong>Free hosting</strong> — next lesson turns a repo into a LIVE website.</li>
+</ul>
+<h3>💡 Profile power move</h3>
+<p>Create a repo named exactly your username — its README becomes your GitHub profile page. Put your name, what you're learning, and links to your projects there.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> create your GitHub account TODAY (free, works on phone) and star this academy's repo to plant your first activity square. 🌱</div>`),
+          article("z-deploy", "Go LIVE — Your Site on the Internet", "12 min", `
+<h3>🎯 The hero moment</h3>
+<p>GitHub Pages hosts your website for free at <code>yourname.github.io</code>. This very academy runs on it!</p>
+<div class="flow">
+  <div class="flow-box">📁 Your repo<br><small>index.html + files</small></div>
+  <div class="flow-arrow" data-label="Settings → Pages"></div>
+  <div class="flow-box alt">⚙️ Enable Pages<br><small>branch: main —<br>one dropdown, Save</small></div>
+  <div class="flow-arrow" data-label="~1 minute"></div>
+  <div class="flow-box warn">🌍 LIVE<br><small>yourname.github.io —<br>anyone on Earth can visit</small></div>
+</div>
+<h3>📝 The exact steps</h3>
+<ol>
+  <li>Push a repo whose main file is named <code>index.html</code> (must be exactly that).</li>
+  <li>Repo → <strong>Settings → Pages</strong> → Source: <strong>main</strong> branch → Save.</li>
+  <li>Wait ~1 minute → your URL appears. Open it on your phone. Send it to a friend. Feel it. 🥹</li>
+</ol>
+<h3>💡 From now on</h3>
+<p>Every <code>git push</code> updates your live site automatically within a minute — you now have the same deploy workflow professionals use (this academy ships exactly this way, many times a day).</p>
+<div class="callout tip"><strong>Level 4 checkpoint:</strong> put your Level 1–3 profile page LIVE. Post the URL somewhere you'll see it every day. You are officially ON the internet — not just using it.</div>`),
+          quiz("z-quiz4", "Level 4 Quiz: Ship It", [
+            { q: "A commit is…", options: ["A deleted file", "A saved snapshot of your project with a message", "A GitHub account", "A CSS rule"], answer: 1 },
+            { q: "The correct order is…", options: ["commit → add → edit", "edit → git add → git commit", "push → edit → add", "init → push → add"], answer: 1 },
+            { q: "git push does what?", options: ["Deletes history", "Uploads your commits to GitHub", "Renames files", "Runs the website"], answer: 1 },
+            { q: "GitHub Pages gives you…", options: ["A paid server", "Free hosting at yourname.github.io", "A domain for $50", "Nothing"], answer: 1 },
+            { q: "For Pages to work, your homepage file must be named…", options: ["home.html", "index.html", "main.html", "page.html"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Level 5 — Data & APIs",
+        lessons: [
+          article("z-json", "JSON — How Apps Exchange Data", "10 min", `
+<h3>🎯 The universal data format</h3>
+<p>When apps talk (your page ↔ a server), they send <strong>JSON</strong> — text that looks like a JavaScript object:</p>
+<pre><code>{
+  "name": "Shwe Tea",
+  "rating": 4.8,
+  "open": true,
+  "menu": ["Milk tea", "Coffee", "Juice"]
+}</code></pre>
+<h3>📝 Reading JSON in JavaScript</h3>
+<pre><code>const shop = {
+  name: "Shwe Tea",
+  menu: ["Milk tea", "Coffee"]
+};
+
+console.log(shop.name);        // Shwe Tea
+console.log(shop.menu[0]);     // Milk tea (lists start at 0!)</code></pre>
+<h3>📝 The two moves</h3>
+<ul>
+  <li><strong>Dot</strong> into objects: <code>shop.name</code>, <code>shop.owner.phone</code></li>
+  <li><strong>Index</strong> into lists: <code>menu[0]</code> is the first item</li>
+</ul>
+<p>Every API answer in the next lesson is just this — objects and lists, nested. If you can dot and index, you can read ANY API.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> build a JSON object describing YOUR dream shop (name, city, 3 menu items, open true/false) and log each piece.</div>`),
+          article("z-fetch", "fetch() — Get Live Data From the Internet", "12 min", `
+<h3>🎯 Your page calls an API</h3>
+<pre><code>fetch("https://open.er-api.com/v6/latest/USD")
+  .then((res) =&gt; res.json())
+  .then((data) =&gt; {
+    console.log("1 USD =", data.rates.MMK, "Ks");
+  })
+  .catch(() =&gt; console.log("Network problem — try again"));</code></pre>
+<div class="flow">
+  <div class="flow-box">📱 Your page<br><small>fetch(url)</small></div>
+  <div class="flow-arrow" data-label="request"></div>
+  <div class="flow-box alt">🌐 API server<br><small>exchange rates,<br>weather, quotes…</small></div>
+  <div class="flow-arrow" data-label="JSON back"></div>
+  <div class="flow-box warn">✨ You display it<br><small>textContent = data…</small></div>
+</div>
+<h3>📝 Read the pattern once, use it forever</h3>
+<ol>
+  <li><code>fetch(url)</code> — send the request</li>
+  <li><code>.then(res =&gt; res.json())</code> — unpack the JSON</li>
+  <li><code>.then(data =&gt; { ... })</code> — USE the data (dot + index!)</li>
+  <li><code>.catch(...)</code> — handle failures politely (networks fail; heroes plan for it)</li>
+</ol>
+<div class="callout tip"><strong>Try it yourself:</strong> run the exchange-rate code in the Playground console. Then show the rate ON the page: set a heading's textContent to it.</div>`),
+          article("z-app", "Project: Your Live-Data Mini App", "15 min", `
+<h3>🦸 Level 5 project — build a real app</h3>
+<p>A <strong>Daily Inspiration</strong> app: one button fetches a random piece of advice from a free API and shows it beautifully.</p>
+<h3>💻 The complete app (type it, don't copy-paste — you learn 3× more)</h3>
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;style&gt;
+    body { font-family: sans-serif; display: flex; flex-direction: column;
+           align-items: center; padding: 40px 16px; background: #f4f0fa; }
+    .card { background: white; padding: 24px; border-radius: 14px;
+            max-width: 420px; text-align: center;
+            box-shadow: 0 6px 20px rgba(0,0,0,.1); }
+    button { margin-top: 16px; padding: 10px 22px; border: none;
+             border-radius: 8px; background: #a435f0; color: white;
+             font-size: 15px; cursor: pointer; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class="card"&gt;
+    &lt;h2&gt;✨ Daily Inspiration&lt;/h2&gt;
+    &lt;p id="quote"&gt;Press the button!&lt;/p&gt;
+    &lt;button id="go"&gt;Inspire me&lt;/button&gt;
+  &lt;/div&gt;
+  &lt;script&gt;
+    const quote = document.getElementById("quote");
+    document.getElementById("go").addEventListener("click", () =&gt; {
+      quote.textContent = "Loading…";
+      fetch("https://api.adviceslip.com/advice")
+        .then((r) =&gt; r.json())
+        .then((data) =&gt; { quote.textContent = "“" + data.slip.advice + "”"; })
+        .catch(() =&gt; { quote.textContent = "No internet — try again!"; });
+    });
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<h3>📝 Look what you're using — EVERY level so far</h3>
+<p>HTML structure (L1) + card styling and viewport (L2) + events, DOM and fetch (L3+L5). This is what "skills stack" means.</p>
+<div class="callout tip"><strong>Hero move:</strong> push this app to GitHub and deploy it with Pages (L4). A LIVE app with real API data — that's portfolio piece #2, and most "3-month bootcamp" students don't have one.</div>`),
+          quiz("z-quiz5", "Level 5 Quiz: Data & APIs", [
+            { q: "JSON is…", options: ["A programming language", "A text format apps use to exchange data", "A database", "A browser"], answer: 1 },
+            { q: "menu[0] gives you…", options: ["The last item", "The first item", "Zero items", "An error"], answer: 1 },
+            { q: "res.json() in the fetch pattern…", options: ["Sends the request", "Unpacks the response into usable data", "Draws the page", "Catches errors"], answer: 1 },
+            { q: ".catch() exists because…", options: ["It's decoration", "Networks fail sometimes and apps must handle it politely", "JSON needs it", "Buttons require it"], answer: 1 },
+            { q: "data.rates.MMK reads…", options: ["A list index", "The MMK field inside the rates object", "A CSS class", "A git branch"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Level 6 — Behind the Curtain (Backend)",
+        lessons: [
+          article("z-backend", "What Servers Actually Do", "10 min", `
+<h3>🎯 The other half of every app</h3>
+<p>Your pages run in the browser (<strong>frontend</strong>). But where do accounts, saved orders and chat messages live? On the <strong>backend</strong> — a program running 24/7 on a server.</p>
+<div class="flow">
+  <div class="flow-box">📱 Frontend<br><small>your HTML/CSS/JS —<br>what users see</small></div>
+  <div class="flow-arrow" data-label="fetch / JSON"></div>
+  <div class="flow-box alt">⚙️ Backend<br><small>rules &amp; logic:<br>"is this password right?"</small></div>
+  <div class="flow-arrow" data-label="reads/writes"></div>
+  <div class="flow-box warn">🗄️ Database<br><small>permanent memory:<br>users, orders, messages</small></div>
+</div>
+<h3>📝 One story, three layers</h3>
+<p>You send a chat message in this academy: the <em>frontend</em> takes your text → the <em>backend</em> (Firebase) checks you're allowed and shares it → the <em>database</em> stores it so your friend sees it tomorrow. Every app you use — same three layers.</p>
+<h3>💡 Why Level 6 is a "peek"</h3>
+<p>You don't need to master backend to be dangerous — you need the MAP. With the map, the Full Stack Developer course (your natural next step) will feel like familiar territory instead of a jungle.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> pick 2 apps you use daily. For each, name one thing the frontend does, one backend rule, and one thing the database remembers.</div>`),
+          article("z-node", "Node & Express in 20 Lines", "12 min", `
+<h3>🎯 JavaScript outside the browser</h3>
+<p><strong>Node.js</strong> runs JS on a server. <strong>Express</strong> makes building APIs simple. Here is a REAL working API:</p>
+<pre><code>const express = require("express");
+const app = express();
+
+const menu = ["Milk tea", "Coffee", "Juice"];
+
+app.get("/api/menu", (req, res) =&gt; {
+  res.json(menu);                    // reply with JSON!
+});
+
+app.listen(3000, () =&gt; {
+  console.log("API running on http://localhost:3000");
+});</code></pre>
+<h3>📝 Read it with Level 5 eyes</h3>
+<p>Remember calling APIs with fetch()? <strong>This is the other side of that phone call.</strong> Someone fetches <code>/api/menu</code> → your code answers with JSON. The whole client-server mystery, solved in 12 lines.</p>
+<h3>💡 The same language everywhere</h3>
+<p>You already know const, functions, arrows and JSON — the SAME JavaScript works on the server. That's why web developers love Node: one language, both sides.</p>
+<div class="callout tip"><strong>Try it yourself (computer):</strong> the Full Stack course Section 4 walks this exact code live, step by step. For now: explain out loud what each line does — if you can, Level 6 is doing its job.</div>`),
+          article("z-db", "Databases — Permanent Memory", "10 min", `
+<h3>🎯 Variables forget. Databases remember.</h3>
+<p>When a server restarts, its variables vanish. Real data — accounts, orders, progress — lives in a <strong>database</strong>.</p>
+<h3>📝 The two big families</h3>
+<ul>
+  <li><strong>SQL</strong> (MySQL, PostgreSQL, SQLite) — data in tables with rows and columns, like disciplined Excel. Speaks the SQL language:</li>
+</ul>
+<pre><code>SELECT name, total FROM orders
+WHERE total &gt; 4000
+ORDER BY total DESC;</code></pre>
+<ul>
+  <li><strong>NoSQL</strong> (MongoDB, Firebase) — data as flexible JSON-like documents. This academy's chat and your progress sync live in Firebase — a NoSQL database you've been using all along!</li>
+</ul>
+<h3>📝 When to pick which (the honest one-liner)</h3>
+<p>Structured data with relationships (orders ↔ customers) → SQL. Flexible/fast-changing shapes or real-time sync → NoSQL. Most careers need comfortable basics in BOTH — the SQL and database courses in this academy go deeper.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> read the SQL above like English, then write (on paper) the query for "names of customers whose total is under 2000, smallest first". You already half-know SQL — it was designed to be readable.</div>`),
+        ],
+      },
+      {
+        title: "Level 7 — Hero: Turn Skills Into Income",
+        lessons: [
+          article("z-portfolio", "A Portfolio That Wins Trust", "12 min", `
+<h3>🎯 Your portfolio IS your CV now</h3>
+<p>For self-taught developers, the portfolio does the talking. Good news: you already built its contents in this course.</p>
+<h3>📝 The 3-project portfolio (you have all three!)</h3>
+<ol>
+  <li><strong>Profile/business page</strong> (Levels 1–2) — polish it: real photos, responsive, clean cards.</li>
+  <li><strong>Interactive app</strong> (Level 3 counter → grow it: a tip calculator or quiz game).</li>
+  <li><strong>Live-data app</strong> (Level 5 inspiration app) — APIs impress; add a second button or share feature.</li>
+</ol>
+<h3>📝 Presentation rules that double interviews</h3>
+<ul>
+  <li>Everything LIVE on GitHub Pages — a link beats a screenshot 100–0.</li>
+  <li>Each repo gets a README: what it does, a screenshot, what you learned, what you'd improve. The write-up shows THINKING, and thinking is what's hired.</li>
+  <li>One page linking all three projects + your GitHub + contact. That page is your portfolio site — project #4, for free.</li>
+  <li>Honest beats fake: 3 small real projects &gt; 1 big copied one. Interviewers ask questions; only real work survives questions.</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> write the README for your inspiration app right now — 5 sentences: what, how, live link, hardest bug, next feature.</div>`),
+          article("z-money", "First Income — Freelance & Local Work", "12 min", `
+<h3>🎯 Paths to your first developer money</h3>
+<div class="flow">
+  <div class="flow-box">🏪 Local shops<br><small>menu page, order form,<br>Facebook → real website</small></div>
+  <div class="flow-arrow" data-label="or"></div>
+  <div class="flow-box alt">🌏 Online freelance<br><small>Upwork / Fiverr —<br>small fixed-price gigs</small></div>
+  <div class="flow-arrow" data-label="or"></div>
+  <div class="flow-box warn">💼 Junior job<br><small>local or remote —<br>portfolio + GitHub open doors</small></div>
+</div>
+<h3>📝 The local-first strategy (works everywhere, especially Myanmar)</h3>
+<ol>
+  <li>Pick ONE shop/service you personally know. Build them a one-page site FREE (a real project + testimonial for you).</li>
+  <li>Post the before/after on Facebook in Burmese: "I built this for X — want one?"</li>
+  <li>Next ones are paid: landing page (start ~50–150k Ks locally), order form, menu updates as a small monthly fee (recurring!).</li>
+</ol>
+<h3>📝 Online freelance survival rules</h3>
+<ul>
+  <li>Start with SMALL fixed-price jobs ("fix my page's mobile layout") — reviews matter more than money at first.</li>
+  <li>Reply fast, over-communicate, deliver a day early. Ratings compound like a streak. 🔥</li>
+  <li>Raise your price every 3 completed jobs. Cheap forever is a trap.</li>
+</ul>
+<div class="callout"><strong>Level up further:</strong> the n8n Automation and Full Stack courses each end with deeper earning playbooks — automation services and complete apps command much higher prices.</div>
+<div class="callout tip"><strong>Try it yourself:</strong> write the ONE Facebook message you'd send a shop owner this week. Short, friendly, with your live portfolio link. Sending it is Level 7's real checkpoint.</div>`),
+          article("z-next", "Your Hero Roadmap From Here", "10 min", `
+<h3>🎉 Look behind you</h3>
+<p>Level 0 you had a phone and curiosity. Now you: build pages (L1), style them responsively (L2), program them (L3), version and DEPLOY them (L4), pull live data (L5), understand servers and databases (L6), and know how to get paid (L7). That is not "beginner" anymore. That's a <strong>junior developer taking shape</strong>. 🦸</p>
+<h3>📝 Choose your next quest (all in this academy)</h3>
+<ul>
+  <li><strong>🥞 Full Stack Developer</strong> — the natural sequel: real servers, databases, complete apps. Level 6 gave you the map; this builds the territory.</li>
+  <li><strong>⚡ n8n Automation & AI Agents</strong> — the fastest freelance income skill of 2026.</li>
+  <li><strong>☁️ Cloud Computing (FREE)</strong> → <strong>♾️ DevOps</strong> — the infrastructure career track.</li>
+  <li><strong>🤖 Agentic AI Engineering</strong> — build with AI, the field everyone's hiring for.</li>
+</ul>
+<h3>📝 The habits that carry you</h3>
+<ol>
+  <li>🔥 Keep the streak — 30 min daily, forever. Consistency IS the talent.</li>
+  <li>🏗️ Always have ONE project in progress. Tutorials teach; projects transform.</li>
+  <li>📢 Build in public — post progress weekly. Your future clients and employers are watching quietly.</li>
+</ol>
+<div class="callout tip"><strong>Graduation:</strong> pass the final exam below, download your Zero to Hero certificate 🎓, post it with your live portfolio link — and enroll in your next quest TODAY while the momentum is hot.</div>`),
+          quiz("z-final", "FINAL EXAM: Zero to Hero", [
+            { q: "The three languages of every web page are…", options: ["Python, SQL, C++", "HTML (structure), CSS (style), JavaScript (behavior)", "Node, Express, MongoDB", "Word, Excel, PowerPoint"], answer: 1 },
+            { q: "To stack flex cards into a column on phones you use…", options: ["A bigger server", "@media (max-width: ...) { .row { flex-direction: column; } }", "More divs", "git push"], answer: 1 },
+            { q: "The event pattern for a working button is…", options: ["style.background", "getElementById + addEventListener(\"click\", fn)", "fetch().then()", "SELECT * FROM buttons"], answer: 1 },
+            { q: "Put your site live for free with…", options: ["Buying a server", "GitHub Pages (repo → Settings → Pages)", "Emailing Google", "USB sticks"], answer: 1 },
+            { q: "The fetch pattern in order:", options: ["catch → then → fetch", "fetch(url) → res.json() → use data → catch errors", "json → fetch → then", "add → commit → push"], answer: 1 },
+            { q: "Permanent app data (accounts, orders) belongs in…", options: ["let variables", "A database", "CSS", "The URL"], answer: 1 },
+            { q: "The strongest first portfolio is…", options: ["One huge copied project", "3 small REAL projects, live, each with an honest README", "Only certificates", "A logo"], answer: 1 },
+            { q: "The best learning habit after this course is…", options: ["Wait for motivation", "30 minutes daily + always one project in progress", "Read without building", "Start 10 courses at once"], answer: 1 },
+          ]),
+        ],
+      },
+    ],
+  },
 ];
 
 /* Expose to the app */

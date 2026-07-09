@@ -3007,7 +3007,7 @@ if students:
     rating: 4.6,
     ratings: 28900,
     students: 187000,
-    hours: 7,
+    hours: 10,
     price: "Free",
     free: true,
     color: "linear-gradient(135deg,#5382a1,#f89820)",
@@ -3081,6 +3081,212 @@ System.out.println(s.name + " passed? " + s.passed());</code></pre>
             { q: "Where does every Java program start?", options: ["The first line of the file", "The main method", "The constructor", "init()"], answer: 1 },
             { q: "Which is a valid Java type?", options: ["number", "int", "let", "var only"], answer: 1 },
             { q: "A class is best described as...", options: ["A running program", "A blueprint for objects", "A loop", "A package manager"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Control & Collections",
+        lessons: [
+          article("jv-control", "Conditions & Loops, Java Style", "10 min", `
+<h3>🎯 Same logic, stricter suit</h3>
+<p>If you did the JavaScript courses, Java's control flow is 90% familiar — just with types:</p>
+<pre><code>int price = 4500;
+
+if (price &gt; 4000) {
+    System.out.println("Big order! Free cookie");
+} else {
+    System.out.println("Normal order");
+}
+
+for (int i = 1; i &lt;= 5; i++) {
+    System.out.println("Cup " + i);
+}
+
+String[] menu = { "Milk tea", "Coffee", "Juice" };
+for (String drink : menu) {          // the "for-each"
+    System.out.println(drink);
+}</code></pre>
+<h3>📝 The Java-specific traps</h3>
+<ul>
+  <li><strong>Compare Strings with .equals()</strong>, never ==: <code>name.equals("Aung")</code>. The == on Strings compares memory addresses — the #1 beginner bug in all of Java.</li>
+  <li><strong>switch</strong> works on int/String/enums — tidy for menus of fixed choices.</li>
+  <li>Conditions must be real booleans: <code>if (1)</code> won't compile (unlike JS). The compiler protecting you IS the Java experience.</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> (online: search "JDoodle Java") loop 1–15 printing "Fizz" for multiples of 3, "Buzz" for 5, "FizzBuzz" for both. Yes — THE interview classic, now in Java.</div>`),
+          article("jv-methods", "Methods — Java's Functions", "10 min", `
+<h3>🎯 Recipes with typed ingredients</h3>
+<pre><code>public class Shop {
+    // returns int, takes two ints
+    static int total(int price, int qty) {
+        return price * qty;
+    }
+
+    // returns nothing (void), just acts
+    static void greet(String name) {
+        System.out.println("Mingalaba, " + name + "!");
+    }
+
+    public static void main(String[] args) {
+        greet("Su");
+        System.out.println(total(1500, 3));   // 4500
+    }
+}</code></pre>
+<h3>📝 Reading a method signature like a native</h3>
+<p><code>static int total(int price, int qty)</code> says: callable without an object (static), RETURNS an int, NEEDS two ints. The signature is a contract — the compiler enforces it, which is why big teams love Java.</p>
+<h3>📝 Overloading — same name, different ingredients</h3>
+<pre><code>static int total(int price, int qty) { return price * qty; }
+static int total(int price)          { return price; }   // qty = 1</code></pre>
+<p>Java picks the right one by the arguments. Cleaner than totalOne/totalMany names.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> write discount(int total, int percent) returning the discounted price, and call it from main with 10000 and 15. (Answer: 8500.)</div>`),
+          article("jv-collections", "ArrayList & HashMap — The Daily Duo", "12 min", `
+<h3>🎯 Arrays have fixed size — real apps don't</h3>
+<pre><code>import java.util.ArrayList;
+import java.util.HashMap;
+
+// a list that GROWS
+ArrayList&lt;String&gt; orders = new ArrayList&lt;&gt;();
+orders.add("Milk tea");
+orders.add("Coffee");
+orders.remove(0);
+System.out.println(orders.size());     // 1
+System.out.println(orders.get(0));     // Coffee
+
+// key → value, O(1) lookup
+HashMap&lt;String, Integer&gt; prices = new HashMap&lt;&gt;();
+prices.put("Milk tea", 1500);
+prices.put("Coffee", 2000);
+System.out.println(prices.get("Coffee"));           // 2000
+System.out.println(prices.getOrDefault("Juice", 0)); // 0, no crash</code></pre>
+<h3>📝 Reading the angle brackets</h3>
+<p><code>ArrayList&lt;String&gt;</code> = "a list OF Strings". The type inside &lt;&gt; (a <strong>generic</strong>) lets the compiler stop you putting a number where text belongs. Annoying for 5 minutes, priceless for 5 years.</p>
+<h3>📝 Loop them like anything else</h3>
+<pre><code>for (String o : orders) System.out.println(o);
+for (String k : prices.keySet())
+    System.out.println(k + " = " + prices.get(k));</code></pre>
+<p>Recognize HashMap? It's the same hero from the DSA course — counting, caching, deduping — now with types.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> build a HashMap menu of 4 drinks, then loop and print a menu board with prices. Add getOrDefault for a drink you didn't add.</div>`),
+          quiz("jv-quiz2", "Quiz: Control & Collections", [
+            { q: "Comparing Strings correctly in Java:", options: ["name == \"Aung\"", "name.equals(\"Aung\")", "name = \"Aung\"", "compare(name)"], answer: 1 },
+            { q: "static int total(int a, int b) returns…", options: ["Nothing", "An int — the compiler enforces it", "A String", "Whatever it wants"], answer: 1 },
+            { q: "A list that can grow is…", options: ["int[]", "ArrayList", "String", "static"], answer: 1 },
+            { q: "ArrayList<String> means…", options: ["A string named ArrayList", "A list that only holds Strings — checked at compile time", "Exactly 1 String", "HTML"], answer: 1 },
+            { q: "prices.getOrDefault(\"Juice\", 0) returns…", options: ["A crash", "The price, or 0 if Juice isn't in the map", "Always 0", "null always"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Real OOP & Next Steps",
+        lessons: [
+          article("jv-objects", "Objects in Practice — Build a Student Class", "12 min", `
+<h3>🎯 From blueprint to living objects</h3>
+<pre><code>public class Student {
+    private String name;      // private: protected inside the class
+    private int xp;
+
+    public Student(String name) {   // constructor
+        this.name = name;
+        this.xp = 0;
+    }
+
+    public void complete(int points) {   // behavior
+        this.xp += points;
+        System.out.println(name + " now has " + xp + " XP");
+    }
+
+    public int getXp() { return xp; }    // controlled reading
+}
+
+// using it:
+Student su = new Student("Su");
+Student aung = new Student("Aung");
+su.complete(10);      // Su now has 10 XP
+aung.complete(25);    // Aung now has 25 XP</code></pre>
+<h3>📝 The ideas hiding in 20 lines</h3>
+<ul>
+  <li><strong>Constructor</strong> — runs at <code>new</code>; guarantees every Student starts valid.</li>
+  <li><strong>private + getters</strong> — outsiders can't do <code>su.xp = 999999;</code> — data changes only through methods you wrote (encapsulation — THE exam word).</li>
+  <li><strong>this</strong> — "my own field", distinguishing it from the parameter.</li>
+  <li>Each object has its OWN data: Su's XP and Aung's XP never mix.</li>
+</ul>
+<p>Sound familiar? This academy's leaderboard is exactly objects like this — name, xp, methods. OOP is how programs model the world.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> add a level() method returning xp / 100 + 1, and a getName() getter. Create 3 students and race them.</div>`),
+          article("jv-inherit", "Inheritance & Interfaces — the Sane Version", "12 min", `
+<h3>🎯 Don't repeat classes</h3>
+<pre><code>public class User {
+    protected String name;
+    public void login() { System.out.println(name + " logged in"); }
+}
+
+public class Admin extends User {          // Admin IS a User...
+    public void deleteCourse(String id) {  // ...plus extra powers
+        System.out.println(name + " deleted " + id);
+    }
+}</code></pre>
+<p><code>extends</code> = inherit everything from the parent, add or override what differs. One login() to maintain, not two.</p>
+<h3>📝 Interfaces — contracts without bodies</h3>
+<pre><code>public interface Payable {
+    int amountDue();                 // WHAT, not HOW
+}
+
+public class Order implements Payable {
+    public int amountDue() { return 4500; }
+}</code></pre>
+<p>An interface says "anything Payable must answer amountDue()". Now a payment method can accept ANY Payable — orders, subscriptions, fines — without knowing their details. That's <strong>polymorphism</strong>, and it's why Java scales to million-line systems.</p>
+<h3>💡 The sane rules (seniors will nod)</h3>
+<ul>
+  <li>Inherit for a true "IS-A" (Admin is a User ✓; Car extends Engine ✗).</li>
+  <li>Keep hierarchies shallow — 2 levels is plenty; 6 is a maze.</li>
+  <li>When unsure, prefer interfaces — flexible contracts beat rigid family trees.</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> make PremiumStudent extends Student with a badge() method — then store a Student AND a PremiumStudent in the same ArrayList&lt;Student&gt;. That "one list, many shapes" moment IS OOP.</div>`),
+          article("jv-errors", "Exceptions & Debugging", "10 min", `
+<h3>🎯 Java refuses to fail silently</h3>
+<pre><code>try {
+    int price = Integer.parseInt(userInput);   // "abc"? → boom
+    System.out.println(price * 2);
+} catch (NumberFormatException e) {
+    System.out.println("Please enter a number!");
+} finally {
+    System.out.println("Always runs — cleanup lives here");
+}</code></pre>
+<h3>📝 Reading a stack trace (the skill that halves debugging time)</h3>
+<pre><code>Exception in thread "main" java.lang.NumberFormatException:
+    For input string: "abc"
+    at java.base/java.lang.Integer.parseInt(...)
+    at Shop.main(Shop.java:12)     ← YOUR line — start here</code></pre>
+<p>Read bottom-up until you hit YOUR file: the exception NAME says what went wrong, the line number says where. It's a map, not an insult.</p>
+<h3>📝 The exceptions you'll actually meet</h3>
+<ul>
+  <li><strong>NullPointerException</strong> — used something that was null. Check before use, or use Optional later.</li>
+  <li><strong>NumberFormatException</strong> — text that isn't a number (user input, always).</li>
+  <li><strong>IndexOutOfBounds</strong> — asked for item 10 of a 3-item list. Off-by-one says hi.</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> cause all three exceptions ON PURPOSE (one line each), read each stack trace aloud. Deliberate crashes = fearless debugging.</div>`),
+          article("jv-next", "Where Java Takes You", "10 min", `
+<h3>🎯 Three famous roads from here</h3>
+<div class="flow">
+  <div class="flow-box">📱 Android<br><small>Java/Kotlin + Android<br>Studio — apps in pockets</small></div>
+  <div class="flow-arrow" data-label="or"></div>
+  <div class="flow-box alt">🏢 Backend<br><small>Spring Boot — banks,<br>telecoms, enterprises</small></div>
+  <div class="flow-arrow" data-label="or"></div>
+  <div class="flow-box">🎓 University+<br><small>exams, DSA in Java,<br>OCA certification</small></div>
+</div>
+<h3>📝 Your realistic next steps</h3>
+<ol>
+  <li><strong>Console project NOW</strong> — a tea-shop order system: ArrayList of orders, HashMap menu, Student-style classes, try/catch on input. Every concept from this course in 100 lines.</li>
+  <li><strong>DSA in Java</strong> — redo this academy's DSA course translating each pattern to Java. Two skills, one effort.</li>
+  <li><strong>Then choose a road</strong> — Android (build for your own phone!) or Spring Boot (the fullstack course's ideas, enterprise-sized).</li>
+</ol>
+<h3>💡 Java vs JavaScript, once and for all</h3>
+<p>Related like car and carpet. JavaScript lives in browsers, dynamic and forgiving; Java lives in servers/Android, compiled and strict. Knowing BOTH is a superpower: JS for speed of building, Java for scale of systems — and this academy taught you both. 🎉</p>
+<div class="callout tip"><strong>Graduation task:</strong> final quiz → certificate 🎓 → then write the tea-shop order system this week. Post a screenshot in the community chat — Java learners are rare and respected there.</div>`),
+          quiz("jv-final", "Final Quiz: Java", [
+            { q: "The #1 Java beginner bug is…", options: ["Missing semicolons", "Comparing Strings with == instead of .equals()", "Too many classes", "Using loops"], answer: 1 },
+            { q: "private fields + public getters give you…", options: ["Slower code", "Encapsulation — data changes only through your methods", "Errors", "Shorter files"], answer: 1 },
+            { q: "Admin extends User means…", options: ["User is deleted", "Admin inherits User's fields/methods and adds its own", "They're unrelated", "Admin is smaller"], answer: 1 },
+            { q: "An interface contains…", options: ["Full implementations", "Method contracts — WHAT, not HOW", "Only variables", "HTML"], answer: 1 },
+            { q: "In a stack trace you first look for…", options: ["The longest line", "The exception name + the line in YOUR file", "The word 'java'", "Nothing, just rerun"], answer: 1 },
+            { q: "Integer.parseInt(\"abc\") throws…", options: ["NullPointerException", "NumberFormatException", "OutOfMemory", "Nothing"], answer: 1 },
           ]),
         ],
       },
@@ -3503,7 +3709,7 @@ plot(months, sales, type = "b",
     rating: 4.8,
     ratings: 31500,
     students: 168000,
-    hours: 9,
+    hours: 12,
     price: "Free",
     free: true,
     color: "linear-gradient(135deg,#134e5e,#71b280)",
@@ -3592,6 +3798,194 @@ console.log(binarySearch([2,5,8,12,16,23,38], 16)); // 4</code></pre>
             { q: "A loop inside a loop over the same list is typically...", options: ["O(1)", "O(log n)", "O(n)", "O(n²)"], answer: 3 },
             { q: "Undo/redo history fits which structure?", options: ["Queue", "Stack", "Hash map", "Graph"], answer: 1 },
             { q: "Binary search requires the data to be...", options: ["Unique", "Sorted", "Numeric", "Short"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Core Structures in Action",
+        lessons: [
+          article("dsa-hash", "Hash Maps — The Interview MVP", "12 min", `
+<h3>🎯 The structure that solves half of all interview questions</h3>
+<p>A <strong>hash map</strong> stores key → value pairs with O(1) lookup: no matter how big it grows, finding a key takes the same tiny time.</p>
+<h3>💻 The counting pattern (memorize this shape)</h3>
+<pre><code>// "which word appears most often?"
+const counts = {};
+for (const w of words) {
+  counts[w] = (counts[w] || 0) + 1;
+}</code></pre>
+<h3>💻 The seen-set pattern</h3>
+<pre><code>// "does the list contain a duplicate?"
+const seen = new Set();
+for (const x of items) {
+  if (seen.has(x)) return true;   // found twice!
+  seen.add(x);
+}
+return false;</code></pre>
+<div class="flow">
+  <div class="flow-box warn">🐌 Nested loops<br><small>compare all pairs —<br>O(n²), 1M items = pain</small></div>
+  <div class="flow-arrow" data-label="replace with"></div>
+  <div class="flow-box alt">⚡ One pass + map<br><small>remember what you saw —<br>O(n), 1M items = instant</small></div>
+</div>
+<p>THE classic interview move: see a nested loop → ask "could a hash map remember this for me?" It usually can.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> in the Playground, count letter frequencies of "mingalaba" with the counting pattern. Which letter wins?</div>`),
+          article("dsa-stackq", "Stacks & Queues in Real Code", "10 min", `
+<h3>🎯 Two disciplines of waiting</h3>
+<div class="flow">
+  <div class="flow-box">🥞 Stack — LIFO<br><small>last in, first out:<br>undo, back button,<br>function calls</small></div>
+  <div class="flow-arrow" data-label="vs"></div>
+  <div class="flow-box alt">🚶 Queue — FIFO<br><small>first in, first out:<br>print jobs, orders,<br>level-by-level search</small></div>
+</div>
+<h3>💻 The famous stack question: valid brackets</h3>
+<pre><code>// is "([{}])" properly closed? push opens, pop on close
+function valid(s) {
+  const stack = [];
+  const pair = { ")": "(", "]": "[", "}": "{" };
+  for (const ch of s) {
+    if ("([{".includes(ch)) stack.push(ch);
+    else if (stack.pop() !== pair[ch]) return false;
+  }
+  return stack.length === 0;
+}</code></pre>
+<p>Asked in interviews constantly — and it's exactly how editors check your code's brackets.</p>
+<h3>📝 In JavaScript</h3>
+<p>An array IS both: <code>push/pop</code> = stack, <code>push/shift</code> = queue. Know the concept; the syntax is free.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> trace valid("([)]") on paper, character by character, drawing the stack. Watch it fail — feel WHY the order matters.</div>`),
+          article("dsa-linked", "Linked Lists Without Tears", "10 min", `
+<h3>🎯 A chain, not a shelf</h3>
+<p>An array is a shelf: numbered slots, instant access, but inserting in the middle means shifting everything. A <strong>linked list</strong> is a treasure hunt: each node holds a value + a pointer to the next.</p>
+<div class="flow">
+  <div class="flow-box">📦 value: 5<br><small>next →</small></div>
+  <div class="flow-arrow" data-label=""></div>
+  <div class="flow-box">📦 value: 8<br><small>next →</small></div>
+  <div class="flow-arrow" data-label=""></div>
+  <div class="flow-box alt">📦 value: 3<br><small>next → null<br>(the end)</small></div>
+</div>
+<h3>💻 A node in code — that's all it is</h3>
+<pre><code>const node3 = { value: 3, next: null };
+const node2 = { value: 8, next: node3 };
+const head  = { value: 5, next: node2 };
+
+// walk the chain
+let cur = head;
+while (cur) { console.log(cur.value); cur = cur.next; }</code></pre>
+<h3>📝 The honest trade-off</h3>
+<ul>
+  <li><strong>Array:</strong> read by index O(1) ⚡ · insert middle O(n) 🐌</li>
+  <li><strong>Linked list:</strong> read by index O(n) 🐌 · insert (given the spot) O(1) ⚡</li>
+</ul>
+<p>Interviews love linked lists because pointers reveal careful thinking — the classic task is "reverse it" (walk the chain flipping each next).</p>
+<div class="callout tip"><strong>Try it yourself:</strong> build the 3-node chain above in the Playground and walk it. Then insert a node BETWEEN 8 and 3 by changing one pointer — feel the O(1).</div>`),
+          quiz("dsa-quiz2", "Quiz: Core Structures", [
+            { q: "Counting word frequencies is a job for…", options: ["Nested loops", "A hash map: counts[w] = (counts[w] || 0) + 1", "Sorting", "A linked list"], answer: 1 },
+            { q: "Hash map lookup by key is roughly…", options: ["O(n)", "O(1)", "O(n²)", "O(log n)"], answer: 1 },
+            { q: "The browser back button behaves like a…", options: ["Queue", "Stack (last in, first out)", "Graph", "Tree"], answer: 1 },
+            { q: "A print-job line behaves like a…", options: ["Stack", "Queue (first in, first out)", "Set", "Map"], answer: 1 },
+            { q: "Linked lists beat arrays at…", options: ["Reading by index", "Inserting at a known spot without shifting", "Everything", "Sorting"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Patterns That Pass Interviews",
+        lessons: [
+          article("dsa-twoptr", "Two Pointers & Sliding Window", "12 min", `
+<h3>🎯 Squeeze O(n²) into O(n)</h3>
+<h3>💻 Two pointers: pair-sum in a SORTED array</h3>
+<pre><code>// does any pair add up to target?
+function pairSum(sorted, target) {
+  let lo = 0, hi = sorted.length - 1;
+  while (lo &lt; hi) {
+    const sum = sorted[lo] + sorted[hi];
+    if (sum === target) return true;
+    if (sum &lt; target) lo++;   // need bigger → move left up
+    else hi--;                 // need smaller → move right down
+  }
+  return false;
+}</code></pre>
+<p>Two fingers walking toward each other — every step eliminates possibilities. One pass instead of all pairs.</p>
+<h3>💻 Sliding window: best 7-day sales streak</h3>
+<pre><code>let sum = 0, best = 0;
+for (let i = 0; i &lt; days.length; i++) {
+  sum += days[i];                 // window grows on the right
+  if (i &gt;= 7) sum -= days[i - 7]; // and shrinks on the left
+  best = Math.max(best, sum);
+}</code></pre>
+<p>The window slides across the data keeping a running total — no re-adding 7 numbers each day.</p>
+<h3>📝 When to smell these patterns</h3>
+<ul>
+  <li>"pair / two elements that…" + sorted data → <strong>two pointers</strong></li>
+  <li>"best/longest/shortest subarray or substring" → <strong>sliding window</strong></li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> run pairSum([1,3,5,8,11], 13) in your head with two fingers on the numbers. Which finger moves first?</div>`),
+          article("dsa-recursion", "Recursion — Trust the Function", "12 min", `
+<h3>🎯 A function that calls itself</h3>
+<p>Recursion scares beginners until they learn the contract: <strong>one base case + one smaller call = done</strong>.</p>
+<h3>💻 The two-line pattern</h3>
+<pre><code>function factorial(n) {
+  if (n &lt;= 1) return 1;              // BASE CASE: stop here
+  return n * factorial(n - 1);        // smaller same problem
+}
+// factorial(4) → 4 * 3 * 2 * 1 = 24</code></pre>
+<h3>📝 How to never get lost</h3>
+<ol>
+  <li>Write the base case FIRST — when is the answer trivial?</li>
+  <li>Assume the recursive call already works for the smaller input ("trust the function").</li>
+  <li>Combine: your job is only THIS layer's step.</li>
+</ol>
+<h3>💻 The memo upgrade (dynamic programming's front door)</h3>
+<pre><code>const memo = {};
+function fib(n) {
+  if (n &lt;= 1) return n;
+  if (memo[n] !== undefined) return memo[n];  // seen it? reuse!
+  return memo[n] = fib(n - 1) + fib(n - 2);
+}</code></pre>
+<p>Plain fib(40) makes ~1.6 BILLION calls; with the memo, about 40. That one cache line is the whole idea behind "dynamic programming".</p>
+<div class="callout tip"><strong>Try it yourself:</strong> write countdown(n) that logs n → 0 recursively. Then remove the base case on purpose and enjoy your first stack overflow — a rite of passage.</div>`),
+          article("dsa-sort", "Sorting — What You Actually Need", "10 min", `
+<h3>🎯 Know the idea, use the built-in</h3>
+<p>Interviews rarely ask you to WRITE quicksort — they ask you to USE sorting wisely and know its cost: good sorts run in <strong>O(n log n)</strong>.</p>
+<h3>💻 The comparator — the part people get wrong</h3>
+<pre><code>const nums = [25, 3, 100];
+nums.sort();                    // ❌ [100, 25, 3]?! sorts as TEXT
+nums.sort((a, b) =&gt; a - b);     // ✅ [3, 25, 100] ascending
+
+// objects: top students by xp, descending
+students.sort((a, b) =&gt; b.xp - a.xp);</code></pre>
+<h3>📝 The mental catalogue (one line each)</h3>
+<ul>
+  <li><strong>Bubble/selection</strong> — O(n²) teaching toys. Know they exist; never ship them.</li>
+  <li><strong>Merge sort</strong> — split, sort halves, merge: O(n log n), the recursion poster child.</li>
+  <li><strong>Quick sort</strong> — pivot + partition: O(n log n) typical; roughly what libraries use.</li>
+</ul>
+<h3>💡 The interview power move</h3>
+<p>"I'd sort first — O(n log n) — then binary search / two pointers become available." Sorting as a STEP unlocks better algorithms; that sentence scores points.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> sort ["banana", "Apple", "cherry"] case-insensitively with a comparator using .toLowerCase(). This exact task appears in real codebases weekly.</div>`),
+          article("dsa-plan", "Your Interview Practice Plan", "10 min", `
+<h3>🎯 From lessons to offers</h3>
+<p>DSA is a sport — you get good by playing, not watching. The 30-day starter plan:</p>
+<div class="flow">
+  <div class="flow-box">Week 1<br><small>arrays + hash maps<br>5 easy problems</small></div>
+  <div class="flow-arrow" data-label="then"></div>
+  <div class="flow-box alt">Week 2<br><small>stacks/queues + two<br>pointers · 5 easy</small></div>
+  <div class="flow-arrow" data-label="then"></div>
+  <div class="flow-box alt">Week 3<br><small>recursion + sorting<br>4 easy + 1 medium</small></div>
+  <div class="flow-arrow" data-label="then"></div>
+  <div class="flow-box warn">Week 4<br><small>mixed review —<br>re-solve old ones FAST</small></div>
+</div>
+<h3>📝 Rules that make practice stick</h3>
+<ul>
+  <li><strong>25-minute rule</strong> — stuck longer? Read the solution, UNDERSTAND it, re-code it from memory tomorrow. That's learning, not cheating.</li>
+  <li><strong>Say the pattern out loud</strong> — "this smells like sliding window because…" Naming patterns is the skill interviews measure.</li>
+  <li><strong>Re-solving beats new-solving</strong> — one problem solved twice a week apart beats three solved once.</li>
+  <li><strong>Free arenas</strong> — LeetCode easy tier, HackerRank, Codewars. One problem a day beats ten on Sunday. 🔥</li>
+</ul>
+<div class="callout tip"><strong>Graduation task:</strong> pass the final quiz, then solve your first real problem TODAY: "Two Sum" on LeetCode — you already know its secret (hash map, one pass). Go collect that green checkmark.</div>`),
+          quiz("dsa-final", "Final Quiz: DSA", [
+            { q: "See a nested loop comparing all pairs. First thought:", options: ["Ship it", "Could a hash map remember what I've seen — O(n)?", "Add a third loop", "Rewrite in C"], answer: 1 },
+            { q: "\"Longest substring with…\" smells like…", options: ["Binary search", "Sliding window", "Linked list", "Bubble sort"], answer: 1 },
+            { q: "Every recursion needs…", options: ["A global variable", "A base case + a smaller call", "At least 2 loops", "A framework"], answer: 1 },
+            { q: "nums.sort() on numbers without a comparator…", options: ["Sorts ascending", "Sorts as TEXT — use (a,b) => a - b", "Crashes", "Sorts descending"], answer: 1 },
+            { q: "Good general-purpose sorts cost…", options: ["O(1)", "O(n log n)", "O(n²) always", "O(2ⁿ)"], answer: 1 },
+            { q: "Stuck 25+ minutes on a practice problem. Best move:", options: ["Stare for 3 more hours", "Study the solution, re-code it from memory tomorrow", "Quit DSA", "Memorize 500 solutions"], answer: 1 },
           ]),
         ],
       },
@@ -3919,7 +4313,7 @@ docker run -p 3000:3000 my-app</code></pre>
     rating: 4.6,
     ratings: 33800,
     students: 274000,
-    hours: 4,
+    hours: 7,
     price: "Free",
     free: true,
     color: "linear-gradient(135deg,#1d6f42,#21a366)",
@@ -3961,6 +4355,157 @@ docker run -p 3000:3000 my-app</code></pre>
             { q: "Every formula begins with...", options: ["#", "=", "@", "$"], answer: 1 },
             { q: "$A$1 in a copied formula...", options: ["Changes row only", "Changes column only", "Never changes", "Causes an error"], answer: 2 },
             { q: "VLOOKUP's FALSE argument asks for...", options: ["Sorted data", "An exact match", "Case sensitivity", "A backup value"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Everyday Excel Power",
+        lessons: [
+          article("xl-format", "Formatting & Real Tables", "10 min", `
+<h3>🎯 Data people can READ</h3>
+<h3>📝 Number formats (right-click → Format Cells)</h3>
+<ul>
+  <li><strong>Currency</strong> — 1500000 becomes 1,500,000 Ks at a glance</li>
+  <li><strong>Percent</strong> — 0.125 becomes 12.5% (Excel multiplies by 100 for display)</li>
+  <li><strong>Date</strong> — dates are secretly numbers; format decides how they LOOK</li>
+</ul>
+<h3>📝 Ctrl + T — the real Table</h3>
+<p>Select your data → <strong>Ctrl+T</strong>. You get: banded rows, filter arrows, headers that stay visible, and formulas that auto-fill down new rows. Professionals put almost everything in Tables — it's one shortcut.</p>
+<h3>📝 Conditional formatting — let colors find problems</h3>
+<p>Home → Conditional Formatting: highlight sales below target in red, top 10 in green, or add data bars inside cells. The rule watches the data FOREVER — new numbers color themselves.</p>
+<div class="flow">
+  <div class="flow-box">😵 Wall of numbers<br><small>nobody sees the problem</small></div>
+  <div class="flow-arrow" data-label="Ctrl+T + rules"></div>
+  <div class="flow-box alt">🎨 Colored table<br><small>the red cell SHOUTS<br>where to look</small></div>
+</div>
+<div class="callout tip"><strong>Try it yourself:</strong> type 10 sales numbers, Ctrl+T them, then add a rule coloring anything under 50,000 red. Watch the table think for you.</div>`),
+          article("xl-sortfilter", "Sort, Filter & Find What Matters", "8 min", `
+<h3>🎯 Questions, answered by clicks</h3>
+<h3>📝 The filter arrows (from your Ctrl+T table)</h3>
+<ul>
+  <li><strong>Sort</strong> — biggest sale first? A→Z on names? One click on the column arrow.</li>
+  <li><strong>Filter by value</strong> — show only "Yangon" branch, only unpaid orders, only this month.</li>
+  <li><strong>Number filters</strong> — "greater than 100,000", "top 10", "above average" — ready-made questions.</li>
+  <li><strong>Search inside the filter</strong> — type into the filter box to find one customer among 5,000.</li>
+</ul>
+<h3>📝 Multi-level sorting</h3>
+<p>Data → Sort → Add Level: sort by Branch, THEN by Amount descending — the report groups itself. (This is the same "ORDER BY" thinking as SQL — Excel is your gateway drug to databases!)</p>
+<h3>⚠️ The classic disaster (avoid!)</h3>
+<p>Selecting ONE column and sorting only it — rows stop matching and your data is scrambled. Always sort from inside the table (or select everything). Ctrl+Z is your friend; saving after the mistake is not.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> in your practice table, show only rows above average with two clicks. Feel how fast "analysis" can be.</div>`),
+          article("xl-charts", "Charts That Tell the Story", "10 min", `
+<h3>🎯 One chart beats forty numbers</h3>
+<p>Select data → Insert → chart. The REAL skill is choosing the right type:</p>
+<div class="flow">
+  <div class="flow-box">📊 Column<br><small>compare categories:<br>sales by branch</small></div>
+  <div class="flow-arrow" data-label="or"></div>
+  <div class="flow-box alt">📈 Line<br><small>change over time:<br>monthly revenue</small></div>
+  <div class="flow-arrow" data-label="or"></div>
+  <div class="flow-box">🥧 Pie<br><small>parts of a whole —<br>max 5 slices!</small></div>
+  <div class="flow-arrow" data-label="or"></div>
+  <div class="flow-box warn">📉 Bar<br><small>long labels or<br>many categories</small></div>
+</div>
+<h3>📝 The 3 edits that make charts professional</h3>
+<ol>
+  <li><strong>Title = the finding</strong> — "Mandalay grew 40% this quarter", not "Chart 1".</li>
+  <li><strong>Delete clutter</strong> — gridlines, borders, 3D effects. Less ink, more meaning.</li>
+  <li><strong>Sort before charting</strong> — bars in size order read instantly.</li>
+</ol>
+<h3>💡 Sparklines — charts inside cells</h3>
+<p>Insert → Sparklines: a tiny trend line per ROW (each product's 12-month story in one cell). Managers love these more than big charts.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> chart your practice sales twice — column and pie. Which answers "which branch is winning?" faster? (Column. Almost always column.)</div>`),
+          quiz("xl-quiz2", "Quiz: Everyday Power", [
+            { q: "Ctrl+T turns your data into…", options: ["A chart", "A real Table: filters, banded rows, auto-fill formulas", "A PDF", "A pivot"], answer: 1 },
+            { q: "Highlighting all sales under target automatically uses…", options: ["Manual coloring every week", "Conditional formatting rules", "A second sheet", "Bold font"], answer: 1 },
+            { q: "Sorting ONE selected column by itself…", options: ["Is best practice", "Scrambles your rows — sort the whole table", "Is faster", "Makes backups"], answer: 1 },
+            { q: "Change over 12 months is best shown by a…", options: ["Pie chart", "Line chart", "3D bar", "Word cloud"], answer: 1 },
+            { q: "A good chart title is…", options: ["\"Chart 1\"", "The finding: \"Mandalay grew 40%\"", "The file name", "Optional decoration"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Analyst Level",
+        lessons: [
+          article("xl-clean", "Dates, Text & Data Cleanup", "10 min", `
+<h3>🎯 Real data arrives dirty</h3>
+<p>Extra spaces, names glued together, dates as text — cleanup is half of every Excel job. Your toolkit:</p>
+<h3>💻 Text repair crew</h3>
+<pre><code>=TRIM(A2)              removes stray spaces
+=PROPER(A2)            aung aung → Aung Aung
+=LEFT(A2, 4)           first 4 characters
+=TEXTJOIN(" ", 1, A2, B2)   glue first + last name
+=TEXT(A2, "mmm d")     date → "Jul 9" for labels</code></pre>
+<h3>💻 Dates are numbers (this unlocks everything)</h3>
+<pre><code>=TODAY()               today, always current
+=B2 - A2               days between two dates
+=B2 + 30               payment due in 30 days
+=NETWORKDAYS(A2, B2)   working days only</code></pre>
+<h3>📝 Two lifesavers</h3>
+<ul>
+  <li><strong>Flash Fill (Ctrl+E)</strong> — type ONE example of what you want ("Aung" from "Aung Aung"), press Ctrl+E, Excel learns the pattern and fills the whole column. Magic, no formula.</li>
+  <li><strong>Remove Duplicates</strong> — Data tab → instant deduped list. Check the count it reports!</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> type 5 messy names ("  su su  ", "AUNG AUNG") and clean them with TRIM + PROPER. Then try the same with Flash Fill — two roads, same result.</div>`),
+          article("xl-xlookup", "XLOOKUP — The New King of Lookups", "10 min", `
+<h3>🎯 VLOOKUP's modern replacement</h3>
+<p>You learned VLOOKUP — everyone asks for it. But modern Excel has <strong>XLOOKUP</strong>: simpler, safer, and it looks in ANY direction.</p>
+<h3>💻 Side by side</h3>
+<pre><code>=VLOOKUP(A2, Prices!A:C, 3, FALSE)      the old way
+=XLOOKUP(A2, Prices!A:A, Prices!C:C)    the new way</code></pre>
+<p>Read the new one aloud: "find A2 in this column, give me the matching value from that column." No column counting, exact match by default.</p>
+<h3>📝 Why professionals switched</h3>
+<ul>
+  <li><strong>No column numbers</strong> — inserting a column doesn't silently break your report (VLOOKUP's famous betrayal).</li>
+  <li><strong>Looks left AND right</strong> — VLOOKUP could only look rightward.</li>
+  <li><strong>Built-in "not found"</strong> — 4th argument: <code>=XLOOKUP(A2, ids, prices, "NOT FOUND")</code>. No more ugly #N/A in printouts.</li>
+</ul>
+<h3>💡 Interview-honest note</h3>
+<p>Older offices still run old Excel — know VLOOKUP for compatibility, use XLOOKUP when available. Saying exactly that sentence in a job interview marks you as experienced.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> build a tiny price list on Sheet2 and pull prices into Sheet1 with XLOOKUP, including a "CHECK ID" not-found message.</div>`),
+          article("xl-pivot", "Pivot Tables in 10 Minutes", "12 min", `
+<h3>🎯 The most valuable Excel skill, period</h3>
+<p>1,000 rows of orders → "sales by branch by month" in four drags. That's a <strong>pivot table</strong>.</p>
+<div class="flow">
+  <div class="flow-box">📄 Raw rows<br><small>date, branch,<br>product, amount</small></div>
+  <div class="flow-arrow" data-label="Insert → PivotTable"></div>
+  <div class="flow-box alt">🎛️ Drag fields<br><small>Branch → Rows<br>Amount → Values<br>Month → Columns</small></div>
+  <div class="flow-arrow" data-label="instantly"></div>
+  <div class="flow-box warn">📊 Summary<br><small>totals per branch<br>per month + grand total</small></div>
+</div>
+<h3>📝 The four boxes</h3>
+<ul>
+  <li><strong>Rows</strong> — what each line groups by (branch, product, person)</li>
+  <li><strong>Values</strong> — the number, summarized (Sum of amount; right-click → Count / Average / % of total)</li>
+  <li><strong>Columns</strong> — a second grouping across the top (months!)</li>
+  <li><strong>Filters/Slicers</strong> — Insert → Slicer = clickable buttons your boss can press without breaking anything</li>
+</ul>
+<h3>💡 The two rules of happy pivots</h3>
+<p>1) Source data as a Ctrl+T Table (new rows flow in). 2) Right-click → Refresh after data changes — pivots don't auto-update, the #1 "my numbers are wrong" cause.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> make a 15-row order list (3 branches, 3 months) and answer "which branch won February?" with a pivot — no formulas at all.</div>`),
+          article("xl-dash", "Your Mini Dashboard + Sharing", "10 min", `
+<h3>🎯 Put it together like an analyst</h3>
+<p>A one-sheet dashboard = 2 pivots + 2 charts + slicers, arranged clean:</p>
+<ol>
+  <li>New sheet named <strong>Dashboard</strong> — nobody works inside raw data.</li>
+  <li>Top: 3 big numbers (total sales, best branch, orders count) — cells with big fonts, linked to pivot values.</li>
+  <li>Middle: a column chart (per branch) + line chart (per month), both from pivots.</li>
+  <li>One shared Slicer controlling both charts (right-click slicer → Report Connections).</li>
+</ol>
+<h3>📝 Sharing without tears</h3>
+<ul>
+  <li><strong>Print/PDF</strong> — set the print area first (Page Layout → Print Area), preview with Ctrl+P; landscape for wide tables.</li>
+  <li><strong>Freeze panes</strong> — View → Freeze Top Row: headers stay while scrolling. Every shared file deserves this.</li>
+  <li><strong>Protect</strong> — Review → Protect Sheet lets viewers click but not wreck formulas.</li>
+</ul>
+<h3>💡 Where this skill goes next</h3>
+<p>Excel thinking IS data thinking: filters = SQL WHERE, pivots = GROUP BY, XLOOKUP = JOIN. When ready, the <strong>SQL Fundamentals</strong> course will feel like meeting an old friend — and "Excel + SQL" on a CV opens office doors everywhere.</p>
+<div class="callout tip"><strong>Graduation task:</strong> build the mini dashboard from your practice data, pass the final quiz, grab the certificate 🎓 — and show the dashboard to someone. Reactions to slicers are always priceless.</div>`),
+          quiz("xl-final", "Final Quiz: Excel", [
+            { q: "\"Sales by branch by month\" from 1,000 raw rows is a job for…", options: ["Manual totals", "A pivot table", "One giant formula", "Copy-paste"], answer: 1 },
+            { q: "Pivot shows old numbers after you edit data. You…", options: ["Panic", "Right-click → Refresh", "Rebuild everything", "Restart Windows"], answer: 1 },
+            { q: "XLOOKUP beats VLOOKUP because…", options: ["It's older", "No column counting, looks both ways, built-in not-found", "It's slower", "It only works on Mac"], answer: 1 },
+            { q: "Messy \"  aung aung  \" becomes clean with…", options: ["Retyping 500 cells", "TRIM + PROPER (or one Ctrl+E Flash Fill)", "Deleting the column", "A macro only"], answer: 1 },
+            { q: "Before printing a big sheet you set…", options: ["More colors", "The print area + landscape + freeze panes", "Font size 6", "Nothing"], answer: 1 },
           ]),
         ],
       },

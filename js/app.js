@@ -1254,6 +1254,7 @@
 
       <div class="container">
         ${dailyHomeCard()}
+        ${communityHomeCard()}
         ${resumeBanner()}
         ${fresh.length ? `
         <h2 class="section-title">🆕 ${t("new_title")}</h2>
@@ -3318,6 +3319,91 @@
     });
   }
 
+  /* ---------------- View: Community ---------------- */
+  function communityHomeCard() {
+    return `
+      <a class="daily-card comm-card" href="#/community">
+        <span class="dc-ic">🫂</span>
+        <div class="dc-txt"><b>${t("comm_title")}</b><span class="muted">${t("comm_home_sub")}</span></div>
+        <span class="btn btn-outline btn-sm">💬</span>
+      </a>`;
+  }
+  function renderCommunity() {
+    app.innerHTML = `
+      <div class="container" style="max-width:720px">
+        <h2 class="section-title">🫂 ${t("comm_title")}</h2>
+        <p class="section-sub">${t("comm_sub")}</p>
+
+        <div class="panel comm-cta">
+          <div style="flex:1;min-width:220px">
+            <h3 style="margin:0 0 4px">💬 ${t("comm_chat_title")}</h3>
+            <p class="muted" style="margin:0;font-size:13.5px">${t("comm_chat_sub")}</p>
+            <p class="tl-status" id="comm-online"></p>
+          </div>
+          <button class="btn btn-primary" id="comm-open">💬 ${t("comm_open")}</button>
+        </div>
+
+        <div class="panel">
+          <h3>🏆 ${t("comm_top_week")}</h3>
+          <div id="comm-top" class="adash-list"><p class="muted">⏳</p></div>
+          <a class="btn btn-outline btn-sm" style="margin-top:10px" href="#/leaderboard">🏆 ${t("lb_title")} →</a>
+        </div>
+
+        <div class="panel">
+          <h3>📚 ${t("comm_rooms")}</h3>
+          <p class="muted" style="font-size:13px;margin-top:0">${t("comm_rooms_sub")}</p>
+          <div class="chips">
+            ${COURSES.filter((c) => !isFree(c)).map((c) =>
+              `<a class="chip" href="#/course/${c.id}">${c.icon} ${cf(c, "title")}</a>`).join("")}
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>📜 ${t("comm_rules")}</h3>
+          <ul class="req-list">
+            <li>${t("comm_rule1")}</li>
+            <li>${t("comm_rule2")}</li>
+            <li>${t("comm_rule3")}</li>
+            <li>${t("comm_rule4")}</li>
+          </ul>
+        </div>
+      </div>`;
+
+    document.getElementById("comm-open").addEventListener("click", () => {
+      if (window.Chat) { window.Chat.setRoom("community", null); window.Chat.open(); }
+    });
+
+    const base = statsBase();
+    if (!base) return;
+    /* who's online (presence heartbeats, 60s window — same rule as the widget) */
+    fetch(base + "/rooms/community/presence.json").then((r) => r.json()).then((val) => {
+      const el = document.getElementById("comm-online");
+      if (!el) return;
+      const now = Date.now();
+      const users = Object.values(val || {}).filter((x) => x && now - x.ts < 60000);
+      el.className = "tl-status " + (users.length ? "ok" : "");
+      el.textContent = users.length
+        ? "🟢 " + users.length + " " + t("comm_online") + ": " +
+          users.slice(0, 5).map((x) => x.name).join(", ") + (users.length > 5 ? " +" + (users.length - 5) : "")
+        : "💤 " + t("comm_quiet");
+    }).catch(() => {});
+    /* this week's most active learners */
+    fetch(base + "/stats/leaderboard.json").then((r) => r.json()).then((lb) => {
+      const el = document.getElementById("comm-top");
+      if (!el) return;
+      const week = Date.now() - 7 * 864e5;
+      const rows = Object.values(lb || {})
+        .filter((x) => x && (Number(x.ts) || 0) >= week && (Number(x.xp) || 0) > 0)
+        .sort((a, b) => (Number(b.xp) || 0) - (Number(a.xp) || 0))
+        .slice(0, 5);
+      el.innerHTML = rows.length
+        ? rows.map((s, i) =>
+            `<div class="adash-row"><span>${["🥇", "🥈", "🥉", "4.", "5."][i]} ${escapeHtml(String(s.name || "?").slice(0, 24))}</span><b>⚡ ${Number(s.xp) || 0} · 🔥 ${Number(s.streak) || 0}</b></div>`).join("")
+        : `<p class="muted">${t("comm_be_first")}</p>`;
+    }).catch(() => {});
+    window.scrollTo(0, 0);
+  }
+
   /* ---------------- View: My Account ---------------- */
   function renderAccount(flash) {
     const u = loggedIn() ? window.Auth.current() : null;
@@ -4222,7 +4308,7 @@
       : parts[0] === "playground" ? "playground"
       : parts[0] === "tools" ? "tools"
       : parts[0] === "daily" ? "home"
-      : ["my-learning", "review", "leaderboard", "account", "certificate"].indexOf(parts[0]) >= 0 ? "me"
+      : ["my-learning", "review", "leaderboard", "account", "certificate", "community"].indexOf(parts[0]) >= 0 ? "me"
       : "";
     document.querySelectorAll("#tabbar a").forEach((a) =>
       a.classList.toggle("active", a.getAttribute("data-tab") === tabOf)
@@ -4244,6 +4330,7 @@
     else if (parts[0] === "playground") renderPlayground(parts[1]);
     else if (parts[0] === "tools") renderTools(parts[1]);
     else if (parts[0] === "daily") renderDaily();
+    else if (parts[0] === "community") renderCommunity();
     else if (parts[0] === "leaderboard") renderLeaderboard();
     else if (parts[0] === "review") renderReview();
     else if (parts[0] === "premium") renderPremium(parts[1]);

@@ -3553,7 +3553,7 @@ Console.WriteLine($"{s.Name} passed? {s.Passed}");</code></pre>
     rating: 4.7,
     ratings: 12400,
     students: 76000,
-    hours: 5,
+    hours: 9,
     price: "Free",
     free: true,
     color: "linear-gradient(135deg,#7f52ff,#e24462)",
@@ -3621,6 +3621,170 @@ fun main() {
             { q: "Which keyword makes a read-only variable?", options: ["var", "let", "val", "const only"], answer: 2 },
             { q: "String? means...", options: ["A list of strings", "A string that may be null", "An optional import", "A comment"], answer: 1 },
             { q: "data class automatically gives you...", options: ["A database table", "equals/hashCode/toString", "A UI screen", "Nothing extra"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Kotlin That Feels Like Kotlin",
+        lessons: [
+          article("kt-functions", "Functions, Defaults & Lambdas", "12 min", `
+<h3>🎯 Less ceremony than Java, same safety</h3>
+<pre><code>// expression body — one-liners stay one line
+fun total(price: Int, qty: Int = 1) = price * qty
+
+total(1500)        // 1500 (default qty)
+total(1500, 3)     // 4500
+total(qty = 2, price = 2000)   // named args — readable calls!</code></pre>
+<h3>💻 Lambdas — functions as values</h3>
+<pre><code>val drinks = listOf("Milk tea", "Coffee", "Juice")
+
+drinks.filter { it.length &gt; 5 }        // [Milk tea, Coffee]
+drinks.map { it.uppercase() }           // shout the menu
+drinks.forEach { println(it) }</code></pre>
+<p><code>it</code> is the automatic name for the single parameter. These three — filter, map, forEach — are half of daily Kotlin.</p>
+<h3>💻 The chain that replaces a page of Java</h3>
+<pre><code>val bigOrders = orders
+    .filter { it.total &gt; 4000 }
+    .sortedByDescending { it.total }
+    .take(5)
+    .map { "${'$'}{it.customer}: ${'$'}{it.total} Ks" }</code></pre>
+<h3>📝 String templates</h3>
+<p><code>"Hello, ${'$'}name!"</code> — variables drop straight into strings. With expressions: <code>"Total: ${'$'}{price * qty} Ks"</code>. Goodbye, + + + chains.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> (play.kotlinlang.org — free, no install) from listOf(1500, 800, 2000, 4500), keep prices ≥ 1000, double them, print each. Three chained calls.</div>`),
+          article("kt-collections", "Collections & When Things Change", "10 min", `
+<h3>🎯 Read-only by default — on purpose</h3>
+<pre><code>val menu = listOf("Milk tea", "Coffee")          // can't add — safe to share
+val orders = mutableListOf&lt;String&gt;()             // this one changes
+orders.add("Milk tea")
+
+val prices = mapOf("Milk tea" to 1500, "Coffee" to 2000)
+val stock  = mutableMapOf("Milk tea" to 10)
+stock["Milk tea"] = 9                             // sold one!</code></pre>
+<h3>📝 The Kotlin instinct</h3>
+<ul>
+  <li>Start with <code>listOf/mapOf</code> (immutable). Reach for <code>mutable...</code> only when something truly changes. Fewer things that CAN change = fewer bugs that DO happen.</li>
+  <li>Same rule as val vs var — and yes, interviewers ask exactly this.</li>
+</ul>
+<h3>💻 The power tools</h3>
+<pre><code>val byCity = students.groupBy { it.city }        // map of city → students
+val totalXp = students.sumOf { it.xp }
+val best = students.maxByOrNull { it.xp }        // null-safe best!
+val names = students.joinToString(", ") { it.name }</code></pre>
+<p>groupBy is a one-word pivot table. sumOf/maxByOrNull read like English. This is why people don't go back to Java loops.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> given three (name, xp) pairs in a list, print "TOP: name (xp XP)" for the highest using maxByOrNull and a string template.</div>`),
+          article("kt-classes", "Classes, data class & Null-Safe OOP", "12 min", `
+<h3>🎯 A whole model layer in three lines</h3>
+<pre><code>data class Student(val name: String, var xp: Int = 0)
+
+class Course(val title: String) {
+    private val enrolled = mutableListOf&lt;Student&gt;()
+
+    fun enroll(s: Student) {
+        enrolled.add(s)
+        println("${'$'}{s.name} joined ${'$'}title")
+    }
+
+    fun top() = enrolled.maxByOrNull { it.xp }
+}</code></pre>
+<h3>📝 What Kotlin gave you for free</h3>
+<ul>
+  <li><strong>Constructor in the header</strong> — <code>class Course(val title: String)</code>: parameter, field and assignment in one.</li>
+  <li><strong>data class</strong> — equals, hashCode, toString, copy: <code>student.copy(xp = 100)</code> makes a tweaked clone. Perfect for records.</li>
+  <li><strong>Null-safety joins OOP</strong> — <code>top()</code> returns Student? (maybe nothing enrolled). Callers must handle it: <code>course.top()?.name ?: "nobody yet"</code>. The billion-dollar mistake, retired.</li>
+</ul>
+<h3>💻 Inheritance — opt-in on purpose</h3>
+<pre><code>open class User(val name: String)          // 'open' = may be extended
+class Admin(name: String) : User(name) {
+    fun deleteCourse(id: String) = println("${'$'}name deleted ${'$'}id")
+}</code></pre>
+<p>Classes are final unless marked <code>open</code> — Kotlin makes deep fragile hierarchies hard by default. (The sane-OOP rules from the Java course, enforced by the language!)</p>
+<div class="callout tip"><strong>Try it yourself:</strong> make a data class Order(item, qty, price) with a total() function, create two orders, print the bigger using maxByOrNull + templates.</div>`),
+          quiz("kt-quiz2", "Quiz: Real Kotlin", [
+            { q: "fun total(price: Int, qty: Int = 1) means…", options: ["qty is required", "qty defaults to 1 — total(1500) works", "It returns nothing", "A compile error"], answer: 1 },
+            { q: "drinks.filter { it.length > 5 } — 'it' is…", options: ["A keyword error", "The automatic name for the lambda's single parameter", "A global variable", "The list itself"], answer: 1 },
+            { q: "listOf vs mutableListOf:", options: ["Same thing", "listOf is read-only — prefer it until change is truly needed", "mutableListOf is faster", "listOf is deprecated"], answer: 1 },
+            { q: "data class gives you…", options: ["A database", "equals/hashCode/toString/copy for free", "A UI", "Coroutines"], answer: 1 },
+            { q: "course.top()?.name ?: \"nobody\" handles…", options: ["Slow networks", "The null case when no one is enrolled — safely", "Exceptions", "Sorting"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "To Android & Beyond",
+        lessons: [
+          article("kt-android", "Your First Android Screen (Compose)", "12 min", `
+<h3>🎯 What modern Android looks like</h3>
+<p>Android UIs are now written in <strong>Jetpack Compose</strong> — Kotlin functions that ARE the screen:</p>
+<pre><code>@Composable
+fun OrderScreen() {
+    var count by remember { mutableStateOf(0) }
+
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text("Milk tea orders: ${'$'}count", fontSize = 24.sp)
+        Button(onClick = { count++ }) {
+            Text("Order one more 🧋")
+        }
+    }
+}</code></pre>
+<h3>📝 Read it with eyes you already own</h3>
+<ul>
+  <li>A screen is a <strong>function</strong> — composables compose like HTML tags nested in each other.</li>
+  <li><code>count</code> is <strong>state</strong> — when it changes, the text redraws itself. (Exactly the click-counter exercise from Zero to Hero — same idea, phone edition!)</li>
+  <li><code>onClick = { count++ }</code> — a lambda as an event listener. Lesson one of this section, paying off.</li>
+</ul>
+<h3>📝 The realistic setup path</h3>
+<ol>
+  <li><strong>Android Studio</strong> (free) needs a decent computer — 8GB RAM minimum, 16 comfortable.</li>
+  <li>New Project → "Empty Activity" → you get a working Compose app; change the text, press Run.</li>
+  <li>No computer yet? Keep building Kotlin skill at play.kotlinlang.org — Compose knowledge transfers the day you get machine time.</li>
+</ol>
+<div class="callout tip"><strong>Try it yourself:</strong> on paper, sketch the composable for a tea-shop menu: a Column of 3 Text items and a Button that adds to a total. Which parts are state?</div>`),
+          article("kt-coroutines", "Coroutines — Async Without Tears", "10 min", `
+<h3>🎯 The phone must never freeze</h3>
+<p>Fetching prices from a server takes a second — block the main thread and the app janks. Kotlin's answer is <strong>coroutines</strong>: asynchronous code that reads like normal code.</p>
+<pre><code>suspend fun fetchPrices(): List&lt;Price&gt; {
+    return client.get("https://api.shop.com/prices")   // suspends, doesn't block
+}
+
+// in the app:
+lifecycleScope.launch {
+    val prices = fetchPrices()      // looks sequential…
+    show(prices)                    // …runs when ready. No callbacks!
+}</code></pre>
+<h3>📝 The three words</h3>
+<ul>
+  <li><strong>suspend</strong> — this function may pause without blocking the thread.</li>
+  <li><strong>launch</strong> — start a coroutine ("do this in the background").</li>
+  <li><strong>scope</strong> — coroutines live inside a scope tied to a screen's lifetime; screen dies → its work cancels. No zombie downloads.</li>
+</ul>
+<h3>💡 You've met this idea before</h3>
+<p>JavaScript's async/await from the fetch() lessons — same music, Kotlin lyrics: await ≈ calling a suspend fun, and structured scopes are Kotlin's upgrade. One mental model, two ecosystems.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> explain to a friend (or a rubber duck) why the button stays clickable while prices load. If your explanation contains "suspends instead of blocking", you've got it.</div>`),
+          article("kt-path", "The Android Developer Path", "10 min", `
+<h3>🎯 From here to an app on the Play Store</h3>
+<div class="flow">
+  <div class="flow-box">✅ Kotlin core<br><small>this course —<br>done today</small></div>
+  <div class="flow-arrow" data-label="next"></div>
+  <div class="flow-box alt">📱 Compose basics<br><small>layouts, state, lists —<br>Google's free codelabs</small></div>
+  <div class="flow-arrow" data-label="then"></div>
+  <div class="flow-box alt">🔌 Real app<br><small>fetch an API + save<br>locally (Room DB)</small></div>
+  <div class="flow-arrow" data-label="then"></div>
+  <div class="flow-box warn">🚀 Publish<br><small>Play Store — $25<br>once, worldwide</small></div>
+</div>
+<h3>📝 Free, official, excellent</h3>
+<ul>
+  <li><strong>developer.android.com/courses</strong> — "Android Basics with Compose": Google's own free track, hands-on, the industry's on-ramp.</li>
+  <li><strong>Your project #1</strong> — the tea-shop order app: menu list, order button, total, saved locally. Every lesson of this course appears in it.</li>
+  <li><strong>Portfolio power</strong> — an APK your interviewer installs on THEIR phone beats ten certificates. Mobile juniors with a shipped app are rare everywhere, including Myanmar.</li>
+</ul>
+<h3>💡 Kotlin beyond Android</h3>
+<p>Backend (Ktor/Spring), cross-platform (Kotlin Multiplatform shares code with iOS!), and it's the JVM's favorite child — your Java course knowledge and this course compound into one career asset.</p>
+<div class="callout tip"><strong>Graduation task:</strong> final quiz → certificate 🎓 → start Google's "Android Basics with Compose" unit 1 THIS week while the momentum is hot. Your app icon on a real home screen is closer than you think.</div>`),
+          quiz("kt-final", "Final Quiz: Kotlin", [
+            { q: "Modern Android UI is written with…", options: ["XML only", "Jetpack Compose — Kotlin functions as screens", "HTML", "Java Swing"], answer: 1 },
+            { q: "In Compose, changing remembered state…", options: ["Crashes", "Redraws the UI that reads it", "Requires a restart", "Is forbidden"], answer: 1 },
+            { q: "A suspend function…", options: ["Blocks the main thread", "Can pause without blocking — the UI stays smooth", "Runs twice", "Is deprecated"], answer: 1 },
+            { q: "Kotlin coroutine scopes exist so that…", options: ["Code looks longer", "Work cancels automatically when its screen dies", "Threads multiply", "Nothing"], answer: 1 },
+            { q: "The strongest mobile-junior portfolio item is…", options: ["A certificate list", "A real app the interviewer can install", "Screenshots only", "A logo"], answer: 1 },
           ]),
         ],
       },
@@ -6468,7 +6632,7 @@ WHERE s.city = 'Yangon' AND e.id IS NULL;</code></pre>
     rating: 4.5,
     ratings: 12600,
     students: 84000,
-    hours: 5,
+    hours: 9,
     price: "Free",
     free: true,
     color: "linear-gradient(135deg,#00758f,#336791)",
@@ -6528,6 +6692,173 @@ WHERE data-&gt;&gt;'plan' = 'pro';</code></pre>
           ]),
         ],
       },
+      {
+        title: "Designing Real Databases",
+        lessons: [
+          article("db-design", "Tables That Don't Fall Apart", "12 min", `
+<h3>🎯 Design before data</h3>
+<p>A shop database done WRONG: one giant table where every order row repeats the customer's name, phone and address. Change a phone number → update 500 rows → miss one → chaos.</p>
+<div class="flow">
+  <div class="flow-box">👥 customers<br><small>id · name · phone</small></div>
+  <div class="flow-arrow" data-label="1 → many"></div>
+  <div class="flow-box alt">🧾 orders<br><small>id · customer_id ·<br>total · created_at</small></div>
+  <div class="flow-arrow" data-label="1 → many"></div>
+  <div class="flow-box">📦 order_items<br><small>order_id · product_id<br>· qty · price</small></div>
+</div>
+<h3>📝 The three habits of sane schemas</h3>
+<ul>
+  <li><strong>Every table gets an id</strong> — <code>id SERIAL PRIMARY KEY</code> (Postgres) / <code>AUTO_INCREMENT</code> (MySQL). Rows need names.</li>
+  <li><strong>Facts live ONCE</strong> — the phone lives in customers; orders point at it via <code>customer_id</code> (a foreign key). That's "normalization" without the scary word.</li>
+  <li><strong>Pick real types</strong> — money as <code>DECIMAL(10,2)</code> (never FLOAT — rounding eats kyats!), dates as <code>TIMESTAMP</code>, flags as <code>BOOLEAN</code>.</li>
+</ul>
+<h3>💻 The trio in SQL</h3>
+<pre><code>CREATE TABLE customers (
+  id    SERIAL PRIMARY KEY,
+  name  VARCHAR(80) NOT NULL,
+  phone VARCHAR(20)
+);
+
+CREATE TABLE orders (
+  id          SERIAL PRIMARY KEY,
+  customer_id INT REFERENCES customers(id),
+  total       DECIMAL(10,2) NOT NULL,
+  created_at  TIMESTAMP DEFAULT NOW()
+);</code></pre>
+<div class="callout tip"><strong>Try it yourself:</strong> design (on paper) the third table, order_items, with proper types and TWO foreign keys. Which columns? Which types?</div>`),
+          article("db-joins", "JOINs & GROUP BY — Where SQL Gets Powerful", "12 min", `
+<h3>🎯 Split tables, joined answers</h3>
+<pre><code>-- every order WITH its customer's name
+SELECT c.name, o.total, o.created_at
+FROM orders o
+JOIN customers c ON c.id = o.customer_id
+ORDER BY o.created_at DESC;</code></pre>
+<h3>📝 The two JOINs you truly need</h3>
+<ul>
+  <li><strong>JOIN</strong> (inner) — only rows that match on both sides.</li>
+  <li><strong>LEFT JOIN</strong> — everything from the left table, matches where they exist: ALL customers, including those who never ordered (their order columns come back NULL — that's the signal!).</li>
+</ul>
+<h3>💻 The classic business question</h3>
+<pre><code>-- customers who never ordered (win them back!)
+SELECT c.name
+FROM customers c
+LEFT JOIN orders o ON o.customer_id = c.id
+WHERE o.id IS NULL;</code></pre>
+<h3>💻 GROUP BY — the pivot table of SQL</h3>
+<pre><code>SELECT c.name, COUNT(o.id) AS orders, SUM(o.total) AS spent
+FROM customers c
+JOIN orders o ON o.customer_id = c.id
+GROUP BY c.name
+HAVING SUM(o.total) &gt; 100000
+ORDER BY spent DESC;</code></pre>
+<p>Read it like Excel: group rows per customer, count and sum each group, keep the big spenders, sort. (Excel graduates: GROUP BY = pivot table. Same brain.)</p>
+<div class="callout tip"><strong>Try it yourself:</strong> write the query for "total sales per DAY, newest first". Which column groups? Which aggregates?</div>`),
+          article("db-index", "Indexes — Why Queries Get Slow (and Fast)", "10 min", `
+<h3>🎯 The phone book trick</h3>
+<p>Finding "Mya" in an unsorted list of 1M names = read all 1M. In a phone book (sorted) = a few page flips. An <strong>index</strong> is that phone book for a column.</p>
+<pre><code>-- without an index this scans EVERYTHING:
+SELECT * FROM orders WHERE customer_id = 42;
+
+-- give it the phone book:
+CREATE INDEX idx_orders_customer ON orders(customer_id);</code></pre>
+<div class="flow">
+  <div class="flow-box warn">🐌 Full scan<br><small>1,000,000 rows read<br>for 3 results</small></div>
+  <div class="flow-arrow" data-label="CREATE INDEX"></div>
+  <div class="flow-box alt">⚡ Index seek<br><small>~20 reads for the<br>same 3 results</small></div>
+</div>
+<h3>📝 The practical rules</h3>
+<ul>
+  <li>Index columns you <strong>WHERE / JOIN / ORDER BY</strong> on constantly — foreign keys first.</li>
+  <li>Primary keys are indexed automatically.</li>
+  <li>Don't index everything — each index slows every INSERT/UPDATE a little (the book must stay sorted).</li>
+  <li>Ask the database itself: <code>EXPLAIN SELECT ...</code> shows scan vs seek. "EXPLAIN" is the most senior word a junior can use.</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> name the columns in your shop schema that deserve indexes and why. (orders.customer_id, order_items.order_id — the JOIN highways.)</div>`),
+          quiz("db-quiz2", "Quiz: Design & Queries", [
+            { q: "The customer's phone number should live…", options: ["Copied into every order row", "Once, in customers — orders point via customer_id", "In a text file", "In the app only"], answer: 1 },
+            { q: "Money columns should be…", options: ["FLOAT", "DECIMAL(10,2) — floats lose kyats to rounding", "VARCHAR", "Emoji"], answer: 1 },
+            { q: "\"Customers who never ordered\" needs…", options: ["Two databases", "LEFT JOIN + WHERE o.id IS NULL", "DELETE", "A bigger server"], answer: 1 },
+            { q: "GROUP BY is SQL's version of…", options: ["A chart", "Excel's pivot table", "A backup", "An index"], answer: 1 },
+            { q: "A query on 1M rows is slow. First suspicion:", options: ["The internet", "Missing index on the WHERE/JOIN column — check with EXPLAIN", "Too many SELECTs", "The keyboard"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Databases in Production",
+        lessons: [
+          article("db-app", "Connect From Code — Safely", "12 min", `
+<h3>🎯 Where apps meet databases</h3>
+<pre><code>// Node.js + Postgres (the fullstack course's world)
+const { Pool } = require("pg");
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+
+const { rows } = await pool.query(
+  "SELECT * FROM orders WHERE customer_id = $1",  // placeholder!
+  [customerId]
+);</code></pre>
+<h3>🔒 The one rule that prevents disasters</h3>
+<p><strong>NEVER glue user input into SQL strings.</strong></p>
+<pre><code>// ☠️ SQL injection — the classic hack:
+query("SELECT * FROM users WHERE name = '" + input + "'");
+// input:  ' OR '1'='1   → returns EVERY user
+
+// ✅ placeholders — input stays DATA, never becomes SQL:
+query("SELECT * FROM users WHERE name = $1", [input]);</code></pre>
+<p>Placeholders ($1 in Postgres, ? in MySQL) cost nothing to use. There is no excuse, ever.</p>
+<h3>📝 Grown-up habits</h3>
+<ul>
+  <li><strong>Connection pool</strong> — connections are expensive; the Pool reuses them.</li>
+  <li><strong>Credentials in env vars</strong> — DATABASE_URL from the environment, never in code (Git remembers forever).</li>
+  <li><strong>Transactions</strong> — money moves in all-or-nothing blocks: <code>BEGIN … COMMIT</code> (or ROLLBACK on error). Half-finished transfers are how shops lose trust.</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> spot the bug: <code>query("DELETE FROM orders WHERE id = " + req.params.id)</code>. What could a visitor send? How do you fix it? (Answer: "1 OR 1=1" deletes ALL orders; use $1.)</div>`),
+          article("db-backup", "Backups, Users & Not Getting Fired", "10 min", `
+<h3>🎯 Data loss is the only unforgivable bug</h3>
+<h3>💻 The backup pair to memorize</h3>
+<pre><code># MySQL
+mysqldump -u root -p shopdb &gt; backup_2026-07-09.sql
+mysql -u root -p shopdb &lt; backup_2026-07-09.sql
+
+# PostgreSQL
+pg_dump shopdb &gt; backup_2026-07-09.sql
+psql shopdb &lt; backup_2026-07-09.sql</code></pre>
+<h3>📝 Rules everyone learns the hard way (skip the hard way)</h3>
+<ul>
+  <li><strong>A backup you never restored is a rumor</strong> — test-restore into a scratch database monthly.</li>
+  <li><strong>Automate it</strong> — nightly schedule (cron or n8n!) + copy OFF the server. Server dies ≠ data dies.</li>
+  <li><strong>Least-privilege users</strong> — the app connects as a user with only the rights it needs. root is for humans on bad days:</li>
+</ul>
+<pre><code>CREATE USER shop_app WITH PASSWORD '...';
+GRANT SELECT, INSERT, UPDATE, DELETE
+  ON ALL TABLES IN SCHEMA public TO shop_app;</code></pre>
+<ul>
+  <li><strong>UPDATE/DELETE ritual</strong> — run the WHERE as a SELECT first to see what it hits, then change one word. Every DBA has a missing-WHERE story; have zero.</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> dump your practice database, drop a table ON PURPOSE, restore it. The calm you feel afterwards is the whole lesson.</div>`),
+          article("db-career", "Your Database Career Path", "8 min", `
+<h3>🎯 Where these skills cash in</h3>
+<ul>
+  <li><strong>Every backend job</strong> — "SQL + one real engine" is on essentially every listing; you now have two engines.</li>
+  <li><strong>Data analyst</strong> — SQL + Excel (this academy teaches both!) is the exact entry combo.</li>
+  <li><strong>Freelance</strong> — shops need order systems; you can now design, query, connect and back up the whole data layer.</li>
+</ul>
+<h3>📝 Portfolio proof (one weekend)</h3>
+<ol>
+  <li>Design the tea-shop schema (customers/orders/order_items) with real types + indexes.</li>
+  <li>Load 50 fake rows; write 5 business queries (top customer, daily sales, never-ordered, best product, monthly trend).</li>
+  <li>Publish schema + queries + EXPLAIN screenshots in a GitHub README. That repo IS the interview.</li>
+</ol>
+<h3>💡 Next quests in this academy</h3>
+<p><strong>SQL Fundamentals</strong> for query depth · <strong>Full Stack</strong> to wire databases into real apps · <strong>MongoDB</strong> for the NoSQL half of interviews · <strong>Cloud</strong> for managed databases that handle the 3 AM problems for you.</p>
+<div class="callout tip"><strong>Graduation task:</strong> final quiz → certificate 🎓 → build the weekend portfolio repo. "I can show you" beats "I know" in every interview on Earth.</div>`),
+          quiz("db-final", "Final Quiz: MySQL & PostgreSQL", [
+            { q: "User input in SQL must ALWAYS travel via…", options: ["String gluing", "Placeholders ($1 / ?) — injection dies here", "Uppercase", "Comments"], answer: 1 },
+            { q: "Money transfers belong inside…", options: ["Two separate UPDATEs, fingers crossed", "A transaction: BEGIN … COMMIT/ROLLBACK", "A spreadsheet", "Midnight"], answer: 1 },
+            { q: "A backup is real only when…", options: ["The file exists", "You've successfully test-restored it", "It's zipped", "It's emailed"], answer: 1 },
+            { q: "The app should connect to the DB as…", options: ["root, always", "A least-privilege user for its own database", "No user", "The developer's account"], answer: 1 },
+            { q: "Before a big UPDATE you should…", options: ["Just run it", "Run its WHERE as a SELECT first, then update", "Disable backups", "Use FLOAT"], answer: 1 },
+          ]),
+        ],
+      },
     ],
   },
   {
@@ -6540,7 +6871,7 @@ WHERE data-&gt;&gt;'plan' = 'pro';</code></pre>
     rating: 4.5,
     ratings: 15900,
     students: 108000,
-    hours: 4.5,
+    hours: 8,
     price: "Free",
     free: true,
     color: "linear-gradient(135deg,#116149,#4faa41)",
@@ -6592,6 +6923,169 @@ db.courses.deleteOne({ title: "Old Course" });</code></pre>
             { q: "MongoDB stores data as...", options: ["Rows in tables", "JSON-like documents", "Plain text files", "Key-value pairs only"], answer: 1 },
             { q: "{ hours: { $lt: 6 } } finds documents where hours is...", options: ["Equal to 6", "Less than 6", "At least 6", "Missing"], answer: 1 },
             { q: "Strictly relational money data (orders/payments) usually fits best in...", options: ["MongoDB", "A SQL database", "Text files", "Cookies"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Query Like You Mean It",
+        lessons: [
+          article("mg-query", "Finding Documents — Filters & Operators", "12 min", `
+<h3>🎯 find() is your SELECT</h3>
+<pre><code>// all Yangon students
+db.students.find({ city: "Yangon" })
+
+// operators live in nested objects
+db.students.find({ xp: { $gte: 100 } })          // xp >= 100
+db.students.find({ level: { $in: [3, 4, 5] } })  // any of these
+db.students.find({ city: "Yangon", xp: { $gte: 100 } })  // AND
+
+// $or needs its own array
+db.students.find({ $or: [ { city: "Yangon" }, { xp: { $gte: 500 } } ] })</code></pre>
+<h3>📝 The operator starter pack</h3>
+<ul>
+  <li><code>$gt / $gte / $lt / $lte / $ne</code> — comparisons</li>
+  <li><code>$in / $nin</code> — value in a list (or not)</li>
+  <li><code>$exists</code> — does the field exist? (flexible schemas need this!)</li>
+  <li>Dot into nested docs: <code>{ "address.city": "Mandalay" }</code></li>
+</ul>
+<h3>💻 Shape the results</h3>
+<pre><code>db.students.find(
+  { xp: { $gte: 100 } },
+  { name: 1, xp: 1, _id: 0 }    // projection: only these fields
+).sort({ xp: -1 }).limit(10)     // top 10 by xp</code></pre>
+<p>find → project → sort → limit: the same "give me the top N" thinking as SQL's SELECT/ORDER BY/LIMIT — just spelled in JSON.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> write the query for "students in Mandalay OR with streak ≥ 7, show name + streak only, highest streak first". Every piece is above.</div>`),
+          article("mg-model", "Data Modeling — Embed or Reference?", "12 min", `
+<h3>🎯 THE MongoDB design question</h3>
+<p>SQL splits everything into tables. Mongo asks: does this data live INSIDE the document, or point elsewhere?</p>
+<div class="flow">
+  <div class="flow-box alt">📦 EMBED<br><small>order contains its items<br>array — read together,<br>one fetch</small></div>
+  <div class="flow-arrow" data-label="vs"></div>
+  <div class="flow-box">🔗 REFERENCE<br><small>order stores customerId —<br>customer data lives once,<br>fetched when needed</small></div>
+</div>
+<h3>💻 A well-modeled order</h3>
+<pre><code>{
+  _id: ObjectId("..."),
+  customerId: ObjectId("..."),        // REFERENCE (customer changes)
+  items: [                             // EMBED (belongs to the order)
+    { name: "Milk tea", qty: 2, price: 1500 },
+    { name: "Coffee",   qty: 1, price: 2000 }
+  ],
+  status: "pending",
+  createdAt: ISODate("2026-07-09")
+}</code></pre>
+<h3>📝 The rules of thumb</h3>
+<ul>
+  <li><strong>Embed</strong> what you read together and what belongs to ONE parent (order items, comments on a post ≤ hundreds).</li>
+  <li><strong>Reference</strong> what many things share (customers) or what grows without limit (a user's million events).</li>
+  <li>16MB per document — unbounded arrays eventually explode. Growth = reference.</li>
+  <li>Design for your QUERIES: "how will I read this?" beats "how do I store this?" — the opposite instinct from SQL.</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> model a course + its reviews. Embed or reference — and why? (Reviews grow forever → reference, or embed only the latest 10 as a preview. Both defensible — say your reasoning aloud.)</div>`),
+          article("mg-agg", "The Aggregation Pipeline", "12 min", `
+<h3>🎯 Mongo's GROUP BY — a conveyor belt</h3>
+<p>Documents flow through <strong>stages</strong>; each stage transforms them:</p>
+<pre><code>db.orders.aggregate([
+  { $match: { status: "paid" } },              // 1. filter (like WHERE)
+  { $unwind: "$items" },                        // 2. one doc per item
+  { $group: {                                   // 3. GROUP BY product
+      _id: "$items.name",
+      sold:    { $sum: "$items.qty" },
+      revenue: { $sum: { $multiply: ["$items.qty", "$items.price"] } }
+  }},
+  { $sort: { revenue: -1 } },                   // 4. biggest first
+  { $limit: 5 }                                 // 5. top 5
+])</code></pre>
+<div class="flow">
+  <div class="flow-box">📄 All orders</div>
+  <div class="flow-arrow" data-label="$match"></div>
+  <div class="flow-box alt">💰 Paid only</div>
+  <div class="flow-arrow" data-label="$unwind + $group"></div>
+  <div class="flow-box alt">📊 Totals per product</div>
+  <div class="flow-arrow" data-label="$sort + $limit"></div>
+  <div class="flow-box warn">🏆 Top 5 sellers</div>
+</div>
+<h3>📝 The stages worth memorizing</h3>
+<ul>
+  <li><code>$match</code> — filter early (fast!) · <code>$group</code> — totals per key · <code>$sort/$limit</code> — rank</li>
+  <li><code>$unwind</code> — explode an array into one doc per element (the trick for embedded items)</li>
+  <li><code>$project</code> — reshape/rename fields for the final answer</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> sketch the pipeline for "revenue per DAY this month". Which stage extracts the day? (Hint: $group by a date expression — look up $dateToString when you build it for real.)</div>`),
+          quiz("mg-quiz2", "Quiz: Queries & Modeling", [
+            { q: "xp >= 100 in Mongo is…", options: ["{ xp >= 100 }", "{ xp: { $gte: 100 } }", "WHERE xp >= 100", "{ $xp: 100 }"], answer: 1 },
+            { q: "Order items usually get…", options: ["Their own collection always", "Embedded in the order — read together, belong together", "A CSV file", "Deleted"], answer: 1 },
+            { q: "Data that grows without limit should be…", options: ["Embedded forever", "Referenced — documents cap at 16MB", "Compressed", "Ignored"], answer: 1 },
+            { q: "Mongo's GROUP BY happens in…", options: ["find()", "The aggregation pipeline's $group stage", "insertOne", "An index"], answer: 1 },
+            { q: "$unwind is for…", options: ["Deleting fields", "Exploding an embedded array into one doc per element", "Sorting", "Backups"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Production Mongo",
+        lessons: [
+          article("mg-index", "Indexes & Speed in Mongo", "10 min", `
+<h3>🎯 Same phone-book trick, JSON edition</h3>
+<pre><code>// the query you run constantly:
+db.orders.find({ customerId: x }).sort({ createdAt: -1 })
+
+// the index that serves it (filter + sort together!):
+db.orders.createIndex({ customerId: 1, createdAt: -1 })</code></pre>
+<h3>📝 What to know</h3>
+<ul>
+  <li><code>_id</code> is indexed automatically; everything else you query on regularly deserves one.</li>
+  <li><strong>Compound indexes</strong> match your real query shape — filter field first, sort field second.</li>
+  <li><strong>Check the truth</strong> — <code>.explain("executionStats")</code>: COLLSCAN = read everything (bad at scale); IXSCAN = used the index. Same "EXPLAIN reflex" as SQL.</li>
+  <li>Unique index = free duplicate protection: <code>db.users.createIndex({ email: 1 }, { unique: true })</code>.</li>
+</ul>
+<h3>💡 The free-tier reality</h3>
+<p><strong>MongoDB Atlas</strong> (the official cloud) has a free M0 tier — a real replicated cluster, perfect for learning and small apps. No server to babysit, browser UI to inspect data. That's your playground for this whole course.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> create a free Atlas cluster (10 minutes, no card), load its sample data, and run .explain on a query before and after adding an index. Watch COLLSCAN become IXSCAN.</div>`),
+          article("mg-node", "MongoDB + Node.js — The Real Wiring", "12 min", `
+<h3>🎯 From shell to app</h3>
+<pre><code>const { MongoClient } = require("mongodb");
+const client = new MongoClient(process.env.MONGO_URL);
+
+const db = client.db("shop");
+const orders = db.collection("orders");
+
+// the same queries you know, now in code
+await orders.insertOne({ customerId, items, status: "pending", createdAt: new Date() });
+const recent = await orders.find({ status: "paid" })
+                           .sort({ createdAt: -1 }).limit(20).toArray();
+await orders.updateOne({ _id: id }, { $set: { status: "shipped" } });</code></pre>
+<h3>📝 Habits that keep production calm</h3>
+<ul>
+  <li><strong>One client, reused</strong> — connect once at startup, share it (like SQL's pool). New connection per request = death by handshake.</li>
+  <li><strong>Connection string in env vars</strong> — MONGO_URL never in code. Atlas gives you the string; treat it like a password, because it contains one.</li>
+  <li><strong>Validate before insert</strong> — flexible schema means the DATABASE won't stop bad shapes; your code must. (Or add Atlas schema validation for a safety net.)</li>
+  <li><strong>updateOne vs updateMany</strong> — read twice before running; the missing "One" is Mongo's missing-WHERE story.</li>
+</ul>
+<div class="callout"><strong>Connection you already have:</strong> Firebase RTDB (this academy's own database!) is Mongo's cousin — JSON documents, flexible shapes. The modeling instincts transfer both ways.</div>
+<div class="callout tip"><strong>Try it yourself:</strong> from the fullstack course's Node app, swap the notes storage to Atlas: insertOne on create, find().toArray() on list. Two functions, real cloud database.</div>`),
+          article("mg-career", "SQL + NoSQL — The Complete Data Developer", "8 min", `
+<h3>🎯 The interview question you're now ready for</h3>
+<p>"SQL or MongoDB — which would you choose?" The senior answer:</p>
+<div class="flow">
+  <div class="flow-box">🏦 SQL<br><small>relational money data,<br>strict shapes, reporting<br>across tables</small></div>
+  <div class="flow-arrow" data-label="choose by DATA"></div>
+  <div class="flow-box alt">📦 MongoDB<br><small>flexible/nested docs,<br>fast iteration, read-together<br>data, huge scale-out</small></div>
+  <div class="flow-arrow" data-label="often"></div>
+  <div class="flow-box warn">🤝 BOTH<br><small>orders in Postgres,<br>sessions/catalog in Mongo —<br>real systems mix</small></div>
+</div>
+<h3>📝 Prove it in a weekend</h3>
+<ol>
+  <li>Take your SQL tea-shop schema and model the SAME shop in Mongo (embed items, reference customers).</li>
+  <li>Write the top-5-products question in BOTH: GROUP BY vs aggregation pipeline.</li>
+  <li>README comparing them: which query was nicer? which schema change was easier? That comparison doc is interview gold.</li>
+</ol>
+<div class="callout tip"><strong>Graduation task:</strong> final quiz → certificate 🎓 → build the two-database comparison repo. Very few juniors can discuss both sides with real code — you'll be one of them.</div>`),
+          quiz("mg-final", "Final Quiz: MongoDB", [
+            { q: "The index for find({customerId}).sort({createdAt:-1}) is…", options: ["No index needed", "Compound: { customerId: 1, createdAt: -1 }", "Only _id", "An SQL index"], answer: 1 },
+            { q: "COLLSCAN in explain() means…", options: ["Perfect performance", "It read the whole collection — probably missing an index", "A backup ran", "Sharding"], answer: 1 },
+            { q: "The Node app should create its MongoClient…", options: ["Per request", "Once at startup, reused everywhere", "Per query", "Never"], answer: 1 },
+            { q: "Duplicate emails are prevented by…", options: ["Hope", "A unique index on email", "Longer passwords", "$unwind"], answer: 1 },
+            { q: "\"SQL or Mongo?\" — the senior answer starts with…", options: ["Whichever is trendy", "It depends on the DATA: relational/strict vs nested/flexible — often both", "Always Mongo", "Always SQL"], answer: 1 },
           ]),
         ],
       },

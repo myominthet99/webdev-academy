@@ -4430,7 +4430,10 @@
       { id: "challenge", ic: "🎯", label: "Challenge teaser" },
       { id: "ask", ic: "🙏", label: "Review / testimonial ask" },
       { id: "lesson", ic: "📚", label: "Course lesson (AI writes it)" },
+      { id: "flowchart", ic: "🔀", label: "Flow chart diagram (AI)" },
+      { id: "cheatsheet", ic: "📜", label: "Cheat sheet (AI)" },
     ];
+    const AI_KINDS = ["lesson", "flowchart", "cheatsheet"];
 
     app.innerHTML = `
       <div class="container" style="max-width:760px">
@@ -4568,41 +4571,69 @@
       const type = $("cc2-type").value;
       $("cc2-course-row").hidden = type !== "course" && type !== "lesson";
       $("cc2-promo-row").hidden = type !== "promo";
-      $("cc2-lesson-row").hidden = type !== "lesson";
+      $("cc2-lesson-row").hidden = AI_KINDS.indexOf(type) === -1;
+      $("cc2-lesson-title").placeholder =
+        type === "flowchart" ? "Topic, e.g. how a fetch request travels"
+        : type === "cheatsheet" ? "Topic, e.g. Flexbox properties"
+        : "Lesson title, e.g. CSS Grid in 15 Minutes";
     };
     $("cc2-type").addEventListener("change", syncRows);
     syncRows();
 
-    /* 📚 AI lesson writer — house-style HTML for the course editor */
-    const generateLesson = () => {
+    /* 📚🔀📜 AI writers — house-style HTML for the course editor */
+    const STYLE_COMMON =
+      "NEVER use backtick characters or the dollar-brace template syntax. " +
+      "Inside <pre><code> escape every < as &lt; and > as &gt;. " +
+      "Reply with ONLY the HTML (no markdown fences, no explanations).";
+    const FLOW_SPEC =
+      'a flow diagram with this EXACT structure: <div class="flow"> containing 3 to 6 step boxes ' +
+      '<div class="flow-box">emoji Title<br><small>one-line note</small></div> ' +
+      '(use class "flow-box alt" for middle/highlight steps and "flow-box warn" for the final/result box), ' +
+      'each pair of boxes separated by <div class="flow-arrow" data-label="short verb"></div>. ';
+    const generateAI = (kind) => {
       const title = ($("cc2-lesson-title").value || "").trim();
-      if (!title) { $("cc2-status").textContent = "Lesson title first!"; return; }
+      if (!title) { $("cc2-status").textContent = "Topic/title first!"; return; }
       if (!(window.AI && window.AI.ready())) { $("cc2-status").textContent = t("chat_ai_nokey"); return; }
       const c = courseById($("cc2-course").value) || COURSES[0];
       const inMM = $("cc2-lang").value === "mm";
-      $("cc2-status").textContent = "📚 ✨ …";
-      window.AI.complete(
-        "You write lessons for WebDev Academy, a beginner-friendly bilingual coding school for Myanmar youth. " +
-        "Write the full lesson body HTML for a lesson titled \"" + title + "\" in the course \"" + c.title + "\". " +
-        (inMM ? "Write all prose in Burmese (keep code and technical terms in English). " : "Write in simple, warm English. ") +
-        "STYLE RULES (follow exactly): " +
-        "1) 3 to 5 sections, each starting with <h3> plus a fitting emoji (🎯 goal first, 💻 for code, 📝 for lists). " +
-        "2) Short paragraphs and <ul>/<ol> lists; friendly, encouraging tone; use a Myanmar-flavored example (tea shop, kyat prices) where natural. " +
-        "3) Exactly one or two <pre><code> examples; inside them escape every < as &lt; and > as &gt;. " +
-        "4) Optionally ONE diagram: <div class=\"flow\"><div class=\"flow-box\">step<br><small>note</small></div><div class=\"flow-arrow\" data-label=\"then\"></div><div class=\"flow-box alt\">step</div></div>. " +
-        "5) End with <div class=\"callout tip\"><strong>Try it yourself:</strong> a small concrete practice task.</div>. " +
-        "6) NEVER use backtick characters or the dollar-brace template syntax anywhere. " +
-        "Reply with ONLY the HTML body (no <html>, no markdown fences, no explanations)."
-      ).then((res) => {
+      const langRule = inMM
+        ? "Write all prose in Burmese (keep code and technical terms in English). "
+        : "Write in simple, warm English. ";
+      let prompt;
+      if (kind === "flowchart") {
+        prompt = "You create teaching diagrams for WebDev Academy, a beginner coding school. " + langRule +
+          "Output ONLY " + FLOW_SPEC +
+          "The diagram must explain: \"" + title + "\". Keep box titles under 4 words and notes under 8 words. " + STYLE_COMMON;
+      } else if (kind === "cheatsheet") {
+        prompt = "You write cheat sheets for WebDev Academy, a beginner coding school. " + langRule +
+          "Write a cheat-sheet lesson body in HTML about \"" + title + "\": " +
+          "start with one <h3>🎯 line saying what it covers; then 2-3 <h3>📝 grouped sections, " +
+          "each followed by a <ul> where EVERY <li> is: <code>the exact syntax/command</code> — short plain description. " +
+          "12 to 20 items total, ordered from most-used to advanced. " +
+          "End with <div class=\"callout tip\"><strong>Try it yourself:</strong> one small practice task.</div>. " + STYLE_COMMON;
+      } else {
+        prompt = "You write lessons for WebDev Academy, a beginner-friendly bilingual coding school for Myanmar youth. " +
+          "Write the full lesson body HTML for a lesson titled \"" + title + "\" in the course \"" + c.title + "\". " + langRule +
+          "STYLE RULES (follow exactly): " +
+          "1) 3 to 5 sections, each starting with <h3> plus a fitting emoji (🎯 goal first, 💻 for code, 📝 for lists). " +
+          "2) Short paragraphs and <ul>/<ol> lists; friendly, encouraging tone; a Myanmar-flavored example (tea shop, kyat prices) where natural. " +
+          "3) One or two <pre><code> examples. " +
+          "4) Optionally ONE diagram: " + FLOW_SPEC +
+          "5) End with <div class=\"callout tip\"><strong>Try it yourself:</strong> a small concrete practice task.</div>. " + STYLE_COMMON;
+      }
+      const ic = kind === "flowchart" ? "🔀" : kind === "cheatsheet" ? "📜" : "📚";
+      $("cc2-status").textContent = ic + " ✨ …";
+      window.AI.complete(prompt).then((res) => {
         let out = String(res || "").trim();
         if (window.AI.stripFences) out = window.AI.stripFences(out);
         $("cc2-out").value = out;
-        $("cc2-status").textContent = out ? "📚 ✓ — paste into ✏️ " + t("admin_title") : t("ai_bad_reply");
+        $("cc2-status").textContent = out ? ic + " ✓ — paste into ✏️ " + t("admin_title") : t("ai_bad_reply");
       }).catch((e) => { $("cc2-status").textContent = "⚠ " + ((e && e.message) || "AI"); });
     };
 
     $("cc2-gen").addEventListener("click", () => {
-      if ($("cc2-type").value === "lesson") return generateLesson();
+      const type = $("cc2-type").value;
+      if (AI_KINDS.indexOf(type) >= 0) return generateAI(type);
       $("cc2-out").value = buildPost();
       $("cc2-status").textContent = "";
     });

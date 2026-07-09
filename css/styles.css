@@ -644,6 +644,15 @@ a.lesson-row:hover .ttl { color: var(--purple); }
 .site-footer .muted { color: #9aa0a6; }
 
 /* ---------- Responsive ---------- */
+/* Tablets (769–1024): the top bar can't fit nav + search + account in one
+   row — wrap it and give the search bar its own full-width row, exactly
+   like phones already do. Fixes ~100px horizontal page overflow. */
+@media (max-width: 1024px) {
+  .topbar { flex-wrap: wrap; row-gap: 8px; gap: 12px; }
+  .searchbar { order: 10; flex-basis: 100%; max-width: none; margin: 0; }
+  .topnav { gap: 14px; }
+  .topnav.right { margin-left: auto; }
+}
 @media (max-width: 960px) {
   .hero .container, .detail-hero .container, .detail-body .container { grid-template-columns: 1fr; }
   .learn-wrap { grid-template-columns: 1fr; }

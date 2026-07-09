@@ -3302,7 +3302,7 @@ public class Order implements Payable {
     rating: 4.5,
     ratings: 15300,
     students: 98000,
-    hours: 8,
+    hours: 11,
     price: "Free",
     free: true,
     color: "linear-gradient(135deg,#283593,#5c6bc0)",
@@ -3372,6 +3372,150 @@ int main(void) {
           ]),
         ],
       },
+      {
+        title: "Functions, Strings & Structs",
+        lessons: [
+          article("c-functions", "Functions & Pass-by-Value", "10 min", `
+<h3>🎯 C's honest deal: copies, unless you point</h3>
+<pre><code>#include &lt;stdio.h&gt;
+
+int total(int price, int qty) {     // gets COPIES
+    return price * qty;
+}
+
+void addBonus(int *xp) {            // gets an ADDRESS
+    *xp += 10;                      // changes the caller's variable
+}
+
+int main(void) {
+    int xp = 50;
+    printf("%d\\n", total(1500, 3)); // 4500
+    addBonus(&xp);                  // pass the address with &
+    printf("%d\\n", xp);             // 60 — really changed!
+    return 0;
+}</code></pre>
+<h3>📝 The rule that explains half of C</h3>
+<p>Arguments are <strong>copied</strong>. Want a function to modify your variable? Hand it the <strong>address</strong> (&x) and let it write through the pointer (*p). The "scary pointer" is just an address plus a promise.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> (onlinegdb.com — free C compiler) write swap(int *a, int *b) that really swaps two ints in main. The classic — and now you know why it needs pointers.</div>`),
+          article("c-strings", "Strings — Arrays With a Secret", "10 min", `
+<h3>🎯 There is no string type. There's a convention.</h3>
+<p>A C string is a char array ending with the invisible <code>'\\0'</code> (zero byte). Every string function trusts that terminator.</p>
+<pre><code>#include &lt;string.h&gt;
+
+char name[20] = "Mingalaba";
+printf("%zu\\n", strlen(name));      // 9 (not counting \\0)
+
+char full[40];
+strcpy(full, "Aung ");              // copy
+strcat(full, "Aung");               // append → "Aung Aung"
+
+if (strcmp(name, "Mingalaba") == 0) // 0 means EQUAL (classic trap!)
+    printf("match\\n");</code></pre>
+<h3>⚠️ The two famous foot-guns</h3>
+<ul>
+  <li><strong>Buffer overflow</strong> — strcpy into a too-small array happily writes past the end (crashes, security holes — the #1 CVE category in history). Prefer <code>snprintf(full, sizeof full, ...)</code> which respects the size.</li>
+  <li><strong>== compares addresses</strong>, not contents. String equality is <code>strcmp(...) == 0</code>, always.</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> declare char s[6] and strcpy "Hello!" into it (7 bytes with \\0!). Compile with warnings on and see what a near-miss feels like — then fix the size.</div>`),
+          article("c-structs", "structs — Building Your Own Types", "10 min", `
+<h3>🎯 Group related data</h3>
+<pre><code>struct Student {
+    char name[40];
+    int xp;
+};
+
+struct Student su = { "Su", 120 };
+su.xp += 10;                            // dot for direct access
+
+void levelUp(struct Student *s) {       // pointer for functions
+    s-&gt;xp += 25;                        // arrow = (*s).xp
+}
+levelUp(&su);
+printf("%s has %d XP\\n", su.name, su.xp);   // Su has 155 XP</code></pre>
+<h3>📝 Dot vs arrow — the only rule</h3>
+<p>Have the struct itself? Use <code>.</code> — Have a POINTER to it? Use <code>-&gt;</code>. That's the whole mystery.</p>
+<h3>💡 Why this matters beyond C</h3>
+<p>structs are the ancestors of every "object" you've used — a JS object, a Java class, a Kotlin data class. C shows you the raw memory version: just bytes, laid out in order. Understanding this makes every other language feel transparent.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> make struct Order { char item[30]; int qty, price; } and a function orderTotal(struct Order *o) returning qty × price.</div>`),
+          quiz("c-quiz2", "Quiz: Functions & Data", [
+            { q: "To let a function change your variable you pass…", options: ["Its name in quotes", "Its address with & (and use * inside)", "A global", "Nothing — C does it automatically"], answer: 1 },
+            { q: "C strings end with…", options: ["A newline", "The invisible '\\0' terminator", "A period", "Nothing"], answer: 1 },
+            { q: "String equality is checked with…", options: ["s1 == s2", "strcmp(s1, s2) == 0", "s1.equals(s2)", "compare(s1)"], answer: 1 },
+            { q: "s->xp means…", options: ["Subtract xp", "(*s).xp — field access through a pointer", "A syntax error", "Move xp"], answer: 1 },
+            { q: "strcpy into a too-small buffer causes…", options: ["A polite error", "A buffer overflow — crash or security hole", "Auto-resize", "Nothing"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Real C & Where It Leads",
+        lessons: [
+          article("c-memory", "malloc, free & the Heap", "12 min", `
+<h3>🎯 Memory you ask for at runtime</h3>
+<pre><code>#include &lt;stdlib.h&gt;
+
+int n = 1000;
+int *scores = malloc(n * sizeof(int));   // ask the heap
+if (scores == NULL) return 1;            // ALWAYS check
+
+for (int i = 0; i &lt; n; i++) scores[i] = 0;
+
+free(scores);                            // give it back
+scores = NULL;                           // and forget the address</code></pre>
+<h3>📝 The contract (memorize, recite, live by)</h3>
+<ul>
+  <li>Every <code>malloc</code> gets exactly one <code>free</code> — no free = <strong>leak</strong>, double free = crash.</li>
+  <li>Never use memory after freeing (use-after-free — the other legendary bug).</li>
+  <li><code>sizeof</code> does the math — <code>n * sizeof(int)</code>, never a hardcoded 4.</li>
+</ul>
+<h3>💡 Why learn this in 2026</h3>
+<p>Java/JS/Python hide the heap behind garbage collectors. C makes you the garbage collector — and once you've BEEN one, you understand GC pauses, what Rust's borrow checker protects, and why embedded devices (no GC!) run C. This lesson is the backstage pass.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> allocate an array sized from user input, fill with squares, print, free. Then comment out free() and imagine it in a loop running for a year — that's how servers die.</div>`),
+          article("c-files", "Files — Programs That Remember", "10 min", `
+<h3>🎯 The open → use → close ritual</h3>
+<pre><code>#include &lt;stdio.h&gt;
+
+FILE *f = fopen("scores.txt", "w");      // w write, r read, a append
+if (f == NULL) { perror("open"); return 1; }
+fprintf(f, "Su %d\\n", 120);              // printf, into a file
+fclose(f);
+
+FILE *in = fopen("scores.txt", "r");
+char name[40]; int xp;
+while (fscanf(in, "%39s %d", name, &xp) == 2)
+    printf("%s → %d XP\\n", name, xp);
+fclose(in);</code></pre>
+<h3>📝 The habits</h3>
+<ul>
+  <li>Check every fopen for NULL — files fail constantly (missing, no permission, full disk).</li>
+  <li>fclose flushes and releases — forgetting it loses tail data.</li>
+  <li>Bound your reads (%39s for a 40-char buffer) — same overflow story as strings.</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> write a mini leaderboard: append name+score to a file, then read it all back and print the highest. Persistent storage, zero databases.</div>`),
+          article("c-career", "Where C Takes You", "8 min", `
+<h3>🎯 The language under everything</h3>
+<div class="flow">
+  <div class="flow-box">🔌 Embedded/IoT<br><small>micro:bit, Arduino,<br>car ECUs — C rules here</small></div>
+  <div class="flow-arrow" data-label="or"></div>
+  <div class="flow-box alt">🖥️ Systems<br><small>Linux kernel, drivers,<br>databases, Git itself</small></div>
+  <div class="flow-arrow" data-label="or"></div>
+  <div class="flow-box">🎓 Foundation<br><small>C++ / Rust / Go feel<br>easy after C</small></div>
+</div>
+<h3>📝 Your next moves</h3>
+<ol>
+  <li><strong>Project:</strong> a console student-records app — structs + dynamic array + file save/load. Every lesson of this course in one program.</li>
+  <li><strong>Then:</strong> the C++ course here (C's ideas + classes + STL), or embedded play.</li>
+  <li><strong>University students:</strong> C is exam gold — pointers, memory and files are exactly what's tested.</li>
+</ol>
+<div class="callout tip"><strong>Graduation task:</strong> final quiz → certificate 🎓 → build the records app this week. "I understand pointers" is rare enough to say out loud in interviews.</div>`),
+          quiz("c-final", "Final Quiz: C", [
+            { q: "Every malloc needs…", options: ["Two frees", "Exactly one free (and a NULL check first)", "A garbage collector", "Nothing"], answer: 1 },
+            { q: "Using memory after free() causes…", options: ["A warning only", "Use-after-free — crashes and security holes", "Auto-realloc", "Better speed"], answer: 1 },
+            { q: "fopen returning NULL means…", options: ["Success", "The file couldn't be opened — handle it", "Empty file", "Binary mode"], answer: 1 },
+            { q: "%39s when reading into char[40] prevents…", options: ["Typos", "Buffer overflow", "EOF", "Slow reads"], answer: 1 },
+            { q: "C dominates in…", options: ["Web styling", "Embedded systems, kernels and drivers", "Spreadsheets", "Slide decks"], answer: 1 },
+          ]),
+        ],
+      },
     ],
   },
   {
@@ -3384,7 +3528,7 @@ int main(void) {
     rating: 4.6,
     ratings: 19800,
     students: 121000,
-    hours: 8,
+    hours: 11,
     price: "Free",
     free: true,
     color: "linear-gradient(135deg,#00427e,#0086d4)",
@@ -3463,6 +3607,151 @@ int main() {
           ]),
         ],
       },
+      {
+        title: "Modern C++ Essentials",
+        lessons: [
+          article("cpp-refs", "References — Pointers With Manners", "10 min", `
+<h3>🎯 The & that changed everything</h3>
+<pre><code>void addBonus(int &xp) {    // reference: another name for the SAME variable
+    xp += 10;               // no * gymnastics
+}
+
+int score = 50;
+addBonus(score);            // no & at the call site either
+// score is now 60</code></pre>
+<h3>📝 The modern C++ parameter guide</h3>
+<ul>
+  <li><strong>Small things</strong> (int, double) — pass by value: <code>int total(int price)</code></li>
+  <li><strong>Big things you read</strong> — const reference: <code>void print(const std::string &name)</code> — no copy, no accidental change</li>
+  <li><strong>Things you modify</strong> — reference: <code>void levelUp(Student &s)</code></li>
+  <li><strong>Raw pointers</strong> — mostly for "might be nothing" and C interop; modern C++ reaches for them last</li>
+</ul>
+<h3>💡 Coming from the C course?</h3>
+<p>A reference is a pointer that can't be null, can't be reseated, and auto-dereferences. Same power, fewer foot-guns — that's the entire spirit of C++ over C.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> rewrite C's swap with references: void swap(int &a, int &b). Count the symbols you no longer need.</div>`),
+          article("cpp-string-map", "std::string & std::map — Batteries Included", "12 min", `
+<h3>🎯 The pain of C strings, deleted</h3>
+<pre><code>#include &lt;string&gt;
+#include &lt;map&gt;
+
+std::string name = "Aung";
+name += " Aung";                      // just works
+if (name == "Aung Aung")              // REAL equality
+    std::cout &lt;&lt; name.length() &lt;&lt; "\\n";
+
+std::map&lt;std::string, int&gt; prices;
+prices["Milk tea"] = 1500;
+prices["Coffee"]   = 2000;
+
+for (const auto&amp; [item, price] : prices)      // structured bindings!
+    std::cout &lt;&lt; item &lt;&lt; ": " &lt;&lt; price &lt;&lt; "\\n";</code></pre>
+<h3>📝 What you get for free</h3>
+<ul>
+  <li><strong>std::string</strong> — grows itself, compares with ==, no terminator bookkeeping, no overflow roulette.</li>
+  <li><strong>std::map</strong> — sorted key→value (the hash-map sibling is <code>unordered_map</code>, your O(1) friend from DSA).</li>
+  <li><strong>auto</strong> — the compiler writes the type; <code>const auto&</code> in loops = fast AND safe.</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> count word frequencies of a sentence with unordered_map&lt;std::string, int&gt; — the DSA counting pattern in its native habitat.</div>`),
+          article("cpp-raii", "RAII — C++'s Superpower", "10 min", `
+<h3>🎯 Cleanup that cannot be forgotten</h3>
+<p><strong>RAII</strong>: resources are owned by objects; destructors free them AUTOMATICALLY when scope ends. It's why modern C++ code has almost no manual cleanup:</p>
+<pre><code>{
+    std::vector&lt;int&gt; scores(1000);     // memory acquired
+    std::ofstream out("log.txt");       // file opened
+    out &lt;&lt; "hello\\n";
+}   // ← scope ends: file closed, memory freed. ALWAYS. Even on exceptions.</code></pre>
+<h3>💻 Smart pointers — RAII for the heap</h3>
+<pre><code>#include &lt;memory&gt;
+
+auto s = std::make_unique&lt;Student&gt;("Su");   // owns the Student
+s-&gt;levelUp();
+// no delete — when s dies, Student dies. Leaks: impossible.</code></pre>
+<h3>📝 The modern rules</h3>
+<ul>
+  <li><code>new/delete</code> by hand = legacy code smell. Use <code>make_unique</code> (one owner) or <code>make_shared</code> (shared owners).</li>
+  <li>Containers (vector, string, map) already RAII everything inside them.</li>
+  <li>This is C++'s answer to garbage collection: deterministic, instant, zero pause — why games and trading systems choose it.</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> explain to your rubber duck why the C course's "every malloc needs a free" rule disappears here — where did the free GO? (Into the destructor.)</div>`),
+          quiz("cpp-quiz2", "Quiz: Modern C++", [
+            { q: "void f(const std::string &s) passes…", options: ["A copy", "A read-only reference — no copy, no mutation", "A pointer that may be null", "A global"], answer: 1 },
+            { q: "std::string vs char[]:", options: ["Identical", "string grows itself, compares with ==, no overflow bookkeeping", "char[] is safer", "string is C-only"], answer: 1 },
+            { q: "RAII means…", options: ["Manual cleanup", "Destructors release resources automatically at scope end", "A GC thread", "Slower code"], answer: 1 },
+            { q: "Modern heap allocation uses…", options: ["new/delete everywhere", "make_unique / make_shared smart pointers", "malloc", "Globals"], answer: 1 },
+            { q: "The O(1) key→value container is…", options: ["std::vector", "std::unordered_map", "std::string", "std::pair"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "STL Power & The Road Ahead",
+        lessons: [
+          article("cpp-algo", "The <algorithm> Toolbox", "10 min", `
+<h3>🎯 Stop writing loops that already exist</h3>
+<pre><code>#include &lt;algorithm&gt;
+#include &lt;vector&gt;
+
+std::vector&lt;int&gt; xp = { 120, 45, 300, 80 };
+
+std::sort(xp.begin(), xp.end());                        // ascending
+std::sort(xp.begin(), xp.end(), std::greater&lt;&gt;());      // descending
+
+auto top = std::max_element(xp.begin(), xp.end());
+int total = std::accumulate(xp.begin(), xp.end(), 0);   // &lt;numeric&gt;
+int big = std::count_if(xp.begin(), xp.end(),
+                        [](int v) { return v &gt;= 100; }); // lambda!</code></pre>
+<h3>📝 The pieces</h3>
+<ul>
+  <li><strong>Iterators</strong> — begin()/end() mark the range; algorithms work on ANY container the same way.</li>
+  <li><strong>Lambdas</strong> — <code>[](int v) { return v &gt;= 100; }</code> — inline functions, same idea as JS arrows/Kotlin lambdas.</li>
+  <li>sort + comparator, max_element, count_if, accumulate, find — these five cover most daily needs (and most contest problems).</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> given a vector of prices, print the total, the max, and how many are over 1000 — zero hand-written loops allowed.</div>`),
+          article("cpp-build", "Compiling, Warnings & Debugging", "10 min", `
+<h3>🎯 Make the compiler your teammate</h3>
+<pre><code># the flags professionals never omit:
+g++ -std=c++20 -Wall -Wextra -O2 shop.cpp -o shop
+
+-std=c++20   modern language features
+-Wall -Wextra  ALL the warnings — free bug detection
+-O2          optimizations (for release)
+-g           debug info (for debugging builds)</code></pre>
+<h3>📝 Reading C++ compiler errors (survival guide)</h3>
+<ul>
+  <li><strong>Read the FIRST error only</strong> — fix it, recompile. Errors 2–47 are usually echoes of error 1.</li>
+  <li>Template errors look terrifying; find the line number in YOUR file and the phrase "required from here".</li>
+  <li>"undefined reference" = linker: you declared but never defined, or forgot a file in the compile command.</li>
+</ul>
+<h3>📝 When it compiles but misbehaves</h3>
+<ul>
+  <li>Print debugging is honorable: <code>std::cerr &lt;&lt; "x=" &lt;&lt; x &lt;&lt; "\\n";</code></li>
+  <li>Level up: sanitizers — <code>-fsanitize=address,undefined</code> catches the C-family's classic memory bugs AT RUNTIME with exact line numbers. Free Valgrind-lite, built into the compiler.</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> compile something with an unused variable and a missing return — once with no flags, once with -Wall -Wextra. Meet your new code reviewer.</div>`),
+          article("cpp-career", "C++ Careers: Games, Speed & Systems", "8 min", `
+<h3>🎯 Where C++ pays</h3>
+<div class="flow">
+  <div class="flow-box">🎮 Games<br><small>Unreal Engine IS C++ —<br>the dream-job route</small></div>
+  <div class="flow-arrow" data-label="or"></div>
+  <div class="flow-box alt">⚡ Performance<br><small>trading, robotics,<br>engines, ML runtimes</small></div>
+  <div class="flow-arrow" data-label="or"></div>
+  <div class="flow-box">🏆 Contests<br><small>competitive programming's<br>favorite language</small></div>
+</div>
+<h3>📝 Your path from here</h3>
+<ol>
+  <li><strong>Project:</strong> console shop manager — classes + vector + map + file save + &lt;algorithm&gt; reports. One weekend, every lesson used.</li>
+  <li><strong>Competitive?</strong> Redo the DSA course's patterns in C++ — vector/unordered_map/sort are contest weapons; Codeforces div 4 awaits.</li>
+  <li><strong>Games?</strong> Learn a framework (SFML/raylib is the gentle start) → then Unreal. Your RAII/reference knowledge is exactly what engine code demands.</li>
+</ol>
+<div class="callout tip"><strong>Graduation task:</strong> final quiz → certificate 🎓 → pick your road (game / speed / contest) and take its first step this week. C++ rewards momentum like no other language.</div>`),
+          quiz("cpp-final", "Final Quiz: C++", [
+            { q: "The compile flags that catch bugs for free:", options: ["-fast", "-Wall -Wextra", "-quiet", "-O9"], answer: 1 },
+            { q: "Facing 40 compiler errors, you fix…", options: ["All at once", "The FIRST one, then recompile", "The last one", "None — reboot"], answer: 1 },
+            { q: "count_if with a lambda replaces…", options: ["The compiler", "A hand-written counting loop", "The linker", "main()"], answer: 1 },
+            { q: "-fsanitize=address finds…", options: ["Typos", "Memory bugs at runtime with exact locations", "Slow Wi-Fi", "License issues"], answer: 1 },
+            { q: "Unreal Engine development is dominated by…", options: ["PHP", "C++", "Excel", "Scratch"], answer: 1 },
+          ]),
+        ],
+      },
     ],
   },
   {
@@ -3475,7 +3764,7 @@ int main() {
     rating: 4.7,
     ratings: 22100,
     students: 143000,
-    hours: 6.5,
+    hours: 9,
     price: "Free",
     free: true,
     color: "linear-gradient(135deg,#68217a,#9b4f96)",
@@ -3538,6 +3827,174 @@ Console.WriteLine($"{s.Name} passed? {s.Passed}");</code></pre>
             { q: "Which command runs a C# console project?", options: ["csc run", "dotnet run", "dotnet go", "run cs"], answer: 1 },
             { q: "$\"Hello {name}\" is called...", options: ["A template", "String interpolation", "Concatenation", "A format macro"], answer: 1 },
             { q: "List<int> can hold...", options: ["Anything", "Only integers", "Only strings", "Exactly 10 items"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "C# That Does Real Work",
+        lessons: [
+          article("cs-collections", "Dictionary, Loops & the Daily Toolkit", "10 min", `
+<h3>🎯 The pair you'll use every day</h3>
+<pre><code>var orders = new List&lt;string&gt; { "Milk tea", "Coffee" };
+orders.Add("Juice");
+orders.Remove("Coffee");
+
+var prices = new Dictionary&lt;string, int&gt; {
+    ["Milk tea"] = 1500,
+    ["Coffee"]   = 2000
+};
+
+foreach (var (item, price) in prices)
+    Console.WriteLine($"{item}: {price} Ks");
+
+if (prices.TryGetValue("Juice", out var p))   // safe lookup
+    Console.WriteLine(p);
+else
+    Console.WriteLine("Not on the menu");</code></pre>
+<h3>📝 Notes that save beginners</h3>
+<ul>
+  <li><strong>String interpolation</strong> — <code>$"{item}: {price}"</code> — the $-string, like JS templates.</li>
+  <li><strong>TryGetValue</strong> beats [] for maybe-missing keys — no exception, no drama.</li>
+  <li><strong>var</strong> = compiler infers the type (it's still 100% typed — just less typing).</li>
+  <li>Dictionary = the hash map from DSA; List = the growable array. Old friends, C# accents.</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> (dotnetfiddle.net — free, no install) build the menu Dictionary and print a formatted menu board with foreach.</div>`),
+          article("cs-linq", "LINQ — Superpower Queries on Anything", "12 min", `
+<h3>🎯 The feature C# developers brag about</h3>
+<p><strong>LINQ</strong> lets you query collections like a database:</p>
+<pre><code>using System.Linq;
+
+var orders = new List&lt;Order&gt; { /* ... */ };
+
+var big = orders
+    .Where(o =&gt; o.Total &gt; 4000)          // filter
+    .OrderByDescending(o =&gt; o.Total)      // sort
+    .Take(5)                              // top 5
+    .Select(o =&gt; $"{o.Customer}: {o.Total} Ks")  // reshape
+    .ToList();
+
+var revenue = orders.Sum(o =&gt; o.Total);
+var byCity = orders.GroupBy(o =&gt; o.City);   // pivot table, one call
+var vip = orders.Any(o =&gt; o.Total &gt; 100000);</code></pre>
+<h3>📝 Translate from what you know</h3>
+<ul>
+  <li>JS: filter/map/reduce → C#: <strong>Where/Select/Aggregate(or Sum)</strong></li>
+  <li>SQL: WHERE/ORDER BY/GROUP BY → LINQ: same words, dot-chained</li>
+  <li>Kotlin's collection chains → LINQ is the same music</li>
+</ul>
+<p>One skill, four ecosystems — this is why learning patterns beats memorizing syntax.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> from a List of (name, xp) students, produce the top 3 by XP as "name — xp" strings, in three chained calls.</div>`),
+          article("cs-oop", "Classes, Properties & the C# Way", "10 min", `
+<h3>🎯 Properties — fields with manners</h3>
+<pre><code>public class Student
+{
+    public string Name { get; init; }        // set once, at creation
+    public int Xp { get; private set; }       // read anywhere, change inside
+
+    public Student(string name) =&gt; Name = name;
+
+    public void Complete(int points)
+    {
+        Xp += points;
+        Console.WriteLine($"{Name} → {Xp} XP");
+    }
+}
+
+var su = new Student("Su");
+su.Complete(25);
+// su.Xp = 999999;   ❌ compiler says no — encapsulation enforced</code></pre>
+<h3>📝 C# flavor notes</h3>
+<ul>
+  <li><strong>Properties</strong> ({ get; set; }) replace Java's hand-written getter/setter boilerplate — one line each.</li>
+  <li><strong>record</strong> — <code>public record Order(string Item, int Qty, int Price);</code> — equality + ToString free, like Kotlin's data class.</li>
+  <li><strong>Nullable references</strong> — <code>string?</code> means "may be null"; the compiler nags you to check. The billion-dollar mistake, supervised.</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> add a Level property computed as Xp / 100 + 1 (expression-bodied: <code>public int Level =&gt; Xp / 100 + 1;</code>) and print it after some Complete() calls.</div>`),
+          quiz("cs-quiz2", "Quiz: Real C#", [
+            { q: "Safe Dictionary lookup uses…", options: ["dict[key] always", "TryGetValue(key, out var v)", "foreach only", "LINQ only"], answer: 1 },
+            { q: "JS's filter/map in LINQ are…", options: ["Filter/Map", "Where/Select", "Find/Change", "For/Each"], answer: 1 },
+            { q: "GroupBy is C#'s version of…", options: ["A chart", "SQL GROUP BY / Excel pivot", "A loop", "An interface"], answer: 1 },
+            { q: "public int Xp { get; private set; } means…", options: ["Nobody reads Xp", "Anyone reads, only the class changes it", "Xp is constant", "Xp is global"], answer: 1 },
+            { q: "string? name signals…", options: ["A typo", "name may be null — compiler pushes you to check", "A fast string", "An interpolated string"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: ".NET Roads: Web, Unity & Career",
+        lessons: [
+          article("cs-webapi", "A Web API in 12 Lines (ASP.NET Minimal)", "10 min", `
+<h3>🎯 The fullstack course's server — C# edition</h3>
+<pre><code>var builder = WebApplication.CreateBuilder(args);
+var app = builder.Build();
+
+var menu = new Dictionary&lt;string, int&gt; {
+    ["Milk tea"] = 1500, ["Coffee"] = 2000
+};
+
+app.MapGet("/api/menu", () =&gt; menu);                 // GET → JSON!
+app.MapGet("/api/menu/{item}", (string item) =&gt;
+    menu.TryGetValue(item, out var p)
+        ? Results.Ok(p)
+        : Results.NotFound());
+
+app.Run();</code></pre>
+<h3>📝 Read it with eyes you already own</h3>
+<ul>
+  <li>MapGet("/api/menu", …) ≈ Express's app.get — same REST thinking, C# suit.</li>
+  <li>Return a Dictionary → automatic JSON. Status codes via Results.Ok/NotFound.</li>
+  <li>Run it: <code>dotnet new web && dotnet run</code> — the .NET SDK is free on every OS.</li>
+</ul>
+<h3>💡 Why companies love this stack</h3>
+<p>ASP.NET is consistently among the FASTEST web frameworks in industry benchmarks, with big-enterprise tooling. "C# + SQL + ASP.NET" is a complete, hireable backend identity — especially in banks, ERPs and international outsourcing.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> sketch the two endpoints for orders: GET /api/orders and POST /api/orders. What do MapGet/MapPost receive and return?</div>`),
+          article("cs-unity", "The Unity Path — C# for Games", "10 min", `
+<h3>🎯 The reason many learners pick C#</h3>
+<p><strong>Unity</strong> — the world's most-used game engine (mobile especially) — is scripted entirely in C#:</p>
+<pre><code>public class Player : MonoBehaviour
+{
+    public float speed = 5f;
+
+    void Update()                       // runs EVERY frame
+    {
+        float x = Input.GetAxis("Horizontal");
+        transform.Translate(x * speed * Time.deltaTime, 0, 0);
+    }
+}</code></pre>
+<h3>📝 Decode it</h3>
+<ul>
+  <li>A script is a class attached to a game object; <code>Update()</code> runs each frame (~60×/second).</li>
+  <li><code>Time.deltaTime</code> makes movement frame-rate independent — the first "aha" of game dev.</li>
+  <li>Everything you learned — properties, Lists, loops, LINQ — is exactly what game logic is made of.</li>
+</ul>
+<h3>📝 The realistic on-ramp</h3>
+<ol>
+  <li>Unity Personal is free; needs a mid-range PC (like Android Studio).</li>
+  <li>Unity Learn's "Essentials" path (free, official) → then clone a simple game: Flappy Bird teaches physics, UI, score, game-over — everything.</li>
+  <li>Ship to Android for your friends — the same Play Store path as the Kotlin course.</li>
+</ol>
+<div class="callout tip"><strong>Try it yourself:</strong> on paper, list the variables and Update() logic for Flappy Bird's bird. (Velocity, gravity per frame, jump on tap, die on collision — you can already write 80% of it.)</div>`),
+          article("cs-career", "The C# Career Map", "8 min", `
+<h3>🎯 One language, three industries</h3>
+<div class="flow">
+  <div class="flow-box">🏢 Enterprise backend<br><small>ASP.NET + SQL —<br>banks, ERPs, outsourcing</small></div>
+  <div class="flow-arrow" data-label="or"></div>
+  <div class="flow-box alt">🎮 Games<br><small>Unity — mobile & indie's<br>favorite engine</small></div>
+  <div class="flow-arrow" data-label="or"></div>
+  <div class="flow-box">🖥️ Apps & tools<br><small>Windows apps, MAUI<br>cross-platform</small></div>
+</div>
+<h3>📝 Portfolio that proves it (pick your road)</h3>
+<ul>
+  <li><strong>Backend road:</strong> the tea-shop API (menu, orders, totals via LINQ) + SQL from the database course + a README with endpoint docs.</li>
+  <li><strong>Game road:</strong> one COMPLETE tiny game (finished beats fancy) with a gameplay GIF in the README.</li>
+  <li>Either way: green GitHub squares + this course's certificate + the DSA patterns (in C# they're LINQ one-liners).</li>
+</ul>
+<div class="callout tip"><strong>Graduation task:</strong> final quiz → certificate 🎓 → install the .NET SDK or Unity (or bookmark dotnetfiddle for now) and take road's step #1 today. Momentum is the real curriculum.</div>`),
+          quiz("cs-final", "Final Quiz: C#", [
+            { q: "app.MapGet(\"/api/menu\", () => menu) returns…", options: ["HTML", "The dictionary as automatic JSON", "A file", "An error"], answer: 1 },
+            { q: "ASP.NET minimal APIs resemble…", options: ["Excel macros", "Express routes — same REST ideas", "CSS", "Photoshop"], answer: 1 },
+            { q: "Unity scripts' Update() runs…", options: ["Once", "Every frame", "On click only", "Never"], answer: 1 },
+            { q: "Time.deltaTime exists so that…", options: ["Code looks pro", "Movement speed is independent of frame rate", "Loops end", "Memory clears"], answer: 1 },
+            { q: "The strongest game-road portfolio item is…", options: ["10 unfinished prototypes", "One COMPLETE tiny game with a gameplay GIF", "A GDD only", "Screenshots of tutorials"], answer: 1 },
           ]),
         ],
       },
@@ -3800,7 +4257,7 @@ lifecycleScope.launch {
     rating: 4.5,
     ratings: 8900,
     students: 54000,
-    hours: 5,
+    hours: 8,
     price: "Free",
     free: true,
     color: "linear-gradient(135deg,#1f65b7,#75aadb)",
@@ -3858,6 +4315,142 @@ plot(months, sales, type = "b",
             { q: "c(1, 2, 3) creates...", options: ["A class", "A vector", "A comment", "A file"], answer: 1 },
             { q: "students$score selects...", options: ["A row", "A column by name", "The first cell", "Nothing"], answer: 1 },
             { q: "Which function draws a basic chart?", options: ["chart()", "draw()", "plot()", "graph()"], answer: 2 },
+          ]),
+        ],
+      },
+      {
+        title: "Real Data Work (tidyverse)",
+        lessons: [
+          article("r-import", "Import & Inspect Real Data", "10 min", `
+<h3>🎯 Analysis starts with a CSV</h3>
+<pre><code>library(tidyverse)          # the modern R toolkit
+
+sales &lt;- read_csv("sales.csv")
+
+glimpse(sales)              # columns, types, first values
+head(sales, 10)             # first 10 rows
+summary(sales)              # min/median/mean/max per column
+n_distinct(sales$branch)    # how many branches?</code></pre>
+<h3>📝 The first-5-minutes ritual (every dataset, every time)</h3>
+<ol>
+  <li><strong>glimpse()</strong> — are the types right? (dates read as text = fix before anything else)</li>
+  <li><strong>summary()</strong> — any impossible values? (negative prices, 999 ages)</li>
+  <li><strong>Missing check</strong> — <code>colSums(is.na(sales))</code> — where are the holes?</li>
+</ol>
+<p>Analysts who skip the ritual present wrong numbers confidently. Don't be that chart.</p>
+<div class="callout"><strong>Free playground:</strong> posit.cloud runs RStudio in the browser — no install, works on modest machines. R's spiritual home.</div>
+<div class="callout tip"><strong>Try it yourself:</strong> in posit.cloud, run the ritual on a built-in dataset: <code>glimpse(mpg)</code>, <code>summary(mpg)</code>. What's the priciest… wait, no price column — which column WOULD you check for nonsense?</div>`),
+          article("r-dplyr", "dplyr — Five Verbs, Infinite Questions", "12 min", `
+<h3>🎯 The grammar of data manipulation</h3>
+<pre><code>sales |&gt;
+  filter(branch == "Yangon", total &gt; 4000) |&gt;   # keep rows
+  mutate(month = floor_date(date, "month")) |&gt;   # new column
+  group_by(month) |&gt;                             # split
+  summarise(revenue = sum(total),                # aggregate
+            orders  = n()) |&gt;
+  arrange(desc(revenue))                          # sort</code></pre>
+<h3>📝 The five verbs</h3>
+<ul>
+  <li><strong>filter()</strong> — keep rows (SQL WHERE) · <strong>select()</strong> — keep columns</li>
+  <li><strong>mutate()</strong> — add/change columns · <strong>summarise()</strong> + <strong>group_by()</strong> — the pivot table</li>
+  <li><strong>arrange()</strong> — sort · and <code>|&gt;</code> pipes each result into the next step, readable top-to-bottom</li>
+</ul>
+<h3>💡 You know this song</h3>
+<p>Excel pivot = group_by + summarise. SQL GROUP BY = same. LINQ GroupBy = same. Four tools, one idea — you're now fluent in the world's most transferable data pattern.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> with mpg: average highway mileage (hwy) per manufacturer, best first. Three verbs, one pipe.</div>`),
+          article("r-ggplot", "ggplot2 — Charts With Grammar", "12 min", `
+<h3>🎯 Layered graphics</h3>
+<pre><code>ggplot(sales, aes(x = month, y = revenue, fill = branch)) +
+  geom_col(position = "dodge") +
+  labs(title = "Mandalay overtook Yangon in June",
+       x = NULL, y = "Revenue (Ks)") +
+  theme_minimal()</code></pre>
+<h3>📝 The three layers of every ggplot</h3>
+<ol>
+  <li><strong>aes()</strong> — map DATA to visuals: x, y, color/fill, size.</li>
+  <li><strong>geom_*</strong> — the chart type: geom_col (bars), geom_line (trends), geom_point (scatter), geom_histogram (distributions).</li>
+  <li><strong>labs + theme</strong> — the finding as the title (Excel course rule — it transfers!), clean theme.</li>
+</ol>
+<h3>💻 The one-liner that impresses</h3>
+<pre><code>ggplot(mpg, aes(displ, hwy, color = class)) + geom_point()</code></pre>
+<p>Engine size vs mileage, colored by car class — a publication-ready scatter in one line. This is why data scientists keep R next to Python.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> make that scatter, then swap geom_point() for geom_smooth() and see the trend lines. One word changed the whole story — that's the grammar working.</div>`),
+          quiz("r-quiz2", "Quiz: tidyverse", [
+            { q: "First minutes with any new dataset:", options: ["Make charts immediately", "glimpse + summary + missing-value check", "Delete odd rows", "Email it"], answer: 1 },
+            { q: "Rows are kept/dropped with…", options: ["select()", "filter()", "mutate()", "labs()"], answer: 1 },
+            { q: "Excel's pivot table in dplyr is…", options: ["arrange()", "group_by() + summarise()", "read_csv()", "theme()"], answer: 1 },
+            { q: "In ggplot, aes() does what?", options: ["Sets colors manually", "Maps data columns to visual properties", "Saves the file", "Filters rows"], answer: 1 },
+            { q: "geom_col vs geom_line:", options: ["Same", "Bars for comparisons vs lines for trends over time", "Both are scatter", "Decorative only"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "From Analysis to Answers",
+        lessons: [
+          article("r-clean", "Cleaning Messy Data", "10 min", `
+<h3>🎯 80% of the job, honestly</h3>
+<pre><code>clean &lt;- sales |&gt;
+  rename(customer = cust_nm) |&gt;                 # sane names
+  mutate(
+    branch = str_trim(str_to_title(branch)),     # " yangon " → "Yangon"
+    total  = parse_number(total_text),           # "1,500 Ks" → 1500
+    date   = dmy(date_text)                      # "09-07-2026" → real date
+  ) |&gt;
+  drop_na(total) |&gt;                              # or fix, don't just drop!
+  distinct()                                      # remove duplicate rows</code></pre>
+<h3>📝 The cleaning creed</h3>
+<ul>
+  <li><strong>Never edit the raw file</strong> — read it, clean in code, keep the script. The script IS your audit trail (Excel's Flash Fill can't say that).</li>
+  <li><strong>Every drop_na is a decision</strong> — dropping 5 rows of 10,000 is fine; dropping 40% means the data has a story you must investigate.</li>
+  <li><strong>lubridate</strong> (dmy/mdy/ymd) fixes any date format; <strong>stringr</strong> (str_*) fixes any text.</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> write the mutate() that turns "  MANDALAY " and "yangon" into proper branch names. Two str_ functions, one line.</div>`),
+          article("r-report", "R Markdown / Quarto — Reports That Rerun", "10 min", `
+<h3>🎯 The killer feature nobody expects</h3>
+<p>Mix text + code + charts in ONE document; render to HTML/PDF/Word. New month's data? Re-render — every number and chart updates itself.</p>
+<pre><code>---
+title: "July Sales Report"
+format: html
+---
+
+Revenue grew \x60r round(growth, 1)\x60% this month.
+
+\x60\x60\x60{r}
+sales |&gt; group_by(branch) |&gt;
+  summarise(rev = sum(total)) |&gt;
+  ggplot(aes(branch, rev)) + geom_col()
+\x60\x60\x60</code></pre>
+<h3>📝 Why this changes your standing at work</h3>
+<ul>
+  <li><strong>No copy-paste errors</strong> — numbers in the text come FROM the code (inline r chunks).</li>
+  <li><strong>Reproducible</strong> — anyone can rerun your analysis; "how did you get this figure?" has an answer.</li>
+  <li><strong>Monthly reports become one keystroke</strong> — the analyst who automates reporting owns Friday afternoons.</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> in posit.cloud: File → New → Quarto Document → Render the template. Change one chart, re-render. That loop is your future reporting workflow.</div>`),
+          article("r-career", "R Careers & the Python Question", "8 min", `
+<h3>🎯 Where R people work</h3>
+<div class="flow">
+  <div class="flow-box">📊 Analytics<br><small>business reporting,<br>dashboards, NGOs' M&E</small></div>
+  <div class="flow-arrow" data-label="or"></div>
+  <div class="flow-box alt">🔬 Research<br><small>universities, public<br>health, statistics</small></div>
+  <div class="flow-arrow" data-label="or"></div>
+  <div class="flow-box">📈 Data science<br><small>often alongside SQL<br>and Python</small></div>
+</div>
+<h3>📝 "R or Python?" — the grown-up answer</h3>
+<p>For statistics, reporting and beautiful charts fast: R shines. For ML pipelines and general engineering: Python leads. Analysts who know <strong>SQL + one of them + Excel</strong> are employable everywhere; the second language comes easily later because the CONCEPTS (this course!) are identical.</p>
+<h3>📝 Portfolio in one weekend</h3>
+<ol>
+  <li>Pick a public dataset you care about (Myanmar weather, football stats, COVID archives).</li>
+  <li>One Quarto report: the 5-minute ritual → 3 dplyr questions → 2 ggplot charts with finding-titles → 3 honest conclusions.</li>
+  <li>Publish the rendered HTML via GitHub Pages (Git course!) — a LIVE analysis link on your CV.</li>
+</ol>
+<div class="callout tip"><strong>Graduation task:</strong> final quiz → certificate 🎓 → start the weekend report. An analysis someone can CLICK beats every buzzword.</div>`),
+          quiz("r-final", "Final Quiz: R", [
+            { q: "Raw data files should be…", options: ["Edited directly", "Left untouched — clean in code, keep the script", "Deleted after import", "Printed"], answer: 1 },
+            { q: "\"1,500 Ks\" becomes 1500 via…", options: ["as.numeric alone", "parse_number()", "sum()", "filter()"], answer: 1 },
+            { q: "Quarto/R Markdown's superpower is…", options: ["Prettier fonts", "Reports that re-run: text + code + charts update together", "Faster R", "Games"], answer: 1 },
+            { q: "Dropping 40% of rows as NA means…", options: ["Great, cleaner data", "Stop — investigate why before dropping", "Nothing", "Double it"], answer: 1 },
+            { q: "The employable analyst combo is…", options: ["R alone", "SQL + R (or Python) + Excel", "PowerPoint", "Only certificates"], answer: 1 },
           ]),
         ],
       },
@@ -4413,7 +5006,7 @@ git restore file          # discard uncommitted edits</code></pre>
     rating: 4.6,
     ratings: 14200,
     students: 89000,
-    hours: 5,
+    hours: 8,
     price: "Free",
     free: true,
     color: "linear-gradient(135deg,#0db7ed,#384d54)",
@@ -4462,6 +5055,148 @@ docker run -p 3000:3000 my-app</code></pre>
             { q: "An image is to a container as...", options: ["A file is to a folder", "A recipe is to a cooked meal", "A server is to a client", "RAM is to disk"], answer: 1 },
             { q: "-p 8080:80 means...", options: ["Use 8080 MB of memory", "Map host port 8080 to container port 80", "Run 80 copies", "Set priority"], answer: 1 },
             { q: "Which file defines how to build your app's image?", options: ["docker.json", "Dockerfile", "image.yml", "container.cfg"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Multi-Container Life",
+        lessons: [
+          article("dk-compose", "docker compose — Your App + Its Friends", "12 min", `
+<h3>🎯 Real apps travel in groups</h3>
+<pre><code># compose.yaml — the whole stack, one file
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      DB_HOST: db
+    depends_on:
+      - db
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_PASSWORD: dev-only
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+volumes:
+  dbdata:</code></pre>
+<pre><code>docker compose up      # start everything
+docker compose down    # stop everything cleanly</code></pre>
+<h3>📝 Three quiet superpowers</h3>
+<ul>
+  <li><strong>Service names are hostnames</strong> — web reaches the database at just "db"; compose wires the private network.</li>
+  <li><strong>Named volumes persist data</strong> — the db survives restarts; container disks are throwaway by design.</li>
+  <li><strong>The file is the onboarding doc</strong> — a new teammate runs one command and has the full environment.</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> add a third service (redis:7) to the file on paper. What hostname would web use to reach it? Does it need a volume for a cache? (redis · no.)</div>`),
+          article("dk-volumes", "Volumes, Ports & env — The Three Confusions", "10 min", `
+<h3>🎯 Where beginners get stuck, solved</h3>
+<h3>📝 1. Ports: -p host:container</h3>
+<pre><code>docker run -p 8080:3000 my-app
+# browser talks to localhost:8080 → forwarded to the app's 3000</code></pre>
+<p>"Works in the container, dead in the browser" = you forgot -p. The container's ports are private until published.</p>
+<h3>📝 2. Volumes: where data survives</h3>
+<pre><code>-v dbdata:/var/lib/postgresql/data    # named volume: Docker manages it
+-v ./src:/app/src                     # bind mount: live-edit code in dev!</code></pre>
+<p>Wrote files inside the container without a volume? They vanish with it. Data you love lives in volumes.</p>
+<h3>📝 3. Config via environment</h3>
+<pre><code>docker run -e DB_HOST=db -e API_KEY=$MY_KEY my-app</code></pre>
+<p>Same image, different environments — dev/staging/prod differ only in env vars. NEVER bake secrets into images (images get shared; files inside are readable).</p>
+<div class="callout tip"><strong>Try it yourself:</strong> run nginx with -p 8080:80 and open localhost:8080. Then stop it, run WITHOUT -p, and feel confusion #1 on purpose — now it can never trick you again.</div>`),
+          article("dk-debug", "Debugging Containers Like a Pro", "10 min", `
+<h3>🎯 Four commands solve 90% of mysteries</h3>
+<pre><code>docker ps -a                # ALL containers — exit codes tell stories
+docker logs my-app          # the app's console (the answer is usually here)
+docker logs -f my-app       # …live, while you reproduce the bug
+docker exec -it my-app sh   # a shell INSIDE the running box
+docker inspect my-app       # full config: env, mounts, network</code></pre>
+<h3>📝 The classic cases, decoded</h3>
+<ul>
+  <li><strong>Exits instantly</strong> — logs show a startup crash; missing env var is cause #1.</li>
+  <li><strong>"Cannot connect to localhost:5432"</strong> — inside a container, localhost = the container ITSELF. Use the compose service name ("db").</li>
+  <li><strong>Out of disk</strong> — old images pile up: <code>docker system prune</code> reclaims gigabytes (read what it lists first!).</li>
+  <li><strong>Wrong/stale build</strong> — <code>docker compose up --build</code> forces a rebuild after code changes.</li>
+</ul>
+<div class="callout"><strong>Golden habit:</strong> read logs BEFORE restarting. "Restart until it works" teaches nothing and hides real bugs.</div>
+<div class="callout tip"><strong>Try it yourself:</strong> run a postgres container without POSTGRES_PASSWORD, watch it exit, read the log line that TELLS you exactly what's missing. Diagnosis muscle: grown.</div>`),
+          quiz("dk-quiz2", "Quiz: Compose & Debugging", [
+            { q: "In compose, the web service reaches postgres at…", options: ["localhost", "The service name, e.g. db", "127.0.0.1", "The public internet"], answer: 1 },
+            { q: "-p 8080:3000 means…", options: ["Container port 8080", "Host 8080 forwards to container 3000", "Two apps", "A typo"], answer: 1 },
+            { q: "Database files survive restarts because of…", options: ["Luck", "A named volume", "Bigger images", "The Dockerfile"], answer: 1 },
+            { q: "A container exits instantly. First command:", options: ["docker logs <name>", "Reinstall Docker", "Reboot", "Delete everything"], answer: 0 },
+            { q: "Secrets belong…", options: ["Baked into the image", "Injected at runtime via env vars/secret stores", "In the README", "In git"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Ship It",
+        lessons: [
+          article("dk-registry", "Registries — Share Your Images", "8 min", `
+<h3>🎯 push, pull, run anywhere</h3>
+<pre><code>docker tag my-app ghcr.io/yourname/my-app:v1
+docker push ghcr.io/yourname/my-app:v1
+
+# any machine on Earth:
+docker pull ghcr.io/yourname/my-app:v1
+docker run -p 3000:3000 ghcr.io/yourname/my-app:v1</code></pre>
+<h3>📝 Registry knowledge that matters</h3>
+<ul>
+  <li><strong>Docker Hub</strong> = the public default; <strong>GHCR</strong> (GitHub) pairs perfectly with your repos.</li>
+  <li><strong>Tags are versions</strong> — push v1, v2, and the commit SHA in CI (DevOps course!). "latest" is a moving target; deploys want exact tags.</li>
+  <li>Your laptop → CI → server all run THE SAME image. That's the whole point: "works on my machine" becomes "works, period".</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> tag and push any image to GHCR (free with your GitHub account), then pull it back. Your first published artifact!</div>`),
+          article("dk-slim", "Small, Safe Images", "10 min", `
+<h3>🎯 Less image = faster deploys + fewer holes</h3>
+<pre><code># .dockerignore — junk stays OUT of the build
+node_modules
+.git
+.env
+
+# multi-stage: build big, ship small
+FROM node:20 AS build
+WORKDIR /app
+COPY . .
+RUN npm ci && npm run build
+
+FROM node:20-alpine            # tiny runtime
+WORKDIR /app
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/node_modules ./node_modules
+USER node                       # don't run as root!
+CMD ["node", "dist/server.js"]</code></pre>
+<h3>📝 The checklist</h3>
+<ul>
+  <li><strong>alpine/slim base</strong> — 50MB beats 900MB every deploy, every pull.</li>
+  <li><strong>.dockerignore always</strong> — secrets and junk never enter layers (layers are forever).</li>
+  <li><strong>USER node</strong> — a container breakout from root is a server breach; from a user, a shrug.</li>
+  <li><strong>Scan it</strong> — <code>docker scout cves my-app</code> (or Trivy) lists known vulnerabilities. Wire it into CI and sleep better.</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> run docker images and sort by SIZE. Find your fattest image and name the two changes that would halve it.</div>`),
+          article("dk-next", "Docker → DevOps: Your Path", "8 min", `
+<h3>🎯 You now hold the container key</h3>
+<div class="flow">
+  <div class="flow-box">✅ Docker<br><small>this course —<br>images, compose, debug</small></div>
+  <div class="flow-arrow" data-label="next"></div>
+  <div class="flow-box alt">🔁 CI/CD<br><small>GitHub Actions builds &<br>pushes images per commit</small></div>
+  <div class="flow-arrow" data-label="then"></div>
+  <div class="flow-box alt">☸️ Kubernetes<br><small>run fleets of containers —<br>self-healing, rolling updates</small></div>
+  <div class="flow-arrow" data-label="career"></div>
+  <div class="flow-box warn">💼 DevOps role<br><small>top-tier salaries,<br>CKA certification</small></div>
+</div>
+<h3>📝 Do these two things</h3>
+<ol>
+  <li><strong>Dockerize YOUR app</strong> — the Full Stack course's notes app: Dockerfile + compose with its database + README with run instructions. That repo is portfolio gold.</li>
+  <li><strong>Enroll in the ♾️ DevOps course here</strong> — it picks up exactly where this ends: pipelines, secrets scanning, Kubernetes, monitoring, and the CKA path.</li>
+</ol>
+<div class="callout tip"><strong>Graduation task:</strong> final quiz → certificate 🎓 → dockerize one real project this week. The moment compose up boots your whole app on a friend's laptop, you'll understand the hype from the inside.</div>`),
+          quiz("dk-final", "Final Quiz: Docker", [
+            { q: "The point of pushing images to a registry is…", options: ["Backups only", "The SAME image runs identically everywhere — laptop, CI, server", "Prettier tags", "Faster typing"], answer: 1 },
+            { q: "Multi-stage builds exist to…", options: ["Confuse juniors", "Build with heavy tools but ship a small runtime image", "Double image size", "Avoid compose"], answer: 1 },
+            { q: "USER node in a Dockerfile…", options: ["Renames the app", "Avoids running as root — smaller blast radius", "Speeds builds", "Is decorative"], answer: 1 },
+            { q: "Deploys should reference…", options: ["latest, always", "Exact tags (versions/SHAs)", "No tags", "Local builds"], answer: 1 },
+            { q: "After Docker, the natural next course is…", options: ["Excel", "DevOps (CI/CD + Kubernetes)", "jQuery", "Scratch"], answer: 1 },
           ]),
         ],
       },
@@ -5349,7 +6084,7 @@ const remove = (id) =&gt;
     rating: 4.4,
     ratings: 17800,
     students: 132000,
-    hours: 3.5,
+    hours: 6,
     price: "Free",
     free: true,
     color: "linear-gradient(135deg,#0769ad,#7acef4)",
@@ -5397,6 +6132,134 @@ $el.on("click", fn)          el.addEventListener("click", fn)</code></pre>
           quiz("jq-quiz", "Quiz: jQuery", [
             { q: "$(\".card\") selects...", options: ["The first .card only", "All elements with class card", "An id of card", "Nothing"], answer: 1 },
             { q: "The modern equivalent of $el.addClass(\"on\") is...", options: ["el.class = 'on'", "el.classList.add('on')", "el.addClass('on')", "el.setAttribute('on')"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Working on Real jQuery Sites",
+        lessons: [
+          article("jq-events", "Events & Delegation — The Part That Matters", "10 min", `
+<h3>🎯 Why old sites still need you</h3>
+<p>Millions of WordPress sites, shop themes and admin panels run jQuery. Freelancers who can FIX them get paid; this section makes you that person.</p>
+<pre><code>// direct events
+$("#order-btn").on("click", function () {
+  $(this).text("Ordered ✓").prop("disabled", true);
+});
+
+// DELEGATION — works for elements added later!
+$("#order-list").on("click", ".remove", function () {
+  $(this).closest("li").fadeOut(200, function () {
+    $(this).remove();
+  });
+});</code></pre>
+<h3>📝 Delegation — the concept that survives jQuery</h3>
+<p>Listen on the PARENT, filter by selector. New rows added by JS still trigger the handler — the #1 fix for "my click only works on the first item". (Vanilla JS does the same with e.target.closest — this academy's own chat uses it!)</p>
+<div class="callout tip"><strong>Try it yourself:</strong> in the Playground (load jQuery via CDN script tag), build a list where an "Add" button appends items and each item's ✕ removes it — via ONE delegated handler.</div>`),
+          article("jq-dom", "DOM Manipulation & Form Reading", "10 min", `
+<h3>🎯 The verbs of maintenance work</h3>
+<pre><code>// change content & attributes
+$("#title").text("Sale today!");
+$("#banner").html("&lt;strong&gt;50% off&lt;/strong&gt;");
+$("#photo").attr("src", "new.jpg");
+
+// build & insert
+$("#menu").append('&lt;li class="item"&gt;Milk tea&lt;/li&gt;');
+$("#notice").prependTo("body");
+
+// read forms
+const name = $("#name").val().trim();
+const plan = $('input[name="plan"]:checked').val();
+
+// show & hide with mercy
+$(".spinner").show();
+$(".old-price").fadeOut(150);
+$("#details").slideToggle();</code></pre>
+<h3>⚠️ The security note that ages well</h3>
+<p><code>.html(userInput)</code> = XSS hole (same lesson as everywhere). Use <code>.text()</code> for anything users typed. Old sites are FULL of this bug — spotting it makes you look senior on day one.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> build a mini order form: name input + drink select + button that appends "name ordered drink" to a list using .text()-safe insertion.</div>`),
+          article("jq-ajax", "AJAX the jQuery Way", "10 min", `
+<h3>🎯 $.ajax — fetch()'s grandparent</h3>
+<pre><code>$.getJSON("https://api.example.com/menu", function (data) {
+  data.items.forEach(function (item) {
+    $("#menu").append($("&lt;li&gt;").text(item.name + " — " + item.price));
+  });
+});
+
+$.post("/api/orders", { item: "Milk tea", qty: 2 })
+  .done(function (res) { $("#msg").text("Order #" + res.id + " ✓"); })
+  .fail(function ()    { $("#msg").text("Failed — try again"); });</code></pre>
+<h3>📝 Translation table (you already know this!)</h3>
+<ul>
+  <li><code>$.getJSON(url, cb)</code> ≈ <code>fetch(url).then(r =&gt; r.json()).then(cb)</code></li>
+  <li><code>.done/.fail</code> ≈ <code>.then/.catch</code></li>
+  <li>Same JSON, same REST verbs, same error thinking — Level 5 of Zero to Hero, older dialect.</li>
+</ul>
+<p>Maintenance reality: you'll READ $.ajax in old code and often REPLACE it with fetch during upgrades. Knowing both directions is the skill.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> rewrite the getJSON example with modern fetch(), then backwards. Two dialects, one brain.</div>`),
+          quiz("jq-quiz2", "Quiz: Working jQuery", [
+            { q: "Clicks on items added later require…", options: ["Page reload", "Delegation: parent.on(\"click\", \".child\", fn)", "More jQuery", "setTimeout"], answer: 1 },
+            { q: "User-typed content goes into the page via…", options: [".html() — always", ".text() — XSS-safe", "eval()", ".attr()"], answer: 1 },
+            { q: "$('#name').val() does what?", options: ["Sets a color", "Reads the input's value", "Validates email", "Submits the form"], answer: 1 },
+            { q: "$.getJSON ≈ modern…", options: ["localStorage", "fetch().then(r => r.json())", "console.log", "WebSocket"], answer: 1 },
+            { q: ".done/.fail correspond to…", options: [".start/.stop", ".then/.catch", ".on/.off", ".show/.hide"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "The Honest Ending",
+        lessons: [
+          article("jq-vanilla", "jQuery → Vanilla: The Translation Card", "10 min", `
+<h3>🎯 Modern browsers closed the gap</h3>
+<pre><code>$("#x")               → document.querySelector("#x")
+$(".card")            → document.querySelectorAll(".card")
+.on("click", fn)      → .addEventListener("click", fn)
+.addClass("on")       → .classList.add("on")
+.text("hi")           → .textContent = "hi"
+.val()                → .value
+.hide()/.show()       → .hidden = true / false
+$.getJSON(url, cb)    → fetch(url).then(r =&gt; r.json()).then(cb)
+$(el).closest("li")   → el.closest("li")</code></pre>
+<h3>📝 When to use which (the professional answer)</h3>
+<ul>
+  <li><strong>Existing jQuery site?</strong> Stay consistent — mixing styles confuses the next maintainer. Fix bugs in the site's own dialect.</li>
+  <li><strong>New project?</strong> Vanilla (or a framework). Loading 30KB of jQuery for querySelector is 2015 thinking.</li>
+  <li><strong>Migrating?</strong> This card + delegation knowledge = you can quote for jQuery-to-modern upgrade jobs. Real freelance niche!</li>
+</ul>
+<div class="callout"><strong>Proof it's enough:</strong> this entire academy — chat, quizzes, playground — is 100% vanilla JS. Everything jQuery did, the platform now does natively.</div>
+<div class="callout tip"><strong>Try it yourself:</strong> take your order-form exercise and rewrite it vanilla using only the card above. Same behavior, zero dependencies.</div>`),
+          article("jq-wp", "jQuery in the Wild: WordPress & Themes", "8 min", `
+<h3>🎯 Where the jobs actually are</h3>
+<p>WordPress powers ~40% of the web and ships jQuery. Theme tweaks, plugin conflicts and "the menu stopped working" gigs are endless — and mostly SMALL jQuery fixes:</p>
+<ul>
+  <li><strong>noConflict mode</strong> — WordPress reserves $; scripts start with <code>jQuery(function ($) { ... })</code> to get $ back safely. Half of "broken theme JS" is someone ignoring this.</li>
+  <li><strong>Find the right file</strong> — theme JS lives in wp-content/themes/THEME/js/; browser DevTools → Sources shows what actually loaded.</li>
+  <li><strong>Console first</strong> — F12 errors name the file and line; most gigs are a selector that no longer matches after a redesign.</li>
+</ul>
+<h3>📝 A realistic first gig</h3>
+<p>"Shop owner: my product tabs stopped switching." You: DevTools → error → selector changed → 3-line fix → happy client, fair invoice, 5-star review. This course just paid for itself.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> open any WordPress site, F12 → Network, filter JS — spot jquery.min.js and count the theme scripts riding on it. That's the maintenance market, visible.</div>`),
+          article("jq-path", "Your Path Beyond jQuery", "6 min", `
+<h3>🎯 jQuery is a bridge, not a home</h3>
+<div class="flow">
+  <div class="flow-box">✅ jQuery<br><small>maintain the old web,<br>earn from fixes</small></div>
+  <div class="flow-arrow" data-label="strengthen"></div>
+  <div class="flow-box alt">💛 Vanilla JS<br><small>JS Essentials course —<br>no crutches</small></div>
+  <div class="flow-arrow" data-label="then"></div>
+  <div class="flow-box warn">⚛️ React / Vue<br><small>component thinking —<br>the modern job market</small></div>
+</div>
+<h3>📝 The move</h3>
+<ol>
+  <li>Keep jQuery for maintenance income — it's a niche with low competition among juniors.</li>
+  <li>Make vanilla your default — the translation card is your bridge.</li>
+  <li>Then React Fundamentals here: delegation, DOM and AJAX instincts all transfer as "state and props" intuition.</li>
+</ol>
+<div class="callout tip"><strong>Graduation task:</strong> final quiz → certificate 🎓 → rewrite one old exercise vanilla, then peek at the React course's first lesson. Bridges are for crossing.</div>`),
+          quiz("jq-final", "Final Quiz: jQuery", [
+            { q: "In WordPress, safe jQuery code starts with…", options: ["$(function(){})", "jQuery(function ($) { ... }) — noConflict-safe", "window.$$ =", "eval"], answer: 1 },
+            { q: ".addClass(\"on\") in vanilla is…", options: ["el.class = \"on\"", "el.classList.add(\"on\")", "el.style = on", "el.on()"], answer: 1 },
+            { q: "For a NEW project in 2026 you reach for…", options: ["jQuery first", "Vanilla JS or a framework", "Flash", "Tables"], answer: 1 },
+            { q: "\"Click works only on the first item\" is cured by…", options: ["More IDs", "Event delegation", "setInterval", "!important"], answer: 1 },
+            { q: "jQuery's career value today is mostly…", options: ["Greenfield apps", "Maintaining/upgrading the huge installed base (WordPress!)", "Mobile apps", "Databases"], answer: 1 },
           ]),
         ],
       },
@@ -6338,7 +7201,7 @@ def course_detail(request, pk):
     rating: 4.6,
     ratings: 14100,
     students: 96000,
-    hours: 7,
+    hours: 10,
     price: "Free",
     free: true,
     color: "linear-gradient(135deg,#ff2d20,#ff6b5e)",
@@ -6399,6 +7262,164 @@ $long   = Course::where("hours", "&gt;", 5)-&gt;get();</code></pre>
             { q: "Laravel projects are created with...", options: ["npm", "composer", "pip", "gem"], answer: 1 },
             { q: "{{ $name }} in Blade...", options: ["Echoes the value, escaped", "Declares a variable", "Is a comment", "Imports a file"], answer: 0 },
             { q: "Course::where(\"hours\", \">\", 5)->get() is...", options: ["Raw SQL", "An Eloquent query", "A Blade directive", "Invalid"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Building Features",
+        lessons: [
+          article("lv-blade", "Blade Templates — HTML With Superpowers", "10 min", `
+<h3>🎯 Views that stay readable</h3>
+<pre><code>{{-- resources/views/menu.blade.php --}}
+@extends('layouts.app')
+
+@section('content')
+  &lt;h1&gt;{{ $shopName }}&lt;/h1&gt;
+
+  @foreach ($drinks as $drink)
+    &lt;div class="card"&gt;
+      {{ $drink-&gt;name }} — {{ number_format($drink-&gt;price) }} Ks
+      @if ($drink-&gt;isPopular()) 🔥 @endif
+    &lt;/div&gt;
+  @endforeach
+
+  @auth  You're logged in! @endauth
+@endsection</code></pre>
+<h3>📝 The essentials</h3>
+<ul>
+  <li><code>{{ $x }}</code> — output, <strong>auto-escaped</strong> (XSS protection by default — Laravel's gift).</li>
+  <li><code>@foreach / @if / @auth</code> — control flow that reads like English.</li>
+  <li><code>@extends + @section</code> — one layout file, every page fills in the middle. Change the navbar once, it changes everywhere.</li>
+  <li>Pass data from routes: <code>return view('menu', ['drinks' =&gt; Drink::all()]);</code></li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> sketch the blade file for a course list page: layout, loop, price formatting, and a 🚧 badge behind an @if. You've seen this exact page — you're using it right now.</div>`),
+          article("lv-forms", "Forms, Validation & Flash Messages", "12 min", `
+<h3>🎯 The request lifecycle you'll build daily</h3>
+<pre><code>// routes/web.php
+Route::get('/orders/create', [OrderController::class, 'create']);
+Route::post('/orders', [OrderController::class, 'store']);
+
+// app/Http/Controllers/OrderController.php
+public function store(Request $request)
+{
+    $data = $request-&gt;validate([
+        'item'  =&gt; 'required|string|max:50',
+        'qty'   =&gt; 'required|integer|min:1|max:20',
+        'phone' =&gt; 'required|regex:/^09\\d{7,9}$/',
+    ]);
+
+    Order::create($data);
+
+    return redirect('/orders/create')
+           -&gt;with('success', 'Order received! 🎉');
+}</code></pre>
+<h3>📝 What Laravel handled FOR you</h3>
+<ul>
+  <li><strong>validate()</strong> — bad input? Auto-redirect back with error messages and old input preserved. Show them in Blade with <code>@error('qty') {{ $message }} @enderror</code>.</li>
+  <li><strong>CSRF</strong> — every form needs <code>@csrf</code>; Laravel blocks forged submissions automatically.</li>
+  <li><strong>Mass-assignment safety</strong> — only fields in the model's <code>$fillable</code> can be created this way.</li>
+  <li><strong>Flash messages</strong> — <code>-&gt;with('success', ...)</code> + <code>@if (session('success'))</code> = the green banner every app has.</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> write the validation rules for a course-review form: rating 1–5 required, text optional max 300. (You've MET this form — on this site's course pages!)</div>`),
+          article("lv-relations", "Eloquent Relationships", "12 min", `
+<h3>🎯 The database course's foreign keys, made fluent</h3>
+<pre><code>class Customer extends Model
+{
+    public function orders() { return $this-&gt;hasMany(Order::class); }
+}
+class Order extends Model
+{
+    public function customer() { return $this-&gt;belongsTo(Customer::class); }
+}
+
+// now the magic:
+$customer-&gt;orders;                    // all their orders
+$order-&gt;customer-&gt;name;               // walk the other way
+Customer::with('orders')-&gt;get();      // eager load — avoids N+1!</code></pre>
+<h3>⚠️ The N+1 problem (the interview favorite)</h3>
+<p>Loop 100 customers printing each one's orders WITHOUT with() → 1 query + 100 queries. With <code>with('orders')</code> → 2 queries total. Laravel Debugbar shows the count; seniors check it reflexively.</p>
+<h3>📝 The relationship menu</h3>
+<ul>
+  <li><code>hasMany / belongsTo</code> — customers↔orders (90% of your needs)</li>
+  <li><code>belongsToMany</code> — students↔courses with a pivot table</li>
+  <li><code>hasOne</code> — user↔profile</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> define the models/relationships for this academy: Student, Course, Enrollment. Which relationship connects Student and Course? (belongsToMany, through enrollments.)</div>`),
+          quiz("lv-quiz2", "Quiz: Features", [
+            { q: "{{ $userInput }} in Blade is…", options: ["An XSS hole", "Auto-escaped — safe by default", "Raw HTML", "A comment"], answer: 1 },
+            { q: "Every POST form needs…", options: ["@csrf", "@auth", "@json", "@php"], answer: 0 },
+            { q: "validate() on bad input…", options: ["Crashes", "Redirects back with errors + old input automatically", "Saves anyway", "Emails you"], answer: 1 },
+            { q: "The N+1 problem is cured by…", options: ["More RAM", "Eager loading: Model::with('relation')", "Raw SQL only", "Caching everything"], answer: 1 },
+            { q: "customers ↔ orders is…", options: ["belongsToMany", "hasMany / belongsTo", "hasOne", "morphMany"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Auth, Deploy & Career",
+        lessons: [
+          article("lv-auth", "Login in Minutes — Breeze", "10 min", `
+<h3>🎯 Auth is a solved problem here</h3>
+<pre><code>composer require laravel/breeze --dev
+php artisan breeze:install blade
+npm install && npm run build
+php artisan migrate</code></pre>
+<p>Four commands buy you: registration, login, logout, password RESET emails, profile page — with hashed passwords and secure sessions. (Remember hand-building auth in the Full Stack course? Now you know both the machinery AND the shortcut.)</p>
+<h3>📝 Using it</h3>
+<ul>
+  <li>Protect routes: <code>Route::get('/dashboard', ...)-&gt;middleware('auth');</code></li>
+  <li>Current user anywhere: <code>auth()-&gt;user()-&gt;name</code> · in Blade: <code>@auth ... @endauth</code></li>
+  <li>Roles the simple way: an <code>is_admin</code> boolean + a tiny middleware — exactly the pattern this academy uses with its ADMIN_EMAILS list.</li>
+</ul>
+<h3>💡 Why employers care</h3>
+<p>"Rolled my own auth" scares reviewers; "used Breeze/Fortify correctly" reads as judgment. Knowing what NOT to hand-build is senior taste.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> list the 3 routes in YOUR shop app that need middleware('auth') and one that must stay public. Gate-thinking is half of backend security.</div>`),
+          article("lv-deploy", "artisan, .env & Going Live", "10 min", `
+<h3>🎯 The toolbox you'll touch daily</h3>
+<pre><code>php artisan serve            # dev server
+php artisan make:model Order -mcr   # model + migration + controller
+php artisan migrate          # apply schema changes
+php artisan tinker           # REPL — poke your models live!
+php artisan route:list       # every route, at a glance</code></pre>
+<h3>📝 .env — one app, many worlds</h3>
+<pre><code>APP_ENV=production
+APP_DEBUG=false        # NEVER true in production (leaks secrets on errors!)
+DB_DATABASE=shop
+DB_PASSWORD=...</code></pre>
+<p>Same code, different .env per environment — the exact pattern from Docker and the Cloud course. .env never enters Git (the Git course's .gitignore lesson!).</p>
+<h3>📝 Cheap hosting reality</h3>
+<ul>
+  <li><strong>Shared hosting</strong> (cPanel) — Laravel runs fine; point the domain at /public.</li>
+  <li><strong>VPS + Docker</strong> — your compose skills apply: app + mysql services.</li>
+  <li>Go-live checklist: <code>APP_DEBUG=false</code>, <code>php artisan config:cache route:cache</code>, backups scheduled (database course!).</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> read this aloud until fluent: "make:model -mcr, migrate, tinker to test, route:list to verify." That's a Laravel developer's morning.</div>`),
+          article("lv-career", "The PHP/Laravel Market", "8 min", `
+<h3>🎯 Unfashionable ≠ unprofitable</h3>
+<div class="flow">
+  <div class="flow-box">🌏 Agencies<br><small>local & regional web
+shops run on Laravel</small></div>
+  <div class="flow-arrow" data-label="or"></div>
+  <div class="flow-box alt">🛒 E-commerce<br><small>custom shops, POS,
+booking systems</small></div>
+  <div class="flow-arrow" data-label="or"></div>
+  <div class="flow-box">🔧 WordPress+<br><small>PHP skills serve 40%
+of the web's fixes</small></div>
+</div>
+<h3>📝 Why Laravel specifically</h3>
+<ul>
+  <li>PHP hosting is the CHEAPEST and most available — clients in emerging markets live on it. Your stack matches your market.</li>
+  <li>Laravel's docs and ecosystem (Breeze, Eloquent, artisan) make one developer productive like a small team.</li>
+  <li>Freelance sweet spot: booking forms, order systems, member sites — 200k–1M Ks projects locally, more remote.</li>
+</ul>
+<h3>📝 Portfolio project (one week, evenings)</h3>
+<p>A booking system for a real business type you know: services table, booking form with validation, auth for the owner, admin list with relationships eager-loaded, deployed on cheap shared hosting with a live URL. That single project demonstrates EVERY lesson in this course.</p>
+<div class="callout tip"><strong>Graduation task:</strong> final quiz → certificate 🎓 → message one local business about their booking chaos. Laravel turns that conversation into income faster than any stack here.</div>`),
+          quiz("lv-final", "Final Quiz: Laravel", [
+            { q: "Breeze gives you…", options: ["A CSS framework", "Complete auth: register, login, reset — in minutes", "A database", "Hosting"], answer: 1 },
+            { q: "APP_DEBUG in production must be…", options: ["true for logs", "false — debug pages leak secrets", "yes", "commented out"], answer: 1 },
+            { q: "php artisan tinker is…", options: ["A game", "A REPL to interact with your models live", "A deployment tool", "A linter"], answer: 1 },
+            { q: ".env belongs…", options: ["In Git", "Outside Git — per-environment config and secrets", "In Blade", "In the README"], answer: 1 },
+            { q: "Laravel's freelance sweet spot includes…", options: ["Device drivers", "Booking/order/member systems for real businesses", "Game engines", "Firmware"], answer: 1 },
           ]),
         ],
       },

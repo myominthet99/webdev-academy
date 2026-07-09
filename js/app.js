@@ -4122,7 +4122,8 @@
           </div>
         </div>
         <div class="panel">
-          <h3>📣 ${t("cc_title")}</h3>
+          <h3 style="display:flex;justify-content:space-between;align-items:center;gap:8px">📣 ${t("cc_title")}
+            <a class="btn btn-primary btn-sm" href="#/admin/content">🚀 ${t("cc_title")} 2.0 →</a></h3>
           <p class="muted" style="margin:0 0 8px;font-size:13px">${t("cc_help")}</p>
           <div class="tl-row">
             <select class="tl-in" id="cc-course" style="flex:1;min-width:180px">
@@ -4254,6 +4255,191 @@
     window.scrollTo(0, 0);
   }
 
+  /* ---------------- Admin: Content creator v2 ----------------
+     Marketing text factory: 7 post types × MM/EN/both × FB/Telegram,
+     with one-click copy and AI polish. */
+  function renderContentCreator() {
+    const SITE = "https://myominthet99.github.io/webdev-academy/";
+    let studentCount = null; /* real count from the leaderboard, when it arrives */
+
+    const TYPES = [
+      { id: "course", ic: "🎓", label: "Course promo" },
+      { id: "general", ic: "🏫", label: "Academy promo" },
+      { id: "promo", ic: "🎁", label: "Promo code" },
+      { id: "milestone", ic: "📊", label: "Milestone brag" },
+      { id: "tip", ic: "💡", label: "Daily tip / quote" },
+      { id: "challenge", ic: "🎯", label: "Challenge teaser" },
+      { id: "ask", ic: "🙏", label: "Review / testimonial ask" },
+    ];
+
+    app.innerHTML = `
+      <div class="container" style="max-width:760px">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+          <h2 class="section-title">📣 ${t("cc_title")} 2.0</h2>
+          <a class="btn btn-outline btn-sm" href="#/admin/dashboard">📊 ${t("dash_admin_title")}</a>
+        </div>
+        <div class="panel">
+          <div class="tl-row">
+            <select class="tl-in" id="cc2-type" style="flex:1;min-width:170px">
+              ${TYPES.map((x) => `<option value="${x.id}">${x.ic} ${x.label}</option>`).join("")}
+            </select>
+            <select class="tl-in" id="cc2-lang" style="width:130px">
+              <option value="mm">🇲🇲 မြန်မာ</option>
+              <option value="en">🇬🇧 English</option>
+              <option value="both">🌐 Both</option>
+            </select>
+            <select class="tl-in" id="cc2-platform" style="width:130px">
+              <option value="fb">📘 Facebook</option>
+              <option value="tg">✈️ Telegram</option>
+            </select>
+          </div>
+          <div class="tl-row" id="cc2-course-row">
+            <select class="tl-in" id="cc2-course" style="flex:1">
+              ${COURSES.map((c) => `<option value="${c.id}">${c.icon} ${escapeHtml(c.title)}</option>`).join("")}
+            </select>
+          </div>
+          <div class="tl-row" id="cc2-promo-row" hidden>
+            <input class="tl-in" id="cc2-code" placeholder="LAUNCH20" style="flex:1;min-width:110px;text-transform:uppercase" maxlength="24">
+            <input class="tl-in" id="cc2-days" type="number" value="30" min="1" style="width:76px"> ${t("promo_days")}
+            <input class="tl-in" id="cc2-uses" type="number" value="20" min="1" style="width:76px"> ${t("promo_uses")}
+          </div>
+          <div class="tl-row">
+            <button class="btn btn-primary" id="cc2-gen">⚡ ${t("cc_generate")}</button>
+            <button class="btn btn-outline" id="cc2-ai">✨ ${t("cc_ai")}</button>
+            <button class="btn btn-outline" id="cc2-copy">📋 ${t("tl_copy")}</button>
+            <span class="muted" id="cc2-status" style="font-size:13px"></span>
+          </div>
+          <textarea id="cc2-out" rows="13" style="width:100%;margin-top:8px;padding:12px;border:1px solid var(--line);border-radius:10px;font-family:inherit;font-size:13.5px;line-height:1.75" placeholder="${t("cc_ph")}"></textarea>
+        </div>
+      </div>`;
+
+    const $ = (s) => document.getElementById(s);
+    const nLessons = COURSES.reduce((a, c) => a + totalLessons(c), 0);
+
+    const buildPost = () => {
+      const type = $("cc2-type").value;
+      const langSel = $("cc2-lang").value;
+      const platform = $("cc2-platform").value;
+      const c = courseById($("cc2-course").value) || COURSES[0];
+      const mmc = (I18N.content && I18N.content.courses && I18N.content.courses[c.id]) || {};
+      const learns = (mmc.whatYouLearn || c.whatYouLearn || []).slice(0, 3);
+      const learnsEn = (c.whatYouLearn || []).slice(0, 3);
+      const students = studentCount ? studentCount + "+" : "များစွာသော";
+      const code = ($("cc2-code").value || "LAUNCH20").toUpperCase();
+      const days = Number($("cc2-days").value) || 30;
+      const uses = Number($("cc2-uses").value) || 20;
+      const quote = motivPick(todayKey());
+      const dq = dailyQuestion();
+      const courseLink = SITE + "#/course/" + c.id;
+      const priceMm = isFree(c)
+        ? "💯 လုံးဝ အခမဲ့!"
+        : "🎫 ဒီသင်တန်းတစ်ခုတည်း " + fmt(PAYMENT_CONFIG.coursePrice) + " Ks · အားလုံးရ Premium " + fmt(PAYMENT_CONFIG.price) + " Ks";
+      const priceEn = isFree(c)
+        ? "💯 Completely FREE!"
+        : "🎫 This course alone: " + fmt(PAYMENT_CONFIG.coursePrice) + " Ks · All-access: " + fmt(PAYMENT_CONFIG.price) + " Ks";
+
+      const T = {
+        course: {
+          mm: "🔥 သင်တန်းအသစ် — " + (mmc.title || c.title) + "\n" + (mmc.subtitle || c.subtitle) + "\n\n" +
+            learns.map((x) => "✅ " + x).join("\n") +
+            "\n\n📚 သင်ခန်းစာ " + totalLessons(c) + " ခု · 🌐 EN + မြန်မာ · 🎓 Certificate ပါ\n" + priceMm +
+            "\n\n👉 " + courseLink + "\n\n#WebDevAcademy #LearnToCode #Myanmar",
+          en: "🔥 New course: " + c.title + "\n" + c.subtitle + "\n\n" +
+            learnsEn.map((x) => "✅ " + x).join("\n") +
+            "\n\n📚 " + totalLessons(c) + " lessons · 🌐 EN + Myanmar · 🎓 Certificate included\n" + priceEn +
+            "\n\n👉 " + courseLink + "\n\n#WebDevAcademy #LearnToCode #Myanmar",
+        },
+        general: {
+          mm: "🎓 မြန်မာလူငယ်တွေအတွက် Web Development သင်တန်း — WebDev Academy!\n\n" +
+            "✅ သင်တန်း " + COURSES.length + " ခု · သင်ခန်းစာ " + nLessons + " ခု\n" +
+            "✅ English + မြန်မာ နှစ်ဘာသာ\n✅ AI Tutor 🤖 · Certificate 🎓 · Community 💬 · ဗီဒီယို study call 📹\n" +
+            "✅ ဖုန်းထဲမှာတင် code ရေးလို့ရ — app install လည်းရ 📲\n\n" +
+            "စာရင်းသွင်းစရာမလိုဘဲ ချက်ချင်းစသင်လို့ရ 👇\n👉 " + SITE + "\n\nShare ပေးကြပါဦးနော် 🙏\n#WebDevAcademy #LearnToCode #Myanmar #FreeCourse",
+          en: "🎓 WebDev Academy — the bilingual coding school built for Myanmar youth!\n\n" +
+            "✅ " + COURSES.length + " courses · " + nLessons + " lessons\n✅ English + မြန်မာ\n" +
+            "✅ AI tutor 🤖 · certificates 🎓 · community chat 💬 · video study calls 📹\n" +
+            "✅ Learn and CODE entirely on your phone 📲\n\nStart free, no signup 👇\n👉 " + SITE + "\n\n#WebDevAcademy #LearnToCode #Myanmar",
+        },
+        promo: {
+          mm: "🎁 PROMO CODE: " + code + "\n\nPremium ကို " + days + " ရက် အခမဲ့သုံးလို့ရမယ့် ကုဒ်! ပထမဆုံး " + uses + " ယောက်အတွက်ပဲနော် 🏃💨\n\n" +
+            "အသုံးပြုနည်း-\n1️⃣ " + SITE + " မှာ အကောင့်ဝင်ပါ\n2️⃣ ⭐ Premium စာမျက်နှာ → 🎟️ \"Promo ကုဒ် ရှိပါသလား?\"\n3️⃣ " + code + " ရိုက်ထည့်ပြီး လဲလှယ်ပါ — ပြီးပြီ! 🎉\n\n" +
+            "👉 " + SITE + "#/premium\n\n#WebDevAcademy #FreePremium #Myanmar",
+          en: "🎁 PROMO CODE: " + code + "\n\n" + days + " days of FREE Premium — first " + uses + " students only! 🏃💨\n\n" +
+            "How: log in at " + SITE + " → ⭐ Premium page → 🎟️ redeem " + code + " → done! 🎉\n\n👉 " + SITE + "#/premium\n\n#WebDevAcademy #FreePremium",
+        },
+        milestone: {
+          mm: "🎉 WebDev Academy မှာ အခုဆို —\n\n📚 သင်တန်း " + COURSES.length + " ခု\n📖 သင်ခန်းစာ " + nLessons + " ခု\n👩‍💻 ကျောင်းသား " + students + " ယောက် အတူသင်ယူနေပြီ!\n\n" +
+            "သင်ရော ပါပြီလား? Leaderboard 🏆 မှာ သင့်နာမည် မြင်ချင်ပြီ 😎\n👉 " + SITE + "\n\n#WebDevAcademy #Milestone #Myanmar",
+          en: "🎉 WebDev Academy today —\n\n📚 " + COURSES.length + " courses\n📖 " + nLessons + " lessons\n👩‍💻 " + (studentCount ? studentCount + "+" : "a growing crowd of") + " students learning together!\n\n" +
+            "Are you on the leaderboard yet? 🏆\n👉 " + SITE + "\n\n#WebDevAcademy #Milestone",
+        },
+        tip: {
+          mm: "💡 ဒီနေ့ အားဆေး —\n\n“" + quote.my + "”\n\nဒီနေ့ သင်ခန်းစာတစ်ခု ပြီးအောင်လုပ်ပြီး streak 🔥 ကို ဆက်ထိန်းလိုက်ပါ။ မိနစ် ၂၀ ပဲ လိုတယ်!\n👉 " + SITE + "\n\n#WebDevAcademy #DailyMotivation #Myanmar",
+          en: "💡 Today's fuel —\n\n“" + quote.en + "”\n\nFinish ONE lesson today and keep the streak alive 🔥 20 minutes is enough.\n👉 " + SITE + "\n\n#WebDevAcademy #DailyMotivation",
+        },
+        challenge: {
+          mm: "🎯 ဒီနေ့ Daily Challenge မေးခွန်း —\n\n“" + (dq ? dq.q.replace(/&lt;/g, "<").replace(/&gt;/g, ">") : "…") + "”\n\n" +
+            "အဖြေသိလား? Comment မှာ မဖြေနဲ့ဦးနော် 😉 App ထဲမှာ ဖြေပြီး +20 XP နဲ့ challenge streak 🔥 ယူသွားပါ!\n👉 " + SITE + "#/daily\n\n#WebDevAcademy #DailyChallenge #Myanmar",
+          en: "🎯 Today's Daily Challenge —\n\n“" + (dq ? dq.q.replace(/&lt;/g, "<").replace(/&gt;/g, ">") : "…") + "”\n\n" +
+            "Know it? Don't answer in the comments 😉 — answer in the app for +20 XP!\n👉 " + SITE + "#/daily\n\n#WebDevAcademy #DailyChallenge",
+        },
+        ask: {
+          mm: "🙏 WebDev Academy နဲ့ သင်ယူနေတဲ့ ကျောင်းသားတွေရေ —\n\nသင်ဘာသင်ခန်းစာ အကြိုက်ဆုံးလဲ? Comment မှာ မျှဝေပေးပါဦး 👇\n\n" +
+            "ပြီးရင် သင်တန်းစာမျက်နှာမှာ ⭐ review လေးရေးခဲ့ပေးပါနော် — သင်လိုပဲ စလေ့လာမယ့် သူငယ်ချင်းတွေအတွက် အကြီးမားဆုံး အကူအညီပါ 💜\n👉 " + SITE + "\n\n#WebDevAcademy #StudentVoice",
+          en: "🙏 WebDev Academy students —\n\nWhat's your favorite lesson so far? Tell us in the comments 👇\n\n" +
+            "And if the academy helped you, leave a ⭐ review on any course page — it's the biggest gift to the next learner 💜\n👉 " + SITE + "\n\n#WebDevAcademy #StudentVoice",
+        },
+      };
+
+      const pick = T[type] || T.general;
+      let out = langSel === "both" ? pick.mm + "\n\n———\n\n" + pick.en : pick[langSel] || pick.mm;
+      if (platform === "tg") {
+        /* Telegram: no hashtags, add a channel-style header */
+        out = "📢 " + out.split("\n").filter((l) => !l.trim().startsWith("#")).join("\n").trim();
+      }
+      return out;
+    };
+
+    const syncRows = () => {
+      const type = $("cc2-type").value;
+      $("cc2-course-row").hidden = type !== "course";
+      $("cc2-promo-row").hidden = type !== "promo";
+    };
+    $("cc2-type").addEventListener("change", syncRows);
+    syncRows();
+
+    $("cc2-gen").addEventListener("click", () => { $("cc2-out").value = buildPost(); $("cc2-status").textContent = ""; });
+    $("cc2-copy").addEventListener("click", () => {
+      const v = $("cc2-out").value;
+      if (!v) return;
+      const done = () => { $("cc2-status").textContent = "✓ " + t("copied"); setTimeout(() => { $("cc2-status").textContent = ""; }, 1500); };
+      if (navigator.clipboard) navigator.clipboard.writeText(v).then(done).catch(() => fallbackCopy(v, done));
+      else fallbackCopy(v, done);
+    });
+    $("cc2-ai").addEventListener("click", () => {
+      const v = $("cc2-out").value;
+      if (!v) { $("cc2-status").textContent = t("cc_gen_first"); return; }
+      if (!(window.AI && window.AI.ready())) { $("cc2-status").textContent = t("chat_ai_nokey"); return; }
+      $("cc2-status").textContent = "✨ …";
+      const langSel = $("cc2-lang").value;
+      window.AI.complete(
+        "You write viral social posts for a Myanmar coding school. Rewrite the post below to be more engaging: " +
+        (langSel === "en" ? "keep it in English" : "keep it in Burmese" + (langSel === "both" ? " and English (keep both sections)" : "")) +
+        ", keep ALL links exactly, keep it under 130 words, natural emojis, end with a question inviting comments. Reply ONLY with the post text.\n\n" + v
+      ).then((res) => {
+        $("cc2-out").value = String(res || "").trim() || v;
+        $("cc2-status").textContent = "✨ ✓";
+      }).catch((e) => { $("cc2-status").textContent = "⚠ " + ((e && e.message) || "AI"); });
+    });
+
+    /* real student count for the milestone post */
+    const base = statsBase();
+    if (base) fetch(base + "/stats/leaderboard.json").then((r) => r.json()).then((lb) => {
+      studentCount = Object.values(lb || {}).filter((x) => x && (Number(x.xp) || 0) > 0).length || null;
+    }).catch(() => {});
+    window.scrollTo(0, 0);
+  }
+
   function renderAdmin(editId) {
     if (!loggedIn()) { location.hash = "#/"; if (window.Auth) window.Auth.openModal("login"); return; }
     if (!(window.Auth && window.Auth.isAdmin && window.Auth.isAdmin())) {
@@ -4267,6 +4453,7 @@
     }
     if (editId === "dashboard") return renderAdminDashboard();
     if (editId === "payments") return renderAdminPayments();
+    if (editId === "content") return renderContentCreator();
     const custom = loadCustomCourses();
     const editing = editId ? custom.find((c) => c.id === editId) : null;
     const cats = CATEGORIES.filter((c) => c !== "All");

@@ -4429,6 +4429,7 @@
       { id: "tip", ic: "💡", label: "Daily tip / quote" },
       { id: "challenge", ic: "🎯", label: "Challenge teaser" },
       { id: "ask", ic: "🙏", label: "Review / testimonial ask" },
+      { id: "lesson", ic: "📚", label: "Course lesson (AI writes it)" },
     ];
 
     app.innerHTML = `
@@ -4461,6 +4462,10 @@
             <input class="tl-in" id="cc2-code" placeholder="LAUNCH20" style="flex:1;min-width:110px;text-transform:uppercase" maxlength="24">
             <input class="tl-in" id="cc2-days" type="number" value="30" min="1" style="width:76px"> ${t("promo_days")}
             <input class="tl-in" id="cc2-uses" type="number" value="20" min="1" style="width:76px"> ${t("promo_uses")}
+          </div>
+          <div class="tl-row" id="cc2-lesson-row" hidden>
+            <input class="tl-in" id="cc2-lesson-title" placeholder="Lesson title, e.g. CSS Grid in 15 Minutes" style="flex:2;min-width:200px" maxlength="80">
+            <a class="btn btn-outline btn-sm" href="#/admin" title="Open the course editor to paste the result">✏️ ${t("admin_title")}</a>
           </div>
           <div class="tl-row">
             <button class="btn btn-primary" id="cc2-gen">⚡ ${t("cc_generate")}</button>
@@ -4561,13 +4566,46 @@
 
     const syncRows = () => {
       const type = $("cc2-type").value;
-      $("cc2-course-row").hidden = type !== "course";
+      $("cc2-course-row").hidden = type !== "course" && type !== "lesson";
       $("cc2-promo-row").hidden = type !== "promo";
+      $("cc2-lesson-row").hidden = type !== "lesson";
     };
     $("cc2-type").addEventListener("change", syncRows);
     syncRows();
 
-    $("cc2-gen").addEventListener("click", () => { $("cc2-out").value = buildPost(); $("cc2-status").textContent = ""; });
+    /* 📚 AI lesson writer — house-style HTML for the course editor */
+    const generateLesson = () => {
+      const title = ($("cc2-lesson-title").value || "").trim();
+      if (!title) { $("cc2-status").textContent = "Lesson title first!"; return; }
+      if (!(window.AI && window.AI.ready())) { $("cc2-status").textContent = t("chat_ai_nokey"); return; }
+      const c = courseById($("cc2-course").value) || COURSES[0];
+      const inMM = $("cc2-lang").value === "mm";
+      $("cc2-status").textContent = "📚 ✨ …";
+      window.AI.complete(
+        "You write lessons for WebDev Academy, a beginner-friendly bilingual coding school for Myanmar youth. " +
+        "Write the full lesson body HTML for a lesson titled \"" + title + "\" in the course \"" + c.title + "\". " +
+        (inMM ? "Write all prose in Burmese (keep code and technical terms in English). " : "Write in simple, warm English. ") +
+        "STYLE RULES (follow exactly): " +
+        "1) 3 to 5 sections, each starting with <h3> plus a fitting emoji (🎯 goal first, 💻 for code, 📝 for lists). " +
+        "2) Short paragraphs and <ul>/<ol> lists; friendly, encouraging tone; use a Myanmar-flavored example (tea shop, kyat prices) where natural. " +
+        "3) Exactly one or two <pre><code> examples; inside them escape every < as &lt; and > as &gt;. " +
+        "4) Optionally ONE diagram: <div class=\"flow\"><div class=\"flow-box\">step<br><small>note</small></div><div class=\"flow-arrow\" data-label=\"then\"></div><div class=\"flow-box alt\">step</div></div>. " +
+        "5) End with <div class=\"callout tip\"><strong>Try it yourself:</strong> a small concrete practice task.</div>. " +
+        "6) NEVER use backtick characters or the dollar-brace template syntax anywhere. " +
+        "Reply with ONLY the HTML body (no <html>, no markdown fences, no explanations)."
+      ).then((res) => {
+        let out = String(res || "").trim();
+        if (window.AI.stripFences) out = window.AI.stripFences(out);
+        $("cc2-out").value = out;
+        $("cc2-status").textContent = out ? "📚 ✓ — paste into ✏️ " + t("admin_title") : t("ai_bad_reply");
+      }).catch((e) => { $("cc2-status").textContent = "⚠ " + ((e && e.message) || "AI"); });
+    };
+
+    $("cc2-gen").addEventListener("click", () => {
+      if ($("cc2-type").value === "lesson") return generateLesson();
+      $("cc2-out").value = buildPost();
+      $("cc2-status").textContent = "";
+    });
     $("cc2-copy").addEventListener("click", () => {
       const v = $("cc2-out").value;
       if (!v) return;

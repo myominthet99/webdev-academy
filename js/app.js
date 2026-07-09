@@ -1388,6 +1388,7 @@
     const firstLesson = firstFlat ? firstFlat.lesson.id : "";
     const done = completedSet(c.id);
     const quizCount = flat.filter((x) => x.lesson.type === "quiz").length;
+    const exCount = flat.filter((x) => x.lesson.type === "exercise").length;
     const contentCount = flat.length - quizCount;
     const isBeg = c.level === "Beginner" || c.category === "Kids";
     const reqs = isBeg ? [t("req_none"), t("req_device")] : [t("req_basics"), t("req_device")];
@@ -1454,6 +1455,14 @@
     const buyOne = premLocked && PAYMENT_CONFIG.coursePrice
       ? `<a class="btn btn-ghost btn-block" style="margin-top:8px" href="#/premium/${c.id}">🎫 ${t("buy_course")} · ${fmt(PAYMENT_CONFIG.coursePrice)} Ks</a>`
       : "";
+    /* mobile: keep the main action reachable while scrolling the long page */
+    const stickyAction = enrolled
+      ? `<a class="btn btn-primary" href="#/learn/${c.id}/${pct > 0 ? resumeLesson : firstLesson}">${pct > 0 ? t("continue_learning") : t("start_course")}</a>`
+      : canPreview
+      ? `<a class="btn btn-primary" href="#/learn/${c.id}/${firstLesson}">🎁 ${t("preview_start")}</a>`
+      : premLocked && PAYMENT_CONFIG.coursePrice
+      ? `<a class="btn btn-primary" href="#/premium/${c.id}">🎫 ${fmt(PAYMENT_CONFIG.coursePrice)} Ks</a>`
+      : `<button class="btn btn-primary" data-enroll="${c.id}">${enrollLabel}</button>`;
 
     app.innerHTML = `
       <section class="detail-hero">
@@ -1486,7 +1495,7 @@
               ${enrolled && pct === 100 ? `<a class="btn btn-ghost btn-block" style="margin-top:10px" href="#/certificate/${c.id}">🎓 ${t("cert_view")}</a>` : ""}
               <div class="includes-title">${t("includes_title")}</div>
               <ul class="includes">
-                <li>📚 ${contentCount} ${t("lessons_word")}${quizCount ? ` · ❓ ${quizCount} ${t("quizzes_word")}` : ""}</li>
+                <li>📚 ${contentCount} ${t("lessons_word")}${quizCount ? ` · ❓ ${quizCount} ${t("quizzes_word")}` : ""}${exCount ? ` · 🏋️ ${exCount} ${t("exercises_word")}` : ""}</li>
                 <li>⏱ ${c.hours} ${t("hours_content")}</li>
                 <li>🎓 ${t("inc_cert")}</li>
                 <li>📲 ${t("inc_offline")}</li>
@@ -1564,7 +1573,9 @@
             </div>
             <div class="panel">
               <h2>${t("share_course")}</h2>
-              <button class="btn btn-outline btn-block" id="course-share" type="button">🔗 ${t("cert_copy")}</button>
+              <a class="btn btn-primary btn-block" target="_blank" rel="noopener"
+                 href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(location.origin + location.pathname + "#/course/" + c.id)}">📘 ${t("share_fb")}</a>
+              <button class="btn btn-outline btn-block" id="course-share" type="button" style="margin-top:8px">🔗 ${t("cert_copy")}</button>
             </div>
           </aside>
         </div>
@@ -1588,13 +1599,21 @@
             <h2 class="section-title">${title}</h2>
             <div class="grid">${related.map(courseCard).join("")}</div>
           </div>` : "";
-      })()}`;
+      })()}
+
+      <div class="course-stickybar">
+        <div class="csb-info">
+          <b>${priceTag(c)}</b>
+          <span class="muted">${enrolled && pct > 0 ? pct + "% ✓" : "⭐ " + c.rating.toFixed(1) + " · " + totalLessons(c) + " " + t("lessons_word")}</span>
+        </div>
+        ${stickyAction}
+      </div>`;
 
     app.querySelectorAll("[data-acc]").forEach((h) =>
       h.addEventListener("click", () => h.parentElement.classList.toggle("open"))
     );
-    const enrollBtn = app.querySelector("[data-enroll]");
-    if (enrollBtn) {
+    /* both the buybox button and the mobile sticky bar can carry data-enroll */
+    app.querySelectorAll("[data-enroll]").forEach((enrollBtn) =>
       enrollBtn.addEventListener("click", () => {
         const go = () => {
           enroll(c.id);
@@ -1602,8 +1621,8 @@
         };
         if (isFree(c)) go();
         else requireAuth(() => { if (hasCourseAccess(c.id)) go(); else location.hash = "#/premium"; });
-      });
-    }
+      })
+    );
     const shareBtn = app.querySelector("#course-share");
     if (shareBtn) shareBtn.addEventListener("click", () => {
       const link = location.origin + location.pathname + "#/course/" + c.id;

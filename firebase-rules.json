@@ -53,6 +53,18 @@
           "used": { ".validate": "newData.isNumber() && newData.val() >= 0" },
           "ts":   { ".validate": "newData.isNumber()" }
         }
+      },
+      "reviews": {
+        "$cid": {
+          "$uid": {
+            ".write": true,
+            "r":       { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 5" },
+            "text":    { ".validate": "newData.isString() && newData.val().length <= 300" },
+            "name":    { ".validate": "newData.isString() && newData.val().length <= 40" },
+            "initial": { ".validate": "newData.isString() && newData.val().length <= 4" },
+            "ts":      { ".validate": "newData.isNumber()" }
+          }
+        }
       }
     },
     "payments": {

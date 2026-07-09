@@ -522,6 +522,97 @@ toggle.addEventListener("click", () =&gt; {
 <p>Congratulations on finishing the bootcamp — mark this lesson complete to hit 100%! 🎓</p>`),
         ],
       },
+      {
+        title: "🏋️ Practice Zone — Prove Your Skills",
+        lessons: [
+          exercise("bcx-card", "Exercise: Build a Profile Card", "10 min", `
+<h3>🏋️ Your task</h3>
+<p>Build the classic <strong>profile card</strong> — the pattern behind half the web:</p>
+<ul>
+  <li>a <code>&lt;div class="card"&gt;</code> containing an <code>&lt;h2&gt;</code> with a name</li>
+  <li>style <code>.card</code> with <code>border-radius</code> of <strong>8px or more</strong> and <code>padding</code> of <strong>10px or more</strong></li>
+</ul>
+<p>Press <strong>▶ Run &amp; Check</strong> to earn +15 XP!</p>`,
+`<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      .card {
+
+      }
+    </style>
+  </head>
+  <body>
+    <!-- build your card here -->
+
+  </body>
+</html>`,
+`var card = document.querySelector(".card");
+if (!card) { __exDone(false, "Add a <div class=\\"card\\"> to the page."); }
+else if (!card.querySelector("h2")) { __exDone(false, "Put an <h2> with a name inside the card."); }
+else {
+  var cs = getComputedStyle(card);
+  if (parseFloat(cs.borderRadius) < 8) __exDone(false, "Give .card a border-radius of 8px or more.");
+  else if (parseFloat(cs.paddingTop) < 10) __exDone(false, "Give .card padding of 10px or more.");
+  else __exDone(true, "");
+}`),
+          exercise("bcx-flex", "Exercise: Center It With Flexbox", "10 min", `
+<h3>🏋️ Your task</h3>
+<p>The interview classic: <strong>perfectly center</strong> the box inside the stage using Flexbox.</p>
+<p>Style <code>#stage</code> with the three magic properties:</p>
+<pre><code>display: flex;
+justify-content: center;
+align-items: center;</code></pre>`,
+`<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      #stage {
+        height: 200px;
+        background: #eee;
+        /* your flexbox magic here */
+
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"><div style="width:60px;height:60px;background:#a435f0"></div></div>
+  </body>
+</html>`,
+`var s = document.getElementById("stage");
+if (!s) { __exDone(false, "Keep the #stage div!"); }
+else {
+  var cs = getComputedStyle(s);
+  if (cs.display !== "flex") __exDone(false, "Set display: flex on #stage.");
+  else if (cs.justifyContent !== "center") __exDone(false, "Add justify-content: center.");
+  else if (cs.alignItems !== "center") __exDone(false, "Add align-items: center.");
+  else __exDone(true, "");
+}`),
+          exercise("bcx-dom", "Exercise: Make the Button Talk", "10 min", `
+<h3>🏋️ Your task</h3>
+<p>Wire up the button: when clicked, the message paragraph must say exactly <code>Hello!</code></p>
+<p>The pattern you learned: find the elements, add a click listener, change <code>textContent</code>.</p>`,
+`<!DOCTYPE html>
+<html>
+  <body>
+    <button id="btn">Say it</button>
+    <p id="msg">...</p>
+    <script>
+      // your code here
+
+    </script>
+  </body>
+</html>`,
+`var b = document.getElementById("btn");
+var m = document.getElementById("msg");
+if (!b || !m) { __exDone(false, "Keep the button id=\\"btn\\" and the p id=\\"msg\\"."); }
+else {
+  b.click();
+  if (m.textContent.trim() === "Hello!") __exDone(true, "");
+  else __exDone(false, "After a click, #msg should say exactly Hello! (now it says \\"" + m.textContent.trim() + "\\")");
+}`),
+        ],
+      },
     ],
   },
 
@@ -1981,6 +2072,74 @@ render();
           ]),
         ],
       },
+      {
+        title: "🏋️ Practice Zone — Prove Your Skills",
+        lessons: [
+          exercise("jsx-double", "Exercise: Write double(n)", "8 min", `
+<h3>🏋️ Your task</h3>
+<p>Write a function <code>double</code> that takes a number and <strong>returns</strong> it multiplied by 2.</p>
+<pre><code>double(3)  → 6
+double(10) → 20</code></pre>
+<p>Remember: <code>return</code>, not <code>console.log</code>!</p>`,
+`<!DOCTYPE html>
+<html>
+  <body>
+    <script>
+      // write your function here:
+      function double(n) {
+
+      }
+    </script>
+  </body>
+</html>`,
+`if (typeof double !== "function") __exDone(false, "Define a function called double.");
+else if (double(3) !== 6) __exDone(false, "double(3) should return 6 - multiply by 2 and return it.");
+else if (double(10) !== 20) __exDone(false, "double(10) should return 20.");
+else if (double(-2) !== -4) __exDone(false, "double(-2) should return -4.");
+else __exDone(true, "");`),
+          exercise("jsx-sum", "Exercise: Sum an Array", "10 min", `
+<h3>🏋️ Your task</h3>
+<p>Write <code>sum(arr)</code> that returns the total of all numbers in the array.</p>
+<pre><code>sum([1, 2, 3]) → 6
+sum([])        → 0</code></pre>
+<p>Hint: a <code>for (const n of arr)</code> loop and a total variable — or the classy <code>arr.reduce()</code>.</p>`,
+`<!DOCTYPE html>
+<html>
+  <body>
+    <script>
+      function sum(arr) {
+
+      }
+    </script>
+  </body>
+</html>`,
+`if (typeof sum !== "function") __exDone(false, "Define a function called sum.");
+else if (sum([1, 2, 3]) !== 6) __exDone(false, "sum([1,2,3]) should return 6.");
+else if (sum([]) !== 0) __exDone(false, "sum([]) should return 0 - start your total at 0.");
+else if (sum([5, 5, 5, 5]) !== 20) __exDone(false, "sum([5,5,5,5]) should return 20.");
+else __exDone(true, "");`),
+          exercise("jsx-greet", "Exercise: Build the Greeting", "8 min", `
+<h3>🏋️ Your task</h3>
+<p>Write <code>greet(name)</code> that returns the string <code>Hello, NAME!</code> — with the real name in the middle.</p>
+<pre><code>greet("Mya")  → "Hello, Mya!"
+greet("Aung") → "Hello, Aung!"</code></pre>
+<p>String joining with <code>+</code> — don't forget the comma, the space and the exclamation mark!</p>`,
+`<!DOCTYPE html>
+<html>
+  <body>
+    <script>
+      function greet(name) {
+
+      }
+    </script>
+  </body>
+</html>`,
+`if (typeof greet !== "function") __exDone(false, "Define a function called greet.");
+else if (greet("Mya") !== "Hello, Mya!") __exDone(false, "greet(\\"Mya\\") should return exactly \\"Hello, Mya!\\" - got \\"" + greet("Mya") + "\\"");
+else if (greet("Aung") !== "Hello, Aung!") __exDone(false, "greet(\\"Aung\\") should return \\"Hello, Aung!\\"");
+else __exDone(true, "");`),
+        ],
+      },
     ],
   },
   {
@@ -1993,7 +2152,7 @@ render();
     rating: 4.7,
     ratings: 30115,
     students: 154900,
-    hours: 6.5,
+    hours: 9,
     price: "Free",
     color: "linear-gradient(135deg,#11998e,#38ef7d)",
     icon: "&#9633;",
@@ -2050,6 +2209,179 @@ render();
           ]),
         ],
       },
+      {
+        title: "Layout Tools That Do the Work",
+        lessons: [
+          article("rd-flex", "Flexbox Patterns for Real Pages", "12 min", `
+<h3>🎯 Four patterns cover most layouts</h3>
+<h3>💻 1. The navbar (logo left, links right)</h3>
+<pre><code>.nav { display: flex; justify-content: space-between; align-items: center; }</code></pre>
+<h3>💻 2. The perfect center</h3>
+<pre><code>.hero { display: flex; justify-content: center; align-items: center; min-height: 60vh; }</code></pre>
+<h3>💻 3. The card row that wraps by itself</h3>
+<pre><code>.cards { display: flex; flex-wrap: wrap; gap: 16px; }
+.card  { flex: 1 1 250px; }   /* grow, shrink, ideal 250px */</code></pre>
+<h3>💻 4. The sidebar layout</h3>
+<pre><code>.page    { display: flex; gap: 20px; }
+.sidebar { flex: 0 0 220px; }   /* fixed-ish */
+.content { flex: 1; }           /* takes the rest */</code></pre>
+<div class="flow">
+  <div class="flow-box">flex: 1 1 250px<br><small>grow · shrink · basis</small></div>
+  <div class="flow-arrow" data-label="wide screen"></div>
+  <div class="flow-box alt">3 cards per row<br><small>each ≥250px</small></div>
+  <div class="flow-arrow" data-label="narrow screen"></div>
+  <div class="flow-box warn">cards wrap<br><small>1 per row — responsive<br>WITHOUT media queries</small></div>
+</div>
+<div class="callout tip"><strong>Try it yourself:</strong> build pattern 3 in the Playground with 5 cards. Resize the preview and watch them reflow — that's flex-wrap earning its salary.</div>`),
+          article("rd-grid", "CSS Grid in 15 Minutes", "12 min", `
+<h3>🎯 Grid = two-dimensional layout</h3>
+<p>Flexbox flows in ONE direction; Grid controls rows AND columns. Its killer one-liner:</p>
+<pre><code>.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}</code></pre>
+<p>Read it: "make as many 220px-minimum columns as fit, share leftover space equally." Screens change, columns adjust, ZERO media queries. This academy's course grid is exactly this line.</p>
+<h3>💻 The classic page skeleton</h3>
+<pre><code>.layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;   /* sidebar + content */
+  grid-template-rows: auto 1fr auto;  /* header, main, footer */
+  min-height: 100vh;
+  gap: 0 20px;
+}</code></pre>
+<h3>📝 Grid or Flexbox? The honest rule</h3>
+<ul>
+  <li><strong>A row OF things</strong> (navbar, buttons, card strip) → Flexbox.</li>
+  <li><strong>A layout OF areas</strong> (photo gallery, page skeleton, dashboard) → Grid.</li>
+  <li>They nest happily: Grid for the page, Flexbox inside each card.</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> rebuild your card row with the auto-fit gallery line. Compare with the flexbox version — feel when each shines.</div>`),
+          article("rd-images", "Responsive Images & Media", "10 min", `
+<h3>🎯 Images are the #1 layout breaker</h3>
+<p>One oversized photo destroys a mobile layout. The permanent vaccine:</p>
+<pre><code>img, video {
+  max-width: 100%;
+  height: auto;
+}</code></pre>
+<p>Put this in EVERY project's base CSS. The media can shrink to fit its box but never overflow it.</p>
+<h3>📝 Level-up toolkit</h3>
+<ul>
+  <li><strong>aspect-ratio</strong> — <code>.thumb { aspect-ratio: 16/9; object-fit: cover; }</code>: perfectly cropped thumbnails, no stretching, no layout jump while loading.</li>
+  <li><strong>srcset</strong> (concept) — give the browser several sizes; phones download the small file. On Myanmar mobile data this is real money saved.</li>
+  <li><strong>loading="lazy"</strong> — images below the screen load only when scrolled near. One attribute, faster first paint.</li>
+  <li><strong>Compress before upload</strong> — a 4MB camera photo has no business on a web page; aim under 200KB (search "squoosh" — free tool).</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> in the Playground, add a picsum.photos image at 1200px wide inside a narrow div — watch it overflow. Add max-width:100% — watch it behave. Vaccine proven.</div>`),
+          quiz("rd-quiz2", "Quiz: Layout Tools", [
+            { q: "A card row that wraps automatically uses…", options: ["float", "display:flex + flex-wrap:wrap", "position:absolute", "tables"], answer: 1 },
+            { q: "repeat(auto-fit, minmax(220px, 1fr)) gives you…", options: ["Fixed 4 columns", "As many ≥220px columns as fit — responsive without media queries", "One giant column", "An error"], answer: 1 },
+            { q: "Grid vs Flexbox:", options: ["Grid is old", "Grid = 2D areas, Flexbox = 1D rows/columns; nest them freely", "Flexbox is deprecated", "They can't be combined"], answer: 1 },
+            { q: "The image vaccine is…", options: ["width: 1200px", "img { max-width: 100%; height: auto; }", "overflow: hidden on body", "smaller screens"], answer: 1 },
+            { q: "loading=\"lazy\" on an image…", options: ["Blurs it", "Loads it only when the user scrolls near — faster pages", "Deletes it on mobile", "Is required by law"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Real-World Patterns",
+        lessons: [
+          article("rd-nav", "Mobile Navigation Patterns", "12 min", `
+<h3>🎯 Where did the menu go?</h3>
+<p>Six links fit a desktop header; on a phone they don't. The three honest options:</p>
+<div class="flow">
+  <div class="flow-box">🍔 Burger menu<br><small>links hide behind ☰ —<br>classic, saves space</small></div>
+  <div class="flow-arrow" data-label="or"></div>
+  <div class="flow-box alt">📱 Bottom tab bar<br><small>4–5 core destinations —<br>app-like (this academy!)</small></div>
+  <div class="flow-arrow" data-label="or"></div>
+  <div class="flow-box">➡️ Scrolling chips<br><small>horizontal scroll row —<br>great for categories</small></div>
+</div>
+<h3>💻 A burger with zero JavaScript</h3>
+<pre><code>&lt;input type="checkbox" id="nav-toggle" hidden&gt;
+&lt;label for="nav-toggle" class="burger"&gt;☰&lt;/label&gt;
+&lt;nav class="menu"&gt; ...links... &lt;/nav&gt;
+
+&lt;style&gt;
+.menu { display: none; }
+#nav-toggle:checked ~ .menu { display: block; }
+@media (min-width: 769px) {
+  .menu { display: flex; }      /* desktop: always visible */
+  .burger { display: none; }
+}
+&lt;/style&gt;</code></pre>
+<p>The checkbox hack: the hidden checkbox holds the open/closed state, the label toggles it, CSS shows the menu when checked. Interactive UI, no JS.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> build the zero-JS burger in the Playground. Then look at this academy's bottom tab bar on your phone — which pattern fits YOUR next project?</div>`),
+          article("rd-tables", "Cards, Tables & the Hard Cases", "10 min", `
+<h3>🎯 Some content HATES small screens</h3>
+<h3>📝 Case 1: Data tables</h3>
+<p>A 6-column table can't shrink to 360px. Pick one:</p>
+<pre><code>/* option A: let the TABLE scroll, not the page */
+.table-wrap { overflow-x: auto; }
+
+/* option B: below 600px, turn rows into stacked cards */
+@media (max-width: 600px) {
+  tr { display: block; border-bottom: 2px solid #eee; }
+  td { display: flex; justify-content: space-between; }
+  td::before { content: attr(data-label); font-weight: 700; }
+}</code></pre>
+<h3>📝 Case 2: Long words & URLs</h3>
+<pre><code>.comment { overflow-wrap: break-word; }</code></pre>
+<p>One Burmese sentence or one long URL without spaces can stretch a bubble past the screen — this one line prevents it (ask any chat app).</p>
+<h3>📝 Case 3: Fixed-width anything</h3>
+<p>Hunt down <code>width: 700px</code> and replace with <code>max-width: 700px</code>. Fixed widths are how horizontal scrollbars are born. (This academy fixed exactly such a bug on tablets — a search bar that wouldn't shrink!)</p>
+<div class="callout tip"><strong>Try it yourself:</strong> build a 6-column table in the Playground, shrink the preview, watch it break — then wrap it in a .table-wrap. Problem, meet solution.</div>`),
+          article("rd-workflow", "Mobile-First Workflow & DevTools", "10 min", `
+<h3>🎯 The professional order of work</h3>
+<div class="flow">
+  <div class="flow-box">📱 1. Build for 360px<br><small>one column, base styles,<br>no media queries yet</small></div>
+  <div class="flow-arrow" data-label="then"></div>
+  <div class="flow-box alt">💊 2. Widen to tablet<br><small>where it looks empty,<br>add min-width queries</small></div>
+  <div class="flow-arrow" data-label="then"></div>
+  <div class="flow-box">🖥️ 3. Desktop polish<br><small>multi-column, hover<br>effects, big type</small></div>
+</div>
+<h3>📝 Why this direction wins</h3>
+<p>Mobile-first forces you to decide what MATTERS (small screen = no room for clutter), and adding space is easier than squeezing. Desktop-first sites always end up with hacky "hide this, shrink that" patches.</p>
+<h3>🔍 Test like a pro (free)</h3>
+<ul>
+  <li><strong>DevTools device mode</strong> — F12 → the phone/tablet icon → pick iPhone/Galaxy sizes, or drag freely. Test EVERY size while you build, not after.</li>
+  <li><strong>The overflow check</strong> — if the page scrolls sideways ANYWHERE, something has a fixed width. Find it (DevTools → hover elements) and fix it.</li>
+  <li><strong>Real device sanity pass</strong> — before shipping, open it on an actual phone. Fonts, tap targets and keyboards surprise you only on real glass.</li>
+</ul>
+<div class="callout tip"><strong>Graduation task:</strong> take your Level-1 profile page (or any project), run the 3-step workflow on it, then pass the exercise below and the final quiz. 🎓</div>`),
+          exercise("rdx-img", "Exercise: Unbreakable Images", "8 min", `
+<h3>🏋️ Your task</h3>
+<p>The image below is 1200px wide and BREAKS the layout. Apply the vaccine in the <code>&lt;style&gt;</code> tag:</p>
+<pre><code>img { max-width: 100%; }</code></pre>
+<p>The checker verifies the image can no longer overflow its container.</p>`,
+`<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      /* your vaccine here */
+
+    </style>
+  </head>
+  <body>
+    <div style="width:280px;border:2px solid #a435f0;padding:8px">
+      <img src="https://picsum.photos/1200/400" alt="wide photo" width="1200">
+    </div>
+  </body>
+</html>`,
+`var img = document.querySelector("img");
+if (!img) { __exDone(false, "Keep the img on the page!"); }
+else {
+  var cs = getComputedStyle(img);
+  if (cs.maxWidth === "100%") __exDone(true, "");
+  else __exDone(false, "Set img { max-width: 100%; } in the style tag (currently max-width is " + cs.maxWidth + ").");
+}`),
+          quiz("rd-final", "Final Quiz: Responsive Design", [
+            { q: "The professional build order is…", options: ["Desktop → squeeze down", "Mobile base → enhance up with min-width queries", "Random", "Print first"], answer: 1 },
+            { q: "A 6-column table on phones should…", options: ["Just break", "Scroll inside its own wrapper OR stack into cards", "Be deleted", "Use smaller fonts only"], answer: 1 },
+            { q: "The page scrolls sideways on a phone. The culprit is usually…", options: ["Too many colors", "Something with a fixed width (or an unshrinkable image)", "The router", "JavaScript"], answer: 1 },
+            { q: "A zero-JS burger menu uses…", options: ["A server", "A hidden checkbox + label + CSS :checked", "jQuery only", "Photoshop"], answer: 1 },
+            { q: "overflow-wrap: break-word saves you from…", options: ["Short words", "Long URLs/words stretching layouts off-screen", "Images", "Slow networks"], answer: 1 },
+          ]),
+        ],
+      },
     ],
   },
   {
@@ -2062,7 +2394,7 @@ render();
     rating: 4.5,
     ratings: 18240,
     students: 96750,
-    hours: 5,
+    hours: 8,
     price: "Free",
     color: "linear-gradient(135deg,#654ea3,#eaafc8)",
     icon: "&#9733;",
@@ -2117,6 +2449,135 @@ git commit -m "Add dark-mode toggle to portfolio header"</code></pre>
               ],
               answer: 2,
             },
+          ]),
+        ],
+      },
+      {
+        title: "Get Noticed",
+        lessons: [
+          article("dc-cv", "A Developer CV That Passes the Filter", "12 min", `
+<h3>🎯 A CV has one job: earn the interview</h3>
+<p>Recruiters scan for ~30 seconds. Structure for the scan:</p>
+<ol>
+  <li><strong>Top block</strong> — name, city, phone, email, GitHub link, portfolio link. The two LINKS matter most for self-taught devs.</li>
+  <li><strong>Projects (before experience!)</strong> — 3 projects, each: name + live link + one line of what it does + the tech used. "Order-form site for a Yangon tea shop — HTML/CSS/JS, deployed on GitHub Pages."</li>
+  <li><strong>Skills</strong> — honest columns: Comfortable (HTML, CSS, JS, Git) / Learning (Node, SQL). Honesty reads as maturity.</li>
+  <li><strong>Education & certificates</strong> — this academy's certificates belong here with verification links.</li>
+</ol>
+<h3>📝 The filter killers (avoid!)</h3>
+<ul>
+  <li>❌ "Microsoft Word" as a tech skill · ❌ paragraphs nobody reads · ❌ skill bars ("JavaScript 70%"?) · ❌ no links</li>
+  <li>✅ One page. PDF. File named <code>MyoMinThet-WebDeveloper.pdf</code> — recruiters download dozens of "CV.pdf".</li>
+</ul>
+<h3>💡 No job experience? Reframe.</h3>
+<p>"Built and deployed 4 web projects in 6 months while completing a 38-course curriculum, including an app with live API data" — that's not "no experience", that's a self-starter with proof.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> draft the Projects section right now for the 3 projects you built in this academy. It's the hardest section — and you just finished it first.</div>`),
+          article("dc-online", "LinkedIn & Building in Public", "10 min", `
+<h3>🎯 Be findable, be visible</h3>
+<p>Jobs come from two directions: you apply, or they find you. The second needs a public presence:</p>
+<h3>📝 LinkedIn in 5 moves</h3>
+<ol>
+  <li>Headline: "Junior Web Developer · HTML/CSS/JS · Building in public" — not "Student".</li>
+  <li>Photo + banner (your code editor makes a fine banner).</li>
+  <li>Featured section → pin your portfolio and best project.</li>
+  <li>About = your 4-sentence story: what you build, what you're learning, what you want.</li>
+  <li>Turn ON "open to work" for remote junior roles.</li>
+</ol>
+<h3>📝 Build in public (the accelerator)</h3>
+<p>Post once a week, tiny and honest: "Week 6: deployed my first API app. Hardest bug: fetch CORS. Next: SQL." In Burmese on Facebook, in English on LinkedIn. In 3 months you have 12 posts of visible growth — recruiters and clients quietly watch these.</p>
+<div class="flow">
+  <div class="flow-box">📚 Learn<br><small>lesson, project, bug</small></div>
+  <div class="flow-arrow" data-label="weekly"></div>
+  <div class="flow-box alt">📢 Post about it<br><small>MM on Facebook,<br>EN on LinkedIn</small></div>
+  <div class="flow-arrow" data-label="compounds into"></div>
+  <div class="flow-box warn">🧲 Inbound<br><small>clients &amp; recruiters<br>come to YOU</small></div>
+</div>
+<div class="callout tip"><strong>Try it yourself:</strong> write this week's build-in-public post now (3 sentences). Post it. That tiny discomfort is the sound of a network growing.</div>`),
+          article("dc-freelance", "Freelance Platforms: First Client Playbook", "12 min", `
+<h3>🎯 Reviews are the currency</h3>
+<p>On Upwork/Fiverr nobody hires a zero-review profile for big jobs — so don't ask them to:</p>
+<ol>
+  <li><strong>Start tiny</strong> — "fix my page's mobile layout", "add a contact form": $10–30 jobs you can OVER-deliver on. You're buying reviews with skill.</li>
+  <li><strong>Proposals that win</strong> — 4 sentences: proof you read THEIR post, one relevant link of yours, exactly what you'll deliver, when. Never paste generic text — clients smell it instantly.</li>
+  <li><strong>Deliver early + a bonus</strong> — asked for a form? Include validation too. 5-star reviews are earned in the extra 20 minutes.</li>
+  <li><strong>Raise prices every 3 jobs</strong> — cheap forever is a trap; reviews are your permission slip to charge more.</li>
+</ol>
+<h3>📝 Fiverr vs Upwork in one line each</h3>
+<ul>
+  <li><strong>Fiverr</strong> — you list fixed "gigs" ("I will build a one-page site — $50"); buyers come to you. Easier start.</li>
+  <li><strong>Upwork</strong> — you bid on client posts; more effort, bigger/longer projects. Move there once you have proof.</li>
+</ul>
+<h3>💡 Payment reality for Myanmar</h3>
+<p>Check each platform's current payout options for your situation (Payoneer is the common bridge). Many Myanmar devs also take direct international clients via referrals once the first few reviews exist — Telegram/Discord communities matter here.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> write your first Fiverr gig description for "one-page business site" using your portfolio pieces as the gallery. Don't publish until your 3 projects are live — proof first.</div>`),
+          quiz("dc-quiz2", "Quiz: Getting Noticed", [
+            { q: "For a self-taught dev, the CV's most important items are…", options: ["Hobbies", "Working LINKS: GitHub + live portfolio projects", "Fonts", "A long objective paragraph"], answer: 1 },
+            { q: "The Projects section belongs…", options: ["Hidden at the bottom", "Above experience — it IS your experience", "In a separate file", "Nowhere"], answer: 1 },
+            { q: "Winning freelance proposals are…", options: ["Generic paste, sent 100×", "Short, specific to the post, with one relevant work link", "Demands for money upfront", "In all caps"], answer: 1 },
+            { q: "The first freelance goal is…", options: ["A $5000 contract", "Small jobs over-delivered → 5-star reviews", "Arguing with clients", "Building your own platform first"], answer: 1 },
+            { q: "Build in public means…", options: ["Sharing passwords", "Posting weekly, honest progress that compounds into inbound work", "Coding outdoors", "Streaming 8h/day"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Get Hired",
+        lessons: [
+          article("dc-jobsearch", "Job Hunting Like a System", "10 min", `
+<h3>🎯 Applications are a funnel, not a lottery</h3>
+<div class="flow">
+  <div class="flow-box">🎯 10 targeted<br>applications / week<br><small>tracked in a sheet</small></div>
+  <div class="flow-arrow" data-label="expect"></div>
+  <div class="flow-box alt">📞 1–2 responses<br><small>silence is normal,<br>not a verdict</small></div>
+  <div class="flow-arrow" data-label="convert"></div>
+  <div class="flow-box warn">💼 Interviews<br><small>every one = practice,<br>even the failed ones</small></div>
+</div>
+<h3>📝 The system</h3>
+<ul>
+  <li><strong>Track everything</strong> — sheet: company, role, date, status, contact. What's measured improves.</li>
+  <li><strong>Tailor 20%</strong> — same CV core, but swap the top project + 2 keywords per job. 10 tailored beats 50 sprayed.</li>
+  <li><strong>Hunt in the right ponds</strong> — local job boards + LinkedIn "junior developer remote" + companies whose products you use + your build-in-public inbound.</li>
+  <li><strong>The follow-up</strong> — one polite message after 1 week. Half of hiring is just being the person who followed up.</li>
+</ul>
+<h3>💡 While hunting: keep shipping</h3>
+<p>One new small project per month during the search. It fills the activity graph, gives fresh interview stories, and protects your mood — momentum is armor.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> create the tracking sheet now (5 columns). Empty sheets get filled; vague intentions don't.</div>`),
+          article("dc-interview", "Interviews: Technical & Human", "12 min", `
+<h3>🎯 Junior interviews test learning ability, not perfection</h3>
+<h3>📝 The technical part — what actually comes up</h3>
+<ul>
+  <li><strong>Walk me through your project</strong> — THE most common. Practice a 2-minute tour of each portfolio piece: what, why, hardest bug, what you'd improve.</li>
+  <li><strong>Fundamentals</strong> — this academy's quizzes are literally interview prep: box model, flexbox centering, const vs let, what an API is, GET vs POST.</li>
+  <li><strong>Small live task</strong> — fizzbuzz-level loops/conditions. Think OUT LOUD: "first I'll loop… now I check…". The thinking is what's graded.</li>
+  <li><strong>"I don't know"</strong> — say it, then add "here's how I'd find out". That answer gets hired; bluffing gets caught.</li>
+</ul>
+<h3>📝 The human part — prepare 4 stories</h3>
+<p>A bug you fought and beat · something you learned fast · feedback you received and used · why THIS company (read their site!). Each 60 seconds, practiced aloud.</p>
+<h3>💡 You interview them too</h3>
+<p>Ask: "How do juniors get mentored here?" and "What does a normal week look like?" Good companies love these questions; bad ones reveal themselves.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> record yourself (phone voice memo) doing the 2-minute tour of your best project. Listen once, cringe once, improve twice. Repeat ×3 — interview-ready.</div>`),
+          article("dc-offer", "Offers, Salary & Your First 90 Days", "10 min", `
+<h3>🎯 The offer conversation</h3>
+<ul>
+  <li><strong>Research the range first</strong> — ask peers/communities what junior roles pay in your market (local vs remote differ hugely). Never guess blind.</li>
+  <li><strong>Don't name a number first</strong> if avoidable: "What range did you budget for this role?" If forced, give YOUR range's top-anchored version.</li>
+  <li><strong>Negotiate once, politely</strong> — "Given my portfolio and the projects I ship, could we do X?" Worst case: no. It's expected, not rude — and remote/foreign employers assume you will.</li>
+  <li><strong>Beyond salary</strong> — remote days, learning budget, review after 6 months. Sometimes easier wins than cash.</li>
+</ul>
+<h3>📝 Your first 90 days (keep the job, grow fast)</h3>
+<ol>
+  <li><strong>Weeks 1–2:</strong> ask everything, write everything down. Nobody expects output yet — they expect curiosity.</li>
+  <li><strong>Weeks 3–6:</strong> small wins: tickets closed, docs improved. Reliability beats brilliance.</li>
+  <li><strong>Weeks 7–12:</strong> own one small area completely. Ask your lead: "what does 'great' look like at 6 months?" — then aim at THAT.</li>
+</ol>
+<h3>💡 And keep the flywheel</h3>
+<p>Streak, projects, build-in-public — the habits that got you hired are the habits that get you promoted. The Zero to Hero mindset doesn't retire; it compounds. 🦸</p>
+<div class="callout tip"><strong>Graduation task:</strong> pass the final quiz, take the certificate 🎓, then send ONE application or freelance proposal today. The course ends; the career starts now.</div>`),
+          quiz("dc-final", "Final Quiz: Land the Job", [
+            { q: "Job hunting works best as…", options: ["A lottery of 100 identical CVs", "A tracked system: 10 tailored applications weekly + follow-ups", "Waiting to be discovered", "One perfect application"], answer: 1 },
+            { q: "The most common junior interview question is…", options: ["Quantum physics", "Walk me through your project", "Your favorite color", "Company trivia"], answer: 1 },
+            { q: "When you don't know an answer…", options: ["Bluff confidently", "Say so + explain how you'd find out", "Change topic", "Leave"], answer: 1 },
+            { q: "On salary, you should…", options: ["Accept instantly, always", "Know the market range and negotiate once, politely", "Demand triple", "Refuse to discuss it"], answer: 1 },
+            { q: "Weeks 1–2 of a new job are for…", options: ["Rewriting everything", "Questions, notes and learning the system", "Vacation", "Silence"], answer: 1 },
           ]),
         ],
       },
@@ -3146,7 +3607,7 @@ console.log(binarySearch([2,5,8,12,16,23,38], 16)); // 4</code></pre>
     rating: 4.8,
     ratings: 26700,
     students: 195000,
-    hours: 4,
+    hours: 7,
     price: "Free",
     free: true,
     color: "linear-gradient(135deg,#f05033,#3e2c00)",
@@ -3202,6 +3663,183 @@ git pull                    # get teammates' changes</code></pre>
             { q: "Which command creates a snapshot?", options: ["git snapshot", "git save", "git commit", "git push"], answer: 2 },
             { q: "Branches are for...", options: ["Backups only", "Working on ideas without breaking main", "Deleting history", "Speed"], answer: 1 },
             { q: "git push does what?", options: ["Downloads changes", "Uploads your commits to the remote", "Merges branches", "Deletes the repo"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Branches, Teams & Fixing Mistakes",
+        lessons: [
+          article("git-undo", "Undo Anything — Git's Time Machine", "10 min", `
+<h3>🎯 The fear killer</h3>
+<p>Beginners fear Git because "what if I break it?" Truth: with commits, almost NOTHING is ever lost. Three undo tools, from soft to hard:</p>
+<div class="flow">
+  <div class="flow-box">📄 git restore file.js<br><small>throw away UNCOMMITTED<br>edits in one file</small></div>
+  <div class="flow-arrow" data-label="or"></div>
+  <div class="flow-box alt">↩️ git revert abc123<br><small>NEW commit that cancels<br>an old one — safe, shareable</small></div>
+  <div class="flow-arrow" data-label="or"></div>
+  <div class="flow-box warn">⏪ git reset --hard<br><small>rewind history —<br>local work only!</small></div>
+</div>
+<h3>💻 The situations you'll actually meet</h3>
+<pre><code># "I messed up this file, give me the last committed version"
+git restore style.css
+
+# "That commit from yesterday broke things — cancel it"
+git revert a1b2c3d
+
+# "Show me what changed before I commit"
+git diff</code></pre>
+<h3>📝 Rule of thumb</h3>
+<p>On shared branches use <strong>revert</strong> (adds history, breaks nobody). Keep <strong>reset --hard</strong> for local experiments — it rewrites history, and rewriting shared history makes teammates cry.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> in a practice repo: edit a file → git restore it → watch your edits vanish. Then commit a change and git revert it. Fear = gone.</div>`),
+          article("git-ignore", ".gitignore — Keep Repos Clean", "8 min", `
+<h3>🎯 Not everything belongs in history</h3>
+<p>Some files must NEVER be committed: dependencies (huge, reinstallable), build output, and above all <strong>secrets</strong>.</p>
+<h3>💻 A solid starter .gitignore</h3>
+<pre><code># dependencies (reinstall with npm install)
+node_modules/
+
+# environment secrets - NEVER commit!
+.env
+
+# build output
+dist/
+build/
+
+# editor & OS noise
+.vscode/
+.DS_Store</code></pre>
+<h3>📝 Why this matters more than it looks</h3>
+<ul>
+  <li><strong>Security</strong> — a committed .env with API keys is public FOREVER (even after deleting it, history remembers). Scanners find leaked keys within minutes.</li>
+  <li><strong>Size</strong> — node_modules can be 300MB; your actual code 300KB. Nobody wants to clone the difference.</li>
+  <li><strong>Professionalism</strong> — a clean repo is the first thing reviewers notice.</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> add a .gitignore to your practice repo with the content above, create a fake .env file, run git status — Git now politely ignores it.</div>`),
+          article("git-conflict", "Merge Conflicts Without Fear", "12 min", `
+<h3>🎯 The rite of passage</h3>
+<p>Two people change the SAME line → Git can't choose → it asks YOU. That's all a conflict is: a question, not a disaster.</p>
+<h3>💻 What a conflict looks like</h3>
+<pre><code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+  price = 1500;        // your version
+=======
+  price = 2000;        // their version
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature/new-prices</code></pre>
+<h3>📝 The calm 4-step fix</h3>
+<ol>
+  <li>Open the file — the markers show BOTH versions.</li>
+  <li>Decide: yours, theirs, or a mix. Edit the block into the final code.</li>
+  <li>Delete the three marker lines completely.</li>
+  <li><code>git add file</code> → <code>git commit</code> — conflict resolved.</li>
+</ol>
+<div class="flow">
+  <div class="flow-box warn">⚡ Conflict<br><small>same line changed<br>on two branches</small></div>
+  <div class="flow-arrow" data-label="you decide"></div>
+  <div class="flow-box alt">✍️ Edit the block<br><small>keep the right code,<br>remove markers</small></div>
+  <div class="flow-arrow" data-label="add + commit"></div>
+  <div class="flow-box">✅ Merged<br><small>history continues</small></div>
+</div>
+<div class="callout"><strong>Prevention beats cure:</strong> small branches merged often conflict rarely. A branch that lives for a month WILL fight you.</div>
+<div class="callout tip"><strong>Try it yourself:</strong> create a conflict on purpose (edit the same line on two branches, merge) and fix it. Doing it once on purpose means never panicking again.</div>`),
+          article("git-pr", "Pull Requests — How Teams Really Work", "12 min", `
+<h3>🎯 The heartbeat of every dev team</h3>
+<p>Nobody pushes straight to main in a real team. Work flows through <strong>pull requests</strong>:</p>
+<div class="flow">
+  <div class="flow-box">🌿 Branch<br><small>feature/login</small></div>
+  <div class="flow-arrow" data-label="push + open PR"></div>
+  <div class="flow-box alt">🔍 Review<br><small>teammates comment,<br>CI tests run</small></div>
+  <div class="flow-arrow" data-label="approved"></div>
+  <div class="flow-box">🔀 Merge<br><small>main stays always<br>releasable</small></div>
+</div>
+<h3>📝 Writing a PR that gets approved fast</h3>
+<ul>
+  <li><strong>Small</strong> — 200 lines gets a careful review; 2000 gets a tired shrug.</li>
+  <li><strong>Title says the change</strong> — "Add KBZPay to checkout", not "updates".</li>
+  <li><strong>Description says WHY</strong> + how to test it. Screenshots for UI changes.</li>
+  <li><strong>Respond to review kindly</strong> — comments target the code, not you. Every senior was reviewed thousands of times.</li>
+</ul>
+<h3>💡 Solo? Still use PRs</h3>
+<p>Branch → PR → merge, even alone: you get a clean history, a place to write what you did, and the exact habit employers expect on day one. (This academy's own repo works this way!)</p>
+<div class="callout tip"><strong>Try it yourself:</strong> in your practice repo make a branch, change something small, push, open a PR on GitHub and merge it yourself. That green "Merged" badge = team-ready.</div>`),
+          quiz("git-quiz2", "Quiz: Teamwork Git", [
+            { q: "Canceling a commit on a SHARED branch safely uses…", options: ["git reset --hard", "git revert — a new commit that undoes it", "Deleting the repo", "git push --force"], answer: 1 },
+            { q: "Which file should NEVER be committed?", options: ["index.html", ".env with API keys", "README.md", "style.css"], answer: 1 },
+            { q: "Conflict markers in a file mean…", options: ["The repo is broken", "Git wants YOU to choose between two versions of the same lines", "You must start over", "GitHub is down"], answer: 1 },
+            { q: "The best pull request is…", options: ["Huge, once a month", "Small and focused, with a clear title and why", "Untested", "Direct to main"], answer: 1 },
+            { q: "node_modules/ belongs…", options: ["In every commit", "In .gitignore — dependencies are reinstallable", "On a USB stick", "In the README"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "Ship & Shine",
+        lessons: [
+          article("git-pages", "Free Hosting with GitHub Pages", "10 min", `
+<h3>🎯 Repo → live website in one minute</h3>
+<ol>
+  <li>Make sure your repo's homepage file is named exactly <code>index.html</code>.</li>
+  <li>Repo → <strong>Settings → Pages</strong> → Source: <strong>main</strong> branch → Save.</li>
+  <li>Wait ~1 minute → your site is live at <code>yourname.github.io/repo-name</code>.</li>
+</ol>
+<div class="flow">
+  <div class="flow-box">📁 index.html<br><small>in your repo</small></div>
+  <div class="flow-arrow" data-label="Settings → Pages"></div>
+  <div class="flow-box alt">⚙️ One dropdown<br><small>source: main</small></div>
+  <div class="flow-arrow" data-label="every push after"></div>
+  <div class="flow-box warn">🌍 Auto-deploys<br><small>push = live in<br>~1 minute</small></div>
+</div>
+<h3>📝 What Pages is perfect for</h3>
+<ul>
+  <li>Your portfolio (employers click links, not screenshots)</li>
+  <li>Every course project — build in public!</li>
+  <li>Small business pages for your first clients (free hosting = pure profit)</li>
+</ul>
+<div class="callout"><strong>Proof it scales:</strong> this entire academy — 38 courses, chat, AI tutor — is hosted on GitHub Pages for exactly 0 Ks/month.</div>
+<div class="callout tip"><strong>Try it yourself:</strong> deploy ANY html file today. The moment your URL loads on your phone is the moment "I'm learning coding" becomes "I ship websites".</div>`),
+          article("git-profile", "A GitHub Profile That Gets Noticed", "10 min", `
+<h3>🎯 Employers check GitHub before your CV</h3>
+<p>Your profile is a free billboard. Five upgrades, 30 minutes total:</p>
+<ol>
+  <li><strong>Real name + photo + one-line bio</strong> — "Learning full stack · Yangon · open to junior roles".</li>
+  <li><strong>The magic README repo</strong> — create a repo named exactly your username; its README shows on your profile. Introduce yourself, list skills, link projects.</li>
+  <li><strong>Pin your best 4 repos</strong> — the 3-project portfolio + this academy's exercises. Pinned = what visitors see first.</li>
+  <li><strong>READMEs everywhere</strong> — each project: what it does, screenshot, live link, what you learned.</li>
+  <li><strong>Green squares</strong> — commit small and often. A steady month of activity says more than any certificate line.</li>
+</ol>
+<h3>💡 The signal hierarchy</h3>
+<p>Recruiters read (in order): pinned projects with live links → activity graph → README quality. Notice: none of these require years of experience — only consistency and care. You can compete TODAY.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> do upgrade #2 right now — the username README repo takes 10 minutes and instantly makes your profile look intentional.</div>`),
+          article("git-cheat", "The Everyday Cheat Sheet", "8 min", `
+<h3>🎯 The 12 commands that are 95% of real usage</h3>
+<pre><code># starting
+git init                  # new repo here
+git clone URL             # copy an existing repo
+
+# the daily loop
+git status                # what changed?
+git add .                 # stage everything changed
+git commit -m "message"   # snapshot
+git push                  # upload
+git pull                  # download teammates' work
+
+# branches
+git checkout -b feature/x # new branch + switch
+git checkout main         # switch back
+git merge feature/x       # bring branch into current
+
+# inspect & rescue
+git log --oneline         # history at a glance
+git restore file          # discard uncommitted edits</code></pre>
+<h3>📝 The mental model in one line each</h3>
+<ul>
+  <li><strong>Working folder</strong> → your live edits · <strong>Stage</strong> → chosen for next snapshot · <strong>History</strong> → permanent commits · <strong>Remote</strong> → the GitHub copy.</li>
+  <li>add moves work → stage; commit moves stage → history; push moves history → remote. That's Git.</li>
+</ul>
+<div class="callout tip"><strong>Graduation task:</strong> write these 12 from memory (yes, on paper). Then take the final quiz and claim your certificate 🎓 — and put "Git & GitHub" on your CV with a clear conscience.</div>`),
+          quiz("git-final", "Final Quiz: Git & GitHub", [
+            { q: "The daily Git loop is…", options: ["push → commit → add", "edit → add → commit → push", "clone → delete → clone", "merge → conflict → cry"], answer: 1 },
+            { q: "git pull does what?", options: ["Uploads commits", "Downloads and merges teammates' commits", "Deletes branches", "Renames files"], answer: 1 },
+            { q: "Your site goes live on GitHub Pages from…", options: ["A paid server", "Settings → Pages with an index.html on main", "Email support", "FTP"], answer: 1 },
+            { q: "The repo that becomes your profile page is named…", options: ["profile", "Exactly your username", "README", "main"], answer: 1 },
+            { q: "add → commit → push moves work…", options: ["remote → history → stage", "working → stage → history → remote", "history → working", "randomly"], answer: 1 },
           ]),
         ],
       },
@@ -6717,6 +7355,79 @@ load();
             { q: "Which free service can host a Node.js + Express app?", options: ["GitHub Pages only", "Render or Railway", "Google Docs", "Instagram"], answer: 1 },
             { q: "A 201 status code means…", options: ["Server crashed", "Not found", "Created successfully", "Forbidden"], answer: 2 },
           ]),
+        ],
+      },
+      {
+        title: "🏋️ Practice Zone — Full Stack Muscles",
+        lessons: [
+          exercise("fsx-json", "Exercise: Total the Order (JSON)", "10 min", `
+<h3>🏋️ Your task</h3>
+<p>An order arrives as JSON. Write <code>getTotal(order)</code> that returns the total price: each item's <code>price × qty</code>, added up.</p>
+<pre><code>getTotal({ items: [
+  { price: 1500, qty: 2 },
+  { price: 500,  qty: 1 }
+] })  → 3500</code></pre>
+<p>Loop over <code>order.items</code> — dot into objects, multiply, add.</p>`,
+`<!DOCTYPE html>
+<html>
+  <body>
+    <script>
+      function getTotal(order) {
+
+      }
+    </script>
+  </body>
+</html>`,
+`if (typeof getTotal !== "function") __exDone(false, "Define a function called getTotal.");
+else if (getTotal({ items: [{ price: 1500, qty: 2 }, { price: 500, qty: 1 }] }) !== 3500) __exDone(false, "For 2x1500 + 1x500 the total should be 3500.");
+else if (getTotal({ items: [] }) !== 0) __exDone(false, "An empty order should total 0.");
+else if (getTotal({ items: [{ price: 100, qty: 10 }] }) !== 1000) __exDone(false, "10 items at 100 should be 1000.");
+else __exDone(true, "");`),
+          exercise("fsx-api", "Exercise: Build the API URL", "8 min", `
+<h3>🏋️ Your task</h3>
+<p>REST APIs put the resource id in the URL. Write <code>apiUrl(id)</code> that returns:</p>
+<pre><code>apiUrl(7)   → "https://api.shop.com/products/7"
+apiUrl(42)  → "https://api.shop.com/products/42"</code></pre>`,
+`<!DOCTYPE html>
+<html>
+  <body>
+    <script>
+      function apiUrl(id) {
+
+      }
+    </script>
+  </body>
+</html>`,
+`if (typeof apiUrl !== "function") __exDone(false, "Define a function called apiUrl.");
+else if (apiUrl(7) !== "https://api.shop.com/products/7") __exDone(false, "apiUrl(7) should return https://api.shop.com/products/7 - got: " + apiUrl(7));
+else if (apiUrl(42) !== "https://api.shop.com/products/42") __exDone(false, "apiUrl(42) should end in /products/42.");
+else __exDone(true, "");`),
+          exercise("fsx-valid", "Exercise: Validate the Signup", "10 min", `
+<h3>🏋️ Your task</h3>
+<p>Backends must ALWAYS validate input. Write <code>isValid(name, phone)</code> that returns <code>true</code> only when:</p>
+<ul>
+  <li><code>name</code> is not empty (after trimming spaces)</li>
+  <li><code>phone</code> starts with <code>"09"</code> and has at least 9 characters</li>
+</ul>
+<pre><code>isValid("Mya", "0912345678") → true
+isValid("", "0912345678")    → false
+isValid("Mya", "12345")      → false</code></pre>`,
+`<!DOCTYPE html>
+<html>
+  <body>
+    <script>
+      function isValid(name, phone) {
+
+      }
+    </script>
+  </body>
+</html>`,
+`if (typeof isValid !== "function") __exDone(false, "Define a function called isValid.");
+else if (isValid("Mya", "0912345678") !== true) __exDone(false, "A good name + phone starting 09 (10 digits) should return true.");
+else if (isValid("", "0912345678") !== false) __exDone(false, "Empty name should return false.");
+else if (isValid("   ", "0912345678") !== false) __exDone(false, "A name of only spaces should return false - use .trim().");
+else if (isValid("Mya", "12345") !== false) __exDone(false, "Phone must start with 09 and be at least 9 characters.");
+else __exDone(true, "");`),
         ],
       },
     ],

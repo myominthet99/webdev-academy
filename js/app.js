@@ -3687,55 +3687,89 @@
     saveReviews(id, list);
   }
 
-  function reviewsPanel(c) {
-    const list = loadReviews(c.id);
-    const avg = reviewAvg(c.id);
-    const u = loggedIn() ? window.Auth.current() : null;
-    const mine = u ? list.find((r) => r.userId === u.id) : null;
-    const items = list.length
-      ? list.slice().sort((a, b) => b.ts - a.ts).map((r) => `
-          <div class="review">
-            <span class="chat-avatar">${escapeHtml(r.initial || "?")}</span>
-            <div>
-              <div class="review-head"><strong>${escapeHtml(r.name || "")}</strong> ${stars(r.rating)}</div>
-              ${r.text ? `<div class="review-text">${escapeHtml(r.text)}</div>` : ""}
-            </div>
-          </div>`).join("")
-      : `<p class="muted">${t("reviews_none")}</p>`;
-    const form = u
-      ? `<form id="review-form" class="review-form">
-           <div class="review-stars" id="review-stars" data-val="${mine ? mine.rating : 0}">
-             ${[1, 2, 3, 4, 5].map((n) => `<button type="button" class="rstar" data-star="${n}">★</button>`).join("")}
-           </div>
-           <textarea name="text" rows="2" placeholder="${escapeHtml(t("reviews_placeholder"))}">${mine ? escapeHtml(mine.text || "") : ""}</textarea>
-           <button class="btn btn-primary btn-sm" type="submit">${t("reviews_submit")}</button>
-         </form>`
-      : `<button class="btn btn-outline btn-sm" id="review-login">${t("reviews_login")}</button>`;
-    return `
-      <div class="panel">
-        <h2>${t("reviews_title")}${avg ? ` <span class="muted" style="font-size:15px">— ${avg.toFixed(1)}★ (${list.length} ${t("reviews_word")})</span>` : ""}</h2>
-        ${form}
-        <div class="review-list">${items}</div>
-      </div>`;
+  /* Reviews are CLOUD-shared (stats/reviews/<course>/<uid>) so every
+     student sees real ratings — one review per account, editable. */
+  function reviewsPanel() {
+    return `<div class="panel" id="reviews-panel"><h2>${t("reviews_title")}</h2><p class="muted" id="reviews-wait">⏳</p></div>`;
   }
   function wireReviews(c) {
-    const box = app.querySelector("#review-stars");
-    if (box) {
-      const paint = (v) => box.querySelectorAll(".rstar").forEach((b, i) => b.classList.toggle("on", i < v));
-      paint(Number(box.dataset.val || 0));
-      box.querySelectorAll(".rstar").forEach((b) =>
-        b.addEventListener("click", () => { box.dataset.val = b.dataset.star; paint(Number(b.dataset.star)); }));
-    }
-    const form = app.querySelector("#review-form");
-    if (form) form.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const rating = Number(app.querySelector("#review-stars").dataset.val || 0);
-      if (!rating) return;
-      addReview(c.id, rating, new FormData(form).get("text"));
-      renderCourse(c.id);
-    });
-    const rl = app.querySelector("#review-login");
-    if (rl) rl.addEventListener("click", () => { if (window.Auth) window.Auth.openModal("login"); });
+    const mount = document.getElementById("reviews-panel");
+    const base = statsBase();
+    if (!mount) return;
+    if (!base) { const w = document.getElementById("reviews-wait"); if (w) w.textContent = t("lb_offline"); return; }
+    const u = loggedIn() ? window.Auth.current() : null;
+
+    const draw = (data) => {
+      if (!document.getElementById("reviews-panel")) return; /* navigated away */
+      const list = Object.entries(data || {})
+        .map(([uid, r]) => Object.assign({ uid }, r))
+        .filter((r) => r && Number(r.r) >= 1)
+        .sort((a, b) => (b.ts || 0) - (a.ts || 0));
+      const avg = list.length ? list.reduce((a, r) => a + Number(r.r), 0) / list.length : 0;
+      const mine = u && data ? data[u.id] : null;
+      const items = list.length
+        ? list.slice(0, 30).map((r) => `
+            <div class="review">
+              <span class="chat-avatar">${escapeHtml(String(r.initial || "?").slice(0, 2))}</span>
+              <div>
+                <div class="review-head"><strong>${escapeHtml(String(r.name || "").slice(0, 40))}</strong> ${stars(Number(r.r) || 0)}</div>
+                ${r.text ? `<div class="review-text">${escapeHtml(String(r.text).slice(0, 300))}</div>` : ""}
+              </div>
+            </div>`).join("")
+        : `<p class="muted">${t("reviews_none")}</p>`;
+      const form = u
+        ? `<form id="review-form" class="review-form">
+             <div class="review-stars" id="review-stars" data-val="${mine ? Number(mine.r) || 0 : 0}">
+               ${[1, 2, 3, 4, 5].map((n) => `<button type="button" class="rstar" data-star="${n}">★</button>`).join("")}
+             </div>
+             <textarea name="text" rows="2" maxlength="300" placeholder="${escapeHtml(t("reviews_placeholder"))}">${mine ? escapeHtml(mine.text || "") : ""}</textarea>
+             <button class="btn btn-primary btn-sm" type="submit">${t("reviews_submit")}</button>
+             <span class="tl-status" id="review-status"></span>
+           </form>`
+        : `<button class="btn btn-outline btn-sm" id="review-login">${t("reviews_login")}</button>`;
+      mount.innerHTML = `
+        <h2>${t("reviews_title")}${avg ? ` <span class="muted" style="font-size:15px">— ${avg.toFixed(1)}★ (${list.length} ${t("reviews_word")})</span>` : ""}</h2>
+        ${form}
+        <div class="review-list">${items}</div>`;
+
+      const box = mount.querySelector("#review-stars");
+      if (box) {
+        const paint = (v) => box.querySelectorAll(".rstar").forEach((b, i) => b.classList.toggle("on", i < v));
+        paint(Number(box.dataset.val || 0));
+        box.querySelectorAll(".rstar").forEach((b) =>
+          b.addEventListener("click", () => { box.dataset.val = b.dataset.star; paint(Number(b.dataset.star)); }));
+      }
+      const formEl = mount.querySelector("#review-form");
+      if (formEl) formEl.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const rating = Number(mount.querySelector("#review-stars").dataset.val || 0);
+        const status = mount.querySelector("#review-status");
+        if (!rating) { status.className = "tl-status bad"; status.textContent = "★?"; return; }
+        status.className = "tl-status"; status.textContent = "⏳";
+        fetch(base + "/stats/reviews/" + c.id + "/" + encodeURIComponent(u.id) + ".json", {
+          method: "PUT",
+          body: JSON.stringify({
+            r: rating,
+            text: String(new FormData(formEl).get("text") || "").slice(0, 300),
+            name: String(u.name || "").slice(0, 40) || "Student",
+            initial: String(u.name || "S").charAt(0).toUpperCase(),
+            ts: Date.now(),
+          }),
+        }).then((res) => {
+          if (!res.ok) throw new Error("write");
+          load(); /* redraw with the fresh list */
+        }).catch(() => { status.className = "tl-status bad"; status.textContent = t("reviews_err"); });
+      });
+      const rl = mount.querySelector("#review-login");
+      if (rl) rl.addEventListener("click", () => { if (window.Auth) window.Auth.openModal("login"); });
+    };
+
+    const load = () =>
+      fetch(base + "/stats/reviews/" + c.id + ".json")
+        .then((r) => r.json())
+        .then(draw)
+        .catch(() => { const w = document.getElementById("reviews-wait"); if (w) w.textContent = t("lb_offline"); });
+    load();
   }
 
   /* ---------------- View: Certificate ---------------- */
@@ -4087,6 +4121,21 @@
               </div>` : "").join("") || `<p class="muted">${t("dash_none")}</p>`}
           </div>
         </div>
+        <div class="panel">
+          <h3>📣 ${t("cc_title")}</h3>
+          <p class="muted" style="margin:0 0 8px;font-size:13px">${t("cc_help")}</p>
+          <div class="tl-row">
+            <select class="tl-in" id="cc-course" style="flex:1;min-width:180px">
+              <option value="">🎉 ${t("cc_general")}</option>
+              ${COURSES.map((c) => `<option value="${c.id}">${c.icon} ${escapeHtml(c.title)}</option>`).join("")}
+            </select>
+            <button class="btn btn-primary btn-sm" id="cc-gen">${t("cc_generate")}</button>
+            <button class="btn btn-outline btn-sm" id="cc-ai">✨ ${t("cc_ai")}</button>
+            <button class="btn btn-outline btn-sm" id="cc-copy">📋 ${t("tl_copy")}</button>
+            <span class="muted" id="cc-status" style="font-size:13px"></span>
+          </div>
+          <textarea id="cc-out" rows="10" style="width:100%;margin-top:8px;padding:12px;border:1px solid var(--line);border-radius:10px;font-family:inherit;font-size:13.5px;line-height:1.7" placeholder="${t("cc_ph")}"></textarea>
+        </div>
         <div class="adash-cols">
           <div class="panel">
             <h3>🔥 ${t("dash_popular")}</h3>
@@ -4119,6 +4168,61 @@
       if (clearBtn) clearBtn.addEventListener("click", () => {
         document.getElementById("ann-text").value = "";
         setAnn(null, "✓ " + t("ann_cleared"));
+      });
+
+      /* 📣 FB content creator: template post per course (MM+EN), AI polish */
+      const ccOut = document.getElementById("cc-out");
+      const ccStatus = document.getElementById("cc-status");
+      const SITE = "https://myominthet99.github.io/webdev-academy/";
+      const fbPostFor = (course) => {
+        if (!course) {
+          return "🎓 မြန်မာလူငယ်တွေအတွက် အခမဲ့ Web Development သင်တန်း — WebDev Academy!\n\n" +
+            "✅ သင်တန်း " + COURSES.length + " ခု · သင်ခန်းစာ " + COURSES.reduce((a, c) => a + totalLessons(c), 0) + " ခု\n" +
+            "✅ English + မြန်မာ နှစ်ဘာသာ\n" +
+            "✅ AI Tutor 🤖 · Certificate 🎓 · Community chat 💬\n" +
+            "✅ ဖုန်းထဲမှာတင် code ရေးလို့ရ — app install လည်းရ 📲\n\n" +
+            "စာရင်းသွင်းစရာမလိုဘဲ ချက်ချင်းစသင်လို့ရ 👇\n👉 " + SITE + "\n\n" +
+            "Share ပေးကြပါဦးနော် 🙏\n#WebDevAcademy #LearnToCode #Myanmar #FreeCourse";
+        }
+        const mm = (I18N.content && I18N.content.courses && I18N.content.courses[course.id]) || {};
+        const learns = (mm.whatYouLearn || course.whatYouLearn || []).slice(0, 3);
+        const freeTxt = isFree(course)
+          ? "💯 လုံးဝ အခမဲ့ — စာရင်းသွင်းစရာမလို!"
+          : "🎫 ဒီသင်တန်းတစ်ခုတည်း " + fmt(PAYMENT_CONFIG.coursePrice) + " Ks (သို့) အားလုံးရ Premium " + fmt(PAYMENT_CONFIG.price) + " Ks";
+        return "🔥 သင်တန်းအသစ် — " + (mm.title || course.title) + "\n" +
+          (mm.subtitle || course.subtitle) + "\n\n" +
+          learns.map((x) => "✅ " + x).join("\n") +
+          "\n\n📚 သင်ခန်းစာ " + totalLessons(course) + " ခု · 🌐 EN + မြန်မာ · 🎓 Certificate ပါ\n" +
+          freeTxt + "\n\n👉 " + SITE + "#/course/" + course.id + "\n\n" +
+          "#WebDevAcademy #LearnToCode #Myanmar #" + String(course.category).replace(/\s+/g, "");
+      };
+      const ccGen = document.getElementById("cc-gen");
+      if (ccGen) ccGen.addEventListener("click", () => {
+        const c = courseById(document.getElementById("cc-course").value);
+        ccOut.value = fbPostFor(c || null);
+        ccStatus.textContent = "";
+      });
+      const ccCopy = document.getElementById("cc-copy");
+      if (ccCopy) ccCopy.addEventListener("click", () => {
+        if (!ccOut.value) return;
+        const done = () => { ccStatus.textContent = "✓ " + t("copied"); setTimeout(() => { ccStatus.textContent = ""; }, 1500); };
+        if (navigator.clipboard) navigator.clipboard.writeText(ccOut.value).then(done).catch(() => fallbackCopy(ccOut.value, done));
+        else fallbackCopy(ccOut.value, done);
+      });
+      const ccAi = document.getElementById("cc-ai");
+      if (ccAi) ccAi.addEventListener("click", () => {
+        if (!ccOut.value) { ccStatus.textContent = t("cc_gen_first"); return; }
+        if (!(window.AI && window.AI.ready())) { ccStatus.textContent = t("chat_ai_nokey"); return; }
+        ccStatus.textContent = "✨ …";
+        window.AI.complete(
+          "You write viral Burmese Facebook posts for a Myanmar coding school. " +
+          "Rewrite the following post to be more engaging and shareable: keep it in Burmese, keep ALL links and hashtags exactly, " +
+          "keep it under 120 words, use emojis naturally, end with a question that invites comments. Reply with ONLY the post text.\n\n" +
+          ccOut.value
+        ).then((res) => {
+          ccOut.value = String(res || "").trim() || ccOut.value;
+          ccStatus.textContent = "✨ ✓";
+        }).catch((e) => { ccStatus.textContent = "⚠ " + ((e && e.message) || "AI"); });
       });
 
       /* 🎟️ promo codes: create + delete */

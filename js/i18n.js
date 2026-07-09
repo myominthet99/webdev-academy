@@ -192,6 +192,14 @@ window.I18N = {
       goal_change: "Change",
       goal_progress: "{n} of {g} lessons this week — keep going!",
       goal_done: "Weekly goal reached — you're unstoppable!",
+      reviews_err: "Could not save yet — the database rules need to be published first.",
+      cc_title: "Content creator",
+      cc_help: "Pick a course (or General promo) → Generate a ready-to-post Facebook text → ✨ lets the AI polish it.",
+      cc_general: "General promo (whole academy)",
+      cc_generate: "Generate",
+      cc_ai: "AI polish",
+      cc_ph: "Your Facebook post will appear here…",
+      cc_gen_first: "Generate a post first.",
       community_join: "Join our community:",
       admin_use_template: "Insert lesson template",
       admin_template_confirm: "Replace the current content with the standard template?",
@@ -782,6 +790,14 @@ window.I18N = {
       goal_change: "ပြောင်းရန်",
       goal_progress: "ဒီအပတ် {g} ခုမှ {n} ခု ပြီးပြီ — ဆက်သွားပါ!",
       goal_done: "အပတ်စဉ်ပန်းတိုင် ရောက်ပြီ — သင်ကို ဘယ်သူမှ မတားနိုင်တော့ပါ!",
+      reviews_err: "မသိမ်းနိုင်သေးပါ — database rules ကို အရင် publish လုပ်ရန် လိုသည်။",
+      cc_title: "Content ဖန်တီးကိရိယာ",
+      cc_help: "သင်တန်းရွေး (သို့ အထွေထွေကြော်ငြာ) → Facebook post စာသား ထုတ် → ✨ ဖြင့် AI က ပိုကောင်းအောင် ပြင်ပေးမည်။",
+      cc_general: "အထွေထွေကြော်ငြာ (Academy တစ်ခုလုံး)",
+      cc_generate: "ထုတ်ရန်",
+      cc_ai: "AI ဖြင့်ပြင်ရန်",
+      cc_ph: "သင့် Facebook post ဒီမှာ ပေါ်လာမည်…",
+      cc_gen_first: "အရင် Generate နှိပ်ပါ။",
       community_join: "အသိုင်းအဝိုင်းသို့ ဝင်ရန်:",
       admin_use_template: "သင်ခန်းစာပုံစံ ထည့်ရန်",
       admin_template_confirm: "လက်ရှိအကြောင်းအရာကို စံပုံစံဖြင့် အစားထိုးမလား?",
@@ -1873,6 +1889,38 @@ btn.addEventListener("click", () =&gt; {
 <div class="callout tip"><strong>စမ်းကြည့်ပြီး သင့်ဟာဖြစ်အောင်လုပ်ပါ-</strong> အမည်၊ ရောင်စဉ်များနှင့် စာရင်း item များကိုပြောင်းပါ။ <code>&lt;img&gt;</code> ဖြင့် ဓာတ်ပုံတစ်ပုံထည့်ပါ။ ဒါ သင့်စာမျက်နှာ ဖြစ်ပြီ!</div>
 <h3>🎓 သင်အောင်မြင်ပြီ</h3>
 <p>အဓိကဘာသာစကားသုံးမျိုးလုံးကိုသုံးပြီး တကယ့် interactive ဝဘ်စာမျက်နှာတစ်ခုကို သင်တည်ဆောက်လိုက်ပြီ။ ၁၀၀% သို့ရောက်ရန် ဤသင်ခန်းစာကို ပြီးစီးအဖြစ်မှတ်ပါ။ နောက်တစ်ဆင့်အနေဖြင့် ပိုနက်ရှိုင်းစွာလေ့လာရန် <strong>ပြည့်စုံသောဝဘ်ဒီဗလော့ပ်မန့် Bootcamp</strong> သို့ဆက်သွားပါ!</p>`,
+      },
+      "wbx-html": {
+        title: "လေ့ကျင့်ခန်း- ကိုယ်ရေးအကျဉ်း စာမျက်နှာလေး တည်ဆောက်ပါ",
+        content: `
+<h3>🏋️ သင့်တာဝန်</h3>
+<p>အောက်ပါ သုံးမျိုးလုံး ပါဝင်သော HTML စာမျက်နှာလေး ရေးပါ-</p>
+<ul>
+  <li>သင့်နာမည်ပါသော <code>&lt;h1&gt;</code> ခေါင်းစီး</li>
+  <li>မိမိအကြောင်း <code>&lt;p&gt;</code> စာပိုဒ်</li>
+  <li>ကြိုက်ရာစာသားပါသော <code>&lt;button&gt;</code></li>
+</ul>
+<p><strong>▶ Run &amp; Check</strong> ကိုနှိပ်ပါ — စစ်ဆေးစက်က ဘာလိုနေသေးလဲ ပြောပြမည်။ အောင်လျှင် <strong>+15 XP</strong> နှင့် သင်ခန်းစာပြီးဆုံး! 🎉</p>`,
+      },
+      "wbx-css": {
+        title: "လေ့ကျင့်ခန်း- Box ကို စတိုင်လုပ်ပါ",
+        content: `
+<h3>🏋️ သင့်တာဝန်</h3>
+<p>စာမျက်နှာတွင် <code>id="box"</code> ပါသော box တစ်ခုရှိသည်။ <code>&lt;style&gt;</code> tag ထဲမှ CSS ဖြင့်-</p>
+<ul>
+  <li><strong>အနီရောင်</strong> ဖြစ်အောင် — <code>background-color: red;</code></li>
+  <li><strong>ထောင့်ဝိုင်း</strong> ဖြစ်အောင် — <code>border-radius</code> ကို <code>16px</code> သို့မဟုတ် ပိုကြီးအောင် ထားပါ</li>
+</ul>
+<p>CSS ပုံစံကို သတိရပါ- <code>#box { property: value; }</code></p>`,
+      },
+      "wbx-js": {
+        title: "လေ့ကျင့်ခန်း- add() function ရေးပါ",
+        content: `
+<h3>🏋️ သင့်တာဝန်</h3>
+<p><code>&lt;script&gt;</code> tag ထဲတွင် ကိန်းနှစ်လုံးပေါင်းပြီး <strong>return</strong> ပြန်ပေးသော <code>add</code> function ရေးပါ-</p>
+<pre><code>add(2, 3)   → 5 ပြန်ရမည်
+add(10, 20) → 30 ပြန်ရမည်</code></pre>
+<p>ပုံစံ- <code>function add(a, b) { return ...; }</code>။ စစ်ဆေးစက်က ကိန်းအမျိုးမျိုးဖြင့် စမ်းမည် — အဖြေသေ ထည့်၍မရပါ! 😄</p>`,
       },
 
       /* ===== The Complete Web Development Bootcamp (Myanmar) ===== */

@@ -2850,6 +2850,7 @@
 
   /* ---------------- View: Student Tools (free utilities) ---------------- */
   const TOOLS = [
+    { id: "cheats", ic: "📜" },
     { id: "color", ic: "🎨" },
     { id: "gradient", ic: "🌈" },
     { id: "shadow", ic: "📦" },
@@ -2937,8 +2938,143 @@
     wireCopyBtns();
   }
 
+  /* 📜 cheat sheets — plain strings on purpose: rows may contain backticks
+     and dollar-brace sequences that must display literally */
+  const CHEATS = {
+    html: [
+      { c: '<!DOCTYPE html><html><body> … </body></html>', d: "Page skeleton" },
+      { c: '<h1>Title</h1> … <h6>', d: "Headings, big → small" },
+      { c: '<p>Text</p>', d: "Paragraph" },
+      { c: '<a href="https://…">Link</a>', d: "Link (target=\"_blank\" = new tab)" },
+      { c: '<img src="pic.jpg" alt="describe">', d: "Image — alt is required manners" },
+      { c: '<ul><li>Item</li></ul>', d: "Bullet list (ol = numbered)" },
+      { c: '<button>Order</button>', d: "Button" },
+      { c: '<input type="text" placeholder="Name">', d: "Text box (email, number, password…)" },
+      { c: '<div class="card"> … </div>', d: "Grouping box for styling" },
+      { c: '<table><tr><td>Cell</td></tr></table>', d: "Table row + cell" },
+      { c: '<header> <nav> <main> <footer>', d: "Semantic page areas" },
+      { c: '<!-- note to self -->', d: "Comment — invisible to visitors" },
+    ],
+    css: [
+      { c: 'h1 { } · .card { } · #menu { }', d: "Tag / class / id selectors" },
+      { c: 'color: purple; background: #f7f9fa;', d: "Text & background colors" },
+      { c: 'font-size: 18px; font-weight: 700;', d: "Size & boldness" },
+      { c: 'padding: 16px; margin: 16px;', d: "Space inside / outside" },
+      { c: 'border: 1px solid #ddd; border-radius: 12px;', d: "Edge + round corners" },
+      { c: 'display: flex; gap: 12px;', d: "Row layout with spacing" },
+      { c: 'justify-content: center; align-items: center;', d: "The perfect center" },
+      { c: 'flex-wrap: wrap;', d: "Let flex items flow to next line" },
+      { c: 'grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));', d: "Responsive grid, no media queries" },
+      { c: '@media (max-width: 600px) { … }', d: "Phone-only styles" },
+      { c: 'img { max-width: 100%; height: auto; }', d: "Unbreakable images" },
+      { c: 'transition: all .2s ease;', d: "Smooth hover changes" },
+      { c: '.btn:hover { filter: brightness(1.1); }', d: "Hover state" },
+      { c: 'box-shadow: 0 4px 12px rgba(0,0,0,.1);', d: "Soft card shadow" },
+    ],
+    js: [
+      { c: 'const name = "Su"; let xp = 0;', d: "Variables (const = fixed)" },
+      { c: '`Hello, ${name}!`', d: "Template string" },
+      { c: 'const add = (a, b) => a + b;', d: "Arrow function" },
+      { c: 'if (xp >= 100) { … } else { … }', d: "Decision" },
+      { c: 'xp >= 100 ? "Pro" : "Rookie"', d: "One-line if (ternary)" },
+      { c: 'for (const item of list) { … }', d: "Loop a list" },
+      { c: 'list.map(x => x * 2)', d: "Transform every item" },
+      { c: 'list.filter(x => x > 10)', d: "Keep matching items" },
+      { c: 'list.includes("tea")', d: "Contains?" },
+      { c: 'document.querySelector("#btn")', d: "Grab an element" },
+      { c: 'el.addEventListener("click", fn)', d: "React to events" },
+      { c: 'el.textContent = "Done";', d: "Change text safely" },
+      { c: 'el.classList.toggle("dark")', d: "Flip a CSS class" },
+      { c: 'fetch(url).then(r => r.json()).then(data => …)', d: "Get JSON from an API" },
+      { c: 'JSON.parse(text) · JSON.stringify(obj)', d: "Text ↔ object" },
+      { c: 'setTimeout(fn, 1000)', d: "Run later (ms)" },
+    ],
+    git: [
+      { c: 'git init', d: "Start tracking this folder" },
+      { c: 'git clone URL', d: "Copy a repo from GitHub" },
+      { c: 'git status', d: "What changed?" },
+      { c: 'git add .', d: "Stage all changes" },
+      { c: 'git commit -m "Add menu page"', d: "Save a snapshot" },
+      { c: 'git push', d: "Upload to GitHub" },
+      { c: 'git pull', d: "Download teammates' work" },
+      { c: 'git checkout -b feature/login', d: "New branch + switch" },
+      { c: 'git checkout main', d: "Switch back" },
+      { c: 'git merge feature/login', d: "Bring branch in" },
+      { c: 'git log --oneline', d: "History at a glance" },
+      { c: 'git restore file.css', d: "Discard uncommitted edits" },
+      { c: 'git revert abc123', d: "Safely cancel a commit" },
+      { c: 'git stash · git stash pop', d: "Pocket changes, restore later" },
+    ],
+    sql: [
+      { c: 'SELECT name, total FROM orders;', d: "Read columns" },
+      { c: "WHERE total > 4000 AND city = 'Yangon'", d: "Filter rows" },
+      { c: 'ORDER BY total DESC LIMIT 10;', d: "Top 10" },
+      { c: "INSERT INTO orders (item, qty) VALUES ('Tea', 2);", d: "Add a row" },
+      { c: "UPDATE orders SET status = 'paid' WHERE id = 7;", d: "Change (WHERE or doom!)" },
+      { c: 'DELETE FROM orders WHERE id = 7;', d: "Remove (same warning!)" },
+      { c: 'JOIN customers c ON c.id = o.customer_id', d: "Combine tables" },
+      { c: 'LEFT JOIN … WHERE o.id IS NULL', d: "Find the missing ones" },
+      { c: 'GROUP BY city HAVING SUM(total) > 100000', d: "Pivot + filter groups" },
+      { c: 'COUNT(*) · SUM(total) · AVG(total)', d: "Aggregates" },
+      { c: "WHERE name LIKE 'Mya%'", d: "Starts with" },
+      { c: 'WHERE id IN (1, 2, 3) · BETWEEN 10 AND 20', d: "Sets & ranges" },
+      { c: 'CREATE INDEX idx ON orders(customer_id);', d: "Speed up lookups" },
+    ],
+    terminal: [
+      { c: 'pwd', d: "Where am I?" },
+      { c: 'ls  (dir on Windows)', d: "List files" },
+      { c: 'cd projects · cd ..', d: "Enter folder / go up" },
+      { c: 'mkdir my-site', d: "New folder" },
+      { c: 'cp a.txt b.txt · mv old.txt new.txt', d: "Copy / move-rename" },
+      { c: 'rm file.txt', d: "Delete (no recycle bin!)" },
+      { c: 'cat file.txt', d: "Show file contents" },
+      { c: 'grep "error" log.txt', d: "Search inside files" },
+      { c: 'node app.js', d: "Run a JS file" },
+      { c: 'npm install · npm run dev', d: "Install deps / run scripts" },
+      { c: 'Ctrl + C', d: "Stop the running program" },
+      { c: 'clear · history', d: "Clean screen / past commands" },
+      { c: 'command --help', d: "Every command explains itself" },
+    ],
+    regex: [
+      { c: '.', d: "Any single character" },
+      { c: 'a* · a+ · a?', d: "0+, 1+, 0-or-1 of a" },
+      { c: '[abc] · [a-z] · [^0-9]', d: "One of / range / NOT these" },
+      { c: '^start · end$', d: "Anchors: begins / ends with" },
+      { c: '\\d \\w \\s', d: "Digit / word char / whitespace" },
+      { c: 'a{2,4}', d: "2 to 4 of a" },
+      { c: '(cat|dog)', d: "Group + OR" },
+      { c: '\\.', d: "Escape specials: . * + ? ( ) [ ]" },
+      { c: '/pattern/gi', d: "Flags: g all matches, i ignore case" },
+      { c: '\\d{2}:\\d{2}', d: "Example: matches 09:45" },
+      { c: '^09\\d{7,9}$', d: "Example: Myanmar phone shape" },
+      { c: '[\\w.]+@[\\w.]+\\.[a-z]{2,}', d: "Example: rough email" },
+    ],
+    markdown: [
+      { c: '# H1 · ## H2 · ### H3', d: "Headings" },
+      { c: '**bold** · *italic*', d: "Emphasis" },
+      { c: '- item  /  1. item', d: "Bullet / numbered lists" },
+      { c: '[text](https://url)', d: "Link" },
+      { c: '![alt](image.png)', d: "Image" },
+      { c: '`inline code`', d: "Code in a sentence" },
+      { c: '```js … ```', d: "Code block (with language!)" },
+      { c: '> quoted wisdom', d: "Blockquote" },
+      { c: '| a | b |  +  |---|---|', d: "Table header + divider" },
+      { c: '---', d: "Horizontal line" },
+      { c: '- [ ] todo · - [x] done', d: "Task list (GitHub)" },
+    ],
+  };
+  const CHEAT_TABS = [
+    ["html", "HTML"], ["css", "CSS"], ["js", "JavaScript"], ["git", "Git"],
+    ["sql", "SQL"], ["terminal", "Terminal"], ["regex", "Regex"], ["markdown", "Markdown"],
+  ];
+
   function toolBody(id) {
     switch (id) {
+      case "cheats": return `
+        <div class="chips" id="ch-tabs" style="margin-top:0">
+          ${CHEAT_TABS.map(([k, label], i) => `<button class="chip ${i === 0 ? "active" : ""}" data-sheet="${k}">${label}</button>`).join("")}
+        </div>
+        <div id="ch-rows"></div>`;
       case "color": return `
         <div class="tl-row">
           <input type="color" id="cp-in" value="#a435f0" class="tl-color-big">
@@ -3055,6 +3191,29 @@
 
   function wireTool(id) {
     const $ = (sel) => document.querySelector(sel);
+
+    if (id === "cheats") {
+      const rows = $("#ch-rows");
+      const paint = (sheet) => {
+        rows.innerHTML = (CHEATS[sheet] || []).map((r) => `
+          <div class="tl-out ch-row">
+            <code>${escapeHtml(r.c)}</code>
+            <span class="ch-desc">${escapeHtml(r.d)}</span>
+            <button class="btn btn-outline btn-sm" data-cpc title="${escapeHtml(t("tl_copy"))}">📋</button>
+          </div>`).join("");
+      };
+      $("#ch-tabs").addEventListener("click", (e) => {
+        const b = e.target.closest("[data-sheet]");
+        if (!b) return;
+        document.querySelectorAll("#ch-tabs .chip").forEach((x) => x.classList.toggle("active", x === b));
+        paint(b.getAttribute("data-sheet"));
+      });
+      rows.addEventListener("click", (e) => {
+        const b = e.target.closest("[data-cpc]");
+        if (b) tlCopy(b, b.parentElement.querySelector("code").textContent);
+      });
+      paint("html");
+    }
 
     if (id === "color") {
       const inp = $("#cp-in");

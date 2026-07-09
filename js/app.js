@@ -3340,7 +3340,10 @@
             <p class="muted" style="margin:0;font-size:13.5px">${t("comm_chat_sub")}</p>
             <p class="tl-status" id="comm-online"></p>
           </div>
-          <button class="btn btn-primary" id="comm-open">💬 ${t("comm_open")}</button>
+          <span style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-primary" id="comm-open">💬 ${t("comm_open")}</button>
+            <a class="btn btn-outline" href="#/call/community">📹 ${t("call_start")}</a>
+          </span>
         </div>
 
         <div class="panel">
@@ -3401,6 +3404,74 @@
             `<div class="adash-row"><span>${["🥇", "🥈", "🥉", "4.", "5."][i]} ${escapeHtml(String(s.name || "?").slice(0, 24))}</span><b>⚡ ${Number(s.xp) || 0} · 🔥 ${Number(s.streak) || 0}</b></div>`).join("")
         : `<p class="muted">${t("comm_be_first")}</p>`;
     }).catch(() => {});
+    window.scrollTo(0, 0);
+  }
+
+  /* ---------------- View: Video study call (FaceTime-style) ----------------
+     Free group video rooms via the public Jitsi Meet server — no backend,
+     no cost, works in mobile browsers. Room names are deterministic per
+     academy room but salted so outsiders can't guess them. */
+  function callRoomName(roomId) {
+    const seed = roomId + "::wda-2026";
+    let h = 0;
+    for (const ch of seed) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+    return "WDA-" + roomId.replace(/[^a-zA-Z0-9-]/g, "") + "-" + h.toString(36).slice(0, 5);
+  }
+  function renderCall(roomId) {
+    roomId = roomId || "community";
+    const course = courseById(roomId);
+    const label = course ? cf(course, "title") : t("comm_title");
+
+    if (!loggedIn()) {
+      location.hash = "#/community";
+      if (window.Auth) window.Auth.openModal("login");
+      return;
+    }
+    /* same rule as chat: paying students (any course or all-access) */
+    if (!premiumChecked && !(window.Auth && window.Auth.isAdmin && window.Auth.isAdmin())) {
+      app.innerHTML = `<div class="container"><div class="empty"><h2>⏳</h2><p class="muted">${t("prem_checking")}</p></div></div>`;
+      return;
+    }
+    if (!window.WDA.isPaying()) {
+      app.innerHTML = `
+        <div class="container"><div class="empty">
+          <h2>📹 ${t("call_title")}</h2>
+          <p>${t("call_locked")}</p>
+          <a class="btn btn-primary" href="#/premium">⭐ ${t("prem_go")}</a>
+          <a class="btn btn-outline" style="margin-left:8px" href="#/community">← ${t("comm_title")}</a>
+        </div></div>`;
+      return;
+    }
+
+    const u = window.Auth.current();
+    const room = callRoomName(roomId);
+    const name = encodeURIComponent('"' + String(u.name || "Student").replace(/"/g, "") + '"');
+    const src = "https://meet.jit.si/" + room + "#userInfo.displayName=" + name;
+    app.innerHTML = `
+      <div class="call-wrap">
+        <div class="call-bar">
+          <span>📹 <b>${escapeHtml(label)}</b> · ${t("call_room")}</span>
+          <span style="display:flex;gap:8px">
+            <a class="btn btn-outline btn-sm" href="${src.replace(/"/g, "&quot;")}" target="_blank" rel="noopener">↗ ${t("call_newtab")}</a>
+            <a class="btn btn-outline btn-sm" href="#/community">✕ ${t("call_leave")}</a>
+          </span>
+        </div>
+        <iframe class="call-frame" src="${src.replace(/"/g, "&quot;")}"
+                allow="camera; microphone; fullscreen; display-capture; autoplay"
+                title="Video call"></iframe>
+        <p class="muted call-tip">💡 ${t("call_tip")}</p>
+      </div>`;
+    /* tell the room's chat so classmates can join */
+    if (window.Chat && window.Chat.post) {
+      try {
+        const invited = sessionStorage.getItem("wda_call_invited::" + roomId);
+        if (!invited) {
+          sessionStorage.setItem("wda_call_invited::" + roomId, "1");
+          window.Chat.setRoom(roomId === "community" ? "community" : roomId, course ? cf(course, "title") : null);
+          window.Chat.post(t("call_invite"));
+        }
+      } catch (e) {}
+    }
     window.scrollTo(0, 0);
   }
 
@@ -4308,7 +4379,7 @@
       : parts[0] === "playground" ? "playground"
       : parts[0] === "tools" ? "tools"
       : parts[0] === "daily" ? "home"
-      : ["my-learning", "review", "leaderboard", "account", "certificate", "community"].indexOf(parts[0]) >= 0 ? "me"
+      : ["my-learning", "review", "leaderboard", "account", "certificate", "community", "call"].indexOf(parts[0]) >= 0 ? "me"
       : "";
     document.querySelectorAll("#tabbar a").forEach((a) =>
       a.classList.toggle("active", a.getAttribute("data-tab") === tabOf)
@@ -4331,6 +4402,7 @@
     else if (parts[0] === "tools") renderTools(parts[1]);
     else if (parts[0] === "daily") renderDaily();
     else if (parts[0] === "community") renderCommunity();
+    else if (parts[0] === "call") renderCall(parts[1]);
     else if (parts[0] === "leaderboard") renderLeaderboard();
     else if (parts[0] === "review") renderReview();
     else if (parts[0] === "premium") renderPremium(parts[1]);

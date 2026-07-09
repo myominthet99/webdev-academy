@@ -15,7 +15,7 @@
   const I18N = window.I18N;
   const KEY = "wda_chat_v1";
   const MAX = 200;
-  const BUILD = "v14"; /* shown in the chat header — bump with releases */
+  const BUILD = "v15"; /* shown in the chat header — bump with releases */
 
   /* ============ Firebase config (optional) ============
      Configured centrally in js/firebase-config.js — paste your config
@@ -379,6 +379,7 @@
       '    <span id="chat-ver" class="chat-ver" title="build · backend"></span>' +
       '    <span id="chat-presence" class="chat-presence"></span>' +
       '    <input id="chat-search" type="text" class="chat-search" placeholder="🔍 Search..." style="display:none">' +
+      '    <button class="chat-call" id="chat-call" type="button" aria-label="Video call" title="' + esc(t("call_title")) + '">📹</button>' +
       '    <button class="chat-full" id="chat-full" type="button" aria-label="Fullscreen" title="Fullscreen">⛶</button>' +
       '    <button class="chat-close" type="button" aria-label="Close">&times;</button></div>' +
       '  <div class="chat-list" id="chat-list"></div>' +
@@ -395,6 +396,11 @@
     presenceEl = wrap.querySelector("#chat-presence");
     fab.addEventListener("click", () => setOpen(!open));
     wrap.querySelector(".chat-close").addEventListener("click", () => setOpen(false));
+    /* 📹 jump to the current room's video study call */
+    wrap.querySelector("#chat-call").addEventListener("click", () => {
+      setOpen(false);
+      location.hash = "#/call/" + encodeURIComponent(room);
+    });
     /* fullscreen mode toggle — remembered across sessions */
     const fullBtn = wrap.querySelector("#chat-full");
     const applyFull = (on) => {

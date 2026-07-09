@@ -29,8 +29,8 @@
     qrImage: "kbzpay-qr.jpg",   // QR image file in the project folder ("" to hide)
     accountName: "Myo Min Thet (******0610)",
     phone: "",                  // optional fallback if no QR image
-    price: 50000,               // current (promotion) price in Kyat
-    listPrice: 100000,          // regular price shown crossed out ("" or 0 to hide)
+    price: 100000,              // current (promotion) price in Kyat
+    listPrice: 200000,          // regular price shown crossed out ("" or 0 to hide)
     coursePrice: 15000,         // buy ONE premium course only (1 course = 1 premium)
     listCoursePrice: 30000,     // crossed-out single-course price (0 to hide)
   };

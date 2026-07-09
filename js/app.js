@@ -179,6 +179,40 @@
   const addBonusXp = (n) => jset(ns("wda_xtra"), bonusXp() + n);
 
   /* Day-streak: bumped when a lesson is completed */
+  /* ---------------- Study motivation ---------------- */
+  const MOTIV = [
+    { en: "Every expert was once a beginner who refused to quit.", my: "ကျွမ်းကျင်သူတိုင်းသည် အရှုံးမပေးခဲ့သော အစပြုသူတစ်ဦး ဖြစ်ခဲ့ဖူးသည်။" },
+    { en: "30 minutes a day beats 5 hours on Sunday. Consistency is the talent.", my: "တစ်နေ့ မိနစ် ၃၀ သည် တနင်္ဂနွေ ၅ နာရီထက် သာသည်။ ပုံမှန်လုပ်ခြင်းသည် ပါရမီဖြစ်သည်။" },
+    { en: "The code you write today is the job you get tomorrow.", my: "ယနေ့ရေးသော ကုဒ်သည် မနက်ဖြန် ရမည့်အလုပ် ဖြစ်သည်။" },
+    { en: "Bugs are not failures — they are lessons in disguise.", my: "Bug များသည် ရှုံးနိမ့်မှုမဟုတ် — ရုပ်ဖျက်ထားသော သင်ခန်းစာများသာ ဖြစ်သည်။" },
+    { en: "You don't need to be great to start. You need to start to be great.", my: "စတင်ရန် တော်နေစရာမလိုပါ။ တော်လာရန် စတင်ဖို့သာ လိုသည်။" },
+    { en: "One lesson today keeps the doubt away.", my: "ယနေ့ သင်ခန်းစာတစ်ခုက သံသယကို ဝေးစေသည်။" },
+    { en: "Your only competition is who you were yesterday.", my: "သင့်ပြိုင်ဘက်တစ်ဦးတည်းမှာ မနေ့က သင်ကိုယ်တိုင်သာ ဖြစ်သည်။" },
+    { en: "Slow progress is still progress. Keep the streak alive!", my: "နှေးသောတိုးတက်မှုသည်လည်း တိုးတက်မှုပင်။ Streak ကို ဆက်ထိန်းပါ!" },
+    { en: "Dream in Burmese, code in JavaScript, succeed in both.", my: "မြန်မာလို အိပ်မက်မက်ပြီး JavaScript နဲ့ ကုဒ်ရေးကာ နှစ်ခုလုံးမှာ အောင်မြင်ပါစေ။" },
+    { en: "The best time to start was yesterday. The second best is right now.", my: "စတင်ရန် အကောင်းဆုံးအချိန်သည် မနေ့က ဖြစ်သည်။ ဒုတိယအကောင်းဆုံးမှာ ယခုပင်။" },
+    { en: "Great developers are not born — they are built, lesson by lesson.", my: "တော်သော developer များသည် မွေးရာပါမဟုတ် — သင်ခန်းစာတစ်ခုချင်းဖြင့် တည်ဆောက်ယူရသည်။" },
+    { en: "Fall in love with the process, and the results will follow.", my: "လုပ်ငန်းစဉ်ကို ချစ်တတ်လာလျှင် ရလဒ်များက နောက်ကလိုက်လာမည်။" },
+    { en: "Ask questions. Every senior developer was once afraid to ask too.", my: "မေးခွန်းမေးပါ။ Senior developer တိုင်းလည်း တစ်ချိန်က မေးရမှာ ကြောက်ခဲ့ဖူးသည်။" },
+    { en: "A little code every day becomes a career every year.", my: "နေ့စဉ် ကုဒ်အနည်းငယ်သည် နှစ်စဉ် အသက်မွေးဝမ်းကျောင်း ဖြစ်လာသည်။" },
+  ];
+  const motivPick = (seedStr) => {
+    let h = 7;
+    for (const ch of seedStr) h = (h * 33 + ch.charCodeAt(0)) >>> 0;
+    return MOTIV[h % MOTIV.length];
+  };
+  const motivText = (m) => (lang === "my" ? m.my : m.en);
+
+  /* Weekly study goal: lessons completed this week vs a self-set target */
+  function weekKey() {
+    const d = new Date();
+    const day = (d.getDay() + 6) % 7; /* Monday = 0 */
+    const mon = new Date(d.getFullYear(), d.getMonth(), d.getDate() - day);
+    return mon.getFullYear() + "-" + String(mon.getMonth() + 1).padStart(2, "0") + "-" + String(mon.getDate()).padStart(2, "0");
+  }
+  const weekCount = () => { const w = jget(ns("wda_week"), {}); return w.wk === weekKey() ? (Number(w.n) || 0) : 0; };
+  const bumpWeek = () => { const wk = weekKey(); jset(ns("wda_week"), { wk, n: weekCount() + 1 }); };
+
   function bumpDayStreak() {
     const key = ns("wda_streak");
     const s = jget(key, { last: "", count: 0 });
@@ -357,7 +391,7 @@
     if (done) set.add(lessonId);
     else set.delete(lessonId);
     state.completed[courseId] = [...set];
-    if (done) bumpDayStreak();
+    if (done) { bumpDayStreak(); bumpWeek(); }
     saveState();
     if (typeof pushLeaderboard === "function") pushLeaderboard();
     if (done) setTimeout(maybeToastBadges, 500);
@@ -1253,8 +1287,10 @@
       </section>
 
       <div class="container">
+        ${streakNudge()}
         ${dailyHomeCard()}
         ${communityHomeCard()}
+        ${motivHomeCard()}
         ${resumeBanner()}
         ${fresh.length ? `
         <h2 class="section-title">🆕 ${t("new_title")}</h2>
@@ -1737,6 +1773,7 @@
         <h2>${t("cele_done")}</h2>
         <div class="cele-xp">+10 XP</div>
         <div class="cele-streak">🔥 ${dayStreak()} ${t("stat_streak")}</div>
+        <div class="cele-quote">${motivText(MOTIV[Math.floor(Math.random() * MOTIV.length)])}</div>
         <button class="btn btn-primary btn-block" id="cele-next">${nextHash ? t("next_lesson") : t("finish")} →</button>
       </div>`;
     document.body.appendChild(wrap);
@@ -2728,6 +2765,31 @@
     window.scrollTo(0, 0);
   }
 
+  /* 🎯 weekly goal card: pick a target, watch the bar fill */
+  function goalCard() {
+    const goal = Number(jget(ns("wda_goal"), 0)) || 0;
+    if (!goal) {
+      return `
+        <div class="panel goal-card">
+          <h3 style="margin-top:0">🎯 ${t("goal_title")}</h3>
+          <p class="muted" style="margin:4px 0 10px;font-size:13.5px">${t("goal_sub")}</p>
+          <div class="tl-row">${[3, 5, 10].map((g) =>
+            `<button class="btn btn-outline btn-sm" data-goal="${g}">${g} ${t("lessons_word")}</button>`).join("")}</div>
+        </div>`;
+    }
+    const n = weekCount();
+    const pct = Math.min(100, Math.round((n / goal) * 100));
+    const doneAll = n >= goal;
+    return `
+      <div class="panel goal-card">
+        <h3 style="margin-top:0;display:flex;justify-content:space-between;align-items:center">🎯 ${t("goal_title")}
+          <button class="btn btn-outline btn-sm" data-goal="0">${t("goal_change")}</button></h3>
+        <div class="progress" style="margin:10px 0"><span style="width:${pct}%"></span></div>
+        <p class="${doneAll ? "tl-status ok" : "muted"}" style="margin:0;font-size:13.5px">
+          ${doneAll ? "🎉 " + t("goal_done") : t("goal_progress").replace("{n}", n).replace("{g}", goal)}</p>
+      </div>`;
+  }
+
   function renderMyLearning() {
     const mine = COURSES.filter((c) => isEnrolled(c.id));
     const rows = mine
@@ -2760,6 +2822,7 @@
           </div>
         </div>
         ${statsHeader()}
+        ${goalCard()}
         <h2 class="section-title">${t("my_learning")}</h2>
         ${
           mine.length
@@ -2769,6 +2832,12 @@
         ${bookmarksSection()}
         ${recommendedSection()}
       </div>`;
+    app.querySelectorAll("[data-goal]").forEach((b) =>
+      b.addEventListener("click", () => {
+        jset(ns("wda_goal"), Number(b.getAttribute("data-goal")) || 0);
+        renderMyLearning();
+      })
+    );
   }
 
   function renderNotFound() {
@@ -3339,6 +3408,20 @@
   }
 
   /* ---------------- View: Community ---------------- */
+  /* daily motivation quote + streak-at-risk nudge for the home page */
+  function motivHomeCard() {
+    return `<div class="motiv-card">💪 <em>“${motivText(motivPick(todayKey()))}”</em></div>`;
+  }
+  function streakNudge() {
+    const s = jget(ns("wda_streak"), { last: "", count: 0 });
+    if (!s.count) return "";
+    let yStr;
+    try { yStr = new Date(Date.now() - 864e5).toISOString().slice(0, 10); } catch (e) { return ""; }
+    /* studied yesterday but not yet today → streak is at risk */
+    if (s.last !== yStr) return "";
+    return `<div class="streak-nudge">🔥 ${t("nudge_streak").replace("{n}", s.count)}</div>`;
+  }
+
   function communityHomeCard() {
     return `
       <a class="daily-card comm-card" href="#/community">

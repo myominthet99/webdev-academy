@@ -1214,6 +1214,144 @@ window.I18N = {
   content: {
     /* ---- course metadata (Myanmar) ---- */
     courses: {
+      "zero-to-hero": {
+        title: "Web Developer — သုညမှ သူရဲကောင်းသို့",
+        subtitle: "လမ်းညွှန်ပြည့်ခရီးစဉ် — တစ်ကြောင်းမှမရေးဖူးသူမှ တိုက်ရိုက်တင်ထားသော portfolio၊ တကယ့်ပရောဂျက်များနှင့် ပထမဆုံးဝင်ငွေအထိ။",
+        description:
+          "သင်တန်းတစ်ခုတည်းနှင့် ခရီးစဉ်တစ်ခုလုံး။ အဆင့် ၈ ဆင့်က သင့်ကို လုံးဝသုည — အတွေ့အကြုံမရှိ၊ ဖုန်း သို့မဟုတ် လက်ပ်တော့တစ်လုံးသာ — မှ သူရဲကောင်းအဆင့်သို့ ပို့ဆောင်ပေးမည်- အင်တာနက်ပေါ်ရှိ တကယ့်ဝဘ်ဆိုက်၊ portfolio ထဲက တကယ့်ပရောဂျက်များနှင့် ပထမဆုံး developer ဝင်ငွေအစီအစဉ်။ အဆင့်တိုင်း၏အဆုံးတွင် စစ်ဆေးမှုရှိသည် (quiz သို့မဟုတ် ကုဒ်ကို အလိုအလျောက်စစ်ပေးသော လေ့ကျင့်ခန်း)။",
+        whatYouLearn: [
+          "HTML ဖြင့် တကယ့်စာမျက်နှာများ တည်ဆောက်ပြီး CSS ဖြင့် စတိုင်လုပ်ကာ JavaScript ဖြင့် အသက်သွင်းခြင်း",
+          "ဖုန်း၊ တက်ဘလက်၊ လက်ပ်တော့ အားလုံးတွင် လှပသော ဆိုက်များ ပြုလုပ်ခြင်း",
+          "Git နှင့် GitHub ကို ပရော်ဖက်ရှင်နယ်လို အသုံးပြုပြီး ဆိုက်ကို အခမဲ့ တိုက်ရိုက်တင်ခြင်း",
+          "API များမှ တိုက်ရိုက်ဒေတာယူပြီး ဒေတာအခြေခံ mini app တည်ဆောက်ခြင်း",
+          "Server နှင့် database များ၏ အလုပ်လုပ်ပုံကို နားလည်ခြင်း (full stack သို့ တံတား)",
+          "ကျွမ်းကျင်မှုကို ဝင်ငွေအဖြစ်ပြောင်းခြင်း — portfolio၊ freelance နှင့် ပထမဆုံးအလုပ်",
+        ],
+      },
+      "fullstack": {
+        title: "Full Stack Developer",
+        subtitle: "ပထမဆုံး HTML tag မှ server နှင့် database ပါသော app အပြည့်အစုံအထိ ခရီးစဉ်တစ်ခုတည်း။",
+      },
+      "n8n-automation": {
+        title: "n8n Automation နှင့် AI Agent များ",
+        subtitle: "အလိုအလျောက်စနစ်များနှင့် AI agent များကို မြင်ကွင်းဖြင့် တည်ဆောက်ပါ — app, API နှင့် LLM များကို ကုဒ်အပိုမလိုဘဲ ချိတ်ဆက်ပါ။",
+      },
+      "ai-engineering": {
+        title: "Agentic AI အင်ဂျင်နီယာပညာ",
+        subtitle: "Prompt ထက်ကျော်လွန်ပါ — LangChain, RAG, vector database, agent နှင့် MCP ဖြင့် ကိုယ်ပိုင်ဆုံးဖြတ်နိုင်သော AI စနစ်များ တည်ဆောက်ပါ။",
+      },
+      "cloud-computing": {
+        title: "Cloud Computing အခြေခံများ",
+        subtitle: "AWS, Azure နှင့် Google Cloud ကို သုညမှ နားလည်ပါ — compute, storage, networking, serverless နှင့် certification လမ်းပြမြေပုံ။",
+      },
+      "devops": {
+        title: "DevOps, Docker နှင့် Kubernetes",
+        subtitle: "ပရော်ဖက်ရှင်နယ်လို software ကို ထုပ်ပိုး၊ ပို့ဆောင်၊ အလိုအလျောက်လုပ်၊ စောင့်ကြည့်ပါ — container, CI/CD pipeline နှင့် orchestration။",
+      },
+      "html-deep-dive": {
+        title: "HTML နက်နက်နဲနဲ — Semantic Markup, Form နှင့် Table များ",
+        subtitle: "သန့်ရှင်းပြီး ပရော်ဖက်ရှင်နယ်ကျသော HTML ရေးပါ — ဝဘ်ဆိုက်ကောင်းတိုင်း၏ အရိုးစုဖြစ်သည်။",
+      },
+      "python-basics": {
+        title: "အစပြုသူများအတွက် Python",
+        subtitle: "ကမ္ဘာ့အဖော်ရဆုံး programming ဘာသာစကား — သုညမှ တကယ့် script များရေးသည်အထိ။",
+      },
+      "java-basics": {
+        title: "Java အခြေခံများ",
+        subtitle: "Android app နှင့် လုပ်ငန်းကြီးစနစ်များနောက်ကွယ်က ဘာသာစကား — နေရာတိုင်းတွင် ရှိသည်။",
+      },
+      "c-basics": {
+        title: "C Programming အခြေခံများ",
+        subtitle: "Operating system များကို မောင်းနှင်သော ဂန္ထဝင်ဘာသာစကား — ကွန်ပျူတာ တကယ်အလုပ်လုပ်ပုံကို သင်ပေးသည်။",
+      },
+      "cpp-basics": {
+        title: "C++ အခြေခံများ",
+        subtitle: "C ၏ စွမ်းအားပြည့် ဆက်ခံသူ — game engine, ငွေကြေးနှင့် မြန်နှုန်းမြင့် software များ၏ ဘာသာစကား။",
+      },
+      "csharp-basics": {
+        title: "C# အခြေခံများ",
+        subtitle: "Microsoft ၏ ဘက်စုံကောင်းဘာသာစကား — desktop app, .NET web API နှင့် Unity game များ။",
+      },
+      "kotlin-basics": {
+        title: "Kotlin အခြေခံများ",
+        subtitle: "Android ၏ ခေတ်မီဘာသာစကား — ကျစ်လျစ်၊ ဘေးကင်းပြီး ရေးရပျော်သည်။",
+      },
+      "r-basics": {
+        title: "ဒေတာခွဲခြမ်းစိတ်ဖြာမှုအတွက် R",
+        subtitle: "ကိန်းဂဏန်းတွက်၊ dataset အနှစ်ချုပ်၊ chart ဆွဲ — စာရင်းအင်းပညာရှင်၏ ဘာသာစကား။",
+      },
+      "dsa-basics": {
+        title: "Data Structure နှင့် Algorithm များ",
+        subtitle: "Interview မေးခွန်းတိုင်းနှင့် မြန်ဆန်သော program တိုင်း၏ နောက်ကွယ်က တွေးခေါ်နည်းများ။",
+      },
+      "git-basics": {
+        title: "Git နှင့် GitHub အခြေခံများ",
+        subtitle: "Version control သည် developer ၏ စွမ်းအားထူး — အလုပ်ဘယ်တော့မှ မပျောက်၊ မည်သူနှင့်မဆို ပူးပေါင်းနိုင်။",
+      },
+      "docker-basics": {
+        title: "Docker အခြေခံများ",
+        subtitle: "ကျွန်တော့စက်မှာတော့ ရတယ် ပြဿနာ — ဖြေရှင်းပြီး။ App များကို နေရာတိုင်းမောင်းနိုင်သော container ထဲ ထုပ်ပိုးပါ။",
+      },
+      "excel-basics": {
+        title: "အစပြုသူများအတွက် Excel",
+        subtitle: "ကမ္ဘာ့အသုံးအများဆုံး ဒေတာကိရိယာ — အလုပ်နှင့်ပညာရေးအတွက် formula, function နှင့် chart များ။",
+      },
+      "react-basics": {
+        title: "React အခြေခံများ",
+        subtitle: "အလိုအပ်ဆုံး frontend library — ပြန်သုံးနိုင်သော component များဖြင့် UI တည်ဆောက်ပါ။",
+      },
+      "vue-basics": {
+        title: "Vue.js အခြေခံများ",
+        subtitle: "တစ်ဆင့်ချင်းတိုးနိုင်သော framework — သင်ရလွယ်ပြီး ရလဒ်စွမ်းအားကြီးသည်။",
+      },
+      "jquery-basics": {
+        title: "jQuery အမြန်စတင်ခြင်း",
+        subtitle: "ဆိုက်သန်းချီတွင် ရှိနေဆဲ — DOM ကို တစ်ကြောင်းတည်းဖြင့် ရွေး၊ စတိုင်လုပ်၊ လှုပ်ရှားစေပါ။",
+      },
+      "bootstrap-basics": {
+        title: "Bootstrap နှင့် CSS Framework များ",
+        subtitle: "အသင့်သုံး component များဖြင့် ချောမွေ့ responsive စာမျက်နှာများကို နာရီပိုင်းအတွင်း ထုတ်ပါ။",
+      },
+      "node-express": {
+        title: "Node.js နှင့် Express",
+        subtitle: "Server ပေါ်က JavaScript — တကယ့် app များကို မောင်းနှင်သော API များ တည်ဆောက်ပါ။",
+      },
+      "php-basics": {
+        title: "ဝဘ်အတွက် PHP",
+        subtitle: "ဝဘ်အများစုကို မောင်းနှင်နေသော ဘာသာစကား — WordPress, Laravel နှင့် ဆိုက်သန်းပေါင်းများစွာ။",
+      },
+      "django-basics": {
+        title: "Django အခြေခံများ",
+        subtitle: "Python ၏ အစုံပါ web framework — admin panel နှင့် database အသင့်ပါပြီး။",
+      },
+      "laravel-basics": {
+        title: "Laravel အခြေခံများ",
+        subtitle: "PHP ၏ အလှဆုံး framework — ရှင်းလင်းသော routing, Eloquent ORM နှင့် artisan မှော်ပညာ။",
+      },
+      "sql-basics": {
+        title: "SQL အခြေခံများ",
+        subtitle: "မေးခွန်းမေး၊ အဖြေရ — ဒေတာ၏ ကမ္ဘာသုံးဘာသာစကား။",
+      },
+      "rdbms-basics": {
+        title: "MySQL နှင့် PostgreSQL လက်တွေ့",
+        subtitle: "အင်တာနက်အများစု၏နောက်ကွယ်က database နှစ်ခု — တပ်ဆင်၊ ချိတ်ဆက်၊ ပရောလို အလုပ်လုပ်ပါ။",
+      },
+      "mongodb-basics": {
+        title: "MongoDB အခြေခံများ",
+        subtitle: "ထိပ်တန်း NoSQL database — ဒေတာကို ပြောင်းလွယ်သော JSON ပုံစံ document များအဖြစ် သိမ်းပါ။",
+      },
+      "ai-for-kids": {
+        title: "အစပြုသူများအတွက် AI — သင့်ပထမဆုံး AI ကို လေ့ကျင့်ပါ (အသက် ၁၀+)",
+        subtitle: "ကုဒ်မလိုပါ! တကယ့် AI ကို မြင်တတ်၊ ကြားတတ်၊ တွေးတတ်အောင် သင်ပေးပြီး chatbot များကို ပညာရှိစွာ သုံးတတ်လာပါ။",
+      },
+      "scratch-kids": {
+        title: "Scratch — ပထမဆုံး Game များ ရေးပါ (အသက် ၈+)",
+        subtitle: "ရောင်စုံတုံးများ ဆက်စပ်ပြီး game, ပုံပြင်နှင့် animation များ လုပ်ပါ — ကမ္ဘာ့အကြိုက်ဆုံး ပထမဆုံး coding ဘာသာစကား။",
+      },
+      "gamedev-kids": {
+        title: "Game ဖန်တီးခြင်း — Roblox, Arcade နှင့် micro:bit (အသက် ၁၀+)",
+        subtitle: "Roblox တွင် 3D ကမ္ဘာများ၊ browser ထဲ retro game များ တည်ဆောက်ပြီး အိတ်ဆောင်စက်ရုပ်လေးကို program လုပ်ပါ။",
+      },
       "webdev-bootcamp": {
         title: "ပြည့်စုံသော ဝဘ်ဒီဗလော့ပ်မန့် Bootcamp",
         subtitle: "လုံးဝအစပြုသူမှ HTML, CSS နှင့် JavaScript ဖြင့် တကယ့်ဝဘ်ဆိုက်များ တည်ဆောက်နိုင်သည်အထိ။",

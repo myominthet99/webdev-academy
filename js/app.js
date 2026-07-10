@@ -1577,13 +1577,14 @@
 
           <aside class="buybox">
             <div class="course-gal peek">
-              <span class="cg-count" id="cg-count">1/3</span>
+              <span class="cg-count" id="cg-count">1/4</span>
               <div class="cg-track" id="cg-track">
                 <div class="cg-slide" style="background:${c.color}${c.image ? `;background-image:url('${escapeHtml(c.image)}');background-size:cover;background-position:center` : ""}">${c.image ? "" : c.icon}</div>
+                <div class="cg-slide"><img id="cg-map" alt="Course structure"></div>
                 <div class="cg-slide"><img id="cg-learn" alt="What you'll learn"></div>
                 <div class="cg-slide"><img id="cg-stats" alt="Course overview"></div>
               </div>
-              <div class="cg-dots" id="cg-dots"><i class="on"></i><i></i><i></i></div>
+              <div class="cg-dots" id="cg-dots"><i class="on"></i><i></i><i></i><i></i></div>
             </div>
             <div class="pad">
               <div class="price ${isFree(c) ? "" : "premium"}">${priceTag(c)}</div>
@@ -1732,14 +1733,16 @@
     try {
       const gl = document.getElementById("cg-learn");
       const gs = document.getElementById("cg-stats");
+      const gm = document.getElementById("cg-map");
       if (gl && gs) { gl.src = drawCourseSlide(c, "learn"); gs.src = drawCourseSlide(c, "stats"); }
+      if (gm) gm.src = drawCourseSlide(c, "map");
       const track = document.getElementById("cg-track");
       const dots = document.getElementById("cg-dots");
       const cnt = document.getElementById("cg-count");
       if (track && dots) track.addEventListener("scroll", () => {
         const i = Math.round(track.scrollLeft / Math.max(1, track.clientWidth));
         dots.querySelectorAll("i").forEach((d, di) => d.classList.toggle("on", di === i));
-        if (cnt) cnt.textContent = (i + 1) + "/3";
+        if (cnt) cnt.textContent = (i + 1) + "/" + track.children.length;
       }, { passive: true });
     } catch (e) {}
     wireReviews(c);
@@ -4423,6 +4426,53 @@
     cv.width = W; cv.height = H;
     const x = cv.getContext("2d");
     const FAM = '"Segoe UI", "Myanmar Text", "Padauk", sans-serif';
+    if (kind === "map") {
+      /* blueprint-style structure diagram: dark navy, glowing boxes,
+         one cascading box per course section */
+      x.fillStyle = "#0b1322"; x.fillRect(0, 0, W, H);
+      const rg = x.createRadialGradient(W / 2, H / 2, 60, W / 2, H / 2, 520);
+      rg.addColorStop(0, "rgba(70,140,255,.12)"); rg.addColorStop(1, "rgba(0,0,0,0)");
+      x.fillStyle = rg; x.fillRect(0, 0, W, H);
+      x.fillStyle = "rgba(120,170,255,.07)";
+      for (let gx = 20; gx < W; gx += 40) for (let gy = 20; gy < H; gy += 40) x.fillRect(gx, gy, 2, 2);
+      /* keep everything inside y 80..375 — the gallery window center-crops
+         the 16:9 canvas, so edges are not safe */
+      const cap = (cf(c, "title") || "").toUpperCase();
+      x.font = "600 17px " + FAM; x.textAlign = "center";
+      const cw = Math.min(W - 80, x.measureText(cap).width + 48);
+      x.strokeStyle = "rgba(140,190,255,.45)"; x.lineWidth = 1.5;
+      rrPath(x, (W - cw) / 2, 80, cw, 32, 8); x.stroke();
+      x.fillStyle = "#bcd6ff"; x.fillText(cap, W / 2, 102);
+      const secs = (c.sections || []).slice(0, 4);
+      const extra = (c.sections || []).length - secs.length;
+      const rowH = 46, gap = 10, startY = 130;
+      x.textAlign = "left";
+      secs.forEach((s, i) => {
+        const ix = 90 + i * 24, iy = startY + i * (rowH + gap), iw = W - 180 - i * 24;
+        if (i > 0) { /* glowing elbow connector from the previous box */
+          x.strokeStyle = "rgba(110,180,255,.5)"; x.lineWidth = 1.5;
+          x.beginPath(); x.moveTo(ix - 12, iy - gap - rowH / 2); x.lineTo(ix - 12, iy + rowH / 2); x.lineTo(ix, iy + rowH / 2); x.stroke();
+        }
+        x.save();
+        x.shadowColor = "rgba(80,160,255,.8)"; x.shadowBlur = 14;
+        x.fillStyle = "rgba(22,44,78,.6)"; x.strokeStyle = "rgba(150,200,255,.75)"; x.lineWidth = 1.6;
+        rrPath(x, ix, iy, iw, rowH, 10); x.fill(); x.stroke();
+        x.restore();
+        x.fillStyle = "#e8f2ff"; x.font = "bold 20px " + FAM;
+        x.fillText(wrapCanvas(x, (i + 1) + ". " + secName(c, i), iw - 150)[0], ix + 16, iy + 30);
+        const nls = (s.lessons || []).length;
+        x.fillStyle = "#8fb8e8"; x.font = "14px " + FAM; x.textAlign = "right";
+        x.fillText(nls + (lang === "my" ? " ခန်း" : " lessons"), ix + iw - 14, iy + 29);
+        x.textAlign = "left";
+      });
+      if (extra > 0) {
+        x.fillStyle = "#7fa8d8"; x.font = "italic 16px " + FAM; x.textAlign = "center";
+        x.fillText(lang === "my" ? "+ နောက်ထပ် အပိုင်း " + extra + " ပိုင်း…" : "+ " + extra + " more sections…", W / 2, 372);
+      }
+      x.fillStyle = "rgba(220,235,255,.55)"; x.font = "22px " + FAM;
+      x.fillText("✦", W - 56, 356); x.fillText("✦", 40, 128);
+      return cv.toDataURL("image/png");
+    }
     const g = x.createLinearGradient(0, 0, W, H);
     g.addColorStop(0, "#7b2ff7"); g.addColorStop(1, "#c86dd7");
     x.fillStyle = g; x.fillRect(0, 0, W, H);

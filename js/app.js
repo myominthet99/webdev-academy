@@ -1270,6 +1270,32 @@
       </a>`;
   }
 
+  /* ---------------- View: Course gallery (visual showcase) ---------------- */
+  function renderGallery() {
+    const tile = (c) => `
+      <a class="gal-tile" href="#/course/${c.id}">
+        <span class="gt-bg" style="background:${c.color}${c.image ? `;background-image:url('${escapeHtml(c.image)}')` : ""}">${c.image ? "" : c.icon}</span>
+        <span class="gt-scrim"></span>
+        <span class="gt-chip ${isFree(c) ? "free" : ""}">${isFree(c) ? t("price_free") : "⭐ " + t("price_premium")}</span>
+        <span class="gt-info">
+          <span class="gt-title">${cf(c, "title")}</span>
+          <span class="gt-meta">${totalLessons(c)} ${t("lessons_word")} · ${c.hours} ${t("hrs")} · ${levelName(c.level)}</span>
+        </span>
+      </a>`;
+    const fresh = NEW_COURSE_IDS.map(courseById).filter(Boolean);
+    const rest = COURSES.filter((c) => fresh.indexOf(c) === -1);
+    app.innerHTML = `
+      <div class="container">
+        <h1 class="tool-h">${t("gal_title")}</h1>
+        <p class="section-sub">${t("gal_sub")}</p>
+        <h2 class="gal-h2">${t("new_title")}</h2>
+        <div class="gal-grid feat">${fresh.map(tile).join("")}</div>
+        <h2 class="gal-h2">${t("gal_all")} (${rest.length})</h2>
+        <div class="gal-grid">${rest.map(tile).join("")}</div>
+      </div>`;
+    window.scrollTo(0, 0);
+  }
+
   /* ---------------- View: Home ---------------- */
   /* Courses to spotlight in the home "New & trending" strip */
   const NEW_COURSE_IDS = ["zero-to-hero", "n8n-automation", "ai-engineering", "cloud-computing"];
@@ -5441,11 +5467,25 @@
       : ["courses", "course", "learn", "search", "roadmap"].indexOf(parts[0]) >= 0 ? "courses"
       : parts[0] === "playground" ? "playground"
       : parts[0] === "tools" ? "tools"
+      : parts[0] === "gallery" ? "gallery"
       : parts[0] === "daily" ? "home"
       : ["my-learning", "review", "leaderboard", "account", "certificate", "community", "call"].indexOf(parts[0]) >= 0 ? "me"
       : "";
     document.querySelectorAll("#tabbar a").forEach((a) =>
       a.classList.toggle("active", a.getAttribute("data-tab") === tabOf)
+    );
+
+    /* highlight the matching top-nav pill */
+    const navOf =
+      ["courses", "course", "learn", "search"].indexOf(parts[0]) >= 0 ? "nav-courses"
+      : parts[0] === "gallery" ? "nav-gallery"
+      : parts[0] === "roadmap" ? "nav-roadmap"
+      : parts[0] === "tools" ? "nav-tools"
+      : parts[0] === "playground" ? "nav-playground"
+      : parts[0] === "my-learning" ? "nav-mylearning"
+      : "";
+    document.querySelectorAll(".topnav a").forEach((a) =>
+      a.classList.toggle("active", a.id === navOf)
     );
 
     /* Point the chat at this course's room, or the global community room */
@@ -5463,6 +5503,7 @@
     else if (parts[0] === "search") renderSearch(decodeURIComponent(parts[1] || ""));
     else if (parts[0] === "playground") renderPlayground(parts[1]);
     else if (parts[0] === "tools") renderTools(parts[1]);
+    else if (parts[0] === "gallery") renderGallery();
     else if (parts[0] === "daily") renderDaily();
     else if (parts[0] === "community") renderCommunity();
     else if (parts[0] === "call") renderCall(parts[1]);
@@ -5485,17 +5526,27 @@
     document.documentElement.lang = lang === "my" ? "my" : "en";
     const set = (id, text) => {
       const el = document.getElementById(id);
-      if (el) el.textContent = text;
+      if (!el) return;
+      /* FB-style nav links keep their icon span — write the label span only */
+      const lbl = el.querySelector(".nv-lbl");
+      (lbl || el).textContent = text;
     };
+    const chatBtn = document.getElementById("chat-nav-btn");
+    if (chatBtn && !chatBtn.dataset.wired) {
+      chatBtn.dataset.wired = "1";
+      chatBtn.addEventListener("click", () => { if (window.Chat) window.Chat.open(); });
+    }
     set("nav-courses", t("nav_courses"));
     set("nav-roadmap", t("nav_roadmap"));
     set("nav-playground", t("nav_playground"));
     set("nav-tools", t("nav_tools"));
+    set("nav-gallery", t("nav_gallery"));
     set("nav-mylearning", t("nav_mylearning"));
     set("tab-home", t("tab_home"));
     set("tab-courses", t("nav_courses"));
     set("tab-play", t("nav_playground"));
     set("tab-tools", t("nav_tools"));
+    set("tab-gallery", t("nav_gallery"));
     set("tab-me", t("tab_me"));
     set("footer-tag", t("footer_tag"));
     set("footer-saved", t("footer_saved"));

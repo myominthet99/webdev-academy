@@ -112,11 +112,45 @@ button { font-family: inherit; cursor: pointer; }
 .topnav.right { margin-left: 4px; }
 .topnav a { font-size: 15px; color: var(--ink); }
 .topnav a:hover { color: var(--purple); }
+/* Facebook-style main menu: icon tabs, gradient underline on the active page */
+.topnav:not(.right) { gap: 4px; }
+.topnav:not(.right) a {
+  display: flex; align-items: center; gap: 7px; position: relative;
+  padding: 8px 13px; border-radius: 10px; white-space: nowrap;
+  font-size: 14px; font-weight: 600; color: var(--muted);
+  transition: background .2s ease, color .2s ease;
+}
+.topnav:not(.right) a .nv-ic { font-size: 17px; line-height: 1; }
+.topnav:not(.right) a:hover { background: var(--surface-2); color: var(--ink); }
+.topnav:not(.right) a.active { color: var(--purple); }
+.topnav:not(.right) a.active::after {
+  content: ""; position: absolute; left: 12px; right: 12px; bottom: -1px;
+  height: 3px; border-radius: 3px;
+  background: linear-gradient(90deg, #7b2ff7, #a435f0);
+}
+/* Messenger-style chat button in the header */
+.chat-nav-btn {
+  width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--line);
+  background: var(--surface-2); font-size: 17px; cursor: pointer;
+  display: grid; place-items: center; transition: transform .15s ease, filter .2s ease;
+}
+.chat-nav-btn:hover { transform: scale(1.08); filter: brightness(1.1); }
+@media (max-width: 1024px) {
+  .topnav:not(.right) { overflow-x: auto; scrollbar-width: none; max-width: 100%; -webkit-overflow-scrolling: touch; }
+  .topnav:not(.right)::-webkit-scrollbar { display: none; }
+}
+@media (max-width: 1360px) {
+  /* FB look: icon-only tabs whenever space is tight (labels return on wide screens) */
+  .topnav:not(.right) .nv-lbl { display: none; }
+  .topnav:not(.right) a { padding: 8px 11px; }
+  .topnav:not(.right) a .nv-ic { font-size: 19px; }
+}
 
 .searchbar {
   display: flex;
   align-items: center;
   flex: 1;
+  min-width: 170px;
   max-width: 620px;
   margin: 0 auto;
   background: var(--bg);
@@ -465,6 +499,33 @@ button { font-family: inherit; cursor: pointer; }
 .course-gal.peek .cg-slide { animation: cgPeek 1s ease .9s 1; }
 @keyframes cgPeek { 0%, 100% { transform: translateX(0); } 45% { transform: translateX(-26px); } }
 @media (prefers-reduced-motion: reduce) { .course-gal.peek .cg-slide { animation: none; } }
+
+/* 🖼️ #/gallery — image-forward course showcase */
+.gal-h2 { font-size: 19px; margin: 22px 0 12px; }
+.gal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
+.gal-grid.feat { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+.gal-tile {
+  position: relative; display: block; height: 150px; border-radius: 14px;
+  overflow: hidden; color: #fff; box-shadow: 0 4px 14px rgba(0, 0, 0, .12);
+}
+.gal-grid.feat .gal-tile { height: 185px; }
+.gal-tile .gt-bg {
+  position: absolute; inset: 0; display: grid; place-items: center; font-size: 44px;
+  background-size: cover !important; background-position: center !important;
+  transition: transform .35s ease;
+}
+.gal-tile:hover .gt-bg { transform: scale(1.06); }
+.gal-tile .gt-scrim { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 38%, rgba(0, 0, 0, .74)); }
+.gal-tile .gt-info { position: absolute; left: 12px; right: 12px; bottom: 10px; }
+.gal-tile .gt-title { display: block; font-weight: 800; font-size: 14.5px; line-height: 1.3; text-shadow: 0 1px 6px rgba(0, 0, 0, .55); }
+.gal-tile .gt-meta { display: block; font-size: 11.5px; opacity: .88; margin-top: 2px; }
+.gal-tile .gt-chip {
+  position: absolute; top: 9px; right: 9px; font-size: 10.5px; font-weight: 700;
+  padding: 3px 8px; border-radius: 999px; background: rgba(0, 0, 0, .45); color: #fff;
+  -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
+}
+.gal-tile .gt-chip.free { background: rgba(22, 163, 74, .88); }
+@media (max-width: 480px) { .gal-grid, .gal-grid.feat { grid-template-columns: 1fr 1fr; } .gal-tile, .gal-grid.feat .gal-tile { height: 132px; } .gal-tile .gt-title { font-size: 12.5px; } .gal-tile .gt-meta { display: none; } }
 .buybox .pad { padding: 20px; }
 .buybox .price { font-size: 26px; margin-bottom: 14px; }
 .buybox ul { list-style: none; padding: 0; margin: 16px 0 0; font-size: 14px; }

@@ -99,11 +99,12 @@ button { font-family: inherit; cursor: pointer; }
   display: inline-grid;
   place-items: center;
   width: 34px; height: 34px;
-  border-radius: 8px;
-  background: var(--ink);
+  border-radius: 10px;
+  background: linear-gradient(135deg, #7b2ff7, #a435f0 60%, #c86dd7);
   color: #fff;
   font-weight: 700;
   font-size: 15px;
+  box-shadow: 0 3px 10px rgba(164, 53, 240, .35);
 }
 .brand-mark.small { width: 24px; height: 24px; font-size: 12px; vertical-align: middle; }
 
@@ -642,6 +643,13 @@ a.lesson-row:hover .ttl { color: var(--purple); }
 .chat-msg.grouped { margin-top: -6px; }
 .chat-avatar.ghost { background: transparent; visibility: hidden; }
 
+/* the academy AI gets its own branded avatar */
+.chat-avatar.botav {
+  background: linear-gradient(135deg, #0ba360, #3cba92);
+  box-shadow: 0 2px 8px rgba(11, 163, 96, .4);
+}
+.chat-avatar.botav .ci { width: 16px; height: 16px; }
+
 /* floating reaction pill */
 .react-pill {
   position: fixed; z-index: 950; display: flex; gap: 2px;
@@ -1171,7 +1179,7 @@ a.lesson-row:hover .ttl { color: var(--purple); }
 .grid .card:nth-child(n+10){animation-delay:.3s}
 /* stat tiles / badges pop in */
 .dash-stats .dstat, .adash-card { animation: popIn .4s ease both; }
-.announce-bar:not([hidden]) { animation: fadeInUp .3s ease both; }
+.announce-bar:not([hidden]) { animation: fadeInUp .3s ease both, annShift 14s ease infinite; }
 /* modal gets a gentle scale-in */
 .modal-overlay.open .modal { animation: popIn .22s ease both; }
 /* respect users who prefer less motion (accessibility) */
@@ -1222,14 +1230,28 @@ a.lesson-row:hover .ttl { color: var(--purple); }
 .announce-bar {
   display: flex; align-items: center; gap: 12px;
   padding: 10px 16px; font-size: 14px; font-weight: 600;
-  background: linear-gradient(135deg, #654ea3, #a535f0); color: #fff;
+  background: linear-gradient(115deg, #5b21b6, #a435f0, #c86dd7, #7b2ff7);
+  background-size: 280% 280%;
+  animation: annShift 14s ease infinite;
+  color: #fff;
+}
+@keyframes annShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+@media (prefers-reduced-motion: reduce) { .announce-bar { animation: none; } }
+.announce-ic {
+  flex: none; display: grid; place-items: center;
+  width: 28px; height: 28px; border-radius: 50%;
+  background: rgba(255, 255, 255, .22); font-size: 14px;
 }
 .announce-text { flex: 1; min-width: 0; }
 .announce-x {
   flex: none; background: rgba(255,255,255,.25); color: #fff; border: none;
   width: 26px; height: 26px; border-radius: 50%; cursor: pointer; font-size: 13px; line-height: 1;
+  transition: transform .15s ease, background .15s ease;
 }
-.announce-x:hover { background: rgba(255,255,255,.4); }
+.announce-x:hover { background: rgba(255,255,255,.45); transform: rotate(90deg); }
 
 /* 📊 Lesson flow-chart diagrams (used in course content) */
 .flow {
@@ -1619,6 +1641,12 @@ input[type="range"].tl-range { width: 100%; accent-color: var(--purple); }
 .rx-out mark { background: rgba(164, 53, 240, .28); color: inherit; border-radius: 3px; padding: 0 1px; }
 .rx-out p { margin: 0 0 10px; }
 .u-cell { display: inline-block; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 5px 10px; margin: 3px 2px; font-size: 12.5px; }
+.ch-group {
+  margin: 16px 0 6px; font-size: 11.5px; font-weight: 800; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--purple);
+  display: flex; align-items: center; gap: 8px;
+}
+.ch-group::after { content: ""; flex: 1; height: 1px; background: var(--line); }
 .ch-row { flex-wrap: wrap; }
 .ch-row code { flex: 1 1 260px; font-size: 12.5px; color: var(--purple); }
 .ch-row .ch-desc { flex: 1 1 160px; font-size: 12.5px; color: var(--muted); }

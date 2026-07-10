@@ -849,7 +849,7 @@
       if (!a || !a.text || !String(a.text).trim()) { bar.hidden = true; bar.innerHTML = ""; return; }
       const ts = String(a.ts || "");
       if (localStorage.getItem("wda_announce_dismiss") === ts) { bar.hidden = true; return; }
-      bar.innerHTML = '<span class="announce-text">📢 ' + escapeHtml(String(a.text).slice(0, 300)) + "</span>" +
+      bar.innerHTML = '<span class="announce-ic">📢</span><span class="announce-text">' + escapeHtml(String(a.text).slice(0, 300)) + "</span>" +
         '<button class="announce-x" type="button" aria-label="Dismiss">✕</button>';
       bar.hidden = false;
       bar.querySelector(".announce-x").addEventListener("click", () => {
@@ -2954,6 +2954,16 @@
       { c: '<table><tr><td>Cell</td></tr></table>', d: "Table row + cell" },
       { c: '<header> <nav> <main> <footer>', d: "Semantic page areas" },
       { c: '<!-- note to self -->', d: "Comment — invisible to visitors" },
+      { g: "⚡ Pro" },
+      { c: '<meta name="viewport" content="width=device-width, initial-scale=1">', d: "Phones render properly (always include!)" },
+      { c: '<input type="email" required minlength="3">', d: "Free browser validation" },
+      { c: '<select><option>…</option></select>', d: "Dropdown" },
+      { c: '<details><summary>More</summary>…</details>', d: "Zero-JS accordion" },
+      { c: '<dialog id="m">…</dialog> + m.showModal()', d: "Native modal" },
+      { c: '<img loading="lazy" …>', d: "Load images only when scrolled near" },
+      { c: 'data-id="7" → el.dataset.id', d: "Custom data attributes" },
+      { c: '<label for="em">Email</label><input id="em">', d: "Clickable labels = accessibility" },
+      { c: 'aria-label="Close menu"', d: "Name icon-only buttons for screen readers" },
     ],
     css: [
       { c: 'h1 { } · .card { } · #menu { }', d: "Tag / class / id selectors" },
@@ -2970,6 +2980,18 @@
       { c: 'transition: all .2s ease;', d: "Smooth hover changes" },
       { c: '.btn:hover { filter: brightness(1.1); }', d: "Hover state" },
       { c: 'box-shadow: 0 4px 12px rgba(0,0,0,.1);', d: "Soft card shadow" },
+      { g: "⚡ Pro" },
+      { c: ':root { --brand: #a435f0; } · color: var(--brand);', d: "CSS variables — theme in one place" },
+      { c: 'font-size: clamp(16px, 2.5vw, 22px);', d: "Fluid type: min, preferred, max" },
+      { c: 'aspect-ratio: 16 / 9; object-fit: cover;', d: "Perfect thumbnails, no stretching" },
+      { c: 'transform: translateY(-3px) scale(1.02);', d: "Move/scale without reflow" },
+      { c: '@keyframes pop { from {opacity:0} to {opacity:1} }', d: "Define an animation" },
+      { c: 'animation: pop .3s ease both;', d: "…and run it" },
+      { c: 'li:nth-child(odd) { background: #f7f7f9; }', d: "Zebra stripes & patterns" },
+      { c: '.card::before { content: ""; … }', d: "Decorations without extra HTML" },
+      { c: '@media (prefers-color-scheme: dark) { … }', d: "Respect the user's dark mode" },
+      { c: 'gap: 12px;', d: "Spacing for flex AND grid — drop margins" },
+      { c: 'position: sticky; top: 0;', d: "Sticky headers" },
     ],
     js: [
       { c: 'const name = "Su"; let xp = 0;', d: "Variables (const = fixed)" },
@@ -2988,6 +3010,19 @@
       { c: 'fetch(url).then(r => r.json()).then(data => …)', d: "Get JSON from an API" },
       { c: 'JSON.parse(text) · JSON.stringify(obj)', d: "Text ↔ object" },
       { c: 'setTimeout(fn, 1000)', d: "Run later (ms)" },
+      { g: "⚡ Pro" },
+      { c: 'const { name, xp } = student;', d: "Destructuring — unpack fields" },
+      { c: 'const copy = { ...obj, xp: 100 };', d: "Spread: clone + tweak" },
+      { c: 'const res = await fetch(url); const data = await res.json();', d: "async/await — fetch without .then chains" },
+      { c: 'try { … } catch (e) { … }', d: "Handle failures gracefully" },
+      { c: 'user?.profile?.phone', d: "Optional chaining — no null crashes" },
+      { c: 'const qty = input ?? 1;', d: "Default only when null/undefined" },
+      { c: 'list.reduce((sum, n) => sum + n, 0)', d: "Fold a list into one value" },
+      { c: 'list.sort((a, b) => b.xp - a.xp)', d: "Sort objects (descending)" },
+      { c: 'localStorage.setItem("k", JSON.stringify(v))', d: "Save across visits" },
+      { c: 'el.closest(".card")', d: "Walk up to the matching parent" },
+      { c: 'new Date().toISOString().slice(0, 10)', d: "Today as YYYY-MM-DD" },
+      { c: 'crypto.randomUUID()', d: "Unique id, built in" },
     ],
     git: [
       { c: 'git init', d: "Start tracking this folder" },
@@ -3004,6 +3039,17 @@
       { c: 'git restore file.css', d: "Discard uncommitted edits" },
       { c: 'git revert abc123', d: "Safely cancel a commit" },
       { c: 'git stash · git stash pop', d: "Pocket changes, restore later" },
+      { g: "⚡ Pro" },
+      { c: 'git diff --staged', d: "Review exactly what you're about to commit" },
+      { c: 'git commit --amend', d: "Fix the last commit (before pushing!)" },
+      { c: 'git cherry-pick abc123', d: "Copy one commit onto this branch" },
+      { c: 'git rebase main', d: "Replay your branch on fresh main (local branches)" },
+      { c: 'git reflog', d: "The undo log — recovers 'lost' commits" },
+      { c: 'git bisect start', d: "Binary-search history for the breaking commit" },
+      { c: 'git tag v1.0 · git push --tags', d: "Mark releases" },
+      { c: 'git remote -v', d: "Where does this repo push/pull?" },
+      { c: 'git log --oneline --graph --all', d: "Branch picture in the terminal" },
+      { c: 'git blame file.js', d: "Who last touched each line (be kind)" },
     ],
     sql: [
       { c: 'SELECT name, total FROM orders;', d: "Read columns" },
@@ -3019,6 +3065,16 @@
       { c: "WHERE name LIKE 'Mya%'", d: "Starts with" },
       { c: 'WHERE id IN (1, 2, 3) · BETWEEN 10 AND 20', d: "Sets & ranges" },
       { c: 'CREATE INDEX idx ON orders(customer_id);', d: "Speed up lookups" },
+      { g: "⚡ Pro" },
+      { c: 'SELECT … WHERE id IN (SELECT … )', d: "Subquery — query inside a query" },
+      { c: "CASE WHEN total > 10000 THEN 'VIP' ELSE 'normal' END", d: "if/else inside SELECT" },
+      { c: 'ROW_NUMBER() OVER (PARTITION BY city ORDER BY total DESC)', d: "Window function: rank within groups" },
+      { c: 'SELECT … UNION SELECT …', d: "Stack two result sets" },
+      { c: 'WHERE EXISTS (SELECT 1 FROM …)', d: "Fast 'has at least one' check" },
+      { c: 'COALESCE(phone, email, "no contact")', d: "First non-null value" },
+      { c: 'BEGIN; … COMMIT; (or ROLLBACK;)', d: "All-or-nothing transactions" },
+      { c: 'EXPLAIN SELECT …', d: "Did it scan or use the index?" },
+      { c: 'INSERT … ON CONFLICT (id) DO UPDATE …', d: "Upsert (Postgres)" },
     ],
     terminal: [
       { c: 'pwd', d: "Where am I?" },
@@ -3034,6 +3090,17 @@
       { c: 'Ctrl + C', d: "Stop the running program" },
       { c: 'clear · history', d: "Clean screen / past commands" },
       { c: 'command --help', d: "Every command explains itself" },
+      { g: "⚡ Pro" },
+      { c: 'cmd1 | cmd2', d: "Pipe: output of one feeds the next" },
+      { c: 'cmd > file.txt · cmd >> file.txt', d: "Write / append output to a file" },
+      { c: 'cmd1 && cmd2', d: "Run 2 only if 1 succeeded" },
+      { c: 'curl -s https://api.example.com/data', d: "Fetch a URL from the terminal" },
+      { c: 'ssh user@server-ip', d: "Log into a remote server" },
+      { c: 'tar -czf backup.tar.gz folder/', d: "Zip a folder (and -xzf to unzip)" },
+      { c: 'ps · kill PID', d: "List processes / stop one" },
+      { c: 'which node', d: "Where does this command live?" },
+      { c: 'history | grep git', d: "Find that command you ran last week" },
+      { c: 'chmod +x deploy.sh · ./deploy.sh', d: "Make a script runnable, run it" },
     ],
     regex: [
       { c: '.', d: "Any single character" },
@@ -3048,6 +3115,15 @@
       { c: '\\d{2}:\\d{2}', d: "Example: matches 09:45" },
       { c: '^09\\d{7,9}$', d: "Example: Myanmar phone shape" },
       { c: '[\\w.]+@[\\w.]+\\.[a-z]{2,}', d: "Example: rough email" },
+      { g: "⚡ Pro" },
+      { c: 'a+? · a*?', d: "Lazy: match as LITTLE as possible" },
+      { c: '(?:abc)', d: "Group without capturing" },
+      { c: '(?<name>\\d+)', d: "Named group → match.groups.name" },
+      { c: '(\\w+) \\1', d: "Backreference: the same text again" },
+      { c: '\\d(?= Ks)', d: "Lookahead: digit only if followed by ' Ks'" },
+      { c: '(?<!09)\\d{7}', d: "Negative lookbehind: not preceded by 09" },
+      { c: '\\btea\\b', d: "Word boundary: 'tea' but not 'team'" },
+      { c: 'text.replace(/(\\d+)/g, "[$1]")', d: "Use captures in JS replacements" },
     ],
     markdown: [
       { c: '# H1 · ## H2 · ### H3', d: "Headings" },
@@ -3061,6 +3137,15 @@
       { c: '| a | b |  +  |---|---|', d: "Table header + divider" },
       { c: '---', d: "Horizontal line" },
       { c: '- [ ] todo · - [x] done', d: "Task list (GitHub)" },
+      { g: "⚡ Pro" },
+      { c: '<details><summary>Spoiler</summary>hidden</details>', d: "Collapsible section (GitHub READMEs)" },
+      { c: '[![CI](badge.svg)](link)', d: "Clickable status badge" },
+      { c: '[Jump](#section-name)', d: "Anchor link inside the doc" },
+      { c: '  - nested item (2 spaces)', d: "Nested lists" },
+      { c: 'Line ends with 2 spaces  ', d: "Forced line break" },
+      { c: '~~crossed out~~', d: "Strikethrough" },
+      { c: '> [!NOTE] · > [!WARNING]', d: "GitHub alert boxes" },
+      { c: '```diff  + added  - removed  ```', d: "Diff highlighting in code blocks" },
     ],
   };
   const CHEAT_TABS = [
@@ -3195,7 +3280,9 @@
     if (id === "cheats") {
       const rows = $("#ch-rows");
       const paint = (sheet) => {
-        rows.innerHTML = (CHEATS[sheet] || []).map((r) => `
+        rows.innerHTML = (CHEATS[sheet] || []).map((r) => r.g
+          ? `<div class="ch-group">${escapeHtml(r.g)}</div>`
+          : `
           <div class="tl-out ch-row">
             <code>${escapeHtml(r.c)}</code>
             <span class="ch-desc">${escapeHtml(r.d)}</span>

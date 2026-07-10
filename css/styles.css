@@ -502,6 +502,8 @@ a.lesson-row:hover .ttl { color: var(--purple); }
 
 .related-wrap { margin-bottom: 40px; }
 
+.cc-imgprev { width: 100%; max-width: 380px; border-radius: 14px; border: 1px solid var(--line); margin-top: 10px; display: block; }
+
 /* admin dashboard mini charts */
 .adash-chart { width: 100%; height: auto; margin-top: 6px; display: block; }
 .adash-chart .bar { fill: var(--purple); opacity: .85; }

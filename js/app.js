@@ -4659,11 +4659,13 @@
       { id: "tip", ic: "💡", label: "Daily tip / quote" },
       { id: "challenge", ic: "🎯", label: "Challenge teaser" },
       { id: "ask", ic: "🙏", label: "Review / testimonial ask" },
+      { id: "week", ic: "📅", label: "Weekly calendar (7 posts at once)" },
+      { id: "tiktok", ic: "🎬", label: "TikTok / Reels script (AI)" },
       { id: "lesson", ic: "📚", label: "Course lesson (AI writes it)" },
       { id: "flowchart", ic: "🔀", label: "Flow chart diagram (AI)" },
       { id: "cheatsheet", ic: "📜", label: "Cheat sheet (AI)" },
     ];
-    const AI_KINDS = ["lesson", "flowchart", "cheatsheet"];
+    const AI_KINDS = ["lesson", "flowchart", "cheatsheet", "tiktok"];
 
     app.innerHTML = `
       <div class="container" style="max-width:760px">
@@ -4707,6 +4709,21 @@
             <span class="muted" id="cc2-status" style="font-size:13px"></span>
           </div>
           <textarea id="cc2-out" rows="13" style="width:100%;margin-top:8px;padding:12px;border:1px solid var(--line);border-radius:10px;font-family:inherit;font-size:13.5px;line-height:1.75" placeholder="${t("cc_ph")}"></textarea>
+        </div>
+
+        <div class="panel">
+          <h3>🖼️ Image card <span class="muted" style="font-size:12px;font-weight:400">— 1080×1080 branded PNG for Facebook/TikTok (image posts reach far more people)</span></h3>
+          <div class="tl-row">
+            <select class="tl-in" id="img-kind" style="min-width:170px">
+              <option value="quote">💡 Quote of the day</option>
+              <option value="course">🎓 Selected course</option>
+              <option value="custom">✍️ Custom text</option>
+            </select>
+            <input class="tl-in" id="img-custom" placeholder="Custom text…" maxlength="120" style="flex:1;min-width:160px">
+            <button class="btn btn-primary btn-sm" id="img-gen">🖼️ ${t("cc_generate")}</button>
+            <a class="btn btn-outline btn-sm" id="img-dl" hidden download="webdev-academy-card.png">⬇ PNG</a>
+          </div>
+          <img id="img-prev" class="cc-imgprev" hidden alt="card preview">
         </div>
       </div>`;
 
@@ -4788,6 +4805,29 @@
         },
       };
 
+      /* 📅 a whole week of posts in one generation */
+      if (type === "week") {
+        const langOf = (p) => (langSel === "both" ? p.mm + "\n\n— EN —\n" + p.en : p[langSel] || p.mm);
+        const dayTip = (offset) => {
+          const m = motivPick(todayKey(offset));
+          return langSel === "en"
+            ? "💡 Today's fuel —\n\n“" + m.en + "”\n\nFinish ONE lesson today 🔥\n👉 " + SITE
+            : "💡 ဒီနေ့ အားဆေး —\n\n“" + m.my + "”\n\nဒီနေ့ သင်ခန်းစာတစ်ခု ပြီးအောင်လုပ်လိုက်ပါ 🔥\n👉 " + SITE;
+        };
+        const caseAsk = langSel === "en"
+          ? "📋 STUCK ON A BUG?\n\nPost it as a CASE STUDY in our community chat — title, what you tried, and screenshots. Classmates + our AI tutor will help you crack it!\n👉 " + SITE + "#/community"
+          : "📋 Bug နဲ့ တစ်နေနေပြီလား?\n\nCommunity chat ထဲမှာ CASE STUDY အဖြစ် တင်လိုက်ပါ — ခေါင်းစဉ်၊ စမ်းခဲ့တာတွေနဲ့ screenshot များ။ သူငယ်ချင်းတွေနဲ့ AI tutor က ကူဖြေရှင်းပေးမယ်!\n👉 " + SITE + "#/community";
+        const sep = "\n\n━━━━━━━━━━━━━━\n\n";
+        return "📅 CONTENT CALENDAR — " + todayKey() + " week\n(post one per day — challenge post: regenerate on the day for that day's question)" + sep +
+          "📌 MONDAY\n\n" + dayTip(0) + sep +
+          "📌 TUESDAY\n\n" + langOf(T.challenge) + sep +
+          "📌 WEDNESDAY\n\n" + langOf(T.course) + sep +
+          "📌 THURSDAY\n\n" + caseAsk + sep +
+          "📌 FRIDAY\n\n" + langOf(T.milestone) + sep +
+          "📌 SATURDAY\n\n" + langOf(T.ask) + sep +
+          "📌 SUNDAY\n\n" + langOf(T.general);
+      }
+
       const pick = T[type] || T.general;
       let out = langSel === "both" ? pick.mm + "\n\n———\n\n" + pick.en : pick[langSel] || pick.mm;
       if (platform === "tg") {
@@ -4830,7 +4870,15 @@
         ? "Write all prose in Burmese (keep code and technical terms in English). "
         : "Write in simple, warm English. ";
       let prompt;
-      if (kind === "flowchart") {
+      if (kind === "tiktok") {
+        prompt = "You write viral 30-second TikTok/Reels scripts for a Myanmar coding school (WebDev Academy). " +
+          (inMM ? "Write the SPOKEN lines in natural, casual Burmese. " : "Write in casual, energetic English. ") +
+          "Topic: \"" + title + "\" (related course: \"" + c.title + "\"). Format EXACTLY:\n" +
+          "HOOK (0-3s): one pattern-interrupt spoken line + [on-screen text]\n" +
+          "POINT 1 (3-10s): spoken line + [on-screen text]\nPOINT 2 (10-18s): same\nPOINT 3 (18-25s): same\n" +
+          "CTA (25-30s): spoken line telling them the course is free to start at WebDev Academy — link in bio + [on-screen text]\n" +
+          "Keep every spoken line under 12 words. No hashtags in the script; add 5 hashtags on the last line. " + STYLE_COMMON.replace("HTML", "text");
+      } else if (kind === "flowchart") {
         prompt = "You create teaching diagrams for WebDev Academy, a beginner coding school. " + langRule +
           "Output ONLY " + FLOW_SPEC +
           "The diagram must explain: \"" + title + "\". Keep box titles under 4 words and notes under 8 words. " + STYLE_COMMON;
@@ -4851,7 +4899,7 @@
           "4) Optionally ONE diagram: " + FLOW_SPEC +
           "5) End with <div class=\"callout tip\"><strong>Try it yourself:</strong> a small concrete practice task.</div>. " + STYLE_COMMON;
       }
-      const ic = kind === "flowchart" ? "🔀" : kind === "cheatsheet" ? "📜" : "📚";
+      const ic = kind === "flowchart" ? "🔀" : kind === "cheatsheet" ? "📜" : kind === "tiktok" ? "🎬" : "📚";
       $("cc2-status").textContent = ic + " ✨ …";
       window.AI.complete(prompt).then((res) => {
         let out = String(res || "").trim();
@@ -4881,13 +4929,96 @@
       $("cc2-status").textContent = "✨ …";
       const langSel = $("cc2-lang").value;
       window.AI.complete(
-        "You write viral social posts for a Myanmar coding school. Rewrite the post below to be more engaging: " +
-        (langSel === "en" ? "keep it in English" : "keep it in Burmese" + (langSel === "both" ? " and English (keep both sections)" : "")) +
-        ", keep ALL links exactly, keep it under 130 words, natural emojis, end with a question inviting comments. Reply ONLY with the post text.\n\n" + v
+        "You write viral social posts for a Myanmar coding school. Rewrite the post below in THREE different versions: " +
+        "VERSION 1 energetic and bold, VERSION 2 warm and friendly, VERSION 3 curious (opens with a question). " +
+        (langSel === "en" ? "Keep them in English" : "Keep them in Burmese" + (langSel === "both" ? " and English (keep both sections)" : "")) +
+        ", keep ALL links exactly in each, each under 110 words, natural emojis, each ends inviting comments. " +
+        "Separate the three with a line containing only: ===\nReply ONLY with the three posts.\n\n" + v
       ).then((res) => {
-        $("cc2-out").value = String(res || "").trim() || v;
-        $("cc2-status").textContent = "✨ ✓";
+        const out = String(res || "").trim();
+        $("cc2-out").value = out
+          ? "✨ PICK YOUR FAVORITE (delete the others before posting):\n\n" + out
+          : v;
+        $("cc2-status").textContent = "✨ 3 ✓";
       }).catch((e) => { $("cc2-status").textContent = "⚠ " + ((e && e.message) || "AI"); });
+    });
+
+    /* 🖼️ branded 1080×1080 share-card generator (canvas, offline, free) */
+    const FAM = '"Segoe UI", "Myanmar Text", "Padauk", sans-serif';
+    const rr = (x2, x, y, w, h, r) => {
+      x2.beginPath();
+      x2.moveTo(x + r, y);
+      x2.arcTo(x + w, y, x + w, y + h, r);
+      x2.arcTo(x + w, y + h, x, y + h, r);
+      x2.arcTo(x, y + h, x, y, r);
+      x2.arcTo(x, y, x + w, y, r);
+      x2.closePath();
+    };
+    const wrapText = (x2, text, maxW) => {
+      const words = String(text).split(" ");
+      const lines = [];
+      let line = "";
+      for (const w of words) {
+        const tl = line ? line + " " + w : w;
+        if (x2.measureText(tl).width > maxW && line) { lines.push(line); line = w; }
+        else line = tl;
+      }
+      if (line) lines.push(line);
+      return lines;
+    };
+    const drawShareCard = (kind) => {
+      const S = 1080;
+      const cv = document.createElement("canvas");
+      cv.width = S; cv.height = S;
+      const x = cv.getContext("2d");
+      /* brand gradient background + glow */
+      const g = x.createLinearGradient(0, 0, S, S);
+      g.addColorStop(0, "#7b2ff7"); g.addColorStop(.6, "#a435f0"); g.addColorStop(1, "#c86dd7");
+      x.fillStyle = g; x.fillRect(0, 0, S, S);
+      const rad = x.createRadialGradient(S * .25, S * .1, 0, S * .25, S * .1, S * .9);
+      rad.addColorStop(0, "rgba(255,255,255,.22)"); rad.addColorStop(.55, "rgba(255,255,255,0)");
+      x.fillStyle = rad; x.fillRect(0, 0, S, S);
+      /* brand */
+      x.fillStyle = "rgba(255,255,255,.18)"; rr(x, 70, 62, 96, 96, 22); x.fill();
+      x.fillStyle = "#fff"; x.font = "bold 44px Consolas, monospace"; x.textAlign = "center";
+      x.fillText("</>", 118, 126);
+      x.textAlign = "left"; x.font = "bold 42px " + FAM;
+      x.fillText("WebDev Academy", 190, 124);
+      x.textAlign = "center";
+
+      if (kind === "course") {
+        const c = courseById($("cc2-course").value) || COURSES[0];
+        const mmc = (I18N.content && I18N.content.courses && I18N.content.courses[c.id]) || {};
+        x.font = "150px " + FAM;
+        x.fillText(c.icon, S / 2, 400);
+        x.font = "bold 62px " + FAM;
+        let y = 505;
+        wrapText(x, ($("cc2-lang").value === "en" ? c.title : (mmc.title || c.title)), S - 180).slice(0, 3).forEach((l) => { x.fillText(l, S / 2, y); y += 78; });
+        x.font = "38px " + FAM; x.fillStyle = "rgba(255,255,255,.88)";
+        wrapText(x, ($("cc2-lang").value === "en" ? c.subtitle : (mmc.subtitle || c.subtitle)), S - 200).slice(0, 3).forEach((l) => { x.fillText(l, S / 2, y + 8); y += 54; });
+        x.font = "bold 40px " + FAM; x.fillStyle = "#fff";
+        x.fillText("📚 " + totalLessons(c) + "  ·  🌐 EN + မြန်မာ  ·  🎓", S / 2, y + 70);
+      } else {
+        const m = motivPick(todayKey());
+        const txt = kind === "custom" ? ($("img-custom").value || "").trim() || "Learn to code. Free. On your phone." : ($("cc2-lang").value === "en" ? m.en : m.my);
+        x.font = "170px " + FAM;
+        x.fillText("💪", S / 2, 360);
+        x.font = "bold 58px " + FAM;
+        const lines = wrapText(x, "“" + txt + "”", S - 170).slice(0, 6);
+        let y = 500 - (lines.length - 3) * 20;
+        lines.forEach((l) => { x.fillText(l, S / 2, y); y += 86; });
+      }
+      /* footer pill */
+      x.fillStyle = "rgba(255,255,255,.2)"; rr(x, S / 2 - 330, S - 140, 660, 76, 38); x.fill();
+      x.fillStyle = "#fff"; x.font = "bold 34px " + FAM;
+      x.fillText("myominthet99.github.io/webdev-academy", S / 2, S - 90);
+      return cv.toDataURL("image/png");
+    };
+    $("img-gen").addEventListener("click", () => {
+      const url = drawShareCard($("img-kind").value);
+      const prev = $("img-prev"), dl = $("img-dl");
+      prev.src = url; prev.hidden = false;
+      dl.href = url; dl.hidden = false;
     });
 
     /* real student count for the milestone post */

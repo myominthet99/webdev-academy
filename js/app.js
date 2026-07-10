@@ -1334,6 +1334,54 @@
     window.scrollTo(0, 0);
   }
 
+  /* ---------------- View: Find-my-course starter quiz ---------------- */
+  function renderStart() {
+    const PICKS = {
+      job: { new: "zero-to-hero", some: "webdev-bootcamp", pro: "fullstack", alts: ["git-basics", "dev-career"] },
+      web: { new: "web-basics", some: "webdev-bootcamp", pro: "react-basics", alts: ["css-mastery", "responsive-design"] },
+      ai: { new: "n8n-automation", some: "ai-engineering", pro: "ai-engineering", alts: ["python-basics", "cloud-computing"] },
+      data: { new: "excel-basics", some: "sql-basics", pro: "python-basics", alts: ["rdbms-basics", "dsa-basics"] },
+    };
+    const q = (key, title, opts) => `
+      <div class="panel start-q" data-q="${key}">
+        <h3>${title}</h3>
+        <div class="tl-chips">${opts.map(([v, label]) => `<button class="chip" data-v="${v}" type="button">${label}</button>`).join("")}</div>
+      </div>`;
+    app.innerHTML = `
+      <div class="container" style="max-width:760px">
+        <h1 class="tool-h">${t("start_title")}</h1>
+        <p class="section-sub">${t("start_sub")}</p>
+        ${q("goal", t("start_q1"), [["job", t("start_g_job")], ["web", t("start_g_web")], ["ai", t("start_g_ai")], ["data", t("start_g_data")]])}
+        ${q("exp", t("start_q2"), [["new", t("start_x_new")], ["some", t("start_x_some")], ["pro", t("start_x_pro")]])}
+        ${q("time", t("start_q3"), [["low", t("start_t_low")], ["mid", t("start_t_mid")], ["high", t("start_t_high")]])}
+        <div id="start-result"></div>
+      </div>`;
+    const ans = {};
+    app.querySelectorAll(".start-q").forEach((panel) => {
+      panel.addEventListener("click", (e) => {
+        const b = e.target.closest("[data-v]");
+        if (!b) return;
+        panel.querySelectorAll(".chip").forEach((x) => x.classList.toggle("active", x === b));
+        ans[panel.dataset.q] = b.dataset.v;
+        if (ans.goal && ans.exp && ans.time) {
+          const conf = PICKS[ans.goal];
+          const main = courseById(conf[ans.exp]) || courseById(conf.new);
+          const alts = conf.alts.map(courseById).filter((x) => x && x !== main).slice(0, 2);
+          const tip = ans.time === "low" ? t("start_tip_low") : ans.time === "high" ? t("start_tip_high") : t("start_tip_mid");
+          const box = document.getElementById("start-result");
+          box.innerHTML = `
+            <h2 class="gal-h2">🎯 ${t("start_reco")}</h2>
+            <div class="grid" style="grid-template-columns:1fr">${courseCard(main)}</div>
+            <div class="callout tip" style="margin:14px 0">${tip}</div>
+            <h2 class="gal-h2">${t("start_also")}</h2>
+            <div class="grid">${alts.map(courseCard).join("")}</div>`;
+          box.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      });
+    });
+    window.scrollTo(0, 0);
+  }
+
   /* ---------------- View: Home ---------------- */
   /* Courses to spotlight in the home "New & trending" strip */
   const NEW_COURSE_IDS = ["zero-to-hero", "n8n-automation", "ai-engineering", "cloud-computing"];
@@ -1360,6 +1408,7 @@
             <p>${t("hero_p")}</p>
             <a class="btn btn-primary" href="#/course/webdev-bootcamp">${t("hero_cta1")}</a>
             <a class="btn btn-outline" href="#/courses" style="margin-left:10px">${t("hero_cta2")}</a>
+            <div style="margin-top:12px"><a class="hero-quiz" href="#/start">🧭 ${t("start_link")}</a></div>
             <div class="hero-badges">
               <div class="stat"><strong>${COURSES.length}</strong><span>${t("stat_courses")}</span></div>
               <div class="stat"><strong>${COURSES.reduce((a, c) => a + totalLessons(c), 0)}</strong><span>${t("stat_lessons")}</span></div>
@@ -4328,20 +4377,42 @@
           <button class="btn btn-outline" id="cert-copy" type="button">${t("cert_copy")}</button>
           <button class="btn btn-outline" id="cert-print" type="button">${t("cert_print")}</button>
           <button class="btn btn-primary" id="cert-dl" type="button">⬇ ${t("cert_download")}</button>
+          <button class="btn btn-primary" id="cert-fb" type="button">${t("cert_share_fb")}</button>
+          <button class="btn btn-outline" id="cert-chat" type="button">${t("cert_share_chat")}</button>
         </div>
       </div>`;
+    const certMeta = totalLessons(c) + " " + t("lessons_word") + " · " + c.hours + " " + t("hours_content");
     const p = app.querySelector("#cert-print");
     if (p) p.addEventListener("click", () => window.print());
     const dl = app.querySelector("#cert-dl");
     if (dl) dl.addEventListener("click", () => {
-      const meta = totalLessons(c) + " " + t("lessons_word") + " · " + c.hours + " " + t("hours_content");
-      const cv = drawCertPng(name, cf(c, "title"), meta, dateStr, certId);
+      const cv = drawCertPng(name, cf(c, "title"), certMeta, dateStr, certId);
       const a = document.createElement("a");
       a.href = cv.toDataURL("image/png");
       a.download = "WebDevAcademy-Certificate-" + c.id + ".png";
       document.body.appendChild(a);
       a.click();
       a.remove();
+    });
+    const fb = app.querySelector("#cert-fb");
+    if (fb) fb.addEventListener("click", () => {
+      const link = location.origin + location.pathname;
+      const quote = t("cert_chat_msg").replace("{c}", cf(c, "title")) + " — " + link;
+      window.open("https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(link) +
+        "&quote=" + encodeURIComponent(quote), "_blank", "noopener");
+    });
+    const sc = app.querySelector("#cert-chat");
+    if (sc) sc.addEventListener("click", () => {
+      if (!window.Chat || !window.Chat.post) return;
+      const cv = drawCertPng(name, cf(c, "title"), certMeta, dateStr, certId);
+      /* downscale to a chat-friendly JPEG so the message stays light */
+      const small = document.createElement("canvas");
+      const ratio = 800 / cv.width;
+      small.width = 800; small.height = Math.round(cv.height * ratio);
+      small.getContext("2d").drawImage(cv, 0, 0, small.width, small.height);
+      window.Chat.post("🎓 " + t("cert_chat_msg").replace("{c}", cf(c, "title")), small.toDataURL("image/jpeg", .82));
+      sc.textContent = "✓ " + t("cert_shared");
+      window.Chat.open();
     });
     const cp = app.querySelector("#cert-copy");
     if (cp) cp.addEventListener("click", () => {
@@ -5676,6 +5747,7 @@
     else if (parts[0] === "tools") renderTools(parts[1]);
     else if (parts[0] === "gallery") renderGallery();
     else if (parts[0] === "map" && parts[1]) renderCourseMap(parts[1]);
+    else if (parts[0] === "start") renderStart();
     else if (parts[0] === "daily") renderDaily();
     else if (parts[0] === "community") renderCommunity();
     else if (parts[0] === "call") renderCall(parts[1]);

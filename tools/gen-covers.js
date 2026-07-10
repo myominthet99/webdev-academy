@@ -44,24 +44,40 @@ function cover(course) {
     scatter += `<text x="${x}" y="${y}" font-size="${size}" fill="#ffffff" fill-opacity="0.09" font-family="Consolas,monospace" font-weight="700" transform="rotate(${rot} ${x} ${y})">${g}</text>\n  `;
   }
   const cat = esc(String(course.category).toUpperCase());
+  const level = esc(String(course.level || "").toUpperCase());
   const icon = esc(course.icon);
+  const nLessons = (course.sections || []).reduce((s, x) => s + (x.lessons || []).length, 0);
+  /* details pill under the icon — top corners stay clear because the UI
+     overlays its own chips there (level on cards, price in the gallery) */
+  const pill = `\u{1F4DA} ${nLessons} lessons · ⏱ ${course.hours}h`;
+  const pillW = Math.round(pill.length * 8.2 + 44);
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="${c1}"/>
       <stop offset="1" stop-color="${c2}"/>
     </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.35" r="0.75">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
   </defs>
   <rect width="${W}" height="${H}" fill="url(#bg)"/>
+  <rect width="${W}" height="${H}" fill="url(#glow)"/>
   <circle cx="${W - 70}" cy="40" r="130" fill="#ffffff" fill-opacity="0.08"/>
   <circle cx="50" cy="${H - 30}" r="90" fill="#000000" fill-opacity="0.10"/>
   ${scatter}
-  <text x="${W / 2}" y="${H / 2 + 4}" font-size="96" text-anchor="middle" dominant-baseline="middle"
+  <text x="${W / 2}" y="${H / 2 - 24}" font-size="92" text-anchor="middle" dominant-baseline="middle"
         font-family="'Segoe UI Emoji','Apple Color Emoji',Consolas,monospace" font-weight="800" fill="#ffffff"
         style="paint-order:stroke" stroke="#000000" stroke-opacity="0.15" stroke-width="4">${icon}</text>
+  <rect x="${(W - pillW) / 2}" y="${H / 2 + 44}" width="${pillW}" height="38" rx="19"
+        fill="#000000" fill-opacity="0.28" stroke="#ffffff" stroke-opacity="0.35" stroke-width="1"/>
+  <text x="${W / 2}" y="${H / 2 + 69}" font-size="18" text-anchor="middle"
+        font-family="'Segoe UI Emoji','Segoe UI',Arial,sans-serif" font-weight="700"
+        fill="#ffffff" fill-opacity="0.95">${pill}</text>
   <rect x="24" y="${H - 52}" width="4" height="26" rx="2" fill="#ffffff" fill-opacity="0.9"/>
   <text x="38" y="${H - 32}" font-size="17" font-family="'Segoe UI',Arial,sans-serif" font-weight="700"
-        fill="#ffffff" fill-opacity="0.92" letter-spacing="2">${cat}</text>
+        fill="#ffffff" fill-opacity="0.92" letter-spacing="2">${cat}${level ? ` · ${level}` : ""}</text>
   <text x="${W - 24}" y="${H - 32}" font-size="13" text-anchor="end" font-family="'Segoe UI',Arial,sans-serif"
         font-weight="600" fill="#ffffff" fill-opacity="0.55">WebDev Academy</text>
 </svg>

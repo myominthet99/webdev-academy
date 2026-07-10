@@ -4,8 +4,13 @@
       <stop offset="0" stop-color="#0db7ed"/>
       <stop offset="1" stop-color="#2c5364"/>
     </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.35" r="0.75">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
   </defs>
   <rect width="640" height="360" fill="url(#bg)"/>
+  <rect width="640" height="360" fill="url(#glow)"/>
   <circle cx="570" cy="40" r="130" fill="#ffffff" fill-opacity="0.08"/>
   <circle cx="50" cy="330" r="90" fill="#000000" fill-opacity="0.10"/>
   <text x="103" y="278" font-size="17" fill="#ffffff" fill-opacity="0.09" font-family="Consolas,monospace" font-weight="700" transform="rotate(-18 103 278)">=</text>
@@ -23,12 +28,17 @@
   <text x="35" y="154" font-size="19" fill="#ffffff" fill-opacity="0.09" font-family="Consolas,monospace" font-weight="700" transform="rotate(-29 35 154)">( )</text>
   <text x="447" y="340" font-size="39" fill="#ffffff" fill-opacity="0.09" font-family="Consolas,monospace" font-weight="700" transform="rotate(-14 447 340)">;</text>
   
-  <text x="320" y="184" font-size="96" text-anchor="middle" dominant-baseline="middle"
+  <text x="320" y="156" font-size="92" text-anchor="middle" dominant-baseline="middle"
         font-family="'Segoe UI Emoji','Apple Color Emoji',Consolas,monospace" font-weight="800" fill="#ffffff"
         style="paint-order:stroke" stroke="#000000" stroke-opacity="0.15" stroke-width="4">♾️</text>
+  <rect x="212" y="224" width="216" height="38" rx="19"
+        fill="#000000" fill-opacity="0.28" stroke="#ffffff" stroke-opacity="0.35" stroke-width="1"/>
+  <text x="320" y="249" font-size="18" text-anchor="middle"
+        font-family="'Segoe UI Emoji','Segoe UI',Arial,sans-serif" font-weight="700"
+        fill="#ffffff" fill-opacity="0.95">📚 18 lessons · ⏱ 15h</text>
   <rect x="24" y="308" width="4" height="26" rx="2" fill="#ffffff" fill-opacity="0.9"/>
   <text x="38" y="328" font-size="17" font-family="'Segoe UI',Arial,sans-serif" font-weight="700"
-        fill="#ffffff" fill-opacity="0.92" letter-spacing="2">TOOLS</text>
+        fill="#ffffff" fill-opacity="0.92" letter-spacing="2">TOOLS · INTERMEDIATE</text>
   <text x="616" y="328" font-size="13" text-anchor="end" font-family="'Segoe UI',Arial,sans-serif"
         font-weight="600" fill="#ffffff" fill-opacity="0.55">WebDev Academy</text>
 </svg>

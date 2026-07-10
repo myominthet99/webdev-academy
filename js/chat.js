@@ -15,7 +15,27 @@
   const I18N = window.I18N;
   const KEY = "wda_chat_v1";
   const MAX = 200;
-  const BUILD = "v15"; /* shown in the chat header — bump with releases */
+  const BUILD = "v16"; /* shown in the chat header — bump with releases */
+
+  /* Crisp inline SVG icons (emoji buttons render differently on every
+     Android brand — these look identical everywhere) */
+  const ICON = (name) => {
+    const P = {
+      chat: '<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6A8.38 8.38 0 0 1 12.5 3h.5a8.48 8.48 0 0 1 8 8Z"/>',
+      reply: '<polyline points="9 17 4 12 9 7"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/>',
+      smile: '<circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>',
+      edit: '<path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>',
+      pin: '<path d="M12 17v5"/><path d="M9 11V6a3 3 0 0 1 6 0v5l2 3H7Z"/>',
+      trash: '<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
+      send: '<line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>',
+      camera: '<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2Z"/><circle cx="12" cy="13" r="4"/>',
+      video: '<polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/>',
+      x: '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
+      expand: '<polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>',
+      caseb: '<path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/>',
+    };
+    return '<svg class="ci" viewBox="0 0 24 24" aria-hidden="true">' + (P[name] || "") + "</svg>";
+  };
 
   /* ============ Firebase config (optional) ============
      Configured centrally in js/firebase-config.js — paste your config
@@ -372,16 +392,16 @@
     const wrap = document.createElement("div");
     wrap.id = "chat-widget";
     wrap.innerHTML =
-      '<button id="chat-fab" class="chat-fab" type="button" aria-label="Chat">💬' +
+      '<button id="chat-fab" class="chat-fab" type="button" aria-label="Chat">' + ICON("chat") +
       '<span class="chat-badge" hidden>0</span></button>' +
       '<div id="chat-panel" class="chat-panel" hidden>' +
       '  <div class="chat-head"><span class="chat-title"></span>' +
       '    <span id="chat-ver" class="chat-ver" title="build · backend"></span>' +
       '    <span id="chat-presence" class="chat-presence"></span>' +
       '    <input id="chat-search" type="text" class="chat-search" placeholder="🔍 Search..." style="display:none">' +
-      '    <button class="chat-call" id="chat-call" type="button" aria-label="Video call" title="' + esc(t("call_title")) + '">📹</button>' +
-      '    <button class="chat-full" id="chat-full" type="button" aria-label="Fullscreen" title="Fullscreen">⛶</button>' +
-      '    <button class="chat-close" type="button" aria-label="Close">&times;</button></div>' +
+      '    <button class="chat-call" id="chat-call" type="button" aria-label="Video call" title="' + esc(t("call_title")) + '">' + ICON("video") + "</button>" +
+      '    <button class="chat-full" id="chat-full" type="button" aria-label="Fullscreen" title="Fullscreen">' + ICON("expand") + "</button>" +
+      '    <button class="chat-close" type="button" aria-label="Close">' + ICON("x") + "</button></div>" +
       '  <div class="chat-list" id="chat-list"></div>' +
       '  <div id="chat-typing" class="chat-typing" hidden></div>' +
       '  <div class="chat-foot" id="chat-foot"></div>' +
@@ -405,7 +425,8 @@
     const fullBtn = wrap.querySelector("#chat-full");
     const applyFull = (on) => {
       panel.classList.toggle("full", on);
-      fullBtn.textContent = on ? "🗗" : "⛶";
+      fullBtn.innerHTML = ICON("expand");
+      fullBtn.title = on ? "Exit fullscreen" : "Fullscreen";
       try { localStorage.setItem("wda_chat_full", on ? "1" : ""); } catch (e) {}
       if (open) scrollBottom();
     };
@@ -455,6 +476,7 @@
     if (!badgeEl) return;
     if (unread > 0) { badgeEl.textContent = unread > 99 ? "99+" : String(unread); badgeEl.hidden = false; }
     else badgeEl.hidden = true;
+    if (fab) fab.classList.toggle("pulse", unread > 0);
   }
 
   function fmtTime(ts) {
@@ -502,24 +524,29 @@
           return `<span class="chat-reaction" title="${esc(list.join(', '))}">${esc(emoji)} ${list.length}</span>`;
         }).join("");
         const mentioned = !mine && mentionsMe(text);
+        /* Messenger-style grouping: same sender within 5 min → tighter
+           spacing, avatar and name shown only on the first of the run */
+        const grouped = !daySep && prev && prev.userId === msg.userId &&
+          !!prev.bot === !!msg.bot && (msg.ts - prev.ts) < 300000;
         return (
           daySep +
-          '<div class="chat-msg ' + (mine ? "mine" : "") + (msg.bot ? " bot" : "") + (isPinned ? " pinned" : "") + (mentioned ? " mentioned" : "") + '">' +
+          '<div class="chat-msg ' + (mine ? "mine" : "") + (msg.bot ? " bot" : "") + (isPinned ? " pinned" : "") + (mentioned ? " mentioned" : "") + (grouped ? " grouped" : "") + '">' +
           (isPinned ? '<span class="chat-pin" title="Pinned">📌</span>' : "") +
-          (mine ? "" : '<span class="chat-avatar">' + esc(msg.initial || "?") + "</span>") +
-          '<div class="chat-bubble">' +
-          (mine ? "" : '<div class="chat-name">' + esc(msg.name || "") + "</div>") +
+          (mine ? "" : '<span class="chat-avatar' + (grouped ? " ghost" : "") + '">' + (grouped ? "" : esc(msg.initial || "?")) + "</span>") +
+          '<div class="chat-bubble' + (msg.caseStudy ? " case" : "") + '">' +
+          (mine || grouped ? "" : '<div class="chat-name">' + esc(msg.name || "") + "</div>") +
+          (msg.caseStudy ? '<div class="case-tag">' + ICON("caseb") + " " + esc(t("case_tag")) + '</div><div class="case-heading">' + esc(String(msg.caseTitle || "").slice(0, 80)) + "</div>" : "") +
           (msg.reply ? '<div class="chat-quote">↩ <b>' + esc(msg.reply.name || "") + "</b> " + esc(String(msg.reply.text || "").slice(0, 80)) + "</div>" : "") +
           (msg.img ? '<img class="chat-img" loading="lazy" src="' + esc(msg.img) + '" alt="photo">' : "") +
           (text ? '<div class="chat-text">' + formatText(text) + (msg.editedText ? ' <span class="chat-edited">(edited)</span>' : "") + "</div>" : "") +
           (reactionHtml ? '<div class="chat-reactions">' + reactionHtml + '</div>' : "") +
           '<div class="chat-meta"><span class="chat-time">' + fmtTime(msg.ts) + "</span>" +
           '<div class="chat-actions">' +
-          '<button class="chat-replybtn" data-reply="' + ref + '" title="' + esc(t("chat_reply")) + '">↩</button>' +
-          '<button class="chat-react" data-react="' + ref + '" title="React">😊</button>' +
-          (mine ? '<button class="chat-edit" data-edit="' + ref + '" title="Edit">✏️</button>' : "") +
-          (mine || (u && u.admin) ? '<button class="chat-pin" data-pin="' + ref + '" title="' + (isPinned ? "Unpin" : "Pin") + '">' + (isPinned ? "📌" : "📌") + '</button>' : "") +
-          (mine || (u && u.admin) ? '<button class="chat-del" data-del="' + ref + '" title="' + esc(t("chat_delete")) + '">🗑</button>' : "") +
+          '<button class="chat-replybtn" data-reply="' + ref + '" title="' + esc(t("chat_reply")) + '">' + ICON("reply") + "</button>" +
+          '<button class="chat-react" data-react="' + ref + '" title="React">' + ICON("smile") + "</button>" +
+          (mine ? '<button class="chat-edit" data-edit="' + ref + '" title="Edit">' + ICON("edit") + "</button>" : "") +
+          (mine || (u && u.admin) ? '<button class="chat-pin" data-pin="' + ref + '" title="' + (isPinned ? "Unpin" : "Pin") + '">' + ICON("pin") + "</button>" : "") +
+          (mine || (u && u.admin) ? '<button class="chat-del" data-del="' + ref + '" title="' + esc(t("chat_delete")) + '">' + ICON("trash") + "</button>" : "") +
           "</div></div></div></div>"
         );
       })
@@ -531,7 +558,7 @@
       b.addEventListener("click", () => edit(b.getAttribute("data-edit")))
     );
     listEl.querySelectorAll("[data-react]").forEach((b) =>
-      b.addEventListener("click", () => showReactionPicker(b.getAttribute("data-react")))
+      b.addEventListener("click", () => showReactionPicker(b.getAttribute("data-react"), b))
     );
     listEl.querySelectorAll("[data-pin]").forEach((b) =>
       b.addEventListener("click", () => togglePin(b.getAttribute("data-pin")))
@@ -540,7 +567,7 @@
       b.addEventListener("click", () => {
         const msg = roomCache.find((m) => (m._key || m.id) === b.getAttribute("data-reply"));
         if (!msg) return;
-        replyTo = { name: msg.name || "?", text: ((msg.editedText || msg.text) || (msg.img ? "📷 photo" : "")).slice(0, 80) };
+        replyTo = { name: msg.name || "?", text: ((msg.caseTitle ? "📋 " + msg.caseTitle + " · " : "") + ((msg.editedText || msg.text) || (msg.img ? "📷 photo" : ""))).slice(0, 80) };
         updateReplyBar();
         const inp = footEl && footEl.querySelector("#chat-form textarea");
         if (inp) inp.focus();
@@ -607,13 +634,54 @@
     }
     footEl.innerHTML =
       '<div id="chat-replybar" class="chat-replybar" hidden></div>' +
+      '<div id="case-form" class="case-form" hidden>' +
+      '  <div class="case-form-head">' + ICON("caseb") + " <b>" + esc(t("case_share")) + '</b><button type="button" id="case-cancel" class="chat-close-mini">' + ICON("x") + "</button></div>" +
+      '  <input id="case-title" maxlength="80" placeholder="' + esc(t("case_title_ph")) + '">' +
+      '  <textarea id="case-desc" rows="3" maxlength="400" placeholder="' + esc(t("case_desc_ph")) + '"></textarea>' +
+      '  <div class="case-form-foot">' +
+      '    <label class="btn-mini">' + ICON("camera") + " " + esc(t("case_shot")) + '<input id="case-file" type="file" accept="image/*" hidden></label>' +
+      '    <span id="case-file-name" class="case-file-name"></span>' +
+      '    <button type="button" id="case-post" class="btn-mini primary">' + ICON("send") + " " + esc(t("case_post")) + "</button>" +
+      "  </div></div>" +
       '<form class="chat-form" id="chat-form">' +
-      '<label class="chat-photo" title="' + esc(t("chat_photo")) + '">📷<input type="file" accept="image/*" hidden></label>' +
+      '<button type="button" class="chat-casebtn" id="chat-case" title="' + esc(t("case_share")) + '">' + ICON("caseb") + "</button>" +
+      '<label class="chat-photo" title="' + esc(t("chat_photo")) + '">' + ICON("camera") + '<input type="file" accept="image/*" hidden></label>' +
       '<textarea rows="1" maxlength="500" placeholder="' + esc(t("chat_placeholder") + (window.AI && window.AI.ready() ? " · @ai 🤖" : "")) + '"></textarea>' +
-      '<button class="chat-send" type="submit" aria-label="Send">➤</button></form>';
+      '<button class="chat-send" type="submit" aria-label="Send">' + ICON("send") + "</button></form>";
     const form = footEl.querySelector("#chat-form");
     const inp = form.querySelector("textarea");
     const file = form.querySelector('input[type="file"]');
+
+    /* 📋 case study composer: title + description + screenshot in one post */
+    const caseForm = footEl.querySelector("#case-form");
+    let caseImg = null;
+    footEl.querySelector("#chat-case").addEventListener("click", () => {
+      caseForm.hidden = !caseForm.hidden;
+      if (!caseForm.hidden) footEl.querySelector("#case-title").focus();
+    });
+    footEl.querySelector("#case-cancel").addEventListener("click", () => { caseForm.hidden = true; });
+    footEl.querySelector("#case-file").addEventListener("change", (e) => {
+      const f = e.target.files && e.target.files[0];
+      e.target.value = "";
+      if (!f) return;
+      showStatus("⏳ …");
+      compressImage(f, (data) => {
+        caseImg = data || null;
+        footEl.querySelector("#case-file-name").textContent = caseImg ? "🖼 ✓" : "⚠";
+        showStatus("");
+      });
+    });
+    footEl.querySelector("#case-post").addEventListener("click", () => {
+      const title = (footEl.querySelector("#case-title").value || "").trim().slice(0, 80);
+      const desc = (footEl.querySelector("#case-desc").value || "").trim();
+      if (!title || !desc) { showStatus("⚠ " + t("case_need")); return; }
+      send(desc, caseImg, { caseStudy: true, caseTitle: title });
+      caseImg = null;
+      footEl.querySelector("#case-title").value = "";
+      footEl.querySelector("#case-desc").value = "";
+      footEl.querySelector("#case-file-name").textContent = "";
+      caseForm.hidden = true;
+    });
     const doSend = () => {
       send(inp.value);
       inp.value = "";
@@ -645,7 +713,7 @@
   }
 
   /* ---------------- actions ---------------- */
-  function send(text, img) {
+  function send(text, img, extra) {
     text = (text || "").trim();
     if (!text && !img) return;
     const u = me();
@@ -663,6 +731,7 @@
       ts: Date.now(),
     };
     if (img) msg.img = img;
+    if (extra) Object.assign(msg, extra); /* e.g. case studies: {caseStudy, caseTitle} */
     if (replyTo) { msg.reply = { name: replyTo.name, text: replyTo.text }; replyTo = null; updateReplyBar(); }
     Promise.resolve(backend.add(room, msg)).catch(() => showStatus("⚠ " + t("chat_send_err")));
     /* @ai → the sender's browser asks the free AI and posts the bot's reply */
@@ -730,21 +799,33 @@
     Promise.resolve(backend.update(room, msg)).catch(() => showStatus("⚠ " + t("chat_send_err")));
   }
 
-  function showReactionPicker(ref) {
-    const emojis = ['👍', '❤️', '😂', '🎉', '🔥', '👏', '🤔', '😢'];
-    const menu = document.createElement("div");
-    menu.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;z-index:9999";
-    menu.innerHTML = `<div style="background:var(--surface);padding:12px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.2)">
-      ${emojis.map(e => `<button style="background:none;border:none;font-size:24px;cursor:pointer;padding:4px" data-emoji="${e}">${e}</button>`).join("")}
-    </div>`;
-    emojis.forEach((emoji) => {
-      menu.querySelector(`[data-emoji="${emoji}"]`).addEventListener("click", () => {
-        addReaction(ref, emoji);
-        menu.remove();
-      });
+  /* Messenger-style floating reaction pill, anchored to the message */
+  function showReactionPicker(ref, anchor) {
+    const old = document.querySelector(".react-pill");
+    if (old) old.remove();
+    const emojis = ['👍', '❤️', '😂', '🎉', '🔥', '👏'];
+    const pill = document.createElement("div");
+    pill.className = "react-pill";
+    pill.innerHTML = emojis.map((e) => '<button type="button" data-emoji="' + e + '">' + e + "</button>").join("");
+    document.body.appendChild(pill);
+    const r = anchor && anchor.getBoundingClientRect
+      ? anchor.getBoundingClientRect()
+      : { top: innerHeight / 2, bottom: innerHeight / 2, left: innerWidth / 2, width: 0 };
+    const pw = pill.offsetWidth, ph = pill.offsetHeight;
+    let top = r.top - ph - 8;
+    if (top < 8) top = r.bottom + 8;
+    const left = Math.min(Math.max(8, r.left + r.width / 2 - pw / 2), innerWidth - pw - 8);
+    pill.style.top = top + "px";
+    pill.style.left = left + "px";
+    pill.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-emoji]");
+      if (b) { addReaction(ref, b.getAttribute("data-emoji")); pill.remove(); }
     });
-    menu.addEventListener("click", (e) => { if (e.target === menu) menu.remove(); });
-    document.body.appendChild(menu);
+    setTimeout(() => {
+      document.addEventListener("click", function close(e) {
+        if (!pill.contains(e.target)) { pill.remove(); document.removeEventListener("click", close); }
+      });
+    }, 0);
   }
 
   function addReaction(ref, emoji) {

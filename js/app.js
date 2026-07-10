@@ -2025,8 +2025,14 @@
             ${
               current.type === "video" && current.src
                 ? videoEmbed(current.src, lf(current, "title"))
-                : `<div class="stage-title">${lf(current, "title")}</div>
-                   <div class="play-btn">▶</div>
+                : /* no video file — show the course art as an example image,
+                     never a dead play button */
+                  `${c.image ? `<span class="stage-cover" style="background-image:url('${escapeHtml(c.image)}')"></span><span class="stage-scrim"></span>` : ""}
+                   <div class="stage-title">${lf(current, "title")}</div>
+                   <div class="stage-center">
+                     ${c.image ? "" : `<span class="stage-ic">${c.icon || "📚"}</span>`}
+                     <span class="si-note">📖 ${t("lesson_read_below")}</span>
+                   </div>
                    <div class="stage-label">${secTitle} · ${t("lesson_word")} ${idx + 1} / ${flat.length}</div>`
             }
           </div>

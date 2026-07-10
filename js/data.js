@@ -739,7 +739,7 @@ else {
 <div class="callout tip">Save this as <code>index.html</code> and open it — you just built a web page from scratch! 🎉</div>
 <h3>🏋️ Practice Task</h3>
 <div class="callout tip"><strong>Try it yourself:</strong> in the 🧪 Playground, type out the full HTML page above. Then change the <code>&lt;h1&gt;</code> to your own name, and add a second <code>&lt;p&gt;</code> about your favorite hobby.</div>`,
-          "https://www.w3schools.com/html/mov_bbb.mp4"), // demo video — swap for "videos/your-file.mp4"
+          ), // add a real video later, e.g. "videos/wb-first-page.webm" — no placeholder demos
           video("wb-text", "Headings, Paragraphs & Text", "8 min", `
 <h3>Headings</h3>
 <p>Headings range from <code>&lt;h1&gt;</code> (biggest / most important) down to <code>&lt;h6&gt;</code>. Use one <code>&lt;h1&gt;</code> per page for the main title.</p>

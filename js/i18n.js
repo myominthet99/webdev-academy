@@ -394,6 +394,7 @@ window.I18N = {
       saved_auto: "Progress saved automatically",
 
       lesson_word: "Lesson",
+      lesson_read_below: "Read the full lesson below 👇",
       mark_complete: "Mark complete",
       completed: "✓ Completed",
       next_lesson: "Next lesson →",
@@ -1017,6 +1018,7 @@ window.I18N = {
       saved_auto: "တိုးတက်မှုကို အလိုအလျောက်သိမ်းဆည်းသည်",
 
       lesson_word: "သင်ခန်းစာ",
+      lesson_read_below: "သင်ခန်းစာ အပြည့်အစုံကို အောက်တွင် ဖတ်ပါ 👇",
       mark_complete: "ပြီးစီးအဖြစ်မှတ်ရန်",
       completed: "✓ ပြီးစီးပြီး",
       next_lesson: "နောက်သင်ခန်းစာ →",

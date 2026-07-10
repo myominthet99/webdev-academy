@@ -856,8 +856,18 @@ a.lesson-row:hover .ttl { color: var(--purple); }
   background: rgba(255, 255, 255, .12); border: 2px solid rgba(255, 255, 255, .5);
   color: #fff; font-size: 30px; display: grid; place-items: center;
 }
-.stage .stage-label { position: absolute; bottom: 16px; left: 20px; color: #c9ccd1; font-size: 13px; }
-.stage .stage-title { position: absolute; top: 18px; left: 22px; right: 22px; font-size: 20px; font-weight: 700; color: #fff; }
+.stage .stage-label { position: absolute; bottom: 16px; left: 20px; color: #c9ccd1; font-size: 13px; z-index: 1; }
+.stage .stage-title { position: absolute; top: 18px; left: 22px; right: 22px; font-size: 20px; font-weight: 700; color: #fff; z-index: 1; }
+/* lessons without a video file show course art instead of a dead player */
+.stage-cover { position: absolute; inset: 0; background-size: cover; background-position: center; }
+.stage-scrim { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10, 10, 14, .30), rgba(10, 10, 14, .72)); }
+.stage-center { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.stage-ic { font-size: 62px; line-height: 1; filter: drop-shadow(0 4px 14px rgba(0, 0, 0, .4)); }
+.si-note {
+  color: #fff; font-size: 13.5px; font-weight: 600; background: rgba(0, 0, 0, .42);
+  padding: 6px 14px; border-radius: 999px;
+  -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
+}
 .stage.has-video { background: #000; }
 .video-frame { width: 100%; height: 100%; display: block; border: 0; object-fit: contain; background: #000; }
 .reader { background: var(--surface); color: var(--ink); padding: 26px 34px 60px; }

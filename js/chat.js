@@ -15,7 +15,7 @@
   const I18N = window.I18N;
   const KEY = "wda_chat_v1";
   const MAX = 200;
-  const BUILD = "v18"; /* shown in the chat header — bump with releases */
+  const BUILD = "v19"; /* shown in the chat header — bump with releases */
 
   /* Crisp inline SVG icons (emoji buttons render differently on every
      Android brand — these look identical everywhere) */
@@ -34,6 +34,9 @@
       expand: '<polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>',
       caseb: '<path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/>',
       bot: '<rect x="4" y="8" width="16" height="12" rx="3"/><line x1="12" y1="8" x2="12" y2="4"/><circle cx="12" cy="3" r="1"/><circle cx="9" cy="13" r="1"/><circle cx="15" cy="13" r="1"/><path d="M9 17h6"/>',
+      mic: '<path d="M12 1a3 3 0 0 1 3 3v8a3 3 0 0 1-6 0V4a3 3 0 0 1 3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>',
+      play: '<polygon points="6 3 20 12 6 21 6 3"/>',
+      pause: '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>',
     };
     return '<svg class="ci" viewBox="0 0 24 24" aria-hidden="true">' + (P[name] || "") + "</svg>";
   };
@@ -404,6 +407,7 @@
       '    <button class="chat-full" id="chat-full" type="button" aria-label="Fullscreen" title="Fullscreen">' + ICON("expand") + "</button>" +
       '    <button class="chat-close" type="button" aria-label="Close">' + ICON("x") + "</button></div>" +
       '  <div class="chat-list" id="chat-list"></div>' +
+      '  <button id="chat-jump" class="chat-jump" type="button" hidden>⬇ <b id="chat-jumpn" hidden></b></button>' +
       '  <div id="chat-typing" class="chat-typing" hidden></div>' +
       '  <div class="chat-foot" id="chat-foot"></div>' +
       "</div>";
@@ -434,6 +438,13 @@
     fullBtn.addEventListener("click", () => applyFull(!panel.classList.contains("full")));
     if (localStorage.getItem("wda_chat_full") === "1") applyFull(true);
     searchEl.addEventListener("input", (e) => { searchQuery = e.target.value.toLowerCase(); if (open) renderList(); });
+    /* ⬇ jump-to-bottom chip: appears when scrolled up; counts new arrivals */
+    jumpEl = wrap.querySelector("#chat-jump");
+    jumpEl.addEventListener("click", () => { newWhileUp = 0; scrollBottom(); updateJump(); });
+    listEl.addEventListener("scroll", () => {
+      if (nearBottom()) { newWhileUp = 0; markSeen(); }
+      updateJump();
+    }, { passive: true });
     setTitle();
   }
 
@@ -508,10 +519,18 @@
       wireRoomBar();
       return;
     }
+    let newDivDone = false;
     listEl.innerHTML = roomBar + filtered
       .map((msg, i) => {
         const mine = u && msg.userId === u.id;
         const ref = esc(msg._key || msg.id);
+        /* "New messages" divider: first message from others that arrived
+           after this reader's last visit to the room */
+        let newDiv = "";
+        if (!newDivDone && seenAtOpen && !mine && msg.ts > seenAtOpen) {
+          newDivDone = true;
+          newDiv = '<div class="chat-newdiv"><span>' + esc(t("chat_new_msgs")) + "</span></div>";
+        }
         const isPinned = msg.pinned;
         const text = (msg.editedText || msg.text || "");
         /* day separator when the calendar date changes */
@@ -530,11 +549,11 @@
         const grouped = !daySep && prev && prev.userId === msg.userId &&
           !!prev.bot === !!msg.bot && (msg.ts - prev.ts) < 300000;
         return (
-          daySep +
+          daySep + newDiv +
           '<div class="chat-msg ' + (mine ? "mine" : "") + (msg.bot ? " bot" : "") + (isPinned ? " pinned" : "") + (mentioned ? " mentioned" : "") + (grouped ? " grouped" : "") + '">' +
           (isPinned ? '<span class="chat-pin" title="Pinned">📌</span>' : "") +
           (mine ? "" : '<span class="chat-avatar' + (msg.bot ? " botav" : "") + (grouped ? " ghost" : "") + '">' + (grouped ? "" : (msg.bot ? ICON("bot") : esc(msg.initial || "?"))) + "</span>") +
-          '<div class="chat-bubble' + (msg.caseStudy ? " case" : "") + '">' +
+          '<div class="chat-bubble' + (msg.caseStudy ? " case" : "") + (msg.sticker ? " sticker" : "") + '">' +
           (mine || grouped ? "" : '<div class="chat-name">' + esc(msg.name || "") + "</div>") +
           (msg.caseStudy ? '<div class="case-tag">' + ICON("caseb") + " " + esc(t("case_tag")) + '</div><div class="case-heading">' + esc(String(msg.caseTitle || "").slice(0, 80)) + "</div>" : "") +
           (msg.reply ? '<div class="chat-quote">↩ <b>' + esc(msg.reply.name || "") + "</b> " + esc(String(msg.reply.text || "").slice(0, 80)) + "</div>" : "") +
@@ -548,6 +567,7 @@
             return '<div class="chat-gallery' + (list.length > 1 ? " multi" : "") + '">' +
               list.slice(0, 4).map((s) => '<img class="chat-img" loading="lazy" src="' + esc(String(s)) + '" alt="photo">').join("") + "</div>";
           })() +
+          (msg.aud ? '<div class="chat-aud"><button type="button" data-aud="' + ref + '">' + ICON("play") + "</button><span class=\"aud-bar\"><i></i></span><span class=\"aud-dur\">" + (Number(msg.dur) ? Number(msg.dur) + "s" : "🎤") + "</span></div>" : "") +
           (text ? '<div class="chat-text">' + formatText(text) + (msg.editedText ? ' <span class="chat-edited">(edited)</span>' : "") + "</div>" : "") +
           (reactionHtml ? '<div class="chat-reactions">' + reactionHtml + '</div>' : "") +
           '<div class="chat-meta"><span class="chat-time">' + fmtTime(msg.ts) + "</span>" +
@@ -586,6 +606,13 @@
     listEl.querySelectorAll(".chat-img").forEach((im) =>
       im.addEventListener("click", () => showImageFull(im.src))
     );
+    listEl.querySelectorAll("[data-aud]").forEach((b) =>
+      b.addEventListener("click", () => {
+        const key = b.getAttribute("data-aud");
+        const m = roomCache.find((x) => (x._key || x.id) === key);
+        if (m && m.aud) toggleVoice(key, m.aud, b);
+      })
+    );
     /* touch devices have no hover — tapping a bubble reveals its actions */
     listEl.querySelectorAll(".chat-bubble").forEach((bb) =>
       bb.addEventListener("click", (e) => {
@@ -615,7 +642,35 @@
       bar.innerHTML = "";
     }
   }
-  function scrollBottom() { if (listEl) listEl.scrollTop = listEl.scrollHeight; }
+  function scrollBottom() { if (listEl) { listEl.scrollTop = listEl.scrollHeight; markSeen(); } }
+  /* ---- UX pack: near-bottom detection, jump chip, seen tracking ---- */
+  let jumpEl = null, newWhileUp = 0, seenAtOpen = 0;
+  const nearBottom = () => !listEl || (listEl.scrollHeight - listEl.scrollTop - listEl.clientHeight) < 140;
+  function markSeen() {
+    const last = roomCache[roomCache.length - 1];
+    if (last && last.ts) { try { localStorage.setItem("wda_chat_seen::" + room, String(last.ts)); } catch (e) {} }
+  }
+  function loadSeen() {
+    seenAtOpen = Number(localStorage.getItem("wda_chat_seen::" + room)) || 0;
+  }
+  function updateJump() {
+    if (!jumpEl) return;
+    const up = !nearBottom();
+    jumpEl.hidden = !up;
+    const n = jumpEl.querySelector("#chat-jumpn");
+    if (n) { n.hidden = !newWhileUp; n.textContent = newWhileUp ? String(newWhileUp) : ""; }
+  }
+  /* one shared audio element so two voice notes never play at once */
+  let audioEl = null, audioKey = "";
+  function toggleVoice(key, src, btn) {
+    if (audioEl && audioKey === key && !audioEl.paused) { audioEl.pause(); btn.innerHTML = ICON("play"); return; }
+    if (audioEl) { audioEl.pause(); document.querySelectorAll(".chat-aud button").forEach((b) => { b.innerHTML = ICON("play"); }); }
+    audioEl = new Audio(src);
+    audioKey = key;
+    btn.innerHTML = ICON("pause");
+    audioEl.addEventListener("ended", () => { btn.innerHTML = ICON("play"); });
+    audioEl.play().catch(() => { btn.innerHTML = ICON("play"); });
+  }
 
   /* Free accounts can READ the chat but only paying students may write.
      Premium status loads async — re-render the composer when it flips. */
@@ -644,6 +699,10 @@
     }
     footEl.innerHTML =
       '<div id="chat-replybar" class="chat-replybar" hidden></div>' +
+      '<div id="stick-tray" class="stick-tray" hidden>' +
+      ["🎉", "🔥", "👍", "❤️", "😂", "🤯", "💪", "🏆", "🙏", "😴", "☕", "🚀"].map((s) =>
+        '<button type="button" data-stick="' + s + '">' + s + "</button>").join("") +
+      "</div>" +
       '<div id="case-form" class="case-form" hidden>' +
       '  <div class="case-form-head">' + ICON("caseb") + " <b>" + esc(t("case_share")) + '</b><button type="button" id="case-cancel" class="chat-close-mini">' + ICON("x") + "</button></div>" +
       '  <input id="case-title" maxlength="80" placeholder="' + esc(t("case_title_ph")) + '">' +
@@ -656,6 +715,8 @@
       '<form class="chat-form" id="chat-form">' +
       '<button type="button" class="chat-casebtn" id="chat-case" title="' + esc(t("case_share")) + '">' + ICON("caseb") + "</button>" +
       '<label class="chat-photo" title="' + esc(t("chat_photo")) + '">' + ICON("camera") + '<input type="file" accept="image/*" hidden></label>' +
+      '<button type="button" class="chat-photo chat-mic" id="chat-mic" title="' + esc(t("chat_voice")) + '">' + ICON("mic") + "</button>" +
+      '<button type="button" class="chat-photo chat-stick" id="chat-stick" title="Sticker">😊</button>' +
       '<textarea rows="1" maxlength="500" placeholder="' + esc(t("chat_placeholder") + (window.AI && window.AI.ready() ? " · @ai 🤖" : "")) + '"></textarea>' +
       '<button class="chat-send" type="submit" aria-label="Send">' + ICON("send") + "</button></form>";
     const form = footEl.querySelector("#chat-form");
@@ -728,13 +789,54 @@
         inp.value = "";
       });
     });
+
+    /* 😊 sticker tray: one tap sends a big emoji (older clients see plain text) */
+    const tray = footEl.querySelector("#stick-tray");
+    footEl.querySelector("#chat-stick").addEventListener("click", () => { tray.hidden = !tray.hidden; });
+    tray.querySelectorAll("[data-stick]").forEach((b) =>
+      b.addEventListener("click", () => { send(b.getAttribute("data-stick"), null, { sticker: true }); tray.hidden = true; })
+    );
+
+    /* 🎤 voice notes: tap to record (30s cap), tap again to send */
+    const micBtn = footEl.querySelector("#chat-mic");
+    let rec = null, recChunks = [], recT0 = 0, recTimer = null;
+    const stopRec = () => { if (rec && rec.state !== "inactive") rec.stop(); clearTimeout(recTimer); };
+    micBtn.addEventListener("click", () => {
+      if (rec && rec.state === "recording") { stopRec(); return; }
+      if (!(navigator.mediaDevices && window.MediaRecorder)) { showStatus("⚠ " + t("chat_mic_unsupported")); return; }
+      navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+        const mime = MediaRecorder.isTypeSupported("audio/webm;codecs=opus") ? "audio/webm;codecs=opus"
+          : MediaRecorder.isTypeSupported("audio/mp4") ? "audio/mp4" : "";
+        rec = new MediaRecorder(stream, mime ? { mimeType: mime, audioBitsPerSecond: 32000 } : undefined);
+        recChunks = []; recT0 = Date.now();
+        rec.addEventListener("dataavailable", (e) => { if (e.data && e.data.size) recChunks.push(e.data); });
+        rec.addEventListener("stop", () => {
+          stream.getTracks().forEach((tr) => tr.stop());
+          micBtn.classList.remove("recording");
+          micBtn.innerHTML = ICON("mic");
+          showStatus("");
+          const dur = Math.round((Date.now() - recT0) / 1000);
+          const blob = new Blob(recChunks, { type: rec.mimeType || "audio/webm" });
+          if (dur < 1 || !blob.size) return;
+          if (blob.size > 400000) { showStatus("⚠ " + t("chat_voice_long")); return; }
+          const fr = new FileReader();
+          fr.onload = () => send("", null, { aud: String(fr.result), dur: dur });
+          fr.readAsDataURL(blob);
+        });
+        rec.start();
+        micBtn.classList.add("recording");
+        micBtn.innerHTML = "⏹";
+        showStatus("🎤 " + t("chat_recording"));
+        recTimer = setTimeout(stopRec, 30000);
+      }).catch(() => { showStatus("⚠ " + t("chat_mic_denied")); });
+    });
     updateReplyBar();
   }
 
   /* ---------------- actions ---------------- */
   function send(text, img, extra) {
     text = (text || "").trim();
-    if (!text && !img) return;
+    if (!text && !img && !(extra && extra.aud)) return;
     const u = me();
     if (!u) { showStatus(t("chat_login")); return; }
     if (!isPaying()) { showStatus("🔒 " + t("chat_premium_only")); return; }
@@ -775,8 +877,10 @@
         system:
           "You are the friendly AI helper in WebDev Academy's community chat — a free web-development school for Myanmar students. " +
           "Answer coding and learning questions in under 120 words, in simple English (reply in Burmese if the student wrote Burmese). " +
-          "Put code inside ```code fences```. If the question is not about learning or coding, reply kindly in one short sentence.",
+          "Put code inside ```code fences```. If the question is not about learning or coding, reply kindly in one short sentence. " +
+          "If an image is attached (a code screenshot, error message or exercise), read it carefully and explain step by step.",
         maxTokens: 2048,
+        image: userMsg.img || null, /* 📷 photo questions — Gemini reads the screenshot */
       }
     ).then((reply) => {
       const bot = {
@@ -917,11 +1021,19 @@
   function subscribeRoom() {
     if (unsub) { try { unsub(); } catch (e) {} }
     roomCache = []; primed = false;
+    loadSeen();
     unsub = backend.subscribe(room, (msgs) => {
       const delta = msgs.length - roomCache.length;
       roomCache = msgs;
       if (!primed) { primed = true; if (open) { renderList(); scrollBottom(); } return; }
-      if (open) { renderList(); scrollBottom(); }
+      if (open) {
+        /* only auto-scroll when the reader is already at the bottom —
+           never yank them away from older messages they're reading */
+        const stick = nearBottom();
+        renderList();
+        if (stick) scrollBottom();
+        else if (delta > 0) { newWhileUp += delta; updateJump(); }
+      }
       else if (delta > 0) { unread += delta; renderBadge(); beep(); flashTitle(); }
     });
   }
@@ -929,7 +1041,7 @@
   function setRoom(id, label) {
     id = id || "community";
     if (id === room) { if (label !== roomLabel) { roomLabel = label; setTitle(); } return; }
-    room = id; roomLabel = label || null; unread = 0; renderBadge(); setTitle();
+    room = id; roomLabel = label || null; unread = 0; newWhileUp = 0; renderBadge(); setTitle();
     markPresence(room);
     subscribeRoom();
     if (open) { renderList(); renderPresence(); startLive(); }

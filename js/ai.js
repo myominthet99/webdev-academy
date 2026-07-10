@@ -67,8 +67,15 @@
     });
   }
   function completeNow(prompt, opts) {
+    const parts = [{ text: String(prompt) }];
+    /* optional image (data URL) — Gemini is multimodal, so photo questions
+       ("explain this error screenshot") work through the same endpoint */
+    if (opts.image) {
+      const m = String(opts.image).match(/^data:([^;]+);base64,(.+)$/);
+      if (m) parts.push({ inlineData: { mimeType: m[1], data: m[2] } });
+    }
     const body = {
-      contents: [{ role: "user", parts: [{ text: String(prompt) }] }],
+      contents: [{ role: "user", parts: parts }],
       generationConfig: {
         temperature: opts.temperature == null ? 0.7 : opts.temperature,
         maxOutputTokens: opts.maxTokens || 2048,

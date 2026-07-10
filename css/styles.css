@@ -789,6 +789,35 @@ a.lesson-row:hover .ttl { color: var(--purple); }
 .chat-msg:not(.mine):has(+ .chat-msg.grouped:not(.mine)) .chat-bubble { border-bottom-left-radius: 6px; }
 .chat-msg.grouped:not(.mine) .chat-bubble { border-top-left-radius: 6px; }
 
+/* chat v19: voice notes, stickers, jump chip, new-messages divider */
+.chat-mic.recording { color: #e11d48 !important; animation: fabPulse 1s ease infinite; }
+.chat-aud { display: flex; align-items: center; gap: 8px; min-width: 150px; padding: 2px 0; }
+.chat-aud button {
+  width: 32px; height: 32px; border-radius: 50%; border: 0; cursor: pointer; flex: 0 0 32px;
+  background: rgba(127, 127, 127, .18); color: inherit; display: grid; place-items: center;
+}
+.chat-msg.mine .chat-aud button { background: rgba(255, 255, 255, .25); color: #fff; }
+.chat-aud .aud-bar { flex: 1; height: 4px; border-radius: 2px; background: rgba(127, 127, 127, .3); position: relative; }
+.chat-msg.mine .chat-aud .aud-bar { background: rgba(255, 255, 255, .35); }
+.chat-aud .aud-dur { font-size: 11.5px; opacity: .8; }
+.chat-bubble.sticker { background: transparent !important; border: 0 !important; box-shadow: none !important; padding: 0 4px; }
+.chat-bubble.sticker .chat-text { font-size: 46px; line-height: 1.15; }
+.stick-tray {
+  display: flex; flex-wrap: wrap; gap: 4px; padding: 8px 10px;
+  background: var(--surface); border-top: 1px solid var(--line);
+}
+.stick-tray button { border: 0; background: transparent; font-size: 26px; cursor: pointer; padding: 4px 6px; border-radius: 8px; transition: transform .12s ease; }
+.stick-tray button:hover { transform: scale(1.25); background: var(--surface-2); }
+.chat-jump {
+  position: absolute; right: 14px; bottom: 86px; z-index: 3;
+  border: 1px solid var(--line); border-radius: 999px; padding: 7px 12px;
+  background: var(--surface); color: var(--ink); cursor: pointer; font-size: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .18);
+}
+.chat-jump b { background: linear-gradient(135deg, #7b2ff7, #a435f0); color: #fff; border-radius: 999px; padding: 1px 7px; font-size: 11.5px; margin-left: 2px; }
+.chat-newdiv { display: flex; align-items: center; gap: 10px; margin: 10px 0; color: var(--purple); font-size: 11.5px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
+.chat-newdiv::before, .chat-newdiv::after { content: ""; flex: 1; height: 1.5px; background: currentColor; opacity: .4; border-radius: 1px; }
+
 /* Messenger-style animated typing dots */
 .tdots { display: inline-flex; gap: 3px; margin-left: 6px; vertical-align: -1px; }
 .tdots i {

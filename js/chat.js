@@ -15,7 +15,7 @@
   const I18N = window.I18N;
   const KEY = "wda_chat_v1";
   const MAX = 200;
-  const BUILD = "v16"; /* shown in the chat header — bump with releases */
+  const BUILD = "v17"; /* shown in the chat header — bump with releases */
 
   /* Crisp inline SVG icons (emoji buttons render differently on every
      Android brand — these look identical everywhere) */
@@ -538,7 +538,16 @@
           (mine || grouped ? "" : '<div class="chat-name">' + esc(msg.name || "") + "</div>") +
           (msg.caseStudy ? '<div class="case-tag">' + ICON("caseb") + " " + esc(t("case_tag")) + '</div><div class="case-heading">' + esc(String(msg.caseTitle || "").slice(0, 80)) + "</div>" : "") +
           (msg.reply ? '<div class="chat-quote">↩ <b>' + esc(msg.reply.name || "") + "</b> " + esc(String(msg.reply.text || "").slice(0, 80)) + "</div>" : "") +
-          (msg.img ? '<img class="chat-img" loading="lazy" src="' + esc(msg.img) + '" alt="photo">' : "") +
+          (function () {
+            /* multi-screenshot gallery (imgs array) with single-img fallback;
+               Firebase may hand arrays back as objects — normalize */
+            let list = Array.isArray(msg.imgs) ? msg.imgs
+              : (msg.imgs && typeof msg.imgs === "object" ? Object.values(msg.imgs) : null);
+            if (!list || !list.length) list = msg.img ? [msg.img] : [];
+            if (!list.length) return "";
+            return '<div class="chat-gallery' + (list.length > 1 ? " multi" : "") + '">' +
+              list.slice(0, 4).map((s) => '<img class="chat-img" loading="lazy" src="' + esc(String(s)) + '" alt="photo">').join("") + "</div>";
+          })() +
           (text ? '<div class="chat-text">' + formatText(text) + (msg.editedText ? ' <span class="chat-edited">(edited)</span>' : "") + "</div>" : "") +
           (reactionHtml ? '<div class="chat-reactions">' + reactionHtml + '</div>' : "") +
           '<div class="chat-meta"><span class="chat-time">' + fmtTime(msg.ts) + "</span>" +
@@ -640,8 +649,8 @@
       '  <input id="case-title" maxlength="80" placeholder="' + esc(t("case_title_ph")) + '">' +
       '  <textarea id="case-desc" rows="3" maxlength="400" placeholder="' + esc(t("case_desc_ph")) + '"></textarea>' +
       '  <div class="case-form-foot">' +
-      '    <label class="btn-mini">' + ICON("camera") + " " + esc(t("case_shot")) + '<input id="case-file" type="file" accept="image/*" hidden></label>' +
-      '    <span id="case-file-name" class="case-file-name"></span>' +
+      '    <label class="btn-mini">' + ICON("camera") + " " + esc(t("case_shot")) + '<input id="case-file" type="file" accept="image/*" multiple hidden></label>' +
+      '    <span id="case-thumbs" class="case-thumbs"></span>' +
       '    <button type="button" id="case-post" class="btn-mini primary">' + ICON("send") + " " + esc(t("case_post")) + "</button>" +
       "  </div></div>" +
       '<form class="chat-form" id="chat-form">' +
@@ -653,34 +662,43 @@
     const inp = form.querySelector("textarea");
     const file = form.querySelector('input[type="file"]');
 
-    /* 📋 case study composer: title + description + screenshot in one post */
+    /* 📋 case study composer: title + description + up to 4 screenshots */
     const caseForm = footEl.querySelector("#case-form");
-    let caseImg = null;
+    let caseImgs = [];
+    const paintThumbs = () => {
+      const box = footEl.querySelector("#case-thumbs");
+      box.innerHTML = caseImgs.map((s, i) =>
+        '<span class="case-thumb"><img src="' + s + '" alt=""><button type="button" data-rmimg="' + i + '">×</button></span>').join("");
+      box.querySelectorAll("[data-rmimg]").forEach((b) =>
+        b.addEventListener("click", () => { caseImgs.splice(Number(b.getAttribute("data-rmimg")), 1); paintThumbs(); }));
+    };
     footEl.querySelector("#chat-case").addEventListener("click", () => {
       caseForm.hidden = !caseForm.hidden;
       if (!caseForm.hidden) footEl.querySelector("#case-title").focus();
     });
     footEl.querySelector("#case-cancel").addEventListener("click", () => { caseForm.hidden = true; });
     footEl.querySelector("#case-file").addEventListener("change", (e) => {
-      const f = e.target.files && e.target.files[0];
+      const files = Array.from(e.target.files || []).slice(0, 4 - caseImgs.length);
       e.target.value = "";
-      if (!f) return;
+      if (!files.length) { if (caseImgs.length >= 4) showStatus("⚠ " + t("case_max")); return; }
       showStatus("⏳ …");
-      compressImage(f, (data) => {
-        caseImg = data || null;
-        footEl.querySelector("#case-file-name").textContent = caseImg ? "🖼 ✓" : "⚠";
-        showStatus("");
-      });
+      let pending = files.length;
+      files.forEach((f) => compressImage(f, (data) => {
+        if (data && caseImgs.length < 4) caseImgs.push(data);
+        if (--pending === 0) { paintThumbs(); showStatus(""); }
+      }));
     });
     footEl.querySelector("#case-post").addEventListener("click", () => {
       const title = (footEl.querySelector("#case-title").value || "").trim().slice(0, 80);
       const desc = (footEl.querySelector("#case-desc").value || "").trim();
       if (!title || !desc) { showStatus("⚠ " + t("case_need")); return; }
-      send(desc, caseImg, { caseStudy: true, caseTitle: title });
-      caseImg = null;
+      const extra = { caseStudy: true, caseTitle: title };
+      if (caseImgs.length > 1) extra.imgs = caseImgs.slice(0, 4);
+      send(desc, caseImgs[0] || null, extra);
+      caseImgs = [];
+      paintThumbs();
       footEl.querySelector("#case-title").value = "";
       footEl.querySelector("#case-desc").value = "";
-      footEl.querySelector("#case-file-name").textContent = "";
       caseForm.hidden = true;
     });
     const doSend = () => {

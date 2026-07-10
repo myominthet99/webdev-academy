@@ -694,6 +694,16 @@ a.lesson-row:hover .ttl { color: var(--purple); }
 }
 .btn-mini.primary { background: linear-gradient(135deg, #7b2ff7, #a435f0); color: #fff; border-color: transparent; margin-left: auto; }
 .case-file-name { font-size: 12px; color: var(--muted); }
+.case-thumbs { display: flex; gap: 6px; flex-wrap: wrap; }
+.case-thumb { position: relative; }
+.case-thumb img { width: 40px; height: 40px; object-fit: cover; border-radius: 8px; border: 1px solid var(--line); display: block; }
+.case-thumb button {
+  position: absolute; top: -6px; right: -6px; width: 16px; height: 16px;
+  border: none; border-radius: 50%; background: #e5484d; color: #fff;
+  font-size: 10px; line-height: 1; cursor: pointer; padding: 0;
+}
+.chat-gallery { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0; }
+.chat-gallery.multi .chat-img { max-width: 118px; max-height: 118px; object-fit: cover; }
 
 /* chat composer lock for free accounts */
 .chat-locked {

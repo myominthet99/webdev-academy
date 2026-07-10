@@ -1550,7 +1550,8 @@
           </div>
 
           <aside class="buybox">
-            <div class="course-gal">
+            <div class="course-gal peek">
+              <span class="cg-count" id="cg-count">1/3</span>
               <div class="cg-track" id="cg-track">
                 <div class="cg-slide" style="background:${c.color}${c.image ? `;background-image:url('${escapeHtml(c.image)}');background-size:cover;background-position:center` : ""}">${c.image ? "" : c.icon}</div>
                 <div class="cg-slide"><img id="cg-learn" alt="What you'll learn"></div>
@@ -1708,9 +1709,11 @@
       if (gl && gs) { gl.src = drawCourseSlide(c, "learn"); gs.src = drawCourseSlide(c, "stats"); }
       const track = document.getElementById("cg-track");
       const dots = document.getElementById("cg-dots");
+      const cnt = document.getElementById("cg-count");
       if (track && dots) track.addEventListener("scroll", () => {
         const i = Math.round(track.scrollLeft / Math.max(1, track.clientWidth));
         dots.querySelectorAll("i").forEach((d, di) => d.classList.toggle("on", di === i));
+        if (cnt) cnt.textContent = (i + 1) + "/3";
       }, { passive: true });
     } catch (e) {}
     wireReviews(c);

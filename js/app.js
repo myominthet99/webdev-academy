@@ -1550,7 +1550,14 @@
           </div>
 
           <aside class="buybox">
-            <div class="thumb" style="background:${c.color}${c.image ? `;background-image:url('${escapeHtml(c.image)}');background-size:cover;background-position:center` : ""}">${c.image ? "" : c.icon}</div>
+            <div class="course-gal">
+              <div class="cg-track" id="cg-track">
+                <div class="cg-slide" style="background:${c.color}${c.image ? `;background-image:url('${escapeHtml(c.image)}');background-size:cover;background-position:center` : ""}">${c.image ? "" : c.icon}</div>
+                <div class="cg-slide"><img id="cg-learn" alt="What you'll learn"></div>
+                <div class="cg-slide"><img id="cg-stats" alt="Course overview"></div>
+              </div>
+              <div class="cg-dots" id="cg-dots"><i class="on"></i><i></i><i></i></div>
+            </div>
             <div class="pad">
               <div class="price ${isFree(c) ? "" : "premium"}">${priceTag(c)}</div>
               ${enrolled && pct > 0 ? `<div class="progress" style="margin-bottom:14px"><span style="width:${pct}%"></span></div><div class="muted" style="margin-bottom:14px">${pct}% ${t("pct_complete_word")} · ⏱ ${formatTime(getTotalTimeSpent(c.id))}</div>` : ""}
@@ -1694,6 +1701,18 @@
       if (navigator.clipboard) navigator.clipboard.writeText(link).then(done).catch(() => fallbackCopy(link, done));
       else fallbackCopy(link, done);
     });
+    /* 🖼️ gallery: generate the two branded slides + wire the dots */
+    try {
+      const gl = document.getElementById("cg-learn");
+      const gs = document.getElementById("cg-stats");
+      if (gl && gs) { gl.src = drawCourseSlide(c, "learn"); gs.src = drawCourseSlide(c, "stats"); }
+      const track = document.getElementById("cg-track");
+      const dots = document.getElementById("cg-dots");
+      if (track && dots) track.addEventListener("scroll", () => {
+        const i = Math.round(track.scrollLeft / Math.max(1, track.clientWidth));
+        dots.querySelectorAll("i").forEach((d, di) => d.classList.toggle("on", di === i));
+      }, { passive: true });
+    } catch (e) {}
     wireReviews(c);
     window.scrollTo(0, 0);
   }
@@ -4340,6 +4359,65 @@
 
   /* Admin dashboard: one page of stats pulled from Firebase — students,
      premium members, pending payments, most-popular courses, top learners */
+  /* shared canvas helpers (course gallery slides, admin image cards) */
+  function rrPath(x2, x, y, w, h, r) {
+    x2.beginPath();
+    x2.moveTo(x + r, y);
+    x2.arcTo(x + w, y, x + w, y + h, r);
+    x2.arcTo(x + w, y + h, x, y + h, r);
+    x2.arcTo(x, y + h, x, y, r);
+    x2.arcTo(x, y, x + w, y, r);
+    x2.closePath();
+  }
+  function wrapCanvas(x2, text, maxW) {
+    const words = String(text).split(" ");
+    const lines = [];
+    let line = "";
+    for (const w of words) {
+      const tl = line ? line + " " + w : w;
+      if (x2.measureText(tl).width > maxW && line) { lines.push(line); line = w; }
+      else line = tl;
+    }
+    if (line) lines.push(line);
+    return lines;
+  }
+  /* 🖼️ auto-generated branded slides for the course-page gallery */
+  function drawCourseSlide(c, kind) {
+    const W = 800, H = 450;
+    const cv = document.createElement("canvas");
+    cv.width = W; cv.height = H;
+    const x = cv.getContext("2d");
+    const FAM = '"Segoe UI", "Myanmar Text", "Padauk", sans-serif';
+    const g = x.createLinearGradient(0, 0, W, H);
+    g.addColorStop(0, "#7b2ff7"); g.addColorStop(1, "#c86dd7");
+    x.fillStyle = g; x.fillRect(0, 0, W, H);
+    const rad = x.createRadialGradient(W * .2, 0, 0, W * .2, 0, W * .8);
+    rad.addColorStop(0, "rgba(255,255,255,.2)"); rad.addColorStop(.6, "rgba(255,255,255,0)");
+    x.fillStyle = rad; x.fillRect(0, 0, W, H);
+    x.fillStyle = "#fff";
+    if (kind === "learn") {
+      x.textAlign = "left";
+      x.font = "bold 36px " + FAM;
+      x.fillText(lang === "my" ? "✅ သင်ယူရမည့်အရာများ" : "✅ What you'll learn", 48, 78);
+      x.font = "27px " + FAM;
+      let y = 142;
+      (cf(c, "whatYouLearn") || c.whatYouLearn || []).slice(0, 3).forEach((item) => {
+        wrapCanvas(x, "•  " + item, W - 110).slice(0, 2).forEach((ln) => { x.fillText(ln, 52, y); y += 40; });
+        y += 14;
+      });
+    } else {
+      x.textAlign = "center";
+      x.font = "92px " + FAM;
+      x.fillText(c.icon, W / 2, 152);
+      x.font = "bold 36px " + FAM;
+      wrapCanvas(x, cf(c, "title"), W - 120).slice(0, 2).forEach((ln, i) => x.fillText(ln, W / 2, 230 + i * 46));
+      x.font = "27px " + FAM;
+      x.fillText("📚 " + totalLessons(c) + (lang === "my" ? " သင်ခန်းစာ" : " lessons") + "   ·   ⏱ " + c.hours + "h", W / 2, 344);
+      x.fillText("🌐 EN + မြန်မာ   ·   🎓 Certificate", W / 2, 392);
+    }
+    return cv.toDataURL("image/png");
+  }
+
   /* tiny dependency-free SVG bar chart for the admin dashboard */
   function chartBars(pairs, h) {
     h = h || 110;

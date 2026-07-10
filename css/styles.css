@@ -439,6 +439,22 @@ button { font-family: inherit; cursor: pointer; }
   align-self: start;
 }
 .buybox .thumb { height: 170px; display: grid; place-items: center; color: #fff; font-size: 46px; font-weight: 800; }
+
+/* 🖼️ course mini-gallery (cover + auto-generated branded slides) */
+.course-gal { position: relative; }
+.cg-track {
+  display: flex; overflow-x: auto; scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch; scrollbar-width: none;
+}
+.cg-track::-webkit-scrollbar { display: none; }
+.cg-slide {
+  flex: 0 0 100%; height: 170px; scroll-snap-align: start;
+  display: grid; place-items: center; color: #fff; font-size: 46px; font-weight: 800;
+}
+.cg-slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cg-dots { position: absolute; bottom: 8px; left: 0; right: 0; display: flex; justify-content: center; gap: 6px; pointer-events: none; }
+.cg-dots i { width: 7px; height: 7px; border-radius: 4px; background: rgba(255, 255, 255, .5); transition: width .2s ease, background .2s ease; }
+.cg-dots i.on { background: #fff; width: 18px; }
 .buybox .pad { padding: 20px; }
 .buybox .price { font-size: 26px; margin-bottom: 14px; }
 .buybox ul { list-style: none; padding: 0; margin: 16px 0 0; font-size: 14px; }
@@ -645,6 +661,12 @@ a.lesson-row:hover .ttl { color: var(--purple); }
 .chat-msg.mine .chat-actions button:hover { color: #fff; }
 .chat-msg.mine .chat-quote { background: rgba(255, 255, 255, .16); color: #fff; }
 .chat-msg.mine .chat-icode { background: rgba(255, 255, 255, .22); }
+/* keep every child readable on the gradient — both themes */
+.chat-msg.mine .chat-mention { color: #fff; background: rgba(255, 255, 255, .25); }
+.chat-msg.mine .chat-mention.me { color: #fff; background: rgba(255, 210, 120, .35); }
+.chat-msg.mine .chat-edited { color: rgba(255, 255, 255, .75); }
+.chat-msg.mine .chat-quote b { color: #fff; }
+.chat-head .chat-online { color: #6ee7a7; }
 .chat-bubble { border-radius: 18px; }
 
 /* messenger-style grouping */
@@ -950,9 +972,9 @@ a.lesson-row:hover .ttl { color: var(--purple); }
   background: linear-gradient(135deg, #7b2ff7, #f107a3); color: #fff; font-weight: 700; font-size: 12px;
 }
 .chat-bubble { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 7px 11px; }
-.chat-msg.mine .chat-bubble { background: #efe7fd; border-color: #dcc9fb; }
+.chat-msg.mine .chat-bubble { background: linear-gradient(135deg, #7b2ff7, #a435f0); border-color: transparent; color: #fff; }
 /* Dark mode: own bubbles must stay readable (light ink needs a dark bg) */
-[data-theme="dark"] .chat-msg.mine .chat-bubble { background: #43306b; border-color: #5b4390; }
+[data-theme="dark"] .chat-msg.mine .chat-bubble { background: linear-gradient(135deg, #7b2ff7, #a435f0); border-color: transparent; }
 /* AI bot replies get a soft teal bubble so they stand out from students */
 .chat-msg.bot .chat-avatar { background: linear-gradient(135deg, #0bab64, #3bb78f); }
 .chat-msg.bot .chat-bubble { background: #eafaf3; border-color: #bfe9d6; }

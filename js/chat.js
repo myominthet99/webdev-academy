@@ -15,7 +15,7 @@
   const I18N = window.I18N;
   const KEY = "wda_chat_v1";
   const MAX = 200;
-  const BUILD = "v17"; /* shown in the chat header — bump with releases */
+  const BUILD = "v18"; /* shown in the chat header — bump with releases */
 
   /* Crisp inline SVG icons (emoji buttons render differently on every
      Android brand — these look identical everywhere) */
@@ -888,8 +888,8 @@
     if (!typingEl) return;
     if (typingUsers.size > 0) {
       const names = Array.from(typingUsers).slice(0, 2).join(", ");
-      const more = typingUsers.size > 2 ? ` +${typingUsers.size - 2}` : "";
-      typingEl.textContent = `${names}${more} is typing...`;
+      const more = typingUsers.size > 2 ? " +" + (typingUsers.size - 2) : "";
+      typingEl.innerHTML = esc(names + more) + ' <span class="tdots"><i></i><i></i><i></i></span>';
       typingEl.hidden = false;
     } else {
       typingEl.hidden = true;

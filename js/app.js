@@ -82,8 +82,36 @@
       const ov = I18N.content.lessons[lesson.id];
       if (ov && ov[field] != null) return ov[field];
     }
-    return lesson[field];
+    if (lesson[field] != null) return lesson[field]; /* custom/admin courses keep inline fields */
+    /* built-in lesson bodies live in the lazy content bundle (data-content.js) */
+    if (window.APP_CONTENT) {
+      const b = window.APP_CONTENT[lesson.id];
+      if (b) {
+        if (field === "content") return b.c;
+        if (field === "starter") return b.s;
+        if (field === "check") return b.k;
+      }
+    }
+    return undefined;
   }
+
+  /* Lazy loader for the lesson-content bundle: the app boots on the light
+     core catalog; bodies download once, on demand (or after idle). */
+  let contentLoading = null;
+  function loadContent() {
+    if (window.APP_CONTENT) return Promise.resolve();
+    if (contentLoading) return contentLoading;
+    contentLoading = new Promise((resolve, reject) => {
+      const s = document.createElement("script");
+      s.src = "js/data-content.js";
+      s.onload = () => resolve();
+      s.onerror = () => { contentLoading = null; reject(new Error("content-load")); };
+      document.head.appendChild(s);
+    });
+    return contentLoading;
+  }
+  /* prefetch quietly a few seconds after boot so lessons open instantly */
+  setTimeout(() => { loadContent().catch(() => {}); }, 4000);
   /* Quiz questions with Myanmar text but English answer index */
   function getQuestions(lesson) {
     const en = lesson.questions;
@@ -1812,6 +1840,12 @@
     try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (e) {}
     const c = courseById(courseId);
     if (!c) return renderNotFound();
+    /* lesson bodies live in the lazy bundle — fetch once, then continue */
+    if (!window.APP_CONTENT) {
+      app.innerHTML = `<div class="container"><div class="empty"><h2>⏳</h2><p class="muted">${t("prem_checking")}</p></div></div>`;
+      loadContent().then(() => renderLearn(courseId, lessonId)).catch(() => renderNotFound());
+      return;
+    }
 
     const flat = lessonsOf(c);
     let idx = flat.findIndex((x) => x.lesson.id === lessonId);
@@ -2355,8 +2389,9 @@
     const status = document.getElementById("ex-status");
     if (!ta || !frame) return;
     const saved = jget(ns("wda_ex_code"), {});
-    ta.value = saved[lesson.id] != null ? saved[lesson.id] : (lesson.starter || "");
-    document.getElementById("ex-reset").addEventListener("click", () => { ta.value = lesson.starter || ""; });
+    const starter = lf(lesson, "starter") || "";
+    ta.value = saved[lesson.id] != null ? saved[lesson.id] : starter;
+    document.getElementById("ex-reset").addEventListener("click", () => { ta.value = starter; });
 
     let timer = null;
     const onMsg = (e) => {
@@ -2404,7 +2439,7 @@
         ',pass:!!p,msg:String(m||"")},"*")}catch(e){}};' +
         'window.addEventListener("error",function(e){window.__exDone(false,e.message)});</scr' + 'ipt>';
       const check =
-        '<script>setTimeout(function(){try{' + (lesson.check || "__exDone(false, 'no check')") +
+        '<script>setTimeout(function(){try{' + (lf(lesson, "check") || "__exDone(false, 'no check')") +
         '}catch(e){__exDone(false,e.message)}},60);</scr' + 'ipt>';
       frame.srcdoc = code + shim + check;
       timer = setTimeout(() => {
@@ -2566,6 +2601,12 @@
     const q = (query || "").trim();
     const ql = q.toLowerCase();
     if (!ql) { location.hash = "#/courses"; return; }
+    /* searching inside lesson bodies needs the lazy content bundle */
+    if (!window.APP_CONTENT) {
+      app.innerHTML = `<div class="container"><div class="empty"><h2>🔍</h2><p class="muted">⏳</p></div></div>`;
+      loadContent().then(() => renderSearch(query)).catch(() => renderNotFound());
+      return;
+    }
     filter.query = q; /* so courseCard highlights matches */
 
     const courseHits = COURSES.filter((c) =>

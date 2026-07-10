@@ -1964,6 +1964,707 @@ btn.addEventListener("click", () =&gt; {
 add(10, 20) → 30 ပြန်ရမည်</code></pre>
 <p>ပုံစံ- <code>function add(a, b) { return ...; }</code>။ စစ်ဆေးစက်က ကိန်းအမျိုးမျိုးဖြင့် စမ်းမည် — အဖြေသေ ထည့်၍မရပါ! 😄</p>`,
       },
+      /* ---- Zero to Hero (34 lessons, fully bilingual) ---- */
+      "z-mindset": {
+        title: "သင် ကုဒ်ရေးတတ်လာနိုင်ပါသည်",
+        content: `
+<h3>🎯 ကုဒ်ရေးခြင်းအကြောင်း အမှန်တရား</h3>
+<p>ဘယ်သူမှ developer အဖြစ် မွေးဖွားလာခြင်း မဟုတ်ပါ။ သင်လေးစားသော သူရဲကောင်းတိုင်း ယခုသင်ရှိနေသည့်နေရာ — သုည — မှ စတင်ခဲ့ကြသည်။ ကုဒ်ရေးခြင်းသည် မှော်ပညာမဟုတ်၊ သင်္ချာပါရမီလည်း မလိုပါ — နေ့စဉ် အနည်းငယ်စီ လုပ်ရင်း တတ်လာသော <strong>လက်မှုပညာ</strong> ဖြစ်သည်။</p>
+<h3>📝 ဤသင်တန်း အလုပ်လုပ်ပုံ</h3>
+<ul>
+  <li><strong>အဆင့် ၈ ဆင့်</strong> — တစ်ဆင့်ချင်းက နောက်တစ်ဆင့်ကို ဖွင့်ပေးသည်။ မသင်ရသေးသည့်အရာ တစ်ခုမှ မမေးပါ။</li>
+  <li><strong>စစ်ဆေးမှုများ</strong> — quiz နှင့် ကုဒ်ကို အလိုအလျောက်စစ်သော လေ့ကျင့်ခန်းများက နောက်တစ်ဆင့် အသင့်ဖြစ်ကြောင်း သက်သေပြသည်။</li>
+  <li><strong>ပရောဂျက်များ</strong> — အဆင့်တိုင်းတွင် တကယ်တည်ဆောက်မည်- ကိုယ်ရေးအကျဉ်းစာမျက်နှာ → စတိုင်လုပ်ထားသော portfolio → interactive app → တိုက်ရိုက်ဝဘ်ဆိုက်။</li>
+  <li>တနင်္ဂနွေ ၅ နာရီထက် <strong>တစ်နေ့ မိနစ် ၂၀-၃၀</strong> က ပိုကောင်းသည်။ သင့် 🔥 streak သည် အကောင်းဆုံးမိတ်ဆွေ။</li>
+</ul>
+<div class="callout tip"><strong>အဆင့် ၀ တာဝန်-</strong> အသံထွက်ပြောလိုက်ပါ- "လာမည့်ရက်သတ္တပတ်အနည်းငယ်အတွင်း ကျွန်ုပ့်ကိုယ်ပိုင်ဝဘ်ဆိုက် အင်တာနက်ပေါ်ရောက်မည်။" ဒါဟာ အားပေးစကားမဟုတ် — ဒီသင်တန်းရဲ့ အဆင့် ၄ အစီအစဉ် အတိအကျပါ။</div>`,
+      },
+      "z-how-web": {
+        title: "ဝဘ်ဆိုက်များ တကယ်အလုပ်လုပ်ပုံ",
+        content: `
+<h3>🎯 ၁၀ စက္ကန့်အနှစ်ချုပ်</h3>
+<p>ဝဘ်ဆိုက်ဆိုသည်မှာ <strong>server</strong> ဟုခေါ်သော ကွန်ပျူတာပေါ်ရှိ <strong>ဖိုင်များ</strong> (စာသားများ!) သာဖြစ်သည်။ သင့် browser က ၎င်းတို့ကို ဒေါင်းလုဒ်လုပ်ပြီး စာမျက်နှာအဖြစ် ဆွဲပြသည်။</p>
+<div class="flow">
+  <div class="flow-box">🧑 သင်<br><small>လိပ်စာရိုက်ပြီး<br>Enter နှိပ်သည်</small></div>
+  <div class="flow-arrow" data-label="request"></div>
+  <div class="flow-box alt">🖥️ Server<br><small>ဖိုင်များကို သိမ်းထားသော<br>ကွန်ပျူတာ</small></div>
+  <div class="flow-arrow" data-label="response"></div>
+  <div class="flow-box warn">🎨 Browser<br><small>ဖိုင်များကိုဖတ်ပြီး<br>စာမျက်နှာ ဆွဲပြသည်</small></div>
+</div>
+<h3>📝 စာမျက်နှာတိုင်း၏ ဘာသာစကား ၃ မျိုး</h3>
+<ul>
+  <li><strong>HTML</strong> — အရိုးစု 🦴- ခေါင်းစီး၊ စာပိုဒ်၊ ပုံ၊ ခလုတ်များ။ (အဆင့် ၁)</li>
+  <li><strong>CSS</strong> — အသားအရေနှင့် အဝတ်အစား 🎨- အရောင်၊ အရွယ်အစား၊ နေရာချထားမှု။ (အဆင့် ၂)</li>
+  <li><strong>JavaScript</strong> — ကြွက်သားများ 💪- တုံ့ပြန်မှု၊ ယုတ္တိ၊ အသက်။ (အဆင့် ၃)</li>
+</ul>
+<p>ဤ academy တစ်ခုလုံးသည်လည်း ဤသုံးမျိုးဖြင့်သာ တည်ဆောက်ထားသည်။ အဆင့် ၃ ရောက်လျှင် ၎င်း၏ကုဒ်ကို ဖတ်နားလည်နိုင်မည်။</p>
+<div class="callout tip"><strong>စမ်းကြည့်ပါ-</strong> ကွန်ပျူတာတွင် F12 နှိပ်ပြီး Elements tab ကိုကြည့်ပါ — သင်သင်ယူတော့မည့် တကယ့် HTML ကို မြင်ရမည်။ ဖုန်းသုံးနေလျှင် အဆင့် ၁ သို့ တန်းသွားလိုက်ပါ!</div>`,
+      },
+      "z-tools": {
+        title: "သင့် အခမဲ့ကိရိယာအစုံ",
+        content: `
+<h3>🎯 လိုအပ်သမျှ အကုန် ၀ ကျပ်</h3>
+<ul>
+  <li><strong>ဤ academy ၏ 🧪 Playground</strong> — HTML/CSS/JS ရေးပြီး ရလဒ်ကို ချက်ချင်းမြင်ရသည်။ ဖုန်းတိုင်းတွင် ရသည်။ အဆင့် ၁–၃ အတွက် သင့်အဓိကကိရိယာ။</li>
+  <li><strong>Browser</strong> — Chrome, Edge သို့ Firefox။ ကွန်ပျူတာတွင် <code>F12</code> = DevTools၊ developer ၏ ဓာတ်မှန်စက်။</li>
+  <li><strong>VS Code</strong> (ကွန်ပျူတာရသောအခါ) — professional အားလုံးနီးပါး သုံးသော အခမဲ့ editor။</li>
+  <li><strong>GitHub အကောင့်</strong> (အဆင့် ၄) — အခမဲ့ ကုဒ်သိုလှောင်ရုံ + <strong>အခမဲ့ ဝဘ်ဆိုက် hosting</strong>။ ဟုတ်ပါသည်၊ အခမဲ့!</li>
+</ul>
+<h3>📝 ဖုန်းဖြင့် သင်ယူသူများ — သင့်လမ်းကြောင်း တကယ်ရှိသည်</h3>
+<p>အဆင့် ၀–၃ ကို ဖုန်းတစ်လုံးတည်းနှင့် Playground ဖြင့် အပြီးသင်နိုင်သည်။ အဆင့် ၄–၇ အတွက် အရင်ဖတ်ထားပြီး ကွန်ပျူတာအချိန်ရသောအခါ (ကျောင်း lab၊ အင်တာနက်ဆိုင်၊ သူငယ်ချင်းလက်ပ်တော့) လက်တွေ့လုပ်ပါ။ မြန်မာ developer အများအပြား ဤလမ်းအတိုင်း စတင်ခဲ့ကြသည်။</p>
+<div class="callout tip"><strong>အဆင့် ၀ စစ်ဆေးမှု-</strong> 🧪 Playground ကိုဖွင့်ပြီး <code>Hello, hero!</code> ဟုရိုက်ကာ preview တွင် ပေါ်လာသည်ကို ကြည့်ပါ။ ပြီးပြီလား? Developer ကိရိယာကို စတင်အသုံးပြုပြီးပြီ — 🦸 ခရီးစဉ် စပါပြီ!</div>`,
+      },
+      "z-html1": {
+        title: "HTML — Tag များသည် အရာအားလုံး",
+        content: `
+<h3>🎯 ဝဘ်ဆိုက်တိုင်း၏နောက်ကွယ်က ပုံစံ</h3>
+<p>HTML သည် အကြောင်းအရာကို အဓိပ္ပာယ်ပေးသော <strong>tag</strong> များဖြင့် ထုပ်ပိုးသည်-</p>
+<pre><code>&lt;h1&gt;My Tea Shop&lt;/h1&gt;          ← ခေါင်းစီးကြီး
+&lt;p&gt;Best laphet yay in town.&lt;/p&gt; ← စာပိုဒ်</code></pre>
+<div class="flow">
+  <div class="flow-box">&lt;tag&gt;<br><small>အဖွင့်</small></div>
+  <div class="flow-arrow" data-label="ထုပ်ပိုးသည်"></div>
+  <div class="flow-box alt">အကြောင်းအရာ<br><small>သင့်စာသား</small></div>
+  <div class="flow-arrow" data-label="ပိတ်သည်"></div>
+  <div class="flow-box">&lt;/tag&gt;<br><small>အပိတ် (/ သတိပြုပါ)</small></div>
+</div>
+<h3>💻 စာမျက်နှာအပြည့်အစုံ — Playground တွင် ရိုက်ကြည့်ပါ</h3>
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;body&gt;
+    &lt;h1&gt;Hello, I am learning HTML!&lt;/h1&gt;
+    &lt;p&gt;This is my very first web page.&lt;/p&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<h3>📝 စတင်သုံး tag အစုံ</h3>
+<ul>
+  <li><code>&lt;h1&gt;</code>…<code>&lt;h6&gt;</code> — ခေါင်းစီးများ၊ အကြီးမှ အသေး</li>
+  <li><code>&lt;p&gt;</code> — စာပိုဒ် · <code>&lt;br&gt;</code> — စာကြောင်းသစ် (အပိတ်မလို)</li>
+  <li><code>&lt;strong&gt;</code> — <strong>စာလုံးမည်း</strong> · <code>&lt;em&gt;</code> — <em>စောင်း</em></li>
+</ul>
+<div class="callout tip"><strong>စမ်းကြည့်ပါ-</strong> h1 (သင့်နာမည်)၊ h2 (သင့်မြို့) နှင့် သင်အကြိုက်ဆုံးအစားအစာအကြောင်း စာပိုဒ်နှစ်ပိုဒ်ပါသော စာမျက်နှာ တည်ဆောက်ပါ။ စကားလုံးတစ်လုံးကို bold လုပ်ပါ။</div>`,
+      },
+      "z-html2": {
+        title: "Link, ပုံနှင့် Attribute များ",
+        content: `
+<h3>🎯 Attribute = tag ထဲက ဆက်တင်များ</h3>
+<pre><code>&lt;a href="https://google.com"&gt;Search here&lt;/a&gt;
+&lt;img src="cat.jpg" alt="A sleepy cat"&gt;</code></pre>
+<p><code>href</code> က link ဘယ်သွားမလဲ ပြောသည်၊ <code>src</code> က ပုံဘယ်ဖိုင်လဲ ပြောသည်၊ <code>alt</code> က ပုံမပေါ်လျှင် ပြသမည့် ဖော်ပြချက် (screen reader များလည်း ဖတ်သည်)။</p>
+<h3>📝 ဝဘ်၏ စွမ်းအားထူး- link</h3>
+<ul>
+  <li>ပြင်ပဝဘ်ဆိုက်သို့- <code>href="https://..."</code></li>
+  <li>သင့်ကိုယ်ပိုင် နောက်စာမျက်နှာသို့- <code>href="menu.html"</code></li>
+  <li>Tab အသစ်ဖွင့်ရန်- <code>target="_blank"</code> ထည့်ပါ</li>
+</ul>
+<h3>💻 လေ့ကျင့်ရန် အခမဲ့ပုံများ</h3>
+<pre><code>&lt;img src="https://picsum.photos/300/200" alt="Random photo"&gt;</code></pre>
+<p>picsum.photos က ကြိုက်သည့်အရွယ် နမူနာပုံများ ပေးသည် — သင်ယူစဉ် အလွန်အသုံးဝင်သည်။</p>
+<div class="callout tip"><strong>စမ်းကြည့်ပါ-</strong> "ကျွန်ုပ်အကြိုက်ဆုံးများ" စာမျက်နှာ — ကြိုက်သောဆိုက် ၃ ခုသို့ link နှင့် ပုံ ၂ ပုံ။ Bonus- link တစ်ခုကို tab အသစ်ဖွင့်အောင် လုပ်ပါ။</div>`,
+      },
+      "z-html3": {
+        title: "List, ခလုတ်နှင့် Form များ",
+        content: `
+<h3>🎯 တကယ့်အကြောင်းအရာအတွက် ဖွဲ့စည်းပုံ</h3>
+<h3>💻 List များ — menu, အဆင့်များ, feature များ</h3>
+<pre><code>&lt;ul&gt;              ← အမှတ်စက်
+  &lt;li&gt;Milk tea&lt;/li&gt;
+  &lt;li&gt;Coffee&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;ol&gt;              ← နံပါတ်စဉ်
+  &lt;li&gt;Boil water&lt;/li&gt;
+  &lt;li&gt;Add tea&lt;/li&gt;
+&lt;/ol&gt;</code></pre>
+<h3>💻 ခလုတ်နှင့် input — app များ စတင်ရာ</h3>
+<pre><code>&lt;input type="text" placeholder="Your name"&gt;
+&lt;button&gt;Order now&lt;/button&gt;</code></pre>
+<p>အခုတော့ ဘာမှမလုပ်သေးပါ — ၎င်းတို့ကို အသက်သွင်းခြင်းသည် အဆင့် ၃ ရှိ JavaScript ၏ အလုပ်ဖြစ်သည်။ သို့သော် သင်သုံးဖူးသော app တိုင်း ဤအပိုင်းအစများဖြင့် ဆောက်ထားသည်။</p>
+<h3>📝 &lt;div&gt; ဖြင့် အုပ်စုဖွဲ့ခြင်း</h3>
+<p><code>&lt;div&gt;</code> သည် အရာများကို အုပ်စုဖွဲ့ရန် မမြင်ရသောသေတ္တာ — card တစ်ခု၊ header တစ်ခု၊ section တစ်ခု။ အဆင့် ၂ တွင် CSS က ဤသေတ္တာများကို လှပသော layout များအဖြစ် ပြောင်းပေးမည်။</p>
+<div class="callout tip"><strong>စမ်းကြည့်ပါ-</strong> လက်ဖက်ရည်ဆိုင် menu စာမျက်နှာ — h1 ဆိုင်နာမည်၊ သောက်စရာ ၄ မျိုးပါ ul၊ ဝယ်သူနာမည်အတွက် input နှင့် "Order" ခလုတ်။</div>`,
+      },
+      "z-ex-html": {
+        title: "စစ်ဆေးမှု- ကိုယ်ရေးအကျဉ်း စာမျက်နှာ တည်ဆောက်ပါ",
+        content: `
+<h3>🦸 အဆင့် ၁ လေ့ကျင့်ခန်း</h3>
+<p>သင့် HTML စွမ်းအားကို သက်သေပြပါ! အောက်ပါအားလုံးပါသော စာမျက်နှာလေး တည်ဆောက်ပါ-</p>
+<ul>
+  <li>သင့်နာမည်ပါ <code>&lt;h1&gt;</code></li>
+  <li>ကြိုက်သောဝဘ်ဆိုက်သို့ link (<code>href</code> ပါသော <code>&lt;a&gt;</code>)</li>
+  <li>ဝါသနာ <strong>၂ ခု</strong> အနည်းဆုံးပါသော <code>&lt;ul&gt;</code> list</li>
+</ul>
+<p><strong>▶ Run &amp; Check</strong> နှိပ်ပါ — စစ်ဆေးစက်က ဘာလိုနေသေးလဲ အတိအကျပြောမည်။ အောင်လျှင် အဆင့် ၁ တံဆိပ် အိတ်ထဲရောက်ပြီ! 🥇</p>`,
+      },
+      "z-quiz1": {
+        title: "အဆင့် ၁ Quiz — HTML",
+        questions: [
+          { q: "မှန်ကန်သော ခေါင်းစီးက ဘယ်ဟာလဲ?", options: ["&lt;heading&gt;Hi&lt;/heading&gt;", "&lt;h1&gt;Hi&lt;/h1&gt;", "&lt;head&gt;Hi&lt;/head&gt;", "(h1) Hi (h1)"] },
+          { q: "Link ၏ သွားမည့်နေရာကို ဘယ်မှာထည့်သလဲ?", options: ["src", "alt", "href", "link"] },
+          { q: "ပုံပေါ်က alt က ဘာလုပ်သလဲ?", options: ["ပုံကို ချဲ့သည်", "ပုံမပေါ်လျှင် ဖော်ပြချက်ပြသည်", "ဘောင်ထည့်သည်", "ဘာမှမလုပ်ပါ"] },
+          { q: "အမှတ်စက် list = ?", options: ["&lt;ol&gt;", "&lt;li&gt; များပါသော &lt;ul&gt;", "&lt;list&gt;", "&lt;bullets&gt;"] },
+          { q: "&lt;div&gt; ကို ဘာအတွက်သုံးသလဲ?", options: ["ကိန်းစားခြင်း", "အကြောင်းအရာများကို သေတ္တာတစ်ခုအဖြစ် အုပ်စုဖွဲ့ခြင်း", "စာလုံးမည်းလုပ်ခြင်း", "ဗီဒီယိုများ"] },
+        ],
+      },
+      "z-css1": {
+        title: "CSS — Selector, အရောင်နှင့် စာသား",
+        content: `
+<h3>🎯 CSS တစ်ခုလုံးကို အုပ်စိုးသော ပုံစံတစ်ခု</h3>
+<div class="flow">
+  <div class="flow-box">ဘယ်သူ<br><small>selector-<br>h1, .card, #menu</small></div>
+  <div class="flow-arrow" data-label="{"></div>
+  <div class="flow-box alt">ဘာကို<br><small>property-<br>color, font-size</small></div>
+  <div class="flow-arrow" data-label=":"></div>
+  <div class="flow-box warn">တန်ဖိုး<br><small>purple, 20px,<br>center</small></div>
+</div>
+<h3>💻 စာမျက်နှာထဲ &lt;style&gt; tag ထည့်ပါ</h3>
+<pre><code>&lt;style&gt;
+  h1   { color: purple; }
+  p    { font-size: 18px; color: #444; }
+  .special { background: gold; }   /* class="special" */
+&lt;/style&gt;</code></pre>
+<h3>📝 ရာသက်ပန်သုံးမည့် selector ၃ မျိုး</h3>
+<ul>
+  <li><code>h1</code> — h1 tag အားလုံး</li>
+  <li><code>.card</code> — <code>class="card"</code> ပါသမျှအားလုံး (ပြန်သုံးနိုင်သော အလုပ်သမား!)</li>
+  <li><code>#menu</code> — <code>id="menu"</code> ပါသော တစ်ခုတည်းသော element</li>
+</ul>
+<div class="callout tip"><strong>စမ်းကြည့်ပါ-</strong> အဆင့် ၁ ကိုယ်ရေးအကျဉ်းစာမျက်နှာကို စတိုင်လုပ်ပါ- h1 ခရမ်းရောင်၊ စာပိုဒ်များ 18px၊ ဝါသနာတစ်ခုကို <code>class="special"</code> ပေးပြီး ရွှေရောင်နောက်ခံ။</div>`,
+      },
+      "z-css2": {
+        title: "Box Model — အရာအားလုံးသည် သေတ္တာ",
+        content: `
+<h3>🎯 CSS ၏ အရေးကြီးဆုံး အယူအဆ</h3>
+<p>Element တိုင်းသည် အလွှာလေးလွှာပါသော လေးထောင့်သေတ္တာဖြစ်သည်-</p>
+<div class="flow">
+  <div class="flow-box">📄 Content<br><small>စာသား/ပုံ</small></div>
+  <div class="flow-arrow" data-label="ထုပ်ပိုးသည်"></div>
+  <div class="flow-box alt">🛋️ Padding<br><small>ဘောင်အတွင်းဘက်<br>နေရာလွတ်</small></div>
+  <div class="flow-arrow" data-label="ပြီးလျှင်"></div>
+  <div class="flow-box alt">🖼️ Border<br><small>မြင်ရသောအနား</small></div>
+  <div class="flow-arrow" data-label="ပြီးလျှင်"></div>
+  <div class="flow-box warn">🌌 Margin<br><small>အပြင်ဘက် နေရာလွတ် —<br>အခြားသေတ္တာများကို တွန်းသည်</small></div>
+</div>
+<h3>💻 သင့်ပထမဆုံး လှပသော card</h3>
+<pre><code>.card {
+  background: white;
+  padding: 20px;              /* အတွင်း အသက်ရှူနေရာ */
+  border: 1px solid #ddd;
+  border-radius: 12px;        /* ထောင့်ဝိုင်း */
+  margin: 16px;               /* အိမ်နီးချင်းများနှင့် အကွာ */
+  box-shadow: 0 4px 12px rgba(0,0,0,.08);
+}</code></pre>
+<p>ဘာကိုမဆို <code>&lt;div class="card"&gt;…&lt;/div&gt;</code> ဖြင့်ထုပ်လိုက်လျှင် ချက်ချင်း professional ကျသွားသည်။ ဤ class ပုံစံတစ်ခုတည်းက ခေတ်သစ်ဝဘ်တစ်ဝက်ကို မောင်းနှင်နေသည်။</p>
+<div class="callout tip"><strong>စမ်းကြည့်ပါ-</strong> ဝါသနာတစ်ခုစီကို .card ဖြစ်အောင်လုပ်ပါ။ padding 10px နှင့် 30px ကွာခြားချက်ကို ခံစားကြည့်ပါ။</div>`,
+      },
+      "z-css3": {
+        title: "Flexbox — ဘာကိုမဆို စီစဉ်ပါ",
+        content: `
+<h3>🎯 Layout ကိရိယာ</h3>
+<p>မိဘသေတ္တာပေါ် <code>display: flex</code> တင်လိုက်လျှင် ကလေးများ တစ်တန်းတည်းစီသွားပြီး ပင်မ property နှစ်ခုဖြင့် ထိန်းချုပ်နိုင်သည်-</p>
+<pre><code>.row {
+  display: flex;
+  justify-content: space-between;  /* ↔ ဘေးတိုက် ဖြန့်ခြင်း */
+  align-items: center;             /* ↕ ဒေါင်လိုက် ချိန်ခြင်း */
+  gap: 12px;                       /* ကြားအကွာအဝေး */
+}</code></pre>
+<h3>📝 ယခုပိုင်ဆိုင်သွားသော layout ၃ မျိုး</h3>
+<ul>
+  <li><strong>Navbar</strong> — logo ဘယ်၊ link များညာ- <code>justify-content: space-between</code></li>
+  <li><strong>အလယ်တည့်တည့်</strong> — <code>justify-content: center; align-items: center</code> (interview ဂန္ထဝင်!)</li>
+  <li><strong>Card တန်း</strong> — <code>flex-wrap: wrap</code> ထည့်လျှင် ဖန်သားပြင်ကျဉ်းတွင် နောက်တစ်ကြောင်းသို့ ကိုယ်တိုင်ဆင်းသည်</li>
+</ul>
+<h3>💻 Card တန်း စမ်းကြည့်ပါ</h3>
+<pre><code>&lt;div class="row"&gt;
+  &lt;div class="card"&gt;One&lt;/div&gt;
+  &lt;div class="card"&gt;Two&lt;/div&gt;
+  &lt;div class="card"&gt;Three&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+<div class="callout tip"><strong>စမ်းကြည့်ပါ-</strong> ဝါသနာ card များကို gap 12px + flex-wrap ဖြင့် flex တန်းစီပါ။ Preview ကို ကျဉ်း-ကျယ် ဆွဲကြည့်ပါ — တန်းပြောင်းသွားတာ ကြည့်ပါ!</div>`,
+      },
+      "z-css4": {
+        title: "Responsive — ဆိုက်တစ်ခု၊ ဖန်သားပြင်တိုင်း",
+        content: `
+<h3>🎯 သင့်အသုံးပြုသူအများစုသည် ဖုန်းပေါ်မှာ</h3>
+<p><strong>Media query</strong> သည် သတ်မှတ်ချက်ကိုက်မှသာ CSS ကို အသက်ဝင်စေသည်-</p>
+<pre><code>/* ဖုန်းများ (ဖန်သားပြင်သေး) */
+@media (max-width: 600px) {
+  .row  { flex-direction: column; }  /* card များ ထပ်ဆင့်စီ */
+  h1    { font-size: 24px; }         /* ခေါင်းစီး သေးအောင် */
+}</code></pre>
+<div class="flow">
+  <div class="flow-box">💻 ဖန်သားပြင်ကျယ်<br><small>card များ တစ်တန်းတည်း</small></div>
+  <div class="flow-arrow" data-label="max-width: 600px"></div>
+  <div class="flow-box warn">📱 ဖုန်း<br><small>card အတူတူ —<br>ဒေါင်လိုက် ထပ်စီ</small></div>
+</div>
+<h3>📝 Responsive စတင်သူအစုံ</h3>
+<ul>
+  <li><code>&lt;head&gt;</code> ထဲ <strong>အမြဲ</strong> ထည့်ပါ- <code>&lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;</code> — မထည့်လျှင် ဖုန်းက desktop ယောင်ဆောင်သည်။</li>
+  <li>သေတ္တာကြီးများအတွက် px သေထက် <strong>%</strong> နှင့် <strong>max-width</strong> — <code>img { max-width: 100%; }</code> က ပုံကျော်ထွက်ခြင်းကို ထာဝရတားသည်။</li>
+  <li>ဖုန်းအတွက် <strong>အရင်</strong> ဒီဇိုင်းဆွဲပြီး ကြီးသောဖန်သားပြင်အတွက် media query ထပ်ထည့်ပါ — ပြောင်းပြန်ထက် လွယ်သည်။</li>
+</ul>
+<div class="callout tip"><strong>စမ်းကြည့်ပါ-</strong> အထက်ပါ media query ကို သင့်စာမျက်နှာထဲထည့်ပြီး preview ကျဉ်း-ကျယ် ဆွဲကြည့်ပါ — သင့်ပထမဆုံး responsive ဆိုက်! (ဖုန်းစောင်းကြည့်လျှင် ဤ academy လည်း ဒီအတိုင်း လုပ်သည်။)</div>`,
+      },
+      "z-quiz2": {
+        title: "အဆင့် ၂ Quiz — CSS",
+        questions: [
+          { q: "CSS တွင် .card က ဘာကိုရွေးသလဲ?", options: ["&lt;card&gt; tag", "class=\"card\" ပါသမျှအားလုံး", "id card", "ဘာမှမရွေးပါ"] },
+          { q: "Border အတွင်းဘက် နေရာလွတ်ကို ဘာခေါ်သလဲ?", options: ["margin", "padding", "gap", "spacing"] },
+          { q: "Flexbox ဖြင့် အလယ်တည့်တည့်ချရန်-", options: ["text-align: middle", "justify-content: center; align-items: center", "position: center", "margin: center"] },
+          { q: "@media (max-width: 600px) က ဘယ်အခါ အလုပ်လုပ်သလဲ?", options: ["600px ထက်ကျယ်လျှင်", "600px နှင့်အောက် ကျဉ်းလျှင်", "အမြဲတမ်း", "desktop တွင်သာ"] },
+          { q: "img { max-width: 100%; } က ဘာကိုတားသလဲ?", options: ["ပုံဝါးခြင်း", "ဖန်သားပြင်သေးတွင် ပုံများ ဘောင်ကျော်ထွက်ခြင်း", "နှေးကွေးခြင်း", "မူပိုင်ခွင့်ပြဿနာ"] },
+        ],
+      },
+      "z-js1": {
+        title: "Variable နှင့် အမျိုးအစားများ",
+        content: `
+<h3>🎯 Program = ဒေတာ + ဆုံးဖြတ်ချက်</h3>
+<p>JavaScript သည် ဒေတာကို <strong>variable</strong> များထဲ သိမ်းသည်-</p>
+<pre><code>&lt;script&gt;
+  const shopName = "Shwe Tea";   // စာသား (string) — မပြောင်းရ
+  let price = 1500;              // ကိန်း — ပြောင်းနိုင်သည်
+  let isOpen = true;             // true/false (boolean)
+
+  console.log(shopName, price, isOpen);
+&lt;/script&gt;</code></pre>
+<h3>📝 အစပြုသူကို ကယ်တင်သော စည်းမျဉ်းများ</h3>
+<ul>
+  <li><code>const</code> = ပြန်မသတ်မှတ်ရ။ <code>let</code> = ရသည်။ const ဖြင့်စပြီး လိုမှသာ let သုံးပါ။</li>
+  <li>String များ quote ဝတ်သည်- <code>"hello"</code>။ ကိန်းများ မဝတ်ပါ- <code>1500</code>။</li>
+  <li><code>console.log(...)</code> — console သို့ ရိုက်ထုတ်ခြင်း၊ သင့် #1 debug ကိရိယာ။ Playground ၏ console panel တွင် ချက်ချင်းမြင်ရသည်။</li>
+</ul>
+<h3>💻 သင်္ချာက အလိုလို အလုပ်လုပ်သည်</h3>
+<pre><code>let cups = 3;
+let total = cups * price;        // 4500
+console.log("Total: " + total + " Ks");</code></pre>
+<div class="callout tip"><strong>စမ်းကြည့်ပါ-</strong> သင့်နာမည်၊ အသက်နှင့် အကြိုက်ဆုံးကိန်းအတွက် variable သုံးခုလုပ်ပြီး + ဖြင့်ဆက်ကာ စာကြောင်းတစ်ကြောင်း log ထုတ်ပါ။</div>`,
+      },
+      "z-js2": {
+        title: "Function နှင့် Event — အလုပ်လုပ်သော ခလုတ်များ",
+        content: `
+<h3>🎯 နောက်ဆုံးတော့ — ခလုတ်ကို အလုပ်လုပ်ခိုင်းမည်</h3>
+<pre><code>&lt;button id="hello-btn"&gt;Say hello&lt;/button&gt;
+
+&lt;script&gt;
+  function sayHello() {
+    alert("Mingalaba! 🎉");
+  }
+
+  document.getElementById("hello-btn")
+          .addEventListener("click", sayHello);
+&lt;/script&gt;</code></pre>
+<div class="flow">
+  <div class="flow-box">👆 Event<br><small>အသုံးပြုသူ<br>ခလုတ်နှိပ်သည်</small></div>
+  <div class="flow-arrow" data-label="ဖြစ်စေသည်"></div>
+  <div class="flow-box alt">⚙️ Function<br><small>သင့်လုပ်ငန်းစဉ်<br>ချက်ပြုတ်နည်း</small></div>
+  <div class="flow-arrow" data-label="ပြောင်းသည်"></div>
+  <div class="flow-box warn">🎨 စာမျက်နှာ<br><small>alert, စာသားသစ်,<br>အရောင်သစ်…</small></div>
+</div>
+<h3>📝 စာကြောင်းလို ဖတ်ပါ</h3>
+<p>"id <em>hello-btn</em> ပါသော element ကိုရှာပြီး <em>click</em> ကြားလျှင် <em>sayHello</em> ကို run ပါ။" — ဝဘ်ပေါ်က like, menu, dark mode အားလုံး ဤပုံစံအတိုင်းပင်။</p>
+<h3>💻 Function များ ပါဝင်ပစ္စည်း လက်ခံသည်</h3>
+<pre><code>function greet(name) {
+  alert("Hello, " + name + "!");
+}
+greet("Aung");   // Hello, Aung!
+greet("Su");     // Hello, Su!</code></pre>
+<div class="callout tip"><strong>စမ်းကြည့်ပါ-</strong> ဆိုင်နာမည် alert ထုတ်သော ခလုတ်တစ်ခုနှင့် သူငယ်ချင်းနာမည် နှစ်မျိုးဖြင့် နှစ်ကြိမ်ခေါ်သော greet(name) function။</div>`,
+      },
+      "z-js3": {
+        title: "DOM — စာမျက်နှာကို တိုက်ရိုက်ပြောင်းပါ",
+        content: `
+<h3>🎯 alert() က ကလေးအဆင့် — စာမျက်နှာကိုယ်တိုင် ပြောင်းမည်</h3>
+<pre><code>&lt;h1 id="title"&gt;My Shop&lt;/h1&gt;
+&lt;button id="btn"&gt;Night mode&lt;/button&gt;
+
+&lt;script&gt;
+  const title = document.getElementById("title");
+  const btn = document.getElementById("btn");
+
+  btn.addEventListener("click", () =&gt; {
+    title.textContent = "My Shop 🌙";          // စာသားပြောင်း
+    document.body.style.background = "#222";   // စတိုင်ပြောင်း
+    document.body.style.color = "white";
+  });
+&lt;/script&gt;</code></pre>
+<h3>📝 သင့် DOM ကိရိယာအစုံ</h3>
+<ul>
+  <li><code>document.getElementById("x")</code> — element ကို ဆွဲယူ</li>
+  <li><code>el.textContent = "..."</code> — စာသားပြောင်း</li>
+  <li><code>el.style.background = "..."</code> — စတိုင်ပြောင်း</li>
+  <li><code>el.classList.toggle("dark")</code> — pro နည်း- CSS class ကို ဖွင့်/ပိတ်</li>
+</ul>
+<p>ဤ academy ၏ 🌙 dark-mode ခလုတ် ဘယ်လိုအလုပ်လုပ်လဲ — အခုနားလည်သွားပြီ။ တကယ်ပါ။</p>
+<div class="callout tip"><strong>စမ်းကြည့်ပါ-</strong> mood စာမျက်နှာ- 😀 ခလုတ်က နောက်ခံဝါ + ခေါင်းစီးပျော်၊ 😴 က နောက်ခံမည်း + ခေါင်းစီးအိပ်ချင်။</div>`,
+      },
+      "z-js4": {
+        title: "ဆုံးဖြတ်ချက်နှင့် Loop များ",
+        content: `
+<h3>🎯 if/else — တွေးတတ်သော program</h3>
+<pre><code>let age = 15;
+
+if (age &gt;= 18) {
+  console.log("You can vote!");
+} else {
+  console.log("Not yet — " + (18 - age) + " years to go.");
+}</code></pre>
+<h3>🎯 Loop — ထပ်ခါထပ်ခါ မရေးပါနှင့်</h3>
+<pre><code>const menu = ["Milk tea", "Coffee", "Juice"];
+
+for (const drink of menu) {
+  console.log("We serve: " + drink);
+}</code></pre>
+<h3>💻 ပေါင်းစပ်ခြင်း- order စစ်ဆေးစက်</h3>
+<pre><code>const order = 3;
+let total = order * 1500;
+
+if (total &gt; 4000) {
+  console.log("Big order! Free cookie 🍪");
+}
+console.log("Pay: " + total + " Ks");</code></pre>
+<p>အခြေအနေ + loop + variable = တကယ့်စီးပွားရေး စည်းမျဉ်းများကို ရေးနိုင်ပြီ။ ဒါက programming ပဲ — ကျန်တာက ဝေါဟာရသာ။</p>
+<div class="callout tip"><strong>စမ်းကြည့်ပါ-</strong> သူငယ်ချင်း ၄ ယောက်စာရင်းကို loop ပတ်ပြီး နာမည်စာလုံး ၄ လုံးထက်ရှည်လျှင် "VIP"၊ မဟုတ်လျှင် "Regular" ဟု log ထုတ်ပါ။</div>`,
+      },
+      "z-ex-js": {
+        title: "စစ်ဆေးမှု- Click Counter",
+        content: `
+<h3>🦸 အဆင့် ၃ လေ့ကျင့်ခန်း</h3>
+<p>ဂန္ထဝင် ပထမ app- <strong>click counter</strong>။ ခလုတ်တစ်ခုနှင့် ကိန်းတစ်လုံး — နှိပ်တိုင်း ဖန်သားပြင်ပေါ်က ကိန်း ၁ တိုးရမည်။</p>
+<ul>
+  <li>ခလုတ် (<code>id="btn"</code>) နှင့် counter (<code>id="count"</code>) ကို ထားပါ</li>
+  <li>ကိန်းတိုးပြီး စာသား update လုပ်သော click listener ထည့်ပါ</li>
+</ul>
+<p>အရိပ်အမြွက်- <code>let clicks = 0;</code> ထားပါ → click တိုင်း <code>clicks = clicks + 1;</code> → ပြီးလျှင် <code>count.textContent = clicks;</code></p>
+<p>စစ်ဆေးစက်က သင့်ခလုတ်ကို နှစ်ကြိမ်နှိပ်ပြီး <strong>2</strong> မြင်ရမယ်လို့ မျှော်လင့်သည်။ 🤖</p>`,
+      },
+      "z-quiz3": {
+        title: "အဆင့် ၃ Quiz — JavaScript",
+        questions: [
+          { q: "ဘယ် variable က ပြန်သတ်မှတ်လို့ မရသလဲ?", options: ["let", "var", "const", "static"] },
+          { q: "addEventListener(\"click\", fn) ၏ အဓိပ္ပာယ်-", options: ["ချက်ချင်းနှိပ်သည်", "element နှိပ်ခံရတိုင်း fn ကို run သည်", "element ကိုဖျက်သည်", "စတိုင်လုပ်သည်"] },
+          { q: "Element ၏ စာသားကို ပြောင်းရန်-", options: ["el.text()", "el.textContent = \"...\"", "el.html", "el.write()"] },
+          { q: "if (total > 4000) { ... } က ဘယ်အခါ run သလဲ?", options: ["အမြဲတမ်း", "total က 4000 ထက်ကြီးလျှင်", "total က 4000 နှင့်ညီလျှင်", "ဘယ်တော့မှ"] },
+          { q: "for (const x of list) က ဘာလုပ်သလဲ?", options: ["list ကိုဖျက်သည်", "list ထဲက item တစ်ခုစီအတွက် block ကို တစ်ကြိမ်စီ run သည်", "list ကို စီသည်", "function ဖန်တီးသည်"] },
+        ],
+      },
+      "z-git": {
+        title: "Git — သင့်ကုဒ်အတွက် Save Point များ",
+        content: `
+<h3>🎯 ဂိမ်း save point လို — ပရောဂျက်များအတွက်</h3>
+<p><strong>Git</strong> သည် ပရောဂျက်၏ snapshot (<strong>commit</strong>) များကို မှတ်တမ်းတင်သည်။ တစ်ခုခုပျက်သွားလား? အချိန်နောက်ပြန်သွားပါ။ အလုပ်ရှင်တိုင်း မျှော်လင့်သော #1 ကိရိယာ — အစမှာတော့ ရိုးရှင်းပါသည်-</p>
+<pre><code>git init                     # ဤ folder ကို စတင်မှတ်တမ်းတင် (တစ်ကြိမ်သာ)
+git add .                    # ပြောင်းလဲမှုအားလုံး ပြင်ဆင်
+git commit -m "Add menu page"  # message ပါ snapshot
+git log --oneline            # သမိုင်းကို ကြည့်ပါ</code></pre>
+<div class="flow">
+  <div class="flow-box">✍️ ဖိုင်ပြင်</div>
+  <div class="flow-arrow" data-label="git add"></div>
+  <div class="flow-box alt">📦 Staged<br><small>နောက် snapshot အတွက်<br>ရွေးထားပြီး</small></div>
+  <div class="flow-arrow" data-label="git commit"></div>
+  <div class="flow-box warn">📚 သမိုင်း<br><small>message ပါ<br>ထာဝရ save point</small></div>
+</div>
+<h3>📝 Commit message အလေ့အကျင့်</h3>
+<p>ပြောင်းလဲမှုက <strong>ဘာလုပ်လဲ</strong> ရေးပါ- "Add order form", "Fix menu prices"။ အနာဂတ်သင်ကိုယ်တိုင် (နှင့် အဖွဲ့သားတိုင်း) က ပရောဂျက်၏ ဒိုင်ယာရီလို ဖတ်ကြသည်။</p>
+<div class="callout"><strong>ဖုန်းသုံးသူလား?</strong> command များကို ဝေါဟာရလို အရင်ဖတ်ထားပါ — ပထမဆုံး ကွန်ပျူတာအချိန်တွင် ရိုက်ကြည့်လျှင် ကြောက်စရာမဟုတ်တော့ဘဲ ရင်းနှီးနေမည်။</div>
+<div class="callout tip"><strong>စမ်းကြည့်ပါ (ကွန်ပျူတာ)-</strong> folder တစ်ခုလုပ်ပြီး သင့်ကိုယ်ရေးအကျဉ်းစာမျက်နှာထည့်ကာ ပထမဆုံး commit နှစ်ခု လုပ်ပါ။ ပထမဆုံး <code>git log</code> ရဲ့ ခံစားချက်က ဘာနဲ့မှ မတူပါ။</div>`,
+      },
+      "z-github": {
+        title: "GitHub — Cloud ထဲက သင့်ကုဒ်",
+        content: `
+<h3>🎯 စက်ထဲ Git + အွန်လိုင်း GitHub = ဘေးကင်းမှု + မြင်နိုင်မှု</h3>
+<pre><code># သင့် folder ကို GitHub repo နှင့် ချိတ်ပါ (တစ်ကြိမ်သာ)
+git remote add origin https://github.com/YOU/my-site.git
+git push -u origin main      # commit များ တင်ပါ
+
+# နောက်ပိုင်း commit အသစ်တိုင်း
+git push</code></pre>
+<h3>📝 GitHub က သင့်အလုပ်အကိုင်အတွက် ဘာကြောင့်အရေးကြီးလဲ</h3>
+<ul>
+  <li><strong>Backup</strong> — လက်ပ်တော့သေလည်း ကုဒ်ရှင်သည်။</li>
+  <li><strong>Portfolio</strong> — အလုပ်ရှင်များ CV မတိုင်မီ သင့် GitHub ကို ဖွင့်ကြည့်ကြသည်။ အစိမ်းရောင်ကွက်များ = တကယ်တည်ဆောက်နေကြောင်း သက်သေ။</li>
+  <li><strong>ပူးပေါင်းဆောင်ရွက်မှု</strong> — pull request သည် ကမ္ဘာ့ dev အဖွဲ့တိုင်း အလုပ်လုပ်ပုံ။</li>
+  <li><strong>အခမဲ့ hosting</strong> — နောက်သင်ခန်းစာတွင် repo ကို တိုက်ရိုက်ဝဘ်ဆိုက် ဖြစ်အောင်လုပ်မည်။</li>
+</ul>
+<h3>💡 Profile လှည့်ကွက်</h3>
+<p>သင့် username အတိုင်း အမည်တူ repo ဖန်တီးပါ — ၎င်း၏ README သည် သင့် profile စာမျက်နှာ ဖြစ်လာသည်။ နာမည်၊ သင်ယူနေသောအရာနှင့် ပရောဂျက် link များ ထည့်ပါ။</p>
+<div class="callout tip"><strong>စမ်းကြည့်ပါ-</strong> ဒီနေ့ပဲ GitHub အကောင့် ဖွင့်ပါ (အခမဲ့၊ ဖုန်းနှင့်ရသည်) — ပထမဆုံး အစိမ်းရောင်ကွက်စိုက်ရန် ဤ academy ၏ repo ကို star လုပ်ပါ။ 🌱</div>`,
+      },
+      "z-deploy": {
+        title: "LIVE တင်ခြင်း — သင့်ဆိုက် အင်တာနက်ပေါ်",
+        content: `
+<h3>🎯 သူရဲကောင်း အခိုက်အတန့်</h3>
+<p>GitHub Pages သည် သင့်ဝဘ်ဆိုက်ကို <code>yourname.github.io</code> တွင် အခမဲ့ host ပေးသည်။ ဤ academy ကိုယ်တိုင် ၎င်းပေါ်တွင် run နေသည်!</p>
+<div class="flow">
+  <div class="flow-box">📁 သင့် repo<br><small>index.html + ဖိုင်များ</small></div>
+  <div class="flow-arrow" data-label="Settings → Pages"></div>
+  <div class="flow-box alt">⚙️ Pages ဖွင့်ပါ<br><small>branch: main —<br>dropdown တစ်ခု၊ Save</small></div>
+  <div class="flow-arrow" data-label="~၁ မိနစ်"></div>
+  <div class="flow-box warn">🌍 LIVE<br><small>yourname.github.io —<br>ကမ္ဘာတစ်ဝန်း ဝင်ကြည့်နိုင်</small></div>
+</div>
+<h3>📝 အဆင့်အတိအကျ</h3>
+<ol>
+  <li>ပင်မဖိုင်နာမည် အတိအကျ <code>index.html</code> ဖြစ်သော repo ကို push လုပ်ပါ။</li>
+  <li>Repo → <strong>Settings → Pages</strong> → Source: <strong>main</strong> branch → Save။</li>
+  <li>~၁ မိနစ်စောင့် → သင့် URL ပေါ်လာမည်။ ဖုန်းဖြင့်ဖွင့်ပါ။ သူငယ်ချင်းကို ပို့ပါ။ ခံစားပါ။ 🥹</li>
+</ol>
+<h3>💡 ယခုမှစ၍</h3>
+<p><code>git push</code> တိုင်း သင့် live ဆိုက် တစ်မိနစ်အတွင်း အလိုအလျောက် update ဖြစ်သည် — professional များသုံးသော deploy လုပ်ငန်းစဉ် အတိအကျ (ဤ academy လည်း တစ်နေ့ အကြိမ်များစွာ ဤအတိုင်း ship သည်)။</p>
+<div class="callout tip"><strong>အဆင့် ၄ စစ်ဆေးမှု-</strong> အဆင့် ၁–၃ ကိုယ်ရေးအကျဉ်းစာမျက်နှာကို LIVE တင်ပါ။ URL ကို နေ့တိုင်းမြင်ရမည့်နေရာမှာ ကပ်ထားပါ။ သင်သည် အင်တာနက်ကို သုံးရုံမဟုတ်တော့ — အင်တာနက်ပေါ်မှာ ရှိနေပြီ။</div>`,
+      },
+      "z-quiz4": {
+        title: "အဆင့် ၄ Quiz — Ship It",
+        questions: [
+          { q: "Commit ဆိုတာ…", options: ["ဖျက်လိုက်သောဖိုင်", "message ပါ ပရောဂျက် snapshot", "GitHub အကောင့်", "CSS rule"] },
+          { q: "မှန်ကန်သော အစီအစဉ်-", options: ["commit → add → edit", "edit → git add → git commit", "push → edit → add", "init → push → add"] },
+          { q: "git push က ဘာလုပ်သလဲ?", options: ["သမိုင်းကိုဖျက်သည်", "commit များကို GitHub သို့တင်သည်", "ဖိုင်နာမည်ပြောင်းသည်", "ဝဘ်ဆိုက်ကို run သည်"] },
+          { q: "GitHub Pages က ပေးသည်မှာ…", options: ["အခကြေး server", "yourname.github.io တွင် အခမဲ့ hosting", "$50 domain", "ဘာမှမပေးပါ"] },
+          { q: "Pages အလုပ်လုပ်ရန် ပင်မဖိုင်နာမည်-", options: ["home.html", "index.html", "main.html", "page.html"] },
+        ],
+      },
+      "z-json": {
+        title: "JSON — App များ ဒေတာလဲလှယ်ပုံ",
+        content: `
+<h3>🎯 ကမ္ဘာသုံး ဒေတာပုံစံ</h3>
+<p>App များ စကားပြောသောအခါ (သင့်စာမျက်နှာ ↔ server) <strong>JSON</strong> ပို့ကြသည် — JavaScript object နှင့်တူသော စာသား-</p>
+<pre><code>{
+  "name": "Shwe Tea",
+  "rating": 4.8,
+  "open": true,
+  "menu": ["Milk tea", "Coffee", "Juice"]
+}</code></pre>
+<h3>📝 JavaScript ဖြင့် JSON ဖတ်ခြင်း</h3>
+<pre><code>const shop = {
+  name: "Shwe Tea",
+  menu: ["Milk tea", "Coffee"]
+};
+
+console.log(shop.name);        // Shwe Tea
+console.log(shop.menu[0]);     // Milk tea (list များ 0 မှစသည်!)</code></pre>
+<h3>📝 လှုပ်ရှားမှု နှစ်ခု</h3>
+<ul>
+  <li><strong>Dot</strong> ဖြင့် object ထဲဝင်ခြင်း- <code>shop.name</code>, <code>shop.owner.phone</code></li>
+  <li><strong>Index</strong> ဖြင့် list ထဲဝင်ခြင်း- <code>menu[0]</code> = ပထမ item</li>
+</ul>
+<p>နောက်သင်ခန်းစာက API အဖြေတိုင်းသည် ဤအတိုင်းသာ — object နှင့် list များ ထပ်ဆင့်ထားခြင်း။ dot နှင့် index တတ်လျှင် ဘယ် API မဆို ဖတ်နိုင်သည်။</p>
+<div class="callout tip"><strong>စမ်းကြည့်ပါ-</strong> သင့်အိပ်မက်ဆိုင်ကို ဖော်ပြသော JSON object (နာမည်၊ မြို့၊ menu ၃ ခု၊ open true/false) ဆောက်ပြီး တစ်ခုချင်း log ထုတ်ပါ။</div>`,
+      },
+      "z-fetch": {
+        title: "fetch() — အင်တာနက်မှ တိုက်ရိုက်ဒေတာ",
+        content: `
+<h3>🎯 သင့်စာမျက်နှာက API ကို ခေါ်သည်</h3>
+<pre><code>fetch("https://open.er-api.com/v6/latest/USD")
+  .then((res) =&gt; res.json())
+  .then((data) =&gt; {
+    console.log("1 USD =", data.rates.MMK, "Ks");
+  })
+  .catch(() =&gt; console.log("Network problem — try again"));</code></pre>
+<div class="flow">
+  <div class="flow-box">📱 သင့်စာမျက်နှာ<br><small>fetch(url)</small></div>
+  <div class="flow-arrow" data-label="request"></div>
+  <div class="flow-box alt">🌐 API server<br><small>ငွေလဲနှုန်း၊ ရာသီဥတု၊<br>ဆိုရိုးစကား…</small></div>
+  <div class="flow-arrow" data-label="JSON ပြန်လာ"></div>
+  <div class="flow-box warn">✨ ပြသခြင်း<br><small>textContent = data…</small></div>
+</div>
+<h3>📝 ပုံစံကို တစ်ကြိမ်ဖတ်၊ ထာဝရသုံး</h3>
+<ol>
+  <li><code>fetch(url)</code> — request ပို့</li>
+  <li><code>.then(res =&gt; res.json())</code> — JSON ဖြည်</li>
+  <li><code>.then(data =&gt; { ... })</code> — ဒေတာကို သုံး (dot + index!)</li>
+  <li><code>.catch(...)</code> — ချို့ယွင်းမှုကို ယဉ်ကျေးစွာကိုင်တွယ် (network တွေ ပျက်တတ်သည်၊ သူရဲကောင်းများ ကြိုပြင်ထားသည်)</li>
+</ol>
+<div class="callout tip"><strong>စမ်းကြည့်ပါ-</strong> ငွေလဲနှုန်းကုဒ်ကို Playground တွင် run ပါ။ ပြီးလျှင် နှုန်းကို စာမျက်နှာပေါ်တင်ပါ- ခေါင်းစီးတစ်ခု၏ textContent အဖြစ် ထည့်ပါ။</div>`,
+      },
+      "z-app": {
+        title: "ပရောဂျက်- တိုက်ရိုက်ဒေတာ Mini App",
+        content: `
+<h3>🦸 အဆင့် ၅ ပရောဂျက် — တကယ့် app ဆောက်မည်</h3>
+<p><strong>Daily Inspiration</strong> app- ခလုတ်တစ်ချက်နှိပ်လျှင် အခမဲ့ API မှ အကြံဉာဏ်တစ်ခု ဆွဲယူပြီး လှပစွာပြသသည်။</p>
+<h3>💻 App အပြည့်အစုံ (copy မကူးဘဲ ရိုက်ပါ — ၃ ဆ ပိုတတ်သည်)</h3>
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;style&gt;
+    body { font-family: sans-serif; display: flex; flex-direction: column;
+           align-items: center; padding: 40px 16px; background: #f4f0fa; }
+    .card { background: white; padding: 24px; border-radius: 14px;
+            max-width: 420px; text-align: center;
+            box-shadow: 0 6px 20px rgba(0,0,0,.1); }
+    button { margin-top: 16px; padding: 10px 22px; border: none;
+             border-radius: 8px; background: #a435f0; color: white;
+             font-size: 15px; cursor: pointer; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class="card"&gt;
+    &lt;h2&gt;✨ Daily Inspiration&lt;/h2&gt;
+    &lt;p id="quote"&gt;Press the button!&lt;/p&gt;
+    &lt;button id="go"&gt;Inspire me&lt;/button&gt;
+  &lt;/div&gt;
+  &lt;script&gt;
+    const quote = document.getElementById("quote");
+    document.getElementById("go").addEventListener("click", () =&gt; {
+      quote.textContent = "Loading…";
+      fetch("https://api.adviceslip.com/advice")
+        .then((r) =&gt; r.json())
+        .then((data) =&gt; { quote.textContent = "“" + data.slip.advice + "”"; })
+        .catch(() =&gt; { quote.textContent = "No internet — try again!"; });
+    });
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<h3>📝 ကြည့်ပါ — အဆင့်တိုင်းကို သုံးနေသည်</h3>
+<p>HTML ဖွဲ့စည်းပုံ (အဆင့်၁) + card စတိုင်နှင့် viewport (အဆင့်၂) + event, DOM နှင့် fetch (အဆင့်၃+၅)။ "ကျွမ်းကျင်မှုများ ထပ်ဆင့်သည်" ဆိုတာ ဒါပါပဲ။</p>
+<div class="callout tip"><strong>သူရဲကောင်းလှုပ်ရှားမှု-</strong> ဤ app ကို GitHub သို့ push ပြီး Pages ဖြင့် deploy လုပ်ပါ။ တကယ့် API ဒေတာပါသော LIVE app — portfolio ပစ္စည်း #2၊ "၃ လ bootcamp" ကျောင်းသားအများစုမှာတောင် မရှိသေးပါ။</div>`,
+      },
+      "z-quiz5": {
+        title: "အဆင့် ၅ Quiz — ဒေတာနှင့် API",
+        questions: [
+          { q: "JSON ဆိုတာ…", options: ["programming ဘာသာစကား", "app များ ဒေတာလဲလှယ်ရာတွင်သုံးသော စာသားပုံစံ", "database", "browser"] },
+          { q: "menu[0] က ဘာပေးသလဲ?", options: ["နောက်ဆုံး item", "ပထမဆုံး item", "item သုည", "error"] },
+          { q: "fetch ပုံစံထဲက res.json() က…", options: ["request ပို့သည်", "အဖြေကို သုံးလို့ရသောဒေတာအဖြစ် ဖြည်သည်", "စာမျက်နှာဆွဲသည်", "error ဖမ်းသည်"] },
+          { q: ".catch() ရှိရသည့်အကြောင်းမှာ…", options: ["အလှဆင်ရန်", "network တစ်ခါတရံပျက်တတ်ပြီး app က ယဉ်ကျေးစွာ ကိုင်တွယ်ရမည်", "JSON ကလိုအပ်သည်", "ခလုတ်များက တောင်းဆိုသည်"] },
+          { q: "data.rates.MMK က ဘာဖတ်သလဲ?", options: ["list index", "rates object ထဲက MMK field", "CSS class", "git branch"] },
+        ],
+      },
+      "z-backend": {
+        title: "Server များ တကယ်ဘာလုပ်သလဲ",
+        content: `
+<h3>🎯 App တိုင်း၏ အခြားတစ်ဝက်</h3>
+<p>သင့်စာမျက်နှာများ browser ထဲ run သည် (<strong>frontend</strong>)။ ဒါပေမဲ့ အကောင့်၊ order နှင့် chat message တွေ ဘယ်မှာနေလဲ? <strong>Backend</strong> — server ပေါ်တွင် ၂၄ နာရီ run နေသော program တစ်ခုပေါ်မှာ။</p>
+<div class="flow">
+  <div class="flow-box">📱 Frontend<br><small>သင့် HTML/CSS/JS —<br>မြင်ရသောအရာ</small></div>
+  <div class="flow-arrow" data-label="fetch / JSON"></div>
+  <div class="flow-box alt">⚙️ Backend<br><small>စည်းမျဉ်းနှင့်ယုတ္တိ-<br>"password မှန်လား?"</small></div>
+  <div class="flow-arrow" data-label="ဖတ်/ရေး"></div>
+  <div class="flow-box warn">🗄️ Database<br><small>ထာဝရမှတ်ဉာဏ်-<br>user, order, message</small></div>
+</div>
+<h3>📝 ပုံပြင်တစ်ပုဒ်၊ အလွှာသုံးလွှာ</h3>
+<p>ဤ academy တွင် chat message ပို့သည်- <em>frontend</em> က သင့်စာသားကိုယူ → <em>backend</em> (Firebase) က ခွင့်ပြုပြီး မျှဝေ → <em>database</em> က သိမ်းထားသဖြင့် သင့်သူငယ်ချင်း မနက်ဖြန်လည်း မြင်ရသည်။ သင်သုံးသော app တိုင်း — အလွှာသုံးလွှာ အတူတူ။</p>
+<h3>💡 အဆင့် ၆ က "လှမ်းကြည့်ခြင်း" ဖြစ်ရသည့်အကြောင်း</h3>
+<p>အန္တရာယ်ရှိလောက်အောင်တတ်ရန် backend ကို ကျွမ်းကျင်စရာမလို — <strong>မြေပုံ</strong> လိုသည်။ မြေပုံရှိလျှင် Full Stack Developer သင်တန်း (သင့်နောက်တစ်ဆင့်) သည် တောအုပ်မဟုတ်ဘဲ ရင်းနှီးသောမြေ ဖြစ်နေမည်။</p>
+<div class="callout tip"><strong>စမ်းကြည့်ပါ-</strong> နေ့စဉ်သုံး app ၂ ခုရွေးပါ။ တစ်ခုစီအတွက် frontend လုပ်တာတစ်ခု၊ backend စည်းမျဉ်းတစ်ခု၊ database မှတ်ထားတာတစ်ခု ပြောပါ။</div>`,
+      },
+      "z-node": {
+        title: "Node နှင့် Express — ၂၀ ကြောင်း",
+        content: `
+<h3>🎯 Browser အပြင်ဘက်က JavaScript</h3>
+<p><strong>Node.js</strong> သည် JS ကို server ပေါ် run စေသည်။ <strong>Express</strong> က API ဆောက်ခြင်းကို လွယ်ကူစေသည်။ ဤသည်မှာ တကယ်အလုပ်လုပ်သော API-</p>
+<pre><code>const express = require("express");
+const app = express();
+
+const menu = ["Milk tea", "Coffee", "Juice"];
+
+app.get("/api/menu", (req, res) =&gt; {
+  res.json(menu);                    // JSON ဖြင့် ပြန်ဖြေ!
+});
+
+app.listen(3000, () =&gt; {
+  console.log("API running on http://localhost:3000");
+});</code></pre>
+<h3>📝 အဆင့် ၅ မျက်လုံးဖြင့် ဖတ်ပါ</h3>
+<p>fetch() ဖြင့် API ခေါ်ခဲ့တာ မှတ်မိလား? <strong>ဒါက အဲဒီဖုန်းခေါ်ဆိုမှုရဲ့ တစ်ဖက်ခြမ်း။</strong> တစ်ယောက်က <code>/api/menu</code> ကို fetch လုပ်လျှင် သင့်ကုဒ်က JSON ဖြင့်ဖြေသည်။ client-server လျှို့ဝှက်ချက်တစ်ခုလုံး ၁၂ ကြောင်းဖြင့် ပြေလည်သွားပြီ။</p>
+<h3>💡 နေရာတိုင်း ဘာသာစကားတစ်ခုတည်း</h3>
+<p>const, function, arrow နှင့် JSON ကို သိပြီးသား — <strong>အတူတူသော JavaScript</strong> က server ပေါ်မှာလည်း အလုပ်လုပ်သည်။ ဒါကြောင့် web developer များ Node ကို ချစ်ကြသည်- ဘာသာစကားတစ်ခု၊ နှစ်ဖက်စလုံး။</p>
+<div class="callout tip"><strong>စမ်းကြည့်ပါ-</strong> Full Stack သင်တန်း အပိုင်း ၄ တွင် ဤကုဒ်အတိအကျကို တစ်ဆင့်ချင်း လက်တွေ့လုပ်သည်။ ယခုတော့- စာကြောင်းတစ်ကြောင်းစီ ဘာလုပ်လဲ အသံထွက်ရှင်းပြပါ — ရှင်းပြနိုင်လျှင် အဆင့် ၆ အောင်ပြီ။</div>`,
+      },
+      "z-db": {
+        title: "Database — ထာဝရမှတ်ဉာဏ်",
+        content: `
+<h3>🎯 Variable များ မေ့သည်။ Database များ မှတ်သည်။</h3>
+<p>Server ပြန်စလျှင် variable များ ပျောက်သည်။ တကယ့်ဒေတာ — အကောင့်၊ order၊ progress — သည် <strong>database</strong> ထဲနေသည်။</p>
+<h3>📝 မိသားစုကြီး နှစ်ခု</h3>
+<ul>
+  <li><strong>SQL</strong> (MySQL, PostgreSQL, SQLite) — စည်းကမ်းရှိသော Excel လို row/column ဇယားများ။ SQL ဘာသာစကား ပြောသည်-</li>
+</ul>
+<pre><code>SELECT name, total FROM orders
+WHERE total &gt; 4000
+ORDER BY total DESC;</code></pre>
+<ul>
+  <li><strong>NoSQL</strong> (MongoDB, Firebase) — ပြောင်းလွယ်သော JSON ပုံစံ document များ။ ဤ academy ၏ chat နှင့် progress sync သည် Firebase — သင်တစ်ချိန်လုံး သုံးနေခဲ့သော NoSQL database!</li>
+</ul>
+<h3>📝 ဘယ်ဟာရွေးမလဲ (ရိုးသားသောအဖြေ)</h3>
+<p>ဆက်နွယ်မှုရှိသော ဒေတာတင်းကျပ် (order ↔ customer) → SQL။ ပြောင်းလွယ်သောပုံစံ / တိုက်ရိုက် sync → NoSQL။ အလုပ်အကိုင်အများစုက <strong>နှစ်မျိုးလုံး</strong> အခြေခံလိုသည် — ဤ academy ၏ SQL နှင့် database သင်တန်းများက ပိုနက်နက်သွားသည်။</p>
+<div class="callout tip"><strong>စမ်းကြည့်ပါ-</strong> အထက်ပါ SQL ကို အင်္ဂလိပ်စာလို ဖတ်ပါ။ ပြီးလျှင် "total 2000 အောက် ဝယ်သူနာမည်များ၊ အနည်းဆုံးအရင်" query ကို စာရွက်ပေါ်ရေးပါ — SQL ကို တစ်ဝက်တတ်ပြီးသား ဖြစ်နေလိမ့်မည်။</div>`,
+      },
+      "z-portfolio": {
+        title: "ယုံကြည်မှုရသော Portfolio",
+        content: `
+<h3>🎯 သင့် portfolio သည် သင့် CV ဖြစ်ပြီ</h3>
+<p>ကိုယ်တိုင်သင်ယူသော developer အတွက် portfolio က စကားပြောပေးသည်။ သတင်းကောင်း- ပါဝင်ရမည့်အရာများကို ဤသင်တန်းထဲမှာ ဆောက်ပြီးသား!</p>
+<h3>📝 ပရောဂျက် ၃ ခု portfolio (အကုန်ရှိပြီးသား!)</h3>
+<ol>
+  <li><strong>ကိုယ်ရေးအကျဉ်း/လုပ်ငန်း စာမျက်နှာ</strong> (အဆင့် ၁–၂) — အချောသတ်ပါ- ပုံအစစ်၊ responsive၊ card သန့်သန့်။</li>
+  <li><strong>Interactive app</strong> (အဆင့် ၃ counter → ချဲ့ပါ- tip တွက်စက် သို့ quiz ဂိမ်း)။</li>
+  <li><strong>တိုက်ရိုက်ဒေတာ app</strong> (အဆင့် ၅) — API များက အထင်ကြီးစေသည်။</li>
+</ol>
+<h3>📝 Interview နှစ်ဆတိုးစေသော တင်ဆက်မှုစည်းမျဉ်းများ</h3>
+<ul>
+  <li>အားလုံး GitHub Pages ပေါ်မှာ LIVE — link က screenshot ကို ၁၀၀-၀ နိုင်သည်။</li>
+  <li>Repo တိုင်း README- ဘာလုပ်လဲ၊ screenshot၊ live link၊ ဘာသင်ခဲ့လဲ၊ ဘာပြင်ချင်လဲ။ ရေးသားချက်က <strong>တွေးခေါ်မှု</strong> ကိုပြသည် — အလုပ်ခန့်ခံရသည်မှာ တွေးခေါ်မှု။</li>
+  <li>ပရောဂျက် ၃ ခုလုံး link ချိတ်ထားသော စာမျက်နှာတစ်ခု = portfolio ဆိုက် — ပရောဂျက် #4 အလကား။</li>
+  <li>ရိုးသားမှုက အတုထက်သာသည်- သေးသော်လည်း စစ်မှန်သော ၃ ခု &gt; ကူးချထားသော ကြီးကြီးတစ်ခု။ Interview မေးခွန်းများကို စစ်မှန်သောအလုပ်သာ ခံနိုင်သည်။</li>
+</ul>
+<div class="callout tip"><strong>စမ်းကြည့်ပါ-</strong> Inspiration app အတွက် README ကို အခုရေးပါ — ၅ ကြောင်း- ဘာလဲ၊ ဘယ်လိုလဲ၊ live link၊ အခက်ဆုံး bug၊ နောက် feature။</div>`,
+      },
+      "z-money": {
+        title: "ပထမဝင်ငွေ — Freelance နှင့် ဒေသတွင်းအလုပ်",
+        content: `
+<h3>🎯 ပထမဆုံး developer ငွေရလမ်းများ</h3>
+<div class="flow">
+  <div class="flow-box">🏪 ဒေသဆိုင်များ<br><small>menu စာမျက်နှာ၊ order form၊<br>Facebook → တကယ့်ဝဘ်ဆိုက်</small></div>
+  <div class="flow-arrow" data-label="သို့"></div>
+  <div class="flow-box alt">🌏 အွန်လိုင်း freelance<br><small>Upwork / Fiverr —<br>သေးသော fixed-price အလုပ်များ</small></div>
+  <div class="flow-arrow" data-label="သို့"></div>
+  <div class="flow-box warn">💼 Junior အလုပ်<br><small>ဒေသတွင်း သို့ remote —<br>portfolio + GitHub က တံခါးဖွင့်သည်</small></div>
+</div>
+<h3>📝 ဒေသတွင်း-အရင် နည်းဗျူဟာ (မြန်မာအတွက် အထူးကောင်း)</h3>
+<ol>
+  <li>ကိုယ်တိုင်သိသော ဆိုင်/ဝန်ဆောင်မှု တစ်ခုရွေးပါ။ သူတို့အတွက် one-page ဆိုက် <strong>အခမဲ့</strong> ဆောက်ပေးပါ (သင့်အတွက် တကယ့်ပရောဂျက် + testimonial)။</li>
+  <li>Before/after ကို မြန်မာလို Facebook တင်ပါ- "X အတွက် ဒါဆောက်ပေးခဲ့တယ် — လိုချင်လား?"</li>
+  <li>နောက်တစ်ခုများ အခကြေးဖြင့်- landing page (ဒေသတွင်း ~၅သောင်း–၁.၅သိန်း Ks စ)၊ order form၊ လစဉ်ထိန်းသိမ်းခ (ထပ်ခါထပ်ခါဝင်ငွေ!)။</li>
+</ol>
+<h3>📝 အွန်လိုင်း freelance ရှင်သန်ရေးစည်းမျဉ်းများ</h3>
+<ul>
+  <li>သေးသော fixed-price အလုပ်ဖြင့်စပါ ("ဖုန်း layout ပြင်ပေးပါ") — အစပိုင်းတွင် review က ငွေထက်အရေးကြီးသည်။</li>
+  <li>မြန်မြန်ဖြေ၊ ပိုပြောပြ၊ တစ်ရက်စောပြီးအပ်ပါ။ ⭐ rating များ streak လို ပွားသည်။</li>
+  <li>အလုပ် ၃ ခုပြီးတိုင်း ဈေးတိုးပါ။ ထာဝရဈေးပေါက ထောင်ချောက်ဖြစ်သည်။</li>
+</ul>
+<div class="callout tip"><strong>စမ်းကြည့်ပါ-</strong> ဒီအပတ် ဆိုင်ရှင်တစ်ယောက်ကို ပို့မည့် message တစ်စောင် ရေးပါ — တိုတို၊ ဖော်ရွေပြီး live portfolio link ပါပါစေ။ ပို့လိုက်ခြင်းက အဆင့် ၇ ရဲ့ တကယ့်စစ်ဆေးမှု။</div>`,
+      },
+      "z-next": {
+        title: "ဒီကနေ သင့်သူရဲကောင်းလမ်းပြမြေပုံ",
+        content: `
+<h3>🎉 နောက်ပြန်လှည့်ကြည့်ပါ</h3>
+<p>အဆင့် ၀ တုန်းက ဖုန်းတစ်လုံးနှင့် စူးစမ်းချင်စိတ်သာ ရှိခဲ့သည်။ ယခု သင်- စာမျက်နှာဆောက်တတ် (၁)၊ responsive စတိုင်တတ် (၂)၊ program ရေးတတ် (၃)၊ version ထိန်း + <strong>DEPLOY</strong> တတ် (၄)၊ တိုက်ရိုက်ဒေတာဆွဲတတ် (၅)၊ server/database နားလည် (၆)၊ ငွေရနည်းသိ (၇)။ ဒါ "အစပြုသူ" မဟုတ်တော့ပါ — <strong>junior developer ဖြစ်လာနေပြီ</strong>။ 🦸</p>
+<h3>📝 နောက် quest ရွေးပါ (အားလုံး ဤ academy ထဲမှာ)</h3>
+<ul>
+  <li><strong>🥞 Full Stack Developer</strong> — သဘာဝကျသော နောက်တစ်ပိုင်း- တကယ့် server, database, app အပြည့်အစုံ။</li>
+  <li><strong>⚡ n8n Automation & AI Agents</strong> — ၂၀၂၆ ရဲ့ အမြန်ဆုံး freelance ဝင်ငွေ skill။</li>
+  <li><strong>☁️ Cloud (အခမဲ့)</strong> → <strong>♾️ DevOps</strong> — infrastructure အလုပ်အကိုင်လမ်းကြောင်း။</li>
+  <li><strong>🤖 Agentic AI Engineering</strong> — လူတိုင်းခန့်နေသောနယ်ပယ်။</li>
+</ul>
+<h3>📝 သင့်ကို သယ်သွားမည့် အလေ့အကျင့်များ</h3>
+<ol>
+  <li>🔥 Streak ဆက်ထိန်းပါ — တစ်နေ့ မိနစ် ၃၀၊ ထာဝရ။ ပုံမှန်လုပ်ခြင်းသည် ပါရမီ။</li>
+  <li>🏗️ ပရောဂျက်တစ်ခု အမြဲလက်ထဲရှိပါစေ။ Tutorial က သင်ပေးသည်၊ ပရောဂျက်က ပြောင်းလဲပေးသည်။</li>
+  <li>📢 လူသိအောင်ဆောက်ပါ — အပတ်စဉ် progress တင်ပါ။ အနာဂတ် client နှင့် အလုပ်ရှင်များ တိတ်တဆိတ် ကြည့်နေကြသည်။</li>
+</ol>
+<div class="callout tip"><strong>ဘွဲ့ယူခြင်း-</strong> အောက်က final exam အောင်ပါ၊ Zero to Hero certificate 🎓 ယူပါ၊ live portfolio link နှင့်အတူ တင်ပါ — ပြီးလျှင် အရှိန်ရှိနေချိန်မှာပဲ နောက် quest ကို ဒီနေ့ စာရင်းသွင်းပါ။</div>`,
+      },
+      "z-final": {
+        title: "နောက်ဆုံးစာမေးပွဲ — Zero to Hero",
+        questions: [
+          { q: "ဝဘ်စာမျက်နှာတိုင်း၏ ဘာသာစကား ၃ မျိုးမှာ…", options: ["Python, SQL, C++", "HTML (ဖွဲ့စည်းပုံ), CSS (စတိုင်), JavaScript (လှုပ်ရှားမှု)", "Node, Express, MongoDB", "Word, Excel, PowerPoint"] },
+          { q: "ဖုန်းတွင် flex card များ ဒေါင်လိုက်ထပ်စီရန်…", options: ["ပိုကြီးသော server", "@media (max-width: ...) { .row { flex-direction: column; } }", "div များ ပိုထည့်ခြင်း", "git push"] },
+          { q: "အလုပ်လုပ်သောခလုတ်၏ event ပုံစံ…", options: ["style.background", "getElementById + addEventListener(\"click\", fn)", "fetch().then()", "SELECT * FROM buttons"] },
+          { q: "ဆိုက်ကို အခမဲ့ live တင်နည်း…", options: ["server ဝယ်ခြင်း", "GitHub Pages (repo → Settings → Pages)", "Google ကို email ပို့ခြင်း", "USB stick"] },
+          { q: "fetch ပုံစံ အစီအစဉ်…", options: ["catch → then → fetch", "fetch(url) → res.json() → ဒေတာသုံး → catch", "json → fetch → then", "add → commit → push"] },
+          { q: "ထာဝရ app ဒေတာ (အကောင့်၊ order) ဘယ်မှာနေသလဲ…", options: ["let variable များ", "Database", "CSS", "URL"] },
+          { q: "အားအကောင်းဆုံး ပထမ portfolio…", options: ["ကူးချထားသော ပရောဂျက်ကြီးတစ်ခု", "LIVE ဖြစ်ပြီး ရိုးသား README ပါသော ပရောဂျက်သေး ၃ ခု", "Certificate များသာ", "Logo တစ်ခု"] },
+          { q: "ဤသင်တန်းပြီးနောက် အကောင်းဆုံးအလေ့အကျင့်…", options: ["စိတ်ဓာတ်တက်ချိန်စောင့်ခြင်း", "တစ်နေ့ မိနစ် ၃၀ + ပရောဂျက်တစ်ခု အမြဲလက်ထဲ", "မဆောက်ဘဲ ဖတ်ခြင်း", "သင်တန်း ၁၀ ခု တစ်ပြိုင်နက်စခြင်း"] },
+        ],
+      },
 
       /* ===== The Complete Web Development Bootcamp (Myanmar) ===== */
       "intro-what": {

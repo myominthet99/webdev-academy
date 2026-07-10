@@ -98,6 +98,16 @@
       window.addEventListener("load", function () {
         navigator.serviceWorker.register("sw.js").catch(function () {});
       });
+      /* When a NEW version of the site takes over, reload once so the page
+         never keeps running a mix of old and new files. hadController guards
+         the very first visit; the flag guards against reload loops. */
+      var hadController = !!navigator.serviceWorker.controller;
+      var swReloaded = false;
+      navigator.serviceWorker.addEventListener("controllerchange", function () {
+        if (!hadController || swReloaded) return;
+        swReloaded = true;
+        location.reload();
+      });
     }
   </script>
 </body>

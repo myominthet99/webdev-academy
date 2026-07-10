@@ -1296,6 +1296,44 @@
     window.scrollTo(0, 0);
   }
 
+  /* ---------------- View: Course map — infographic lesson flow ---------------- */
+  function renderCourseMap(courseId) {
+    const c = courseById(courseId);
+    if (!c) return renderNotFound();
+    const canAll = isFree(c) || hasCourseAccess(c.id);
+    const done = completedSet(c.id);
+    const PALETTE = ["#7b2ff7", "#0ea5e9", "#f59e0b", "#10b981", "#ef4444", "#d946ef"];
+    const typeIc = (l) => l.type === "video" ? "🎬" : l.type === "quiz" ? "❓" : l.type === "exercise" ? "🏋️" : "📖";
+    let n = 0;
+    const secs = (c.sections || []).map((s, si) => {
+      const col = PALETTE[si % PALETTE.length];
+      const rows = (s.lessons || []).map((l) => {
+        n++;
+        const locked = !canAll && n > PREVIEW_LESSONS;
+        const isDone = done.has(l.id);
+        const href = locked ? "#/premium/" + c.id : "#/learn/" + c.id + "/" + l.id;
+        return `<a class="cmap-lesson${isDone ? " done" : ""}${locked ? " locked" : ""}" href="${href}">
+          <span class="cm-n" style="background:${col}">${n}</span>
+          <span class="cm-ic">${typeIc(l)}</span>
+          <span class="cm-t">${lf(l, "title")}</span>
+          <span class="cm-d">${isDone ? "✅" : locked ? "🔒" : escapeHtml(l.duration || "")}</span>
+        </a>`;
+      }).join("");
+      return `<div class="cmap-sec" style="--sc:${col}">
+        <div class="cmap-head"><span class="cm-step">${si + 1}</span> ${secName(c, si)}</div>
+        ${rows}
+      </div>${si < c.sections.length - 1 ? '<div class="cmap-arrow">▼</div>' : ""}`;
+    }).join("");
+    app.innerHTML = `
+      <div class="container" style="max-width:760px">
+        <div class="muted" style="font-size:13px"><a href="#/course/${c.id}">← ${cf(c, "title")}</a></div>
+        <h1 class="tool-h">🗺️ ${t("map_title")}</h1>
+        <p class="section-sub">${c.icon} ${cf(c, "title")} · ${totalLessons(c)} ${t("lessons_word")} · ⏱ ${c.hours} ${t("hrs")} · ${progressPct(c)}% ${t("pct_complete_word")}</p>
+        <div class="cmap">${secs}</div>
+      </div>`;
+    window.scrollTo(0, 0);
+  }
+
   /* ---------------- View: Home ---------------- */
   /* Courses to spotlight in the home "New & trending" strip */
   const NEW_COURSE_IDS = ["zero-to-hero", "n8n-automation", "ai-engineering", "cloud-computing"];
@@ -1590,6 +1628,7 @@
               <div class="price ${isFree(c) ? "" : "premium"}">${priceTag(c)}</div>
               ${enrolled && pct > 0 ? `<div class="progress" style="margin-bottom:14px"><span style="width:${pct}%"></span></div><div class="muted" style="margin-bottom:14px">${pct}% ${t("pct_complete_word")} · ⏱ ${formatTime(getTotalTimeSpent(c.id))}</div>` : ""}
               ${cta}${buyOne}
+              <a class="btn btn-outline btn-block" style="margin-top:10px" href="#/map/${c.id}">🗺️ ${t("map_view")}</a>
               ${!isFree(c) && !isPremiumUser() && premiumCoursesMap[c.id] ? `<div class="tl-status ok" style="text-align:center">✓ ${t("purchased")}</div>` : ""}
               ${enrolled && pct === 100 ? `<a class="btn btn-ghost btn-block" style="margin-top:10px" href="#/certificate/${c.id}">🎓 ${t("cert_view")}</a>` : ""}
               <div class="includes-title">${t("includes_title")}</div>
@@ -5596,7 +5635,7 @@
     /* highlight the matching bottom tab (mobile app bar) */
     const tabOf =
       !parts[0] ? "home"
-      : ["courses", "course", "learn", "search", "roadmap"].indexOf(parts[0]) >= 0 ? "courses"
+      : ["courses", "course", "learn", "search", "roadmap", "map"].indexOf(parts[0]) >= 0 ? "courses"
       : parts[0] === "playground" ? "playground"
       : parts[0] === "tools" ? "tools"
       : parts[0] === "gallery" ? "gallery"
@@ -5609,7 +5648,7 @@
 
     /* highlight the matching top-nav pill */
     const navOf =
-      ["courses", "course", "learn", "search"].indexOf(parts[0]) >= 0 ? "nav-courses"
+      ["courses", "course", "learn", "search", "map"].indexOf(parts[0]) >= 0 ? "nav-courses"
       : parts[0] === "gallery" ? "nav-gallery"
       : parts[0] === "roadmap" ? "nav-roadmap"
       : parts[0] === "tools" ? "nav-tools"
@@ -5636,6 +5675,7 @@
     else if (parts[0] === "playground") renderPlayground(parts[1]);
     else if (parts[0] === "tools") renderTools(parts[1]);
     else if (parts[0] === "gallery") renderGallery();
+    else if (parts[0] === "map" && parts[1]) renderCourseMap(parts[1]);
     else if (parts[0] === "daily") renderDaily();
     else if (parts[0] === "community") renderCommunity();
     else if (parts[0] === "call") renderCall(parts[1]);

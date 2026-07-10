@@ -3959,9 +3959,19 @@
         </div>
 
         <div class="panel">
+          <h3>📅 ${t("ev_title")}</h3>
+          <div id="comm-events"><p class="muted">⏳</p></div>
+        </div>
+
+        <div class="panel">
           <h3>🏆 ${t("comm_top_week")}</h3>
           <div id="comm-top" class="adash-list"><p class="muted">⏳</p></div>
           <a class="btn btn-outline btn-sm" style="margin-top:10px" href="#/leaderboard">🏆 ${t("lb_title")} →</a>
+        </div>
+
+        <div class="panel">
+          <h3>⚡ ${t("ev_activity")}</h3>
+          <div id="comm-activity" class="adash-list"><p class="muted">⏳</p></div>
         </div>
 
         <div class="panel">
@@ -4015,19 +4025,66 @@
           users.slice(0, 5).map((x) => x.name).join(", ") + (users.length > 5 ? " +" + (users.length - 5) : "")
         : "💤 " + t("comm_quiet");
     }).catch(() => {});
-    /* this week's most active learners */
+    /* this week's most active learners + recent-activity feed */
     fetch(base + "/stats/leaderboard.json").then((r) => r.json()).then((lb) => {
       const el = document.getElementById("comm-top");
-      if (!el) return;
       const week = Date.now() - 7 * 864e5;
-      const rows = Object.values(lb || {})
-        .filter((x) => x && (Number(x.ts) || 0) >= week && (Number(x.xp) || 0) > 0)
-        .sort((a, b) => (Number(b.xp) || 0) - (Number(a.xp) || 0))
-        .slice(0, 5);
-      el.innerHTML = rows.length
-        ? rows.map((s, i) =>
-            `<div class="adash-row"><span>${["🥇", "🥈", "🥉", "4.", "5."][i]} ${escapeHtml(String(s.name || "?").slice(0, 24))}</span><b>⚡ ${Number(s.xp) || 0} · 🔥 ${Number(s.streak) || 0}</b></div>`).join("")
-        : `<p class="muted">${t("comm_be_first")}</p>`;
+      const all = Object.values(lb || {}).filter((x) => x && (Number(x.xp) || 0) > 0);
+      if (el) {
+        const rows = all
+          .filter((x) => (Number(x.ts) || 0) >= week)
+          .sort((a, b) => (Number(b.xp) || 0) - (Number(a.xp) || 0))
+          .slice(0, 5);
+        el.innerHTML = rows.length
+          ? rows.map((s, i) =>
+              `<div class="adash-row"><span>${["🥇", "🥈", "🥉", "4.", "5."][i]} ${escapeHtml(String(s.name || "?").slice(0, 24))}</span><b>⚡ ${Number(s.xp) || 0} · 🔥 ${Number(s.streak) || 0}</b></div>`).join("")
+          : `<p class="muted">${t("comm_be_first")}</p>`;
+      }
+      /* recent activity: latest study sessions, newest first */
+      const act = document.getElementById("comm-activity");
+      if (act) {
+        const ago = (ts) => {
+          const m = Math.max(1, Math.round((Date.now() - ts) / 60000));
+          if (m < 60) return m + t("ev_min_ago");
+          const h = Math.round(m / 60);
+          if (h < 24) return h + t("ev_hr_ago");
+          return Math.round(h / 24) + t("ev_day_ago");
+        };
+        const recent = all
+          .filter((x) => Number(x.ts) > 0)
+          .sort((a, b) => Number(b.ts) - Number(a.ts))
+          .slice(0, 6);
+        act.innerHTML = recent.length
+          ? recent.map((s) =>
+              `<div class="adash-row"><span>📖 ${escapeHtml(String(s.name || "?").slice(0, 24))} ${t("ev_studied")}</span><b class="muted">${ago(Number(s.ts))}</b></div>`).join("")
+          : `<p class="muted">${t("comm_be_first")}</p>`;
+      }
+    }).catch(() => {});
+    /* upcoming events (admin-created, stats/events) */
+    fetch(base + "/stats/events.json").then((r) => r.json()).then((evs) => {
+      const el = document.getElementById("comm-events");
+      if (!el) return;
+      const now = Date.now();
+      const list = Object.values(evs || {})
+        .filter((e) => e && e.t && Number(e.ts) > now - 2 * 3600e3)
+        .sort((a, b) => Number(a.ts) - Number(b.ts))
+        .slice(0, 6);
+      const dayLabel = (ts) => {
+        const d = new Date(Number(ts));
+        const today = new Date(); today.setHours(0, 0, 0, 0);
+        const diff = Math.floor((d - today) / 864e5);
+        const time = d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+        if (diff === 0) return t("ev_today") + " " + time;
+        if (diff === 1) return t("ev_tomorrow") + " " + time;
+        return d.toLocaleDateString([], { month: "short", day: "numeric" }) + " " + time;
+      };
+      el.innerHTML = list.length
+        ? list.map((e) => `
+            <div class="adash-row ev-row">
+              <span>📌 <b>${escapeHtml(lang === "my" && e.my ? e.my : e.t)}</b><br><small class="muted">🗓 ${dayLabel(e.ts)}</small></span>
+              ${e.link ? `<a class="btn btn-primary btn-sm" href="${escapeHtml(e.link)}">${t("ev_join")}</a>` : ""}
+            </div>`).join("")
+        : `<p class="muted">${t("ev_none")}</p>`;
     }).catch(() => {});
     window.scrollTo(0, 0);
   }
@@ -4823,6 +4880,19 @@
           </div>
         </div>
         <div class="panel">
+          <h3>📅 ${t("ev_title")}</h3>
+          <p class="muted" style="margin:0 0 8px;font-size:13px">${t("ev_help")}</p>
+          <div class="tl-row">
+            <input class="tl-in" id="ev-t" placeholder="Live Q&amp;A with Sayar" style="flex:1;min-width:150px" maxlength="80">
+            <input class="tl-in" id="ev-my" placeholder="မြန်မာခေါင်းစဉ် (optional)" style="flex:1;min-width:150px" maxlength="120">
+            <input class="tl-in" id="ev-ts" type="datetime-local" style="width:190px">
+            <input class="tl-in" id="ev-link" placeholder="#/call/community" style="width:160px" maxlength="200">
+            <button class="btn btn-primary btn-sm" id="ev-create">${t("ev_create")}</button>
+            <span class="muted" id="ev-status" style="font-size:13px"></span>
+          </div>
+          <div class="adash-list" id="ev-list"><p class="muted">⏳</p></div>
+        </div>
+        <div class="panel">
           <h3 style="display:flex;justify-content:space-between;align-items:center;gap:8px">📣 ${t("cc_title")}
             <a class="btn btn-primary btn-sm" href="#/admin/content">🚀 ${t("cc_title")} 2.0 →</a></h3>
           <p class="muted" style="margin:0 0 8px;font-size:13px">${t("cc_help")}</p>
@@ -4988,6 +5058,43 @@
         fetch(base + "/stats/promo/" + b.getAttribute("data-pc-del") + ".json", { method: "DELETE" })
           .then(() => renderAdminDashboard())
           .catch(() => {});
+      });
+
+      /* 📅 community events: list + create + delete */
+      const evList = document.getElementById("ev-list");
+      const evStatus = document.getElementById("ev-status");
+      const loadEvents = () => fetch(base + "/stats/events.json").then((r) => r.json()).then((evs) => {
+        if (!evList) return;
+        const rows = Object.entries(evs || {}).filter(([, v]) => v && v.t)
+          .sort((a, b) => Number(a[1].ts) - Number(b[1].ts));
+        evList.innerHTML = rows.length
+          ? rows.map(([k, v]) => `
+              <div class="adash-row">
+                <span>📌 <b>${escapeHtml(v.t)}</b> · ${new Date(Number(v.ts)).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}${Number(v.ts) < Date.now() ? " ⏳" : ""}</span>
+                <b><button class="btn btn-outline btn-sm" data-ev-del="${escapeHtml(k)}">🗑</button></b>
+              </div>`).join("")
+          : `<p class="muted">${t("dash_none")}</p>`;
+      }).catch(() => {});
+      loadEvents();
+      const evCreate = document.getElementById("ev-create");
+      if (evCreate) evCreate.addEventListener("click", () => {
+        const tt = (document.getElementById("ev-t").value || "").trim();
+        const my = (document.getElementById("ev-my").value || "").trim();
+        const when = Date.parse(document.getElementById("ev-ts").value || "");
+        const link = (document.getElementById("ev-link").value || "").trim();
+        if (!tt || !when) { evStatus.textContent = "?"; return; }
+        const body = { t: tt, ts: when, created: Date.now() };
+        if (my) body.my = my;
+        if (link) body.link = link;
+        fetch(base + "/stats/events.json", { method: "POST", body: JSON.stringify(body) })
+          .then((r) => { if (!r.ok) throw new Error("write"); evStatus.textContent = "✓"; loadEvents(); })
+          .catch(() => { evStatus.textContent = t("ev_err"); });
+      });
+      if (evList) evList.addEventListener("click", (e) => {
+        const b = e.target.closest("[data-ev-del]");
+        if (!b) return;
+        fetch(base + "/stats/events/" + b.getAttribute("data-ev-del") + ".json", { method: "DELETE" })
+          .then(() => loadEvents()).catch(() => {});
       });
     }).catch(() => { mount.innerHTML = `<div class="empty"><h2>${t("lb_offline")}</h2></div>`; });
     window.scrollTo(0, 0);

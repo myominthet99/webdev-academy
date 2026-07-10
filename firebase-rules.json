@@ -64,6 +64,16 @@
           "ts": { ".validate": "newData.isNumber()" }
         }
       },
+      "events": {
+        "$eid": {
+          ".write": true,
+          "t":       { ".validate": "newData.isString() && newData.val().length <= 80" },
+          "my":      { ".validate": "newData.isString() && newData.val().length <= 120" },
+          "ts":      { ".validate": "newData.isNumber()" },
+          "link":    { ".validate": "newData.isString() && newData.val().length <= 200" },
+          "created": { ".validate": "newData.isNumber()" }
+        }
+      },
       "reviews": {
         "$cid": {
           "$uid": {

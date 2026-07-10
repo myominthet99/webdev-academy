@@ -1499,6 +1499,99 @@ body { font-family: sans-serif; color: var(--ink); padding: 24px; }
           ]),
         ],
       },
+      {
+        title: "🏋️ Practice Zone — Prove Your Skills",
+        lessons: [
+          exercise("csx-center", "Exercise: The Perfect Center", "8 min", `
+<h3>🏋️ Your task</h3>
+<p>Make the purple box sit <strong>exactly in the middle</strong> of the .wrap area — horizontally AND vertically — using flexbox on <code>.wrap</code>.</p>
+<p>Three properties: <code>display</code>, <code>justify-content</code>, <code>align-items</code>.</p>`,
+`<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      .wrap {
+        height: 220px; border: 2px dashed #bbb;
+        /* your 3 lines here: */
+
+      }
+      .box { width: 80px; height: 80px; background: #a435f0; border-radius: 12px; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap"><div class="box"></div></div>
+  </body>
+</html>`,
+`var w = document.querySelector(".wrap");
+if (!w) __exDone(false, "Keep the .wrap div!");
+else {
+  var s = getComputedStyle(w);
+  if (s.display !== "flex") __exDone(false, "Set display: flex on .wrap");
+  else if (s.justifyContent !== "center") __exDone(false, "Add justify-content: center");
+  else if (s.alignItems !== "center") __exDone(false, "Add align-items: center");
+  else __exDone(true, "");
+}`),
+          exercise("csx-card", "Exercise: Style a Card", "8 min", `
+<h3>🏋️ Your task</h3>
+<p>Give <code>.card</code> the classic card look:</p>
+<ul><li>rounded corners of <strong>at least 8px</strong> (<code>border-radius</code>)</li>
+<li>a soft <code>box-shadow</code></li></ul>`,
+`<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      .card {
+        width: 220px; padding: 20px; background: #fff; border: 1px solid #eee;
+        /* make it beautiful: */
+
+      }
+    </style>
+  </head>
+  <body style="background:#f6f7f9;padding:30px">
+    <div class="card"><h3>Mohinga Recipe</h3><p>The classic breakfast.</p></div>
+  </body>
+</html>`,
+`var c = document.querySelector(".card");
+if (!c) __exDone(false, "Keep the .card div!");
+else {
+  var s = getComputedStyle(c);
+  var r = parseFloat(s.borderTopLeftRadius) || 0;
+  if (r < 8) __exDone(false, "Add border-radius of at least 8px (currently " + r + "px).");
+  else if (!s.boxShadow || s.boxShadow === "none") __exDone(false, "Add a box-shadow, e.g. 0 4px 12px rgba(0,0,0,.1)");
+  else __exDone(true, "");
+}`),
+          exercise("csx-grid", "Exercise: Three-Column Grid", "9 min", `
+<h3>🏋️ Your task</h3>
+<p>Turn <code>.grid</code> into a <strong>3-column</strong> grid with a gap, using <code>display: grid</code> and <code>grid-template-columns</code>.</p>
+<p>Hint: <code>repeat(3, 1fr)</code></p>`,
+`<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      .grid {
+        /* your grid here: */
+
+      }
+      .grid div { background: #ede4ff; padding: 18px; border-radius: 8px; text-align: center; }
+    </style>
+  </head>
+  <body>
+    <div class="grid">
+      <div>1</div><div>2</div><div>3</div>
+      <div>4</div><div>5</div><div>6</div>
+    </div>
+  </body>
+</html>`,
+`var g = document.querySelector(".grid");
+if (!g) __exDone(false, "Keep the .grid div!");
+else {
+  var s = getComputedStyle(g);
+  if (s.display !== "grid") __exDone(false, "Set display: grid on .grid");
+  else if (s.gridTemplateColumns.split(" ").length !== 3) __exDone(false, "Make exactly 3 columns - try grid-template-columns: repeat(3, 1fr)");
+  else __exDone(true, "");
+}`),
+        ],
+      },
     ],
   },
   {
@@ -1710,6 +1803,67 @@ body { font-family: sans-serif; color: var(--ink); padding: 24px; }
               answer: 1,
             },
           ]),
+        ],
+      },
+      {
+        title: "🏋️ Practice Zone — Prove Your Skills",
+        lessons: [
+          exercise("hdx-semantic", "Exercise: Semantic Skeleton", "8 min", `
+<h3>🏋️ Your task</h3>
+<p>Build a page skeleton using the four semantic areas: <code>&lt;header&gt;</code>, <code>&lt;nav&gt;</code>, <code>&lt;main&gt;</code> and <code>&lt;footer&gt;</code> — any content inside is fine.</p>`,
+`<!DOCTYPE html>
+<html>
+  <body>
+    <!-- build the semantic skeleton here: -->
+
+  </body>
+</html>`,
+`if (!document.querySelector("header")) __exDone(false, "Add a <header> element.");
+else if (!document.querySelector("nav")) __exDone(false, "Add a <nav> element (it can live inside the header).");
+else if (!document.querySelector("main")) __exDone(false, "Add a <main> element for the unique page content.");
+else if (!document.querySelector("footer")) __exDone(false, "Add a <footer> element.");
+else __exDone(true, "");`),
+          exercise("hdx-form", "Exercise: An Accessible Form Field", "9 min", `
+<h3>🏋️ Your task</h3>
+<p>Create an email field done <em>professionally</em>:</p>
+<ul><li>a <code>&lt;label&gt;</code> whose <code>for</code> is <code>email</code></li>
+<li>an <code>&lt;input&gt;</code> with <code>id="email"</code>, <code>type="email"</code> and <code>required</code></li></ul>`,
+`<!DOCTYPE html>
+<html>
+  <body>
+    <form>
+      <!-- your label + input here: -->
+
+      <button>Subscribe</button>
+    </form>
+  </body>
+</html>`,
+`var lab = document.querySelector("label");
+var inp = document.getElementById("email");
+if (!lab) __exDone(false, "Add a <label> element.");
+else if (lab.htmlFor !== "email") __exDone(false, 'Set the label attribute for="email".');
+else if (!inp) __exDone(false, 'Add an input with id="email".');
+else if (inp.type !== "email") __exDone(false, 'Set type="email" on the input.');
+else if (!inp.required) __exDone(false, "Add the required attribute so the browser validates it.");
+else __exDone(true, "");`),
+          exercise("hdx-table", "Exercise: A Proper Data Table", "10 min", `
+<h3>🏋️ Your task</h3>
+<p>Build a table with a real structure:</p>
+<ul><li>a <code>&lt;thead&gt;</code> row using <code>&lt;th&gt;</code> header cells</li>
+<li>a <code>&lt;tbody&gt;</code> with <strong>at least 2</strong> data rows</li></ul>`,
+`<!DOCTYPE html>
+<html>
+  <body>
+    <h3>Class Scores</h3>
+    <!-- your table here: -->
+
+  </body>
+</html>`,
+`var t = document.querySelector("table");
+if (!t) __exDone(false, "Add a <table> element.");
+else if (!t.querySelector("thead th")) __exDone(false, "Add a <thead> containing <th> header cells.");
+else if (t.querySelectorAll("tbody tr").length < 2) __exDone(false, "Add a <tbody> with at least 2 <tr> data rows.");
+else __exDone(true, "");`),
         ],
       },
     ],
@@ -5749,6 +5903,83 @@ function StudyTracker() {
           ]),
         ],
       },
+      {
+        title: "🏋️ Practice Zone — Component Thinking",
+        lessons: [
+          exercise("rbx-component", "Exercise: Your First Component", "9 min", `
+<h3>🏋️ Your task</h3>
+<p>React components are just functions that return UI. Practice the idea in plain JavaScript: write <code>Card(title)</code> that <strong>returns a div element</strong> with class <code>card</code> containing the title text.</p>
+<pre><code>var el = Card("Hello");
+el.className   → "card"
+el.textContent → "Hello"</code></pre>
+<p>Hint: <code>document.createElement("div")</code></p>`,
+`<!DOCTYPE html>
+<html>
+  <body>
+    <script>
+      // write your component here:
+      function Card(title) {
+
+      }
+    </script>
+  </body>
+</html>`,
+`if (typeof Card !== "function") __exDone(false, "Define a function called Card.");
+else {
+  var el;
+  try { el = Card("Hello"); } catch (e) { el = null; }
+  if (!el || !el.nodeType) __exDone(false, "Card must RETURN an element - use document.createElement('div').");
+  else if (el.className.indexOf("card") < 0) __exDone(false, 'Give the div className = "card".');
+  else if (el.textContent.indexOf("Hello") < 0) __exDone(false, "Put the title text inside the div (textContent).");
+  else __exDone(true, "");
+}`),
+          exercise("rbx-props", "Exercise: Props In, UI Out", "8 min", `
+<h3>🏋️ Your task</h3>
+<p>Components receive <strong>props</strong> (an object) and return UI from them. Write <code>Greeting(props)</code> that returns the string <code>"Hello, NAME!"</code> using <code>props.name</code>.</p>
+<pre><code>Greeting({ name: "Su" })  → "Hello, Su!"
+Greeting({ name: "Ko Ko" }) → "Hello, Ko Ko!"</code></pre>`,
+`<!DOCTYPE html>
+<html>
+  <body>
+    <script>
+      // write your function here:
+      function Greeting(props) {
+
+      }
+    </script>
+  </body>
+</html>`,
+`if (typeof Greeting !== "function") __exDone(false, "Define a function called Greeting.");
+else if (Greeting({ name: "Su" }) !== "Hello, Su!") __exDone(false, 'Greeting({name:"Su"}) should return "Hello, Su!" - use props.name.');
+else if (Greeting({ name: "Ko Ko" }) !== "Hello, Ko Ko!") __exDone(false, "Use props.name so it works for ANY name.");
+else __exDone(true, "");`),
+          exercise("rbx-state", "Exercise: State Makes UI Update", "10 min", `
+<h3>🏋️ Your task</h3>
+<p>State = data that changes and updates the UI. Wire the button so each click <strong>adds 1</strong> to a counter variable and shows it in <code>#count</code>.</p>
+<p>Hint: keep a <code>let count = 0</code>, update <code>textContent</code> in the click handler.</p>`,
+`<!DOCTYPE html>
+<html>
+  <body>
+    <p>Clicks: <span id="count">0</span></p>
+    <button id="inc">+1</button>
+    <script>
+      // your state + click handler here:
+
+    </script>
+  </body>
+</html>`,
+`var b = document.getElementById("inc");
+var c = document.getElementById("count");
+if (!b || !c) __exDone(false, "Keep the #inc button and #count span!");
+else {
+  b.click(); b.click();
+  setTimeout(function () {
+    if (c.textContent.trim() === "2") __exDone(true, "");
+    else __exDone(false, "After 2 clicks #count should show 2 (it shows " + c.textContent.trim() + "). Update textContent inside the click handler.");
+  }, 50);
+}`),
+        ],
+      },
     ],
   },
   {
@@ -6739,6 +6970,83 @@ curl -X DELETE http://localhost:3000/api/courses/1</code></pre>
             { q: "res.status(204).end() means...", options: ["Error", "Success with no body to return", "Redirect", "Timeout"], answer: 1 },
             { q: "Why Number(req.params.id)?", options: ["Style preference", "Params are strings; the ids are numbers — types must match for ===", "Express requires it", "It validates auth"], answer: 1 },
           ]),
+        ],
+      },
+      {
+        title: "🏋️ Practice Zone — Server Logic",
+        lessons: [
+          exercise("nbx-route", "Exercise: A Tiny Router", "9 min", `
+<h3>🏋️ Your task</h3>
+<p>Express matches paths to handlers. Practice the core idea: write <code>route(path)</code> that returns:</p>
+<pre><code>route("/")      → "home"
+route("/about") → "about"
+anything else   → "404"</code></pre>`,
+`<!DOCTYPE html>
+<html>
+  <body>
+    <script>
+      // write your router here:
+      function route(path) {
+
+      }
+    </script>
+  </body>
+</html>`,
+`if (typeof route !== "function") __exDone(false, "Define a function called route.");
+else if (route("/") !== "home") __exDone(false, 'route("/") should return "home".');
+else if (route("/about") !== "about") __exDone(false, 'route("/about") should return "about".');
+else if (route("/xyz") !== "404") __exDone(false, 'Unknown paths should return "404".');
+else __exDone(true, "");`),
+          exercise("nbx-query", "Exercise: Parse a Query String", "10 min", `
+<h3>🏋️ Your task</h3>
+<p>Express gives you <code>req.query</code> — build it yourself once to understand it. Write <code>parseQuery(str)</code>:</p>
+<pre><code>parseQuery("a=1&amp;b=2") → { a: "1", b: "2" }
+parseQuery("q=tea")    → { q: "tea" }</code></pre>
+<p>Hint: <code>str.split("&amp;")</code> then <code>part.split("=")</code>.</p>`,
+`<!DOCTYPE html>
+<html>
+  <body>
+    <script>
+      // write your parser here:
+      function parseQuery(str) {
+
+      }
+    </script>
+  </body>
+</html>`,
+`if (typeof parseQuery !== "function") __exDone(false, "Define a function called parseQuery.");
+else {
+  var r1 = parseQuery("a=1&b=2");
+  var r2 = parseQuery("q=tea");
+  if (!r1 || r1.a !== "1" || r1.b !== "2") __exDone(false, 'parseQuery("a=1&b=2") should return {a:"1", b:"2"}.');
+  else if (!r2 || r2.q !== "tea") __exDone(false, 'parseQuery("q=tea") should return {q:"tea"}.');
+  else __exDone(true, "");
+}`),
+          exercise("nbx-api", "Exercise: Shape an API Response", "9 min", `
+<h3>🏋️ Your task</h3>
+<p>Good APIs wrap data in a consistent shape. Write <code>apiResponse(data)</code> that returns a <strong>JSON string</strong> of <code>{ ok: true, data: data }</code>.</p>
+<pre><code>apiResponse([1,2]) → '{"ok":true,"data":[1,2]}'</code></pre>
+<p>Hint: <code>JSON.stringify</code></p>`,
+`<!DOCTYPE html>
+<html>
+  <body>
+    <script>
+      // write your function here:
+      function apiResponse(data) {
+
+      }
+    </script>
+  </body>
+</html>`,
+`if (typeof apiResponse !== "function") __exDone(false, "Define a function called apiResponse.");
+else {
+  var out;
+  try { out = JSON.parse(apiResponse([1, 2])); } catch (e) { out = null; }
+  if (!out) __exDone(false, "apiResponse must return a JSON STRING - use JSON.stringify.");
+  else if (out.ok !== true) __exDone(false, "The response object needs ok: true.");
+  else if (!out.data || out.data[0] !== 1 || out.data[1] !== 2) __exDone(false, "Put the data argument under the data key.");
+  else __exDone(true, "");
+}`),
         ],
       },
     ],

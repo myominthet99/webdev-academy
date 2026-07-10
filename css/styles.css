@@ -554,6 +554,21 @@ button { font-family: inherit; cursor: pointer; }
 .start-q h3 { margin: 0 0 10px; font-size: 16px; }
 .start-q { margin-bottom: 14px; }
 .start-q .chip.active { background: linear-gradient(135deg, #7b2ff7, #a435f0); color: #fff; border-color: transparent; }
+
+/* ⚔️ quiz battle */
+.bt-codechip {
+  font-size: 15px; vertical-align: middle; margin-left: 8px; letter-spacing: 3px;
+  background: linear-gradient(135deg, #7b2ff7, #a435f0); color: #fff;
+  padding: 4px 12px; border-radius: 999px;
+}
+.bt-bigcode { font-size: 42px; font-weight: 800; letter-spacing: 10px; margin: 10px 0; color: var(--purple); }
+.bt-head { display: flex; align-items: center; gap: 14px; }
+.bt-side { flex: 1; min-width: 0; }
+.bt-side .progress { margin: 6px 0 4px; }
+.bt-pts { font-size: 12.5px; color: var(--muted); font-weight: 700; }
+.bt-vs { font-weight: 900; color: var(--purple); font-size: 15px; flex: 0 0 auto; }
+.bt-pulse { font-size: 26px; animation: fabPulse 1.2s ease infinite; display: inline-block; }
+@media (prefers-reduced-motion: reduce) { .bt-pulse { animation: none; } }
 .buybox .price { font-size: 26px; margin-bottom: 14px; }
 .buybox ul { list-style: none; padding: 0; margin: 16px 0 0; font-size: 14px; }
 .buybox ul li { padding: 6px 0; color: var(--muted); display: flex; gap: 8px; }

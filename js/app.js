@@ -3849,6 +3849,194 @@
     for (const ch of date) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
     return bank[h % bank.length];
   }
+  /* ---------------- View: Quiz Battle — 1v1 realtime race ----------------
+     Uses the open rooms/ path (messages as a tiny event log), so it works
+     with the CURRENT database rules. Questions derive deterministically
+     from the battle code — both players compute the same quiz locally. */
+  function battleQuestions(code) {
+    const bank = [];
+    COURSES.forEach((c) => c.sections.forEach((s) => s.lessons.forEach((l) => {
+      if (l.type === "quiz" && Array.isArray(l.questions)) l.questions.forEach((q) => bank.push(q));
+    })));
+    let x = 7;
+    for (const ch of code) x = ((x * 33) ^ ch.charCodeAt(0)) >>> 0;
+    const qs = [], used = {};
+    while (qs.length < 5 && qs.length < bank.length) {
+      x ^= x << 13; x ^= x >>> 17; x ^= x << 5; x >>>= 0;
+      const i = x % bank.length;
+      if (!used[i]) { used[i] = 1; qs.push(bank[i]); }
+    }
+    return qs;
+  }
+  function battleMe() {
+    const u = loggedIn() ? window.Auth.current() : null;
+    let gid = sessionStorage.getItem("wda_battle_id");
+    if (!gid) { gid = "p_" + Math.random().toString(36).slice(2, 8); sessionStorage.setItem("wda_battle_id", gid); }
+    return { id: u ? u.id : gid, name: u ? String(u.name || u.email).split(" ")[0].slice(0, 16) : "Player-" + gid.slice(-3) };
+  }
+  function renderBattle(code) {
+    const base = statsBase();
+    if (!code) {
+      /* lobby: create or join */
+      app.innerHTML = `
+        <div class="container" style="max-width:560px">
+          <h1 class="tool-h">⚔️ ${t("bt_title")}</h1>
+          <p class="section-sub">${t("bt_sub")}</p>
+          <div class="panel" style="text-align:center">
+            <button class="btn btn-primary btn-block" id="bt-create">🎮 ${t("bt_create")}</button>
+            <div class="muted" style="margin:14px 0 8px">— ${t("bt_or")} —</div>
+            <div class="tl-row" style="justify-content:center">
+              <input class="tl-in" id="bt-code" placeholder="${t("bt_join_ph")}" maxlength="6" style="width:140px;text-transform:uppercase;text-align:center;font-weight:800;letter-spacing:3px">
+              <button class="btn btn-outline" id="bt-join">${t("bt_join")}</button>
+            </div>
+          </div>
+          <div class="panel"><h3>📖 ${t("bt_how")}</h3><ul class="req-list">
+            <li>${t("bt_how1")}</li><li>${t("bt_how2")}</li><li>${t("bt_how3")}</li>
+          </ul></div>
+        </div>`;
+      document.getElementById("bt-create").addEventListener("click", () => {
+        const c = Math.random().toString(36).replace(/[^a-z0-9]/g, "").slice(2, 7).toUpperCase();
+        location.hash = "#/battle/" + c;
+      });
+      const go = () => {
+        const v = (document.getElementById("bt-code").value || "").trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
+        if (v) location.hash = "#/battle/" + v;
+      };
+      document.getElementById("bt-join").addEventListener("click", go);
+      document.getElementById("bt-code").addEventListener("keydown", (e) => { if (e.key === "Enter") go(); });
+      window.scrollTo(0, 0);
+      return;
+    }
+
+    code = code.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6);
+    if (!base) { app.innerHTML = `<div class="container"><div class="empty"><h2>${t("lb_offline")}</h2></div></div>`; return; }
+    const me = battleMe();
+    const qs = battleQuestions(code);
+    const url = base + "/rooms/" + encodeURIComponent("battle::" + code) + "/messages.json";
+    const post = (obj) => fetch(url, { method: "POST", body: JSON.stringify(Object.assign({ ts: Date.now() }, obj)) }).catch(() => {});
+    let joined = false, shownAt = 0, finishedDrawn = false, lastSig = "";
+
+    app.innerHTML = `
+      <div class="container" style="max-width:620px">
+        <h1 class="tool-h">⚔️ ${t("bt_title")} <span class="bt-codechip">${code}</span></h1>
+        <div id="bt-arena"><div class="empty"><h2>⏳</h2></div></div>
+      </div>`;
+    const arena = document.getElementById("bt-arena");
+
+    const draw = (msgs) => {
+      const list = Object.values(msgs || {}).filter(Boolean).sort((a, b) => (a.ts || 0) - (b.ts || 0));
+      const joins = [];
+      list.forEach((m) => { if (m.type === "join" && m.u && !joins.some((j) => j.u === m.u)) joins.push(m); });
+      if (!joined && !joins.some((j) => j.u === me.id)) { joined = true; post({ type: "join", u: me.id, name: me.name }); }
+      const players = joins.slice(0, 2);
+      const opp = players.find((p) => p.u !== me.id);
+      const iAmIn = players.some((p) => p.u === me.id);
+      if (!iAmIn && players.length >= 2) {
+        arena.innerHTML = `<div class="empty"><h2>😢 ${t("bt_full")}</h2><a class="btn btn-primary" href="#/battle">← ${t("bt_title")}</a></div>`;
+        return true;
+      }
+      if (players.length < 2) {
+        const share = location.origin + location.pathname + "#/battle/" + code;
+        arena.innerHTML = `
+          <div class="panel" style="text-align:center">
+            <h2 style="margin:6px 0">${t("bt_waiting")}</h2>
+            <div class="bt-bigcode">${code}</div>
+            <p class="muted">${t("bt_share")}</p>
+            <div class="tl-row" style="justify-content:center">
+              <button class="btn btn-outline btn-sm" id="bt-copy">🔗 ${t("tl_copy")}</button>
+              <button class="btn btn-outline btn-sm" id="bt-chat">💬 ${t("bt_invite_chat")}</button>
+            </div>
+            <p class="bt-pulse" style="margin-top:14px">🕐</p>
+          </div>`;
+        const cb = document.getElementById("bt-copy");
+        if (cb) cb.addEventListener("click", () => {
+          const done = () => { cb.textContent = "✓ " + t("copied"); };
+          if (navigator.clipboard) navigator.clipboard.writeText(share).then(done).catch(done); else done();
+        });
+        const ch = document.getElementById("bt-chat");
+        if (ch) ch.addEventListener("click", () => {
+          if (window.Chat && window.Chat.post) {
+            window.Chat.setRoom("community", null);
+            window.Chat.post("⚔️ " + t("bt_chat_invite").replace("{code}", code) + " " + share);
+            window.Chat.open();
+            ch.textContent = "✓";
+          }
+        });
+        return false;
+      }
+      /* battle on: my answers vs theirs */
+      const ans = { mine: [], theirs: [] };
+      list.forEach((m) => {
+        if (m.type !== "ans" || typeof m.i !== "number") return;
+        if (m.u === me.id) ans.mine[m.i] = m;
+        else if (opp && m.u === opp.u) ans.theirs[m.i] = m;
+      });
+      const score = (arr) => arr.reduce((s, a) => s + (a && a.ok ? 100 + Math.max(0, 50 - Math.floor((a.ms || 9999) / 200)) : 0), 0);
+      const myDone = ans.mine.filter(Boolean).length, opDone = ans.theirs.filter(Boolean).length;
+      const myScore = score(ans.mine), opScore = score(ans.theirs);
+      const head = `
+        <div class="panel bt-head">
+          <div class="bt-side"><b>🙋 ${escapeHtml(me.name)}</b><div class="progress thin"><span style="width:${myDone * 20}%"></span></div><span class="bt-pts">${myScore} ${t("bt_pts")}</span></div>
+          <span class="bt-vs">VS</span>
+          <div class="bt-side"><b>${escapeHtml(opp.name || "?")}</b><div class="progress thin"><span style="width:${opDone * 20}%"></span></div><span class="bt-pts">${opScore} ${t("bt_pts")}</span></div>
+        </div>`;
+      if (myDone >= qs.length && opDone >= qs.length) {
+        if (finishedDrawn) return true;
+        finishedDrawn = true;
+        const win = myScore > opScore, draw2 = myScore === opScore;
+        const xp = win ? 30 : draw2 ? 15 : 10;
+        const awardKey = ns("wda_battle_xp::" + code);
+        if (!localStorage.getItem(awardKey)) { localStorage.setItem(awardKey, "1"); addBonusXp(xp); }
+        arena.innerHTML = head + `
+          <div class="panel" style="text-align:center">
+            <h2 style="font-size:40px;margin:8px 0">${win ? "🏆" : draw2 ? "🤝" : "💪"}</h2>
+            <h2>${win ? t("bt_win") : draw2 ? t("bt_draw") : t("bt_lose")}</h2>
+            <p class="muted">${myScore} — ${opScore} · +${xp} XP</p>
+            <a class="btn btn-primary" href="#/battle">🔁 ${t("bt_again")}</a>
+            <a class="btn btn-outline" href="#/community">🫂 ${t("comm_title")}</a>
+          </div>`;
+        return true;
+      }
+      if (myDone >= qs.length) {
+        arena.innerHTML = head + `<div class="panel" style="text-align:center"><h3>⌛ ${t("bt_wait_opp")}</h3><p class="bt-pulse">🕐</p></div>`;
+        return false;
+      }
+      const q = qs[myDone];
+      const sig = code + ":" + myDone + ":" + opDone + ":" + opScore;
+      if (sig === lastSig) return false; /* nothing changed — don't re-render mid-question */
+      lastSig = sig;
+      if (!shownAt || !arena.querySelector(".bt-q")) shownAt = Date.now();
+      arena.innerHTML = head + `
+        <div class="panel bt-q">
+          <p class="muted" style="margin:0 0 6px">${t("bt_q")} ${myDone + 1} / ${qs.length}</p>
+          <h3 style="margin-top:0">${q.q}</h3>
+          ${q.options.map((o, i) => `<button class="qc-opt" data-i="${i}">${o}</button>`).join("")}
+        </div>`;
+      shownAt = Date.now();
+      arena.querySelectorAll(".qc-opt").forEach((b) => b.addEventListener("click", () => {
+        if (arena.dataset.lock) return;
+        arena.dataset.lock = "1";
+        const i = Number(b.getAttribute("data-i"));
+        const ok = i === q.answer;
+        b.classList.add(ok ? "right" : "wrong");
+        if (!ok) { const r = arena.querySelector(`.qc-opt[data-i="${q.answer}"]`); if (r) r.classList.add("right"); }
+        post({ type: "ans", u: me.id, i: myDone, ok: ok, ms: Date.now() - shownAt });
+        setTimeout(() => { delete arena.dataset.lock; lastSig = ""; tick(); }, 900);
+      }));
+      return false;
+    };
+
+    let stop = false;
+    const tick = () => {
+      if (stop) return;
+      fetch(url).then((r) => r.json()).then((msgs) => { if (!stop && draw(msgs)) stop = true; }).catch(() => {});
+    };
+    tick();
+    const iv = setInterval(tick, 1500);
+    window.addEventListener("hashchange", () => { stop = true; clearInterval(iv); }, { once: true });
+    window.scrollTo(0, 0);
+  }
+
   function dailyHomeCard() {
     const st = jget(ns("wda_daily"), {});
     const done = st.date === todayKey();
@@ -3952,6 +4140,7 @@
           </div>
           <span style="display:flex;gap:8px;flex-wrap:wrap">
             <button class="btn btn-primary" id="comm-open">💬 ${t("comm_open")}</button>
+            <a class="btn btn-outline" href="#/battle">⚔️ ${t("bt_title")}</a>
             <a class="btn btn-outline" href="#/call/community">📹 ${t("call_start")}</a>
             ${window.Push && window.Push.supported() && !(window.Push.enabled())
               ? `<button class="btn btn-outline" id="comm-push">🔔 ${t("push_enable")}</button>` : ""}
@@ -5818,7 +6007,7 @@
       : parts[0] === "tools" ? "tools"
       : parts[0] === "gallery" ? "gallery"
       : parts[0] === "daily" ? "home"
-      : ["my-learning", "review", "leaderboard", "account", "certificate", "community", "call"].indexOf(parts[0]) >= 0 ? "me"
+      : ["my-learning", "review", "leaderboard", "account", "certificate", "community", "call", "battle"].indexOf(parts[0]) >= 0 ? "me"
       : "";
     document.querySelectorAll("#tabbar a").forEach((a) =>
       a.classList.toggle("active", a.getAttribute("data-tab") === tabOf)
@@ -5855,6 +6044,7 @@
     else if (parts[0] === "gallery") renderGallery();
     else if (parts[0] === "map" && parts[1]) renderCourseMap(parts[1]);
     else if (parts[0] === "start") renderStart();
+    else if (parts[0] === "battle") renderBattle(parts[1]);
     else if (parts[0] === "daily") renderDaily();
     else if (parts[0] === "community") renderCommunity();
     else if (parts[0] === "call") renderCall(parts[1]);

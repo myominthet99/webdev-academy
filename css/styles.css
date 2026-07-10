@@ -502,6 +502,12 @@ a.lesson-row:hover .ttl { color: var(--purple); }
 
 .related-wrap { margin-bottom: 40px; }
 
+/* admin dashboard mini charts */
+.adash-chart { width: 100%; height: auto; margin-top: 6px; display: block; }
+.adash-chart .bar { fill: var(--purple); opacity: .85; }
+.adash-chart .val { font-size: 10px; fill: var(--muted); text-anchor: middle; font-weight: 700; }
+.adash-chart .lab { font-size: 9px; fill: var(--muted); text-anchor: middle; }
+
 /* ---------- 🏅 Badge toast ---------- */
 .badge-toast {
   position: fixed; top: 74px; right: 16px; z-index: 900;

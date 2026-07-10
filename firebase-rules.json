@@ -54,6 +54,16 @@
           "ts":   { ".validate": "newData.isNumber()" }
         }
       },
+      "pushConfig": {
+        ".write": true,
+        "vapid": { ".validate": "newData.isString() && newData.val().length <= 200" }
+      },
+      "pushTokens": {
+        "$token": {
+          ".write": true,
+          "ts": { ".validate": "newData.isNumber()" }
+        }
+      },
       "reviews": {
         "$cid": {
           "$uid": {

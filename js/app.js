@@ -3732,6 +3732,8 @@
           <span style="display:flex;gap:8px;flex-wrap:wrap">
             <button class="btn btn-primary" id="comm-open">💬 ${t("comm_open")}</button>
             <a class="btn btn-outline" href="#/call/community">📹 ${t("call_start")}</a>
+            ${window.Push && window.Push.supported() && !(window.Push.enabled())
+              ? `<button class="btn btn-outline" id="comm-push">🔔 ${t("push_enable")}</button>` : ""}
           </span>
         </div>
 
@@ -3763,6 +3765,19 @@
 
     document.getElementById("comm-open").addEventListener("click", () => {
       if (window.Chat) { window.Chat.setRoom("community", null); window.Chat.open(); }
+    });
+    const pushBtn = document.getElementById("comm-push");
+    if (pushBtn) pushBtn.addEventListener("click", () => {
+      pushBtn.disabled = true;
+      pushBtn.textContent = "🔔 …";
+      window.Push.enable()
+        .then(() => { pushBtn.textContent = "🔔 ✓ " + t("push_on"); })
+        .catch((e) => {
+          pushBtn.disabled = false;
+          pushBtn.textContent = "🔔 " + t("push_enable");
+          const m = (e && e.message) || "";
+          alert(m === "not-configured" ? t("push_not_ready") : m === "denied" ? t("push_denied") : t("chat_send_err"));
+        });
     });
 
     const base = statsBase();
@@ -4325,6 +4340,21 @@
 
   /* Admin dashboard: one page of stats pulled from Firebase — students,
      premium members, pending payments, most-popular courses, top learners */
+  /* tiny dependency-free SVG bar chart for the admin dashboard */
+  function chartBars(pairs, h) {
+    h = h || 110;
+    const w = 560;
+    const max = Math.max(1, ...pairs.map((p) => p[1]));
+    const bw = w / pairs.length;
+    return '<svg viewBox="0 0 ' + w + " " + (h + 22) + '" class="adash-chart" role="img">' +
+      pairs.map(([lab, v], i) => {
+        const bh = Math.max(v ? 3 : 0, Math.round((v / max) * h));
+        return '<rect x="' + (i * bw + 3).toFixed(1) + '" y="' + (h - bh) + '" width="' + (bw - 6).toFixed(1) + '" height="' + bh + '" rx="3" class="bar"/>' +
+          (v ? '<text x="' + (i * bw + bw / 2).toFixed(1) + '" y="' + (h - bh - 4) + '" class="val">' + v + "</text>" : "") +
+          (i % 2 ? '<text x="' + (i * bw + bw / 2).toFixed(1) + '" y="' + (h + 14) + '" class="lab">' + lab + "</text>" : "");
+      }).join("") + "</svg>";
+  }
+
   function renderAdminDashboard() {
     const base = statsBase();
     app.innerHTML = `
@@ -4366,6 +4396,18 @@
 
       const topStudents = students.slice().sort((a, b) => (Number(b.xp) || 0) - (Number(a.xp) || 0)).slice(0, 8);
 
+      /* 📈 activity: course views per day (14d, all courses combined) +
+         active-student counts from leaderboard heartbeat timestamps */
+      const days = [];
+      for (let i = 13; i >= 0; i--) days.push(dateKey(i));
+      const perDay = days.map((d) => {
+        let n = 0;
+        Object.values(courses || {}).forEach((cd) => { n += Number(cd && cd[d]) || 0; });
+        return [d.slice(5).replace("-", "/"), n];
+      });
+      const activeToday = students.filter((x) => (Number(x.ts) || 0) >= new Date(dateKey(0) + "T00:00:00").getTime()).length;
+      const active7 = students.filter((x) => (Number(x.ts) || 0) >= Date.now() - 7 * 864e5).length;
+
       const card = (icon, num, label) =>
         `<div class="adash-card"><div class="adash-ic">${icon}</div><div class="adash-num">${num}</div><div class="adash-lbl">${label}</div></div>`;
 
@@ -4379,6 +4421,29 @@
           ${card("💰", fmt(revenue) + " Ks", t("dash_revenue"))}
         </div>
         ${pending ? `<div style="margin:10px 0"><a class="btn btn-primary btn-sm" href="#/admin/payments">💳 ${t("dash_review_pending").replace("{n}", pending)}</a></div>` : ""}
+        <div class="panel">
+          <h3>📈 ${t("dash_trend")}</h3>
+          <div class="tl-row" style="margin:0 0 4px">
+            <span class="lb-lvl">🟢 ${t("dash_active_today")}: <b>${activeToday}</b></span>
+            <span class="lb-lvl">📅 ${t("dash_active7")}: <b>${active7}</b></span>
+            <span class="lb-lvl">👁 ${t("dash_views14")}: <b>${perDay.reduce((a, p) => a + p[1], 0)}</b></span>
+          </div>
+          ${chartBars(perDay)}
+        </div>
+        <div class="panel">
+          <h3>🔔 ${t("push_title")}</h3>
+          <p class="muted" style="margin:0 0 8px;font-size:13px">${t("push_help")}</p>
+          <div class="tl-row">
+            <input class="tl-in" id="push-vapid" placeholder="VAPID key (Web Push certificate) — save once" style="flex:1;min-width:180px">
+            <button class="btn btn-outline btn-sm" id="push-savevapid">💾</button>
+          </div>
+          <div class="tl-row">
+            <input class="tl-in" id="push-t" placeholder="Title" maxlength="80" style="flex:1;min-width:120px">
+            <input class="tl-in" id="push-b" placeholder="Message" maxlength="200" style="flex:2;min-width:180px">
+            <button class="btn btn-primary btn-sm" id="push-send">🔔 ${t("push_send")}</button>
+            <span class="muted" id="push-status" style="font-size:13px"></span>
+          </div>
+        </div>
         <div class="panel">
           <h3>📢 ${t("ann_title")}</h3>
           <p class="muted" style="margin:0 0 8px;font-size:13px">${t("ann_help")}</p>
@@ -4456,6 +4521,43 @@
       if (clearBtn) clearBtn.addEventListener("click", () => {
         document.getElementById("ann-text").value = "";
         setAnn(null, "✓ " + t("ann_cleared"));
+      });
+
+      /* 🔔 push: save VAPID + send via the worker's /push route */
+      fetch(base + "/stats/pushConfig.json").then((r) => r.json()).then((pc) => {
+        const el = document.getElementById("push-vapid");
+        if (el && pc && pc.vapid) el.value = pc.vapid;
+      }).catch(() => {});
+      const pushStatus = document.getElementById("push-status");
+      const pv = document.getElementById("push-savevapid");
+      if (pv) pv.addEventListener("click", () => {
+        const v = (document.getElementById("push-vapid").value || "").trim();
+        if (!v) return;
+        fetch(base + "/stats/pushConfig.json", { method: "PUT", body: JSON.stringify({ vapid: v.slice(0, 200) }) })
+          .then((r) => { pushStatus.textContent = r.ok ? "✓" : t("promo_err"); })
+          .catch(() => { pushStatus.textContent = t("promo_err"); });
+      });
+      const ps = document.getElementById("push-send");
+      if (ps) ps.addEventListener("click", () => {
+        const title = (document.getElementById("push-t").value || "").trim();
+        const bodyTxt = (document.getElementById("push-b").value || "").trim();
+        if (!title || !bodyTxt) { pushStatus.textContent = "?"; return; }
+        let secret = localStorage.getItem("wda_push_secret") || "";
+        if (!secret) {
+          secret = prompt(t("push_secret_ask")) || "";
+          if (!secret) return;
+          localStorage.setItem("wda_push_secret", secret);
+        }
+        pushStatus.textContent = "⏳";
+        const proxy = (window.AI && window.AI.proxyUrl && window.AI.proxyUrl()) || "https://curly-wildflower-d23b.mmtboy90.workers.dev/";
+        fetch(proxy.replace(/\/$/, "") + "/push", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "X-Push-Secret": secret },
+          body: JSON.stringify({ title, body: bodyTxt, url: "https://myominthet99.github.io/webdev-academy/" }),
+        }).then((r) => r.json()).then((res) => {
+          if (res && typeof res.sent === "number") pushStatus.textContent = "✓ " + res.sent + "/" + res.total;
+          else { if (res && res.error) localStorage.removeItem("wda_push_secret"); pushStatus.textContent = "⚠ " + ((res.error && res.error.message) || "?"); }
+        }).catch(() => { pushStatus.textContent = "⚠"; });
       });
 
       /* 📣 FB content creator: template post per course (MM+EN), AI polish */

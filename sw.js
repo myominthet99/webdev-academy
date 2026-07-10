@@ -2,7 +2,7 @@
    Strategy: NETWORK-FIRST for same-origin requests — users always get
    fresh code when online; the cache is only an offline fallback.
    Still bump CACHE per release so stale precaches get purged. */
-const CACHE = "wda-v93";
+const CACHE = "wda-v94";
 const ASSETS = [
   "./",
   "./index.html",
@@ -14,6 +14,7 @@ const ASSETS = [
   "./js/i18n.js",
   "./js/auth.js",
   "./js/ai.js",
+  "./js/push.js",
   "./js/app.js",
   "./js/chat.js",
   "./js/cloud-sync.js",

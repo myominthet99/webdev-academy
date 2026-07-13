@@ -5977,6 +5977,8 @@
     let studentCount = null; /* real count from the leaderboard, when it arrives */
 
     const TYPES = [
+      { id: "codetip", ic: "💡", label: "Code tip (shareable — from How-To)" },
+      { id: "quizday", ic: "🧠", label: "Quiz of the day (engagement)" },
       { id: "course", ic: "🎓", label: "Course promo" },
       { id: "general", ic: "🏫", label: "Academy promo" },
       { id: "promo", ic: "🎁", label: "Promo code" },
@@ -5998,6 +6000,7 @@
           <h2 class="section-title">📣 ${t("cc_title")} 2.0</h2>
           <a class="btn btn-outline btn-sm" href="#/admin/dashboard">📊 ${t("dash_admin_title")}</a>
         </div>
+        <p class="section-sub" style="margin-top:-6px">💡 Lead with teaching content (Code tip / Quiz) — value people share, with a soft link back. Ads convert worse than useful posts.</p>
         <div class="panel">
           <div class="tl-row">
             <select class="tl-in" id="cc2-type" style="flex:1;min-width:170px">
@@ -6040,7 +6043,9 @@
           <h3>🖼️ Image card <span class="muted" style="font-size:12px;font-weight:400">— 1080×1080 branded PNG for Facebook/TikTok (image posts reach far more people)</span></h3>
           <div class="tl-row">
             <select class="tl-in" id="img-kind" style="min-width:170px">
-              <option value="quote">💡 Quote of the day</option>
+              <option value="codetip">💡 Code tip card</option>
+              <option value="quiz">🧠 Quiz card</option>
+              <option value="quote">💬 Quote of the day</option>
               <option value="course">🎓 Selected course</option>
               <option value="custom">✍️ Custom text</option>
             </select>
@@ -6054,6 +6059,20 @@
 
     const $ = (s) => document.getElementById(s);
     const nLessons = COURSES.reduce((a, c) => a + totalLessons(c), 0);
+
+    /* teaching-content sources: real How-To recipes + the quiz bank, so posts
+       teach something people want to share (not just "join my course" ads) */
+    const quizBank = [];
+    COURSES.forEach((c) => c.sections.forEach((s) => s.lessons.forEach((l) => {
+      if (l.type === "quiz" && Array.isArray(l.questions))
+        l.questions.forEach((q) => { if (q && q.q && (q.options || []).length >= 2) quizBank.push(q); });
+    })));
+    const rand = (arr) => arr[Math.floor(Math.random() * arr.length)];
+    const pickHowto = () => (typeof HOWTOS !== "undefined" && HOWTOS.length ? rand(HOWTOS) : null);
+    const pickQuiz = () => (quizBank.length ? rand(quizBank) : null);
+    let teachTip = pickHowto();
+    let teachQuiz = pickQuiz();
+    const decodeEnt = (s) => String(s == null ? "" : s).replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&");
 
     const buildPost = () => {
       const type = $("cc2-type").value;
@@ -6129,6 +6148,39 @@
             "And if the academy helped you, leave a ⭐ review on any course page — it's the biggest gift to the next learner 💜\n👉 " + SITE + "\n\n#WebDevAcademy #StudentVoice",
         },
       };
+
+      const tgClean = (out) => platform === "tg"
+        ? "📢 " + out.split("\n").filter((l) => !l.trim().startsWith("#")).join("\n").trim()
+        : out;
+
+      /* 💡 Code tip — a real, useful snippet from the How-To library, with a
+         soft CTA. Value-first content people actually share. */
+      if (type === "codetip") {
+        const h = teachTip || (teachTip = pickHowto());
+        if (!h) return "No How-To recipes found.";
+        const mk = (en) =>
+          "💡 " + (en ? h.q : (h.qMy || h.q)) + "\n\n" +
+          (en ? h.a : (h.aMy || h.a)) + "\n\n" + h.code + "\n\n" +
+          (en ? "▶ Try it live + more free tips 👉 " : "▶ တိုက်ရိုက်စမ်း + tip အများကြီး 👉 ") + SITE + "#/howto";
+        let out = langSel === "both" ? mk(false) + "\n\n———\n\n" + mk(true) : mk(langSel === "en");
+        out += "\n\n#WebDevAcademy #CodeTip #LearnToCode #Myanmar";
+        return tgClean(out);
+      }
+
+      /* 🧠 Quiz of the day — asks a real question (answer hidden) to pull
+         comments/engagement, then sends them to the app to check. */
+      if (type === "quizday") {
+        const q = teachQuiz || (teachQuiz = pickQuiz());
+        if (!q) return "No quiz questions found.";
+        const opts = (q.options || []).map((o, i) => String.fromCharCode(65 + i) + ") " + decodeEnt(o)).join("\n");
+        const mk = (en) =>
+          (en ? "🧠 Quiz of the day!\n\n" : "🧠 ဒီနေ့ Quiz!\n\n") + decodeEnt(q.q) + "\n\n" + opts + "\n\n" +
+          (en ? "Drop your answer in the comments 👇 (no peeking!) then check it free 👉 "
+              : "အဖြေကို comment မှာ ရေးပါ 👇 (မခိုးကြည့်နဲ့နော်) ပြီးရင် app မှာ အခမဲ့ စစ်ကြည့် 👉 ") + SITE + "#/daily";
+        let out = langSel === "both" ? mk(false) + "\n\n———\n\n" + mk(true) : mk(langSel === "en");
+        out += "\n\n#WebDevAcademy #CodingQuiz #Myanmar";
+        return tgClean(out);
+      }
 
       /* 📅 a whole week of posts in one generation */
       if (type === "week") {
@@ -6237,8 +6289,11 @@
     $("cc2-gen").addEventListener("click", () => {
       const type = $("cc2-type").value;
       if (AI_KINDS.indexOf(type) >= 0) return generateAI(type);
+      /* fresh pick each time so re-tapping Generate gives variety */
+      if (type === "codetip") teachTip = pickHowto();
+      if (type === "quizday") teachQuiz = pickQuiz();
       $("cc2-out").value = buildPost();
-      $("cc2-status").textContent = "";
+      $("cc2-status").textContent = type === "codetip" || type === "quizday" ? "↻ " + t("cc_generate") : "";
     });
     $("cc2-copy").addEventListener("click", () => {
       const v = $("cc2-out").value;
@@ -6311,7 +6366,37 @@
       x.fillText("WebDev Academy", 190, 124);
       x.textAlign = "center";
 
-      if (kind === "course") {
+      if (kind === "codetip") {
+        /* 💡 a real code snippet on a dark panel — the shareable teaching card */
+        const h = teachTip || (teachTip = pickHowto());
+        const title = h ? ($("cc2-lang").value === "en" ? h.q : (h.qMy || h.q)) : "Code tip";
+        x.fillStyle = "#fff"; x.font = "bold 54px " + FAM;
+        let y = 300;
+        wrapText(x, "💡 " + title, S - 150).slice(0, 2).forEach((l) => { x.fillText(l, S / 2, y); y += 68; });
+        const panelY = y + 24, panelBottom = S - 180, panelH = panelBottom - panelY;
+        x.fillStyle = "rgba(15,17,19,.94)"; rr(x, 90, panelY, S - 180, panelH, 22); x.fill();
+        x.textAlign = "left"; x.fillStyle = "#e6e7e9"; x.font = "27px Consolas, monospace";
+        const maxLines = Math.max(4, Math.floor((panelH - 70) / 37));
+        (h ? h.code.split("\n") : []).slice(0, maxLines).forEach((l, i) => {
+          const line = l.length > 44 ? l.slice(0, 43) + "…" : l;
+          x.fillText(line, 122, panelY + 54 + i * 37);
+        });
+        x.textAlign = "center";
+      } else if (kind === "quiz") {
+        /* 🧠 a real question + options; answer hidden to drive comments */
+        const q = teachQuiz || (teachQuiz = pickQuiz());
+        x.font = "84px " + FAM; x.fillText("🧠", S / 2, 250);
+        x.fillStyle = "#fff"; x.font = "bold 46px " + FAM;
+        let y = 340;
+        wrapText(x, q ? decodeEnt(q.q) : "Quiz", S - 170).slice(0, 4).forEach((l) => { x.fillText(l, S / 2, y); y += 60; });
+        x.textAlign = "left"; x.font = "38px " + FAM; x.fillStyle = "rgba(255,255,255,.96)";
+        y += 26;
+        (q ? q.options : []).slice(0, 4).forEach((o, i) => {
+          x.fillText(String.fromCharCode(65 + i) + ")  " + decodeEnt(o), 150, y); y += 66;
+        });
+        x.textAlign = "center"; x.fillStyle = "#fff"; x.font = "bold 34px " + FAM;
+        x.fillText("👇 Answer in the comments", S / 2, Math.min(y + 34, S - 200));
+      } else if (kind === "course") {
         const c = courseById($("cc2-course").value) || COURSES[0];
         const mmc = (I18N.content && I18N.content.courses && I18N.content.courses[c.id]) || {};
         x.font = "150px " + FAM;

@@ -24,6 +24,7 @@
   const SYNC_PREFIXES = [
     "wda_state_v1",     /* enrollments + completed lessons  */
     "wda_notes",        /* lesson notes                     */
+    "wda_actions",      /* "Your turn" action steps done    */
     "wda_blk",          /* blocked chat users               */
     "wda_bookmarks",    /* bookmarked lessons               */
     "wda_quiz",         /* quiz best scores                 */

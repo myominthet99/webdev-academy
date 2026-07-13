@@ -214,6 +214,19 @@
   const bonusXp = () => Number(jget(ns("wda_xtra"), 0)) || 0;
   const addBonusXp = (n) => jset(ns("wda_xtra"), bonusXp() + n);
 
+  /* 🎯 "Your turn" action step: mark a lesson's action done (once → +5 XP). */
+  const loadActions = () => jget(ns("wda_actions"), {});
+  const isActionDone = (id) => !!loadActions()[id];
+  const markActionDone = (id) => {
+    const a = loadActions();
+    if (a[id]) return false;
+    a[id] = Date.now(); jset(ns("wda_actions"), a); addBonusXp(5); return true;
+  };
+
+  /* 📊 lesson confidence poll: one vote per lesson per account (local guard). */
+  const pollVoted = (id) => jget(ns("wda_pollv::" + id), null);
+  const setPollVoted = (id, opt) => jset(ns("wda_pollv::" + id), opt);
+
   /* Free AI comprehension aids (Simpler / Burmese) are open to every student
      but capped per day for non-paying users, so cost stays bounded while the
      "understand any lesson" promise still holds. Premium = unlimited. */
@@ -2102,6 +2115,70 @@
       .filter((s) => s.replace(/\s|&nbsp;/g, "").length > 0);
   }
 
+  /* 📊 lesson confidence poll — how well students felt they understood.
+     Votes go to stats/polls/<lessonId> (one pushed record each); results are
+     tallied client-side. One vote per account (local guard). Also gives the
+     admin a signal for which lessons confuse students. */
+  const POLL_OPTS = [
+    { v: 0, emoji: "😕", key: "poll_confusing" },
+    { v: 1, emoji: "😐", key: "poll_ok" },
+    { v: 2, emoji: "😀", key: "poll_gotit" },
+  ];
+  function wireLessonPoll(lessonId) {
+    const body = document.getElementById("poll-body");
+    if (!body) return;
+    const base = statsBase();
+    const already = pollVoted(lessonId);
+
+    const renderResults = (counts, myOpt) => {
+      const total = counts.reduce((a, b) => a + b, 0) || 0;
+      body.innerHTML = POLL_OPTS.map((o) => {
+        const n = counts[o.v] || 0;
+        const pct = total ? Math.round((n / total) * 100) : 0;
+        return `<div class="poll-row ${myOpt === o.v ? "mine" : ""}">
+            <span class="poll-lbl">${o.emoji} ${t(o.key)}</span>
+            <span class="poll-bar"><i style="width:${pct}%"></i></span>
+            <span class="poll-pct">${pct}%</span>
+          </div>`;
+      }).join("") +
+      `<p class="muted" style="font-size:12px;margin:8px 0 0">${total ? t("poll_total").replace("{n}", total) : t("poll_first")}</p>`;
+    };
+
+    const showVoting = () => {
+      body.innerHTML = `<div class="poll-opts">${POLL_OPTS.map((o) =>
+        `<button type="button" class="poll-opt" data-poll="${o.v}">${o.emoji}<span>${t(o.key)}</span></button>`).join("")}</div>`;
+      body.querySelectorAll("[data-poll]").forEach((b) => b.addEventListener("click", () => {
+        const opt = Number(b.getAttribute("data-poll"));
+        setPollVoted(lessonId, opt);
+        /* optimistic: show my vote immediately, then load real tallies */
+        renderResults(tallyWith({}, opt), opt);
+        if (base) {
+          authFetch(base + "/stats/polls/" + encodeURIComponent(lessonId) + ".json",
+            { method: "POST", body: JSON.stringify({ o: opt, ts: Date.now() }) })
+            .then(() => loadTally(opt)).catch(() => {});
+        }
+      }));
+    };
+
+    const tallyWith = (val, myOpt) => {
+      const counts = [0, 0, 0];
+      Object.values(val || {}).forEach((r) => { const o = r && Number(r.o); if (o >= 0 && o <= 2) counts[o]++; });
+      /* make sure my own just-cast vote shows even before the server echoes it */
+      if (myOpt != null && !Object.keys(val || {}).length) counts[myOpt]++;
+      return counts;
+    };
+    const loadTally = (myOpt) => {
+      if (!base) { renderResults(tallyWith({}, myOpt), myOpt); return; }
+      fetch(base + "/stats/polls/" + encodeURIComponent(lessonId) + ".json")
+        .then((r) => r.json())
+        .then((val) => renderResults(tallyWith(val, myOpt), myOpt))
+        .catch(() => renderResults(tallyWith({}, myOpt), myOpt));
+    };
+
+    if (already != null) loadTally(already);
+    else showVoting();
+  }
+
   function renderLearn(courseId, lessonId) {
     /* stop any auto-play narration from a previous render */
     try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (e) {}
@@ -2255,6 +2332,29 @@
          </div>`
       : "";
 
+    /* 🎯 "Your turn" action step + 📊 confidence poll (article/video lessons) */
+    const teachLesson = current.type === "article" || current.type === "video";
+    const lessonHasCode = /<pre[\s>]/i.test(lf(current, "content") || "");
+    const actDone = isActionDone(current.id);
+    const actionHtml = teachLesson
+      ? `<div class="action-step" id="action-step">
+           <div class="as-head">🎯 <strong>${t("action_title")}</strong></div>
+           <p class="as-task">${lessonHasCode ? t("action_task_code") : t("action_task_reflect")}</p>
+           <div class="tl-row">
+             ${lessonHasCode ? `<button class="btn btn-outline btn-sm" data-action-pg>🧪 ${t("pg_title")}</button>` : ""}
+             <button class="btn ${actDone ? "btn-ghost" : "btn-primary"} btn-sm" id="action-done" ${actDone ? "disabled" : ""}>
+               ${actDone ? "✓ " + t("action_done") : t("action_mark")}</button>
+           </div>
+         </div>`
+      : "";
+    const myVote = pollVoted(current.id);
+    const pollHtml = teachLesson
+      ? `<div class="lesson-poll" id="lesson-poll">
+           <div class="as-head">📊 <strong>${t("poll_title")}</strong></div>
+           <div id="poll-body"></div>
+         </div>`
+      : "";
+
     app.innerHTML = `
       <div class="learn-wrap">
         <div class="player-main">
@@ -2280,6 +2380,8 @@
             ${previewMode ? `<div class="preview-banner">🎁 ${t("preview_free").replace("{n}", PREVIEW_LESSONS)} · <a href="#/premium">⭐ ${t("preview_unlock")}</a></div>` : ""}
             ${body}
             ${fullQcHtml}
+            ${actionHtml}
+            ${pollHtml}
             <div class="ai-tutor" id="ai-tutor">
               <div class="notes-head"><strong>🎓 ${t("tutor_title")}</strong> <span class="muted" style="font-size:12px">${t("tutor_sub")}</span></div>
               ${(() => {
@@ -2394,6 +2496,29 @@
         }
       });
     }
+
+    /* 🎯 action step: open playground for the "do it" task + mark done (+XP) */
+    const apg = app.querySelector("[data-action-pg]");
+    if (apg) apg.addEventListener("click", () => {
+      const firstPre = app.querySelector(".reader pre");
+      openPlayground(firstPre ? codeTextOf(firstPre) : "<!DOCTYPE html>\n<html>\n<body>\n\n<h1>Your turn!</h1>\n\n</body>\n</html>");
+    });
+    const adBtn = app.querySelector("#action-done");
+    if (adBtn) adBtn.addEventListener("click", () => {
+      if (markActionDone(current.id)) {
+        adBtn.className = "btn btn-ghost btn-sm";
+        adBtn.disabled = true;
+        adBtn.textContent = "✓ " + t("action_done");
+        const step = app.querySelector("#action-step");
+        if (step) { const m = document.createElement("p"); m.className = "tl-status ok"; m.style.margin = "8px 0 0";
+          m.textContent = "🎉 " + t("action_praise") + " · +5 XP"; step.appendChild(m); }
+        setTimeout(maybeToastBadges, 300);
+        pushLeaderboard();
+      }
+    });
+
+    /* 📊 confidence poll: vote once, then see the class results */
+    wireLessonPoll(current.id);
 
     /* Step Mode wiring: show one card at a time with progress + nav */
     app.querySelectorAll("[data-lesson-mode]").forEach((b) =>

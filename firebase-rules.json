@@ -124,6 +124,17 @@
           "created": { ".validate": "newData.isNumber()" }
         }
       },
+      "polls": {
+        ".read": true,
+        "$lid": {
+          "$vote": {
+            ".write": "auth != null && newData.exists() && !root.child('banned').child(auth.uid).exists()",
+            "o":  { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 2" },
+            "ts": { ".validate": "newData.isNumber()" },
+            "$other": { ".validate": false }
+          }
+        }
+      },
       "reviews": {
         ".read": true,
         "$cid": {

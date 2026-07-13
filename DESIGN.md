@@ -172,4 +172,10 @@ games beyond the sticky topbar and chat widget.
 - **Don't** add external assets (fonts, icon sets, CSS libs) — the site
   must stay self-contained and offline-friendly (service worker).
 - **Don't** use `alert()`/`confirm()` for feedback — inline `.tl-status`
-  lines or toasts.
+  lines or toasts. (Exception: destructive/irreversible moderation actions —
+  block, ban, report — use a `confirm()` guard on purpose.)
+- **Do** send the Firebase login token on every cloud write: use
+  `authFetch()` in [js/app.js](js/app.js) and `withAuth()` in
+  [js/chat.js](js/chat.js), never a bare `fetch()` to the database. The
+  security rules ([firebase-rules.json](firebase-rules.json)) reject
+  unauthenticated writes and cross-account reads — a plain `fetch` will 401.

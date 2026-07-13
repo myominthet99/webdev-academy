@@ -15,7 +15,7 @@
   const I18N = window.I18N;
   const KEY = "wda_chat_v1";
   const MAX = 200;
-  const BUILD = "v19"; /* shown in the chat header — bump with releases */
+  const BUILD = "v20"; /* shown in the chat header — bump with releases */
 
   /* Crisp inline SVG icons (emoji buttons render differently on every
      Android brand — these look identical everywhere) */
@@ -126,6 +126,17 @@
     return active;
   };
 
+  /* 🚫 block list: {userId: name} — their messages are hidden on THIS
+     account's devices (key is synced by cloud-sync). Blocking is personal;
+     admin ⛔ bans are global and enforced by the security rules. */
+  const blkKey = () => "wda_blk::" + ((me() && me().id) || "guest");
+  const loadBlocked = () => { try { return JSON.parse(localStorage.getItem(blkKey())) || {}; } catch (e) { return {}; } };
+  const toggleBlock = (uid, name) => {
+    const b = loadBlocked();
+    if (b[uid]) delete b[uid]; else b[uid] = String(name || "?").slice(0, 40);
+    try { localStorage.setItem(blkKey(), JSON.stringify(b)); } catch (e) {}
+  };
+
   /* ---------------- CLOUD presence & typing (真 cross-device) ----------------
      Written under rooms/<room>/presence|typing so the existing "rooms"
      database rule covers them. Heartbeat while the panel is open; a poll
@@ -137,10 +148,10 @@
   function heartbeat() {
     const u = me();
     if (!u || !FIREBASE_CONFIG) return;
-    fetch(cloudUrl(room, "presence", u.id), {
+    withAuth(cloudUrl(room, "presence", u.id)).then((url) => fetch(url, {
       method: "PUT",
       body: JSON.stringify({ name: (u.name || u.email || "?").split(" ")[0], ts: Date.now() }),
-    }).catch(() => {});
+    })).catch(() => {});
   }
   function cloudTypingPing() {
     const u = me();
@@ -148,10 +159,10 @@
     const now = Date.now();
     if (now - lastTypingPut < 2500) return; /* throttle writes */
     lastTypingPut = now;
-    fetch(cloudUrl(room, "typing", u.id), {
+    withAuth(cloudUrl(room, "typing", u.id)).then((url) => fetch(url, {
       method: "PUT",
       body: JSON.stringify({ name: (u.name || u.email || "?").split(" ")[0], ts: now }),
-    }).catch(() => {});
+    })).catch(() => {});
   }
   function pollLive() {
     if (!FIREBASE_CONFIG || !open) return;
@@ -188,7 +199,7 @@
     clearInterval(hbTimer); clearInterval(liveTimer);
     hbTimer = liveTimer = null;
     const u = me();
-    if (u && FIREBASE_CONFIG) fetch(cloudUrl(room, "presence", u.id), { method: "DELETE" }).catch(() => {});
+    if (u && FIREBASE_CONFIG) withAuth(cloudUrl(room, "presence", u.id)).then((url) => fetch(url, { method: "DELETE" })).catch(() => {});
   }
   function renderPresenceCloud(users) {
     if (!presenceEl) return;
@@ -296,6 +307,19 @@
     add(r, msg) { const m = localLoad(r); m.push(msg); localSave(r, m); this._emit(r); broadcast(r); return Promise.resolve(); },
     update(r, msg) { const m = localLoad(r); const i = m.findIndex((x) => x.id === msg.id); if (i >= 0) m[i] = msg; localSave(r, m); this._emit(r); broadcast(r); return Promise.resolve(); },
     del(r, ref) { const m = localLoad(r).filter((x) => x.id !== ref); localSave(r, m); this._emit(r); broadcast(r); return Promise.resolve(); },
+    /* write one nested field, e.g. "reactions/👍" or "pinned" (null = remove) */
+    setPath(r, ref, path, val) {
+      const m = localLoad(r);
+      const msg = m.find((x) => x.id === ref);
+      if (msg) {
+        const seg = path.split("/");
+        let o = msg;
+        for (let i = 0; i < seg.length - 1; i++) o = o[seg[i]] = o[seg[i]] || {};
+        if (val == null) delete o[seg[seg.length - 1]]; else o[seg[seg.length - 1]] = val;
+        localSave(r, m); this._emit(r); broadcast(r);
+      }
+      return Promise.resolve();
+    },
   };
   function broadcast(r) { if (bc) { try { bc.postMessage({ type: "msg", room: r }); } catch (e) {} } }
   function incoming(evtRoom) { if (localBackend._handlers[evtRoom]) localBackend._emit(evtRoom); }
@@ -304,7 +328,15 @@
     if (e.key && e.key.indexOf(KEY + "::") === 0) incoming(e.key.slice((KEY + "::").length));
   });
 
-  /* Firebase backend (only used when FIREBASE_CONFIG is set) */
+  /* Authenticated REST writes: security rules require a logged-in user, so
+     every PUT/POST/DELETE carries the Firebase idToken as ?auth= */
+  const idTok = () => (window.Auth && window.Auth.idToken ? window.Auth.idToken() : Promise.resolve(null));
+  const withAuth = (url) => idTok().then((tk) =>
+    url + (tk ? (url.indexOf("?") >= 0 ? "&" : "?") + "auth=" + encodeURIComponent(tk) : ""));
+
+  /* Firebase backend (only used when FIREBASE_CONFIG is set).
+     Reuses auth.js's "wda-auth" app so the database SDK sends the signed-in
+     user's token automatically — required by the security rules. */
   let fb = null, fbInit = null;
   function ensureFb() {
     if (fb) return Promise.resolve();
@@ -312,7 +344,9 @@
       fbInit = (async () => {
         const appMod = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
         const dbMod = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js");
-        const app = appMod.initializeApp(FIREBASE_CONFIG);
+        let app;
+        try { app = appMod.getApp("wda-auth"); }
+        catch (e) { app = appMod.initializeApp(FIREBASE_CONFIG, "wda-auth"); }
         fb = {
           db: dbMod.getDatabase(app),
           ref: dbMod.ref, push: dbMod.push, remove: dbMod.remove, set: dbMod.set,
@@ -344,6 +378,9 @@
       return ensureFb().then(() => fb.set(fb.ref(fb.db, "rooms/" + r + "/messages/" + msg._key), cleanMsg(msg)));
     },
     del(r, ref) { return ensureFb().then(() => fb.remove(fb.ref(fb.db, "rooms/" + r + "/messages/" + ref))); },
+    setPath(r, ref, path, val) {
+      return ensureFb().then(() => fb.set(fb.ref(fb.db, "rooms/" + r + "/messages/" + ref + "/" + path), val == null ? null : val));
+    },
   };
 
   /* REST fallback: plain HTTPS polling — works even where the Firebase SDK
@@ -367,17 +404,22 @@
     },
     _refresh() { if (this._poll) this._poll(); },
     add(r, msg) {
-      return fetch(restUrl(r), { method: "POST", body: JSON.stringify(cleanMsg(msg)) })
+      return withAuth(restUrl(r)).then((u) => fetch(u, { method: "POST", body: JSON.stringify(cleanMsg(msg)) }))
         .then((res) => { if (!res.ok) throw new Error("send failed"); this._refresh(); });
     },
     update(r, msg) {
       if (!msg._key) return this.add(r, msg);
-      return fetch(restUrl(r, msg._key), { method: "PUT", body: JSON.stringify(cleanMsg(msg)) })
+      return withAuth(restUrl(r, msg._key)).then((u) => fetch(u, { method: "PUT", body: JSON.stringify(cleanMsg(msg)) }))
         .then((res) => { if (!res.ok) throw new Error("update failed"); this._refresh(); });
     },
     del(r, ref) {
-      return fetch(restUrl(r, ref), { method: "DELETE" })
+      return withAuth(restUrl(r, ref)).then((u) => fetch(u, { method: "DELETE" }))
         .then((res) => { if (!res.ok) throw new Error("delete failed"); this._refresh(); });
+    },
+    setPath(r, ref, path, val) {
+      return withAuth(restUrl(r, ref + "/" + path)).then((u) =>
+        fetch(u, { method: "PUT", body: JSON.stringify(val == null ? null : val) }))
+        .then((res) => { if (!res.ok) throw new Error("update failed"); this._refresh(); });
     },
   };
 
@@ -507,22 +549,33 @@
     const roomBar = room === "community" ? "" :
       '<div class="chat-roombar"><span>📚 ' + esc(roomLabel || room) + "</span>" +
       '<button id="chat-to-community" type="button">🌐 ' + t("chat_go_community") + "</button></div>";
+    /* 🚫 blocked-users bar: who you've muted, with one-tap unblock */
+    const blocked = u ? loadBlocked() : {};
+    const blockedN = Object.keys(blocked).length;
+    const blockedBar = blockedN
+      ? '<div class="chat-blockedbar"><span>🚫 ' + esc(t("chat_blocked_n").replace("{n}", blockedN)) + "</span>" +
+        Object.entries(blocked).map(([id, nm]) =>
+          '<button type="button" data-unblock="' + esc(id) + '">' + esc(nm) + " ✕</button>").join("") +
+        "</div>"
+      : "";
     const wireRoomBar = () => {
       const b = listEl.querySelector("#chat-to-community");
       if (b) b.addEventListener("click", () => setRoom("community", null));
+      listEl.querySelectorAll("[data-unblock]").forEach((ub) =>
+        ub.addEventListener("click", () => { toggleBlock(ub.getAttribute("data-unblock")); renderList(); }));
     };
-    const filtered = searchQuery
+    const filtered = (searchQuery
       ? roomCache.filter((m) => (m.text || "").toLowerCase().includes(searchQuery) || (m.name || "").toLowerCase().includes(searchQuery))
-      : roomCache;
+      : roomCache).filter((m) => !blocked[m.userId]);
     if (!filtered.length) {
-      listEl.innerHTML = roomBar + '<div class="chat-empty">' + (searchQuery ? "No messages match" : t("chat_empty")) + "</div>";
+      listEl.innerHTML = roomBar + blockedBar + '<div class="chat-empty">' + (searchQuery ? "No messages match" : t("chat_empty")) + "</div>";
       wireRoomBar();
       return;
     }
     let newDivDone = false;
-    listEl.innerHTML = roomBar + filtered
+    listEl.innerHTML = roomBar + blockedBar + filtered
       .map((msg, i) => {
-        const mine = u && msg.userId === u.id;
+        const mine = u && msg.userId === u.id && !msg.bot;
         const ref = esc(msg._key || msg.id);
         /* "New messages" divider: first message from others that arrived
            after this reader's last visit to the room */
@@ -574,6 +627,9 @@
           '<div class="chat-actions">' +
           '<button class="chat-replybtn" data-reply="' + ref + '" title="' + esc(t("chat_reply")) + '">' + ICON("reply") + "</button>" +
           '<button class="chat-react" data-react="' + ref + '" title="React">' + ICON("smile") + "</button>" +
+          (!mine && !msg.bot ? '<button class="chat-report" data-report="' + ref + '" title="' + esc(t("chat_report")) + '">🚩</button>' : "") +
+          (!mine && !msg.bot && msg.userId ? '<button class="chat-block" data-block="' + esc(msg.userId) + '" data-bname="' + esc((msg.name || "?")) + '" title="' + esc(t("chat_block")) + '">🚫</button>' : "") +
+          (!mine && msg.userId && u && u.admin ? '<button class="chat-banbtn" data-ban="' + esc(msg.userId) + '" data-bname="' + esc((msg.name || "?")) + '" title="' + esc(t("chat_ban")) + '">⛔</button>' : "") +
           (mine ? '<button class="chat-edit" data-edit="' + ref + '" title="Edit">' + ICON("edit") + "</button>" : "") +
           (mine || (u && u.admin) ? '<button class="chat-pin" data-pin="' + ref + '" title="' + (isPinned ? "Unpin" : "Pin") + '">' + ICON("pin") + "</button>" : "") +
           (mine || (u && u.admin) ? '<button class="chat-del" data-del="' + ref + '" title="' + esc(t("chat_delete")) + '">' + ICON("trash") + "</button>" : "") +
@@ -592,6 +648,20 @@
     );
     listEl.querySelectorAll("[data-pin]").forEach((b) =>
       b.addEventListener("click", () => togglePin(b.getAttribute("data-pin")))
+    );
+    listEl.querySelectorAll("[data-report]").forEach((b) =>
+      b.addEventListener("click", () => report(b.getAttribute("data-report")))
+    );
+    listEl.querySelectorAll("[data-block]").forEach((b) =>
+      b.addEventListener("click", () => {
+        const name = b.getAttribute("data-bname") || "?";
+        if (!confirm(t("chat_block_confirm").replace("{n}", name))) return;
+        toggleBlock(b.getAttribute("data-block"), name);
+        renderList();
+      })
+    );
+    listEl.querySelectorAll("[data-ban]").forEach((b) =>
+      b.addEventListener("click", () => toggleBan(b.getAttribute("data-ban"), b.getAttribute("data-bname") || "?"))
     );
     listEl.querySelectorAll("[data-reply]").forEach((b) =>
       b.addEventListener("click", () => {
@@ -854,7 +924,15 @@
     if (img) msg.img = img;
     if (extra) Object.assign(msg, extra); /* e.g. case studies: {caseStudy, caseTitle} */
     if (replyTo) { msg.reply = { name: replyTo.name, text: replyTo.text }; replyTo = null; updateReplyBar(); }
-    Promise.resolve(backend.add(room, msg)).catch(() => showStatus("⚠ " + t("chat_send_err")));
+    Promise.resolve(backend.add(room, msg)).catch(() => {
+      /* a rules rejection may mean this account is banned — say so plainly */
+      if (FIREBASE_CONFIG) {
+        withAuth(FIREBASE_CONFIG.databaseURL + "/banned/" + encodeURIComponent(u.id) + ".json")
+          .then((url) => fetch(url)).then((r) => r.json())
+          .then((b) => showStatus(b ? "⛔ " + t("chat_you_banned") : "⚠ " + t("chat_send_err")))
+          .catch(() => showStatus("⚠ " + t("chat_send_err")));
+      } else showStatus("⚠ " + t("chat_send_err"));
+    });
     /* @ai → the sender's browser asks the free AI and posts the bot's reply */
     if (/(^|\s)@ai\b/i.test(text)) askAiBot(text.replace(/(^|\s)@ai\b/gi, " ").trim(), msg);
   }
@@ -885,7 +963,9 @@
     ).then((reply) => {
       const bot = {
         id: "m_" + Date.now().toString(36) + "ai",
-        userId: "wda-ai-bot",
+        /* posted from the asker's browser with the asker's auth — rules
+           require userId === auth.uid; bot:true keeps the bot styling */
+        userId: userMsg.userId,
         name: "AI Bot",
         initial: "🤖",
         bot: true,
@@ -906,6 +986,49 @@
     const msg = roomCache.find((m) => (m._key || m.id) === ref);
     if (!msg || (msg.userId !== u.id && !u.admin)) return; // your own, or admin
     backend.del(room, ref);
+  }
+
+  /* 🚩 report a message → reports/ queue, reviewed in the admin dashboard */
+  function report(ref) {
+    const u = me();
+    if (!u) { if (window.Auth) window.Auth.openModal("login"); return; }
+    const msg = roomCache.find((m) => (m._key || m.id) === ref);
+    if (!msg) return;
+    if (!confirm(t("chat_report_confirm"))) return;
+    if (!FIREBASE_CONFIG) { showStatus("🚩 " + t("chat_reported")); return; }
+    const payload = {
+      room: room, msg: String(msg._key || msg.id),
+      uid: String(msg.userId || ""), name: String(msg.name || "").slice(0, 40),
+      text: String(msg.editedText || msg.text || (msg.img ? "📷 photo" : msg.aud ? "🎤 voice" : "")).slice(0, 200),
+      by: u.id, byName: (u.name || u.email || "?").split(" ")[0].slice(0, 40), ts: Date.now(),
+    };
+    withAuth(FIREBASE_CONFIG.databaseURL + "/reports.json")
+      .then((url) => fetch(url, { method: "POST", body: JSON.stringify(payload) }))
+      .then((r) => { if (!r.ok) throw new Error("report failed"); showStatus("🚩 " + t("chat_reported")); })
+      .catch(() => showStatus("⚠ " + t("chat_send_err")));
+  }
+
+  /* ⛔ admin ban/unban: rules refuse every write from a uid in banned/ */
+  function toggleBan(uid, name) {
+    const u = me();
+    if (!u || !u.admin || !FIREBASE_CONFIG || !uid) return;
+    withAuth(FIREBASE_CONFIG.databaseURL + "/banned/" + encodeURIComponent(uid) + ".json").then((url) =>
+      fetch(url).then((r) => r.json()).then((cur) => {
+        if (cur) {
+          if (!confirm(t("chat_unban_confirm").replace("{n}", name))) return;
+          return fetch(url, { method: "DELETE" }).then((r2) => {
+            if (!r2.ok) throw new Error("unban failed");
+            showStatus("✓ " + t("chat_unbanned").replace("{n}", name));
+          });
+        }
+        if (!confirm(t("chat_ban_confirm").replace("{n}", name))) return;
+        return fetch(url, { method: "PUT", body: JSON.stringify({ name: String(name || "?").slice(0, 40), by: u.id, ts: Date.now() }) })
+          .then((r2) => {
+            if (!r2.ok) throw new Error("ban failed");
+            showStatus("⛔ " + t("chat_banned").replace("{n}", name));
+          });
+      })
+    ).catch(() => showStatus("⚠ " + t("chat_send_err")));
   }
 
   function edit(ref) {
@@ -966,7 +1089,11 @@
       msg.reactions[emoji] = msg.reactions[emoji].filter(id => id !== u.id);
       if (msg.reactions[emoji].length === 0) delete msg.reactions[emoji];
     }
-    Promise.resolve(backend.update(room, msg)).catch(() => showStatus("⚠ " + t("chat_send_err")));
+    /* write ONLY this emoji's list — the security rules let anyone react but
+       only the author rewrite the whole message node */
+    const list = msg.reactions[emoji];
+    Promise.resolve(backend.setPath(room, ref, "reactions/" + emoji, list && list.length ? list : null))
+      .catch(() => showStatus("⚠ " + t("chat_send_err")));
   }
 
   function togglePin(ref) {
@@ -976,7 +1103,8 @@
     if (!msg) return;
     if (msg.userId !== u.id && !u.admin) return;
     msg.pinned = !msg.pinned;
-    Promise.resolve(backend.update(room, msg)).catch(() => showStatus("⚠ " + t("chat_send_err")));
+    Promise.resolve(backend.setPath(room, ref, "pinned", msg.pinned ? true : null))
+      .catch(() => showStatus("⚠ " + t("chat_send_err")));
   }
 
   /* Broadcast typing status */

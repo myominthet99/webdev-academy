@@ -492,6 +492,14 @@
     resendVerification,
     openModal,
     ready: () => authReady,
+    /* Fresh Firebase idToken for authenticated REST writes (SDK refreshes
+       it automatically). Resolves null when logged out or Firebase is off. */
+    idToken: async () => {
+      try {
+        await ensureAuth();
+        return auth && auth.currentUser ? await auth.currentUser.getIdToken() : null;
+      } catch (e) { return null; }
+    },
     onChange: (cb) => listeners.push(cb),
     refresh: () => {
       renderAuthArea();

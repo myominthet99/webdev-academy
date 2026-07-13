@@ -1,42 +1,84 @@
 {
   "rules": {
+    "banned": {
+      ".read": "auth != null && auth.token.email === 'mmtboy90@gmail.com'",
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.token.email === 'mmtboy90@gmail.com'",
+        "name": { ".validate": "newData.isString() && newData.val().length <= 40" },
+        "by":   { ".validate": "newData.isString()" },
+        "ts":   { ".validate": "newData.isNumber()" }
+      }
+    },
+    "reports": {
+      ".read": "auth != null && auth.token.email === 'mmtboy90@gmail.com'",
+      "$rid": {
+        ".write": "auth != null && (data.exists() ? auth.token.email === 'mmtboy90@gmail.com' : newData.child('by').val() === auth.uid)",
+        "room":   { ".validate": "newData.isString() && newData.val().length <= 120" },
+        "msg":    { ".validate": "newData.isString() && newData.val().length <= 120" },
+        "uid":    { ".validate": "newData.isString() && newData.val().length <= 128" },
+        "name":   { ".validate": "newData.isString() && newData.val().length <= 40" },
+        "text":   { ".validate": "newData.isString() && newData.val().length <= 300" },
+        "by":     { ".validate": "newData.isString() && newData.val().length <= 128" },
+        "byName": { ".validate": "newData.isString() && newData.val().length <= 40" },
+        "ts":     { ".validate": "newData.isNumber()" }
+      }
+    },
     "rooms": {
       ".read": true,
       "$room": {
         "messages": {
           "$msg": {
-            ".write": true,
-            "text":  { ".validate": "newData.isString() && newData.val().length <= 2000" },
-            "name":  { ".validate": "newData.isString() && newData.val().length <= 60" },
-            "img":   { ".validate": "newData.isString() && newData.val().length <= 500000" },
-            "ts":    { ".validate": "newData.isNumber()" }
+            ".write": "auth != null && !root.child('banned').child(auth.uid).exists() && (data.exists() ? (((data.child('userId').val() === auth.uid || data.child('u').val() === auth.uid) && (!newData.exists() || newData.child('userId').val() === data.child('userId').val())) || auth.token.email === 'mmtboy90@gmail.com') : (newData.child('userId').val() === auth.uid || newData.child('u').val() === auth.uid))",
+            "reactions": {
+              "$emoji": { ".write": "auth != null && !root.child('banned').child(auth.uid).exists()" }
+            },
+            "pinned": {
+              ".write": "auth != null && (data.parent().child('userId').val() === auth.uid || auth.token.email === 'mmtboy90@gmail.com')",
+              ".validate": "newData.isBoolean()"
+            },
+            "userId":     { ".validate": "newData.isString() && newData.val().length <= 128" },
+            "text":       { ".validate": "newData.isString() && newData.val().length <= 2000" },
+            "editedText": { ".validate": "newData.isString() && newData.val().length <= 2000" },
+            "name":       { ".validate": "newData.isString() && newData.val().length <= 60" },
+            "img":        { ".validate": "newData.isString() && newData.val().length <= 500000" },
+            "aud":        { ".validate": "newData.isString() && newData.val().length <= 500000" },
+            "dur":        { ".validate": "newData.isNumber()" },
+            "ts":         { ".validate": "newData.isNumber()" }
           }
         },
-        "presence": { "$uid": { ".write": true } },
-        "typing":   { "$uid": { ".write": true } }
+        "presence": { "$uid": { ".write": "auth != null && $uid === auth.uid" } },
+        "typing":   { "$uid": { ".write": "auth != null && $uid === auth.uid" } }
       }
     },
     "sync": {
       "$ekey": {
-        ".read": true,
+        ".read": "auth != null && (auth.token.email === 'mmtboy90@gmail.com' || (auth.token.email != null && $ekey === auth.token.email.toLowerCase().replace('.', ',').replace('#', ',').replace('$', ',').replace('[', ',').replace(']', ',').replace('/', ',').replace('%', ',')))",
+        ".write": "auth != null && auth.token.email != null && $ekey === auth.token.email.toLowerCase().replace('.', ',').replace('#', ',').replace('$', ',').replace('[', ',').replace(']', ',').replace('/', ',').replace('%', ',')",
         "$row": {
-          ".write": true,
           "k": { ".validate": "newData.isString()" },
           "v": { ".validate": "newData.isString()" }
         }
       }
     },
     "stats": {
-      ".read": true,
       "announcement": {
-        ".write": true,
+        ".read": true,
+        ".write": "auth != null && auth.token.email === 'mmtboy90@gmail.com'",
         "text": { ".validate": "newData.isString() && newData.val().length <= 300" },
         "ts":   { ".validate": "newData.isNumber()" }
       },
-      "courses":     { "$cid": { ".write": true } },
-      "leaderboard": {
-        "$uid": {
+      "courses": {
+        ".read": true,
+        "$cid": {
           ".write": true,
+          "$day": { ".validate": "newData.isNumber()" }
+        }
+      },
+      "leaderboard": {
+        ".read": true,
+        "$uid": {
+          ".write": "auth != null && ($uid === auth.uid || auth.token.email === 'mmtboy90@gmail.com')",
           "name":    { ".validate": "newData.isString() && newData.val().length <= 40" },
           "xp":      { ".validate": "newData.isNumber()" },
           "lessons": { ".validate": "newData.isNumber()" },
@@ -46,27 +88,35 @@
         }
       },
       "promo": {
+        ".read": "auth != null && auth.token.email === 'mmtboy90@gmail.com'",
         "$code": {
-          ".write": true,
+          ".read": "auth != null",
+          ".write": "auth != null && auth.token.email === 'mmtboy90@gmail.com'",
+          "used": {
+            ".write": "auth != null",
+            ".validate": "newData.isNumber() && newData.val() >= 0"
+          },
           "days": { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 3650" },
           "max":  { ".validate": "newData.isNumber() && newData.val() >= 1" },
-          "used": { ".validate": "newData.isNumber() && newData.val() >= 0" },
           "ts":   { ".validate": "newData.isNumber()" }
         }
       },
       "pushConfig": {
-        ".write": true,
+        ".read": true,
+        ".write": "auth != null && auth.token.email === 'mmtboy90@gmail.com'",
         "vapid": { ".validate": "newData.isString() && newData.val().length <= 200" }
       },
       "pushTokens": {
+        ".read": "auth != null && auth.token.email === 'mmtboy90@gmail.com'",
         "$token": {
-          ".write": true,
+          ".write": "auth != null",
           "ts": { ".validate": "newData.isNumber()" }
         }
       },
       "events": {
+        ".read": true,
         "$eid": {
-          ".write": true,
+          ".write": "auth != null && auth.token.email === 'mmtboy90@gmail.com'",
           "t":       { ".validate": "newData.isString() && newData.val().length <= 80" },
           "my":      { ".validate": "newData.isString() && newData.val().length <= 120" },
           "ts":      { ".validate": "newData.isNumber()" },
@@ -75,9 +125,10 @@
         }
       },
       "reviews": {
+        ".read": true,
         "$cid": {
           "$uid": {
-            ".write": true,
+            ".write": "auth != null && $uid === auth.uid",
             "r":       { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 5" },
             "text":    { ".validate": "newData.isString() && newData.val().length <= 300" },
             "name":    { ".validate": "newData.isString() && newData.val().length <= 40" },
@@ -88,12 +139,18 @@
       }
     },
     "payments": {
-      ".read": true,
-      "$claim": { ".write": true }
+      ".read": "auth != null && auth.token.email === 'mmtboy90@gmail.com'",
+      "$claim": {
+        ".read": "auth != null && (auth.token.email === 'mmtboy90@gmail.com' || (auth.token.email != null && $claim.beginsWith(auth.token.email.toLowerCase().replace('.', ',').replace('#', ',').replace('$', ',').replace('[', ',').replace(']', ',').replace('/', ',').replace('%', ','))))",
+        ".write": "auth != null && (auth.token.email === 'mmtboy90@gmail.com' || (auth.token.email != null && $claim.beginsWith(auth.token.email.toLowerCase().replace('.', ',').replace('#', ',').replace('$', ',').replace('[', ',').replace(']', ',').replace('/', ',').replace('%', ',')) && newData.exists() && newData.child('status').val() === 'pending'))"
+      }
     },
     "premium": {
-      ".read": true,
-      "$ekey": { ".write": true }
+      ".read": "auth != null && auth.token.email === 'mmtboy90@gmail.com'",
+      "$ekey": {
+        ".read": "auth != null && (auth.token.email === 'mmtboy90@gmail.com' || (auth.token.email != null && $ekey === auth.token.email.toLowerCase().replace('.', ',').replace('#', ',').replace('$', ',').replace('[', ',').replace(']', ',').replace('/', ',').replace('%', ',')))",
+        ".write": "auth != null && (auth.token.email === 'mmtboy90@gmail.com' || (auth.token.email != null && $ekey === auth.token.email.toLowerCase().replace('.', ',').replace('#', ',').replace('$', ',').replace('[', ',').replace(']', ',').replace('/', ',').replace('%', ',')))"
+      }
     }
   }
 }

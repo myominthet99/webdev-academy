@@ -1937,6 +1937,32 @@ input[type="range"].tl-range { width: 100%; accent-color: var(--purple); }
   }
 }
 
+/* ---------- Chat moderation (report / block / ban) ---------- */
+.chat-actions .chat-report,
+.chat-actions .chat-block,
+.chat-actions .chat-banbtn { font-size: 11px; line-height: 1; }
+.chat-blockedbar {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  margin: 6px 10px; padding: 6px 10px; font-size: 12px; color: var(--muted);
+  background: var(--surface-2); border: 1px solid var(--line); border-radius: 999px;
+}
+.chat-blockedbar button {
+  border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+  border-radius: 999px; padding: 2px 9px; font-size: 12px;
+}
+.chat-blockedbar button:hover { border-color: var(--purple); color: var(--purple); }
+.rep-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  flex-wrap: wrap; padding: 10px 0; border-bottom: 1px solid var(--line);
+}
+.rep-row:last-child { border-bottom: 0; }
+.rep-txt { flex: 1; min-width: 220px; font-size: 14px; }
+.rep-quote {
+  margin-top: 4px; padding: 6px 10px; font-size: 13px; color: var(--muted);
+  background: var(--surface-2); border-left: 3px solid var(--purple); border-radius: 6px;
+  overflow-wrap: anywhere;
+}
+
 /* ---------- Daily Review (spaced repetition) ---------- */
 .srs-stats { display: flex; gap: 10px; margin-bottom: 16px; }
 .srs-stats .stat {

@@ -24,6 +24,7 @@
   const SYNC_PREFIXES = [
     "wda_state_v1",     /* enrollments + completed lessons  */
     "wda_notes",        /* lesson notes                     */
+    "wda_blk",          /* blocked chat users               */
     "wda_bookmarks",    /* bookmarked lessons               */
     "wda_quiz",         /* quiz best scores                 */
     "wda_srs",          /* spaced-repetition review deck    */
@@ -48,8 +49,11 @@
       fbInit = (async () => {
         const appMod = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
         const dbMod = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js");
-        /* named app: chat.js owns the default app with the same config */
-        const application = appMod.initializeApp(cfg, "wda-cloud-sync");
+        /* share auth.js's app so the database SDK sends the user's token —
+           the security rules only let an account read/write its OWN rows */
+        let application;
+        try { application = appMod.getApp("wda-auth"); }
+        catch (e) { application = appMod.initializeApp(cfg, "wda-auth"); }
         fb = { db: dbMod.getDatabase(application), ref: dbMod.ref, set: dbMod.set, get: dbMod.get };
       })();
     }

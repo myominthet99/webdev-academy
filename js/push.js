@@ -36,7 +36,9 @@
     const token = await msgMod.getToken(messaging, { vapidKey: pc.vapid, serviceWorkerRegistration: reg });
     if (!token) throw new Error("no-token");
 
-    await fetch(base + "/stats/pushTokens/" + encodeURIComponent(token) + ".json", {
+    /* rules require a signed-in user for writes */
+    const idTok = window.Auth && window.Auth.idToken ? await window.Auth.idToken() : null;
+    await fetch(base + "/stats/pushTokens/" + encodeURIComponent(token) + ".json" + (idTok ? "?auth=" + encodeURIComponent(idTok) : ""), {
       method: "PUT",
       body: JSON.stringify({ ts: Date.now() }),
     });

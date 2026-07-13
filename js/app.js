@@ -873,6 +873,11 @@
      in the last 7 days; falls back to the static list when there's no
      data or no Firebase. Needs "stats" allowed in the database rules. */
   const statsBase = () => (window.FIREBASE_CONFIG && window.FIREBASE_CONFIG.databaseURL) || null;
+  /* The security rules require a login token on cloud writes (and private
+     reads) — same fetch, with ?auth=<idToken> appended when signed in. */
+  const authFetch = (url, opts) =>
+    (window.Auth && window.Auth.idToken ? window.Auth.idToken() : Promise.resolve(null))
+      .then((tk) => fetch(url + (tk ? (url.indexOf("?") >= 0 ? "&" : "?") + "auth=" + encodeURIComponent(tk) : ""), opts));
   const dateKey = (offset) => new Date(Date.now() - offset * 86400000).toISOString().slice(0, 10);
 
   /* 📢 Site-wide announcement banner: the admin posts one message
@@ -944,7 +949,7 @@
     if (!base || !u) return;
     const s = computeMyStats();
     if (s.lessons === 0) return; /* nothing to rank yet */
-    fetch(base + "/stats/leaderboard/" + encodeURIComponent(u.id) + ".json", {
+    authFetch(base + "/stats/leaderboard/" + encodeURIComponent(u.id) + ".json", {
       method: "PUT",
       body: JSON.stringify({
         name: (u.name || u.email || "?").split(" ")[0],
@@ -1067,7 +1072,7 @@
     const u = window.Auth && window.Auth.current ? window.Auth.current() : null;
     if (!base || !u || !u.email) { premiumStatus = false; premiumCoursesMap = {}; premiumChecked = true; return; }
     premiumChecked = false;
-    fetch(base + "/premium/" + emailKey(u.email) + ".json")
+    authFetch(base + "/premium/" + emailKey(u.email) + ".json")
       .then((r) => r.json())
       .then((v) => {
         const was = premiumStatus;
@@ -1165,14 +1170,14 @@
         const code = (document.getElementById("redeem-code").value || "").trim().toUpperCase().replace(/[^A-Z0-9_-]/g, "");
         if (!code) return;
         status.className = "tl-status"; status.textContent = "⏳";
-        fetch(base + "/stats/promo/" + code + ".json")
+        authFetch(base + "/stats/promo/" + code + ".json")
           .then((r) => r.json())
           .then((v) => {
             if (!v || !v.days || (v.max && (Number(v.used) || 0) >= Number(v.max))) throw new Error("invalid");
             const until = Date.now() + Number(v.days) * 864e5;
-            return fetch(base + "/stats/promo/" + code + "/used.json", {
+            return authFetch(base + "/stats/promo/" + code + "/used.json", {
               method: "PUT", body: JSON.stringify((Number(v.used) || 0) + 1),
-            }).then(() => fetch(base + "/premium/" + emailKey(u.email) + ".json", {
+            }).then(() => authFetch(base + "/premium/" + emailKey(u.email) + ".json", {
               method: "PATCH", /* merge — must not wipe single-course purchases */
               body: JSON.stringify({ until, via: code, ts: Date.now() }),
             })).then((r) => {
@@ -1187,7 +1192,7 @@
       });
     };
 
-    fetch(base + "/payments/" + claimKey + ".json").then((r) => r.json()).then((p) => {
+    authFetch(base + "/payments/" + claimKey + ".json").then((r) => r.json()).then((p) => {
       const mine = p && p.status === "pending" ? [p] : [];
       if (mine.length) {
         mount.innerHTML = `<div class="panel"><h2>⏳ ${t("prem_pending")}</h2><p class="muted">${t("prem_pending_sub")}</p></div>` + redeemHtml;
@@ -1225,7 +1230,7 @@
         e.preventDefault();
         const phone = form.phone.value.trim(), txn = form.txn.value.trim();
         if (!phone || !txn) return;
-        fetch(base + "/payments/" + claimKey + ".json", {
+        authFetch(base + "/payments/" + claimKey + ".json", {
           method: "PUT", /* one claim per account (per course for singles) */
           body: JSON.stringify(Object.assign({
             email: u.email.toLowerCase(), name: u.name || "",
@@ -4105,6 +4110,12 @@
     return { id: u ? u.id : gid, name: u ? String(u.name || u.email).split(" ")[0].slice(0, 16) : "Player-" + gid.slice(-3) };
   }
   function renderBattle(code) {
+    /* the security rules only accept battle events from signed-in players */
+    if (!loggedIn()) {
+      app.innerHTML = `<div class="container" style="max-width:560px"><div class="empty"><h2>⚔️</h2><p>${t("bt_login")}</p></div></div>`;
+      requireAuth(() => { window.dispatchEvent(new Event("hashchange")); });
+      return;
+    }
     const base = statsBase();
     if (!code) {
       /* lobby: create or join */
@@ -4143,7 +4154,7 @@
     const me = battleMe();
     const qs = battleQuestions(code);
     const url = base + "/rooms/" + encodeURIComponent("battle::" + code) + "/messages.json";
-    const post = (obj) => fetch(url, { method: "POST", body: JSON.stringify(Object.assign({ ts: Date.now() }, obj)) }).catch(() => {});
+    const post = (obj) => authFetch(url, { method: "POST", body: JSON.stringify(Object.assign({ ts: Date.now() }, obj)) }).catch(() => {});
     let joined = false, shownAt = 0, finishedDrawn = false, lastSig = "";
 
     app.innerHTML = `
@@ -4745,7 +4756,7 @@
         const status = mount.querySelector("#review-status");
         if (!rating) { status.className = "tl-status bad"; status.textContent = "★?"; return; }
         status.className = "tl-status"; status.textContent = "⏳";
-        fetch(base + "/stats/reviews/" + c.id + "/" + encodeURIComponent(u.id) + ".json", {
+        authFetch(base + "/stats/reviews/" + c.id + "/" + encodeURIComponent(u.id) + ".json", {
           method: "PUT",
           body: JSON.stringify({
             r: rating,
@@ -5003,7 +5014,7 @@
       </div>`;
     const mount = document.getElementById("pay-list");
     if (!base) { mount.innerHTML = `<div class="empty"><h2>${t("lb_offline")}</h2></div>`; return; }
-    fetch(base + "/payments.json").then((r) => r.json()).then((val) => {
+    authFetch(base + "/payments.json").then((r) => r.json()).then((val) => {
       const rows = Object.entries(val || {})
         .map(([key, p]) => Object.assign({ key }, p))
         .sort((a, b) => (b.ts || 0) - (a.ts || 0));
@@ -5028,7 +5039,7 @@
           </div>
         </div>`).join("");
       const setStatus = (key, status) =>
-        fetch(base + "/payments/" + encodeURIComponent(key) + "/status.json", { method: "PUT", body: JSON.stringify(status) });
+        authFetch(base + "/payments/" + encodeURIComponent(key) + "/status.json", { method: "PUT", body: JSON.stringify(status) });
       mount.querySelectorAll("[data-approve]").forEach((b) =>
         b.addEventListener("click", () => {
           const email = b.getAttribute("data-email");
@@ -5036,10 +5047,10 @@
           /* single-course claim → grant just that course; otherwise grant
              all-access. PATCH/child-PUT so grants never wipe each other. */
           const grant = cid
-            ? fetch(base + "/premium/" + emailKey(email) + "/courses/" + cid + ".json", {
+            ? authFetch(base + "/premium/" + emailKey(email) + "/courses/" + cid + ".json", {
                 method: "PUT", body: "true",
               })
-            : fetch(base + "/premium/" + emailKey(email) + ".json", {
+            : authFetch(base + "/premium/" + emailKey(email) + ".json", {
                 method: "PATCH",
                 body: JSON.stringify({ since: Date.now(), by: (window.Auth.current() || {}).email || "admin" }),
               });
@@ -5055,6 +5066,83 @@
         })
       );
     }).catch(() => { mount.innerHTML = `<div class="empty"><h2>${t("lb_offline")}</h2></div>`; });
+  }
+
+  /* 🚩 Reports & bans: review what students flagged in the chat.
+     Delete the message, ban the author (rules refuse a banned uid's
+     writes everywhere), or dismiss the report. */
+  function renderAdminReports() {
+    const base = statsBase();
+    app.innerHTML = `
+      <div class="container" style="max-width:860px">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+          <h2 class="section-title">🚩 ${t("rep_title")}</h2>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <a class="btn btn-outline btn-sm" href="#/admin/dashboard">📊 ${t("dash_admin_title")}</a>
+            <a class="btn btn-outline btn-sm" href="#/admin/payments">💳 ${t("admin_payments")}</a>
+          </div>
+        </div>
+        <div id="rep-list" class="panel"><p class="muted">⏳</p></div>
+        <h3 class="section-title" style="font-size:19px">⛔ ${t("rep_banned")}</h3>
+        <div id="ban-list" class="panel"><p class="muted">⏳</p></div>
+      </div>`;
+    if (!base) { document.getElementById("rep-list").innerHTML = `<p class="muted">${t("lb_offline")}</p>`; return; }
+
+    const load = () => {
+      authFetch(base + "/reports.json").then((r) => r.json()).then((val) => {
+        const list = Object.entries(val || {}).map(([k, v]) => Object.assign({ _k: k }, v)).sort((a, b) => (b.ts || 0) - (a.ts || 0));
+        const mount = document.getElementById("rep-list");
+        if (!mount) return;
+        mount.innerHTML = list.length ? list.map((r) => `
+          <div class="rep-row">
+            <div class="rep-txt">
+              <b>${escapeHtml(r.name || "?")}</b>
+              <span class="muted">· ${t("rep_in")} ${escapeHtml(r.room || "?")} · ${t("rep_by")} ${escapeHtml(r.byName || "?")} · ${new Date(r.ts || 0).toLocaleString()}</span>
+              <div class="rep-quote">${escapeHtml(r.text || "")}</div>
+            </div>
+            <div class="tl-row">
+              <button class="btn btn-outline btn-sm" data-rep-delmsg="${escapeHtml(r._k)}">🗑 ${t("rep_delmsg")}</button>
+              <button class="btn btn-outline btn-sm" data-rep-ban="${escapeHtml(r._k)}">⛔ ${t("rep_ban")}</button>
+              <button class="btn btn-ghost btn-sm" data-rep-dismiss="${escapeHtml(r._k)}">✓ ${t("rep_dismiss")}</button>
+            </div>
+          </div>`).join("") : `<p class="muted" style="margin:0">🎉 ${t("rep_none")}</p>`;
+        const byKey = (k) => list.find((x) => x._k === k);
+        mount.querySelectorAll("[data-rep-delmsg]").forEach((b) => b.addEventListener("click", () => {
+          const r = byKey(b.getAttribute("data-rep-delmsg"));
+          if (!r || !r.room || !r.msg) return;
+          authFetch(base + "/rooms/" + encodeURIComponent(r.room) + "/messages/" + encodeURIComponent(r.msg) + ".json", { method: "DELETE" })
+            .then(() => authFetch(base + "/reports/" + r._k + ".json", { method: "DELETE" }))
+            .then(load).catch(() => alert(t("chat_send_err")));
+        }));
+        mount.querySelectorAll("[data-rep-ban]").forEach((b) => b.addEventListener("click", () => {
+          const r = byKey(b.getAttribute("data-rep-ban"));
+          if (!r || !r.uid) return;
+          authFetch(base + "/banned/" + encodeURIComponent(r.uid) + ".json", {
+            method: "PUT",
+            body: JSON.stringify({ name: String(r.name || "?").slice(0, 40), by: (window.Auth.current() || {}).id || "admin", ts: Date.now() }),
+          }).then(load).catch(() => alert(t("chat_send_err")));
+        }));
+        mount.querySelectorAll("[data-rep-dismiss]").forEach((b) => b.addEventListener("click", () => {
+          authFetch(base + "/reports/" + b.getAttribute("data-rep-dismiss") + ".json", { method: "DELETE" }).then(load).catch(() => {});
+        }));
+      }).catch(() => { const m = document.getElementById("rep-list"); if (m) m.innerHTML = `<p class="muted">${t("lb_offline")}</p>`; });
+
+      authFetch(base + "/banned.json").then((r) => r.json()).then((val) => {
+        const mount = document.getElementById("ban-list");
+        if (!mount) return;
+        const rows = Object.entries(val || {});
+        mount.innerHTML = rows.length ? rows.map(([uid, v]) => `
+          <div class="rep-row">
+            <div class="rep-txt"><b>${escapeHtml((v && v.name) || "?")}</b> <span class="muted">${new Date((v && v.ts) || 0).toLocaleDateString()}</span></div>
+            <button class="btn btn-outline btn-sm" data-unban="${escapeHtml(uid)}">✓ ${t("rep_unban")}</button>
+          </div>`).join("") : `<p class="muted" style="margin:0">${t("rep_noban")}</p>`;
+        mount.querySelectorAll("[data-unban]").forEach((b) => b.addEventListener("click", () => {
+          authFetch(base + "/banned/" + encodeURIComponent(b.getAttribute("data-unban")) + ".json", { method: "DELETE" }).then(load).catch(() => {});
+        }));
+      }).catch(() => {});
+    };
+    load();
+    window.scrollTo(0, 0);
   }
 
   /* Admin dashboard: one page of stats pulled from Firebase — students,
@@ -5198,10 +5286,10 @@
     Promise.all([
       fetch(base + "/stats/leaderboard.json").then((r) => r.json()).catch(() => ({})),
       fetch(base + "/stats/courses.json").then((r) => r.json()).catch(() => ({})),
-      fetch(base + "/payments.json").then((r) => r.json()).catch(() => ({})),
-      fetch(base + "/premium.json").then((r) => r.json()).catch(() => ({})),
+      authFetch(base + "/payments.json").then((r) => r.json()).catch(() => ({})),
+      authFetch(base + "/premium.json").then((r) => r.json()).catch(() => ({})),
       fetch(base + "/stats/announcement.json").then((r) => r.json()).catch(() => null),
-      fetch(base + "/stats/promo.json").then((r) => r.json()).catch(() => null),
+      authFetch(base + "/stats/promo.json").then((r) => r.json()).catch(() => null),
     ]).then(([lb, courses, payments, premium, announce, promos]) => {
       const students = Object.values(lb || {}).filter((x) => x && (Number(x.xp) || 0) > 0);
       const active = students.filter((x) => (Number(x.streak) || 0) > 0).length;
@@ -5346,7 +5434,7 @@
       /* announcement post/clear */
       const annStatus = document.getElementById("ann-status");
       const setAnn = (body, msg) =>
-        fetch(base + "/stats/announcement.json", { method: "PUT", body: JSON.stringify(body) })
+        authFetch(base + "/stats/announcement.json", { method: "PUT", body: JSON.stringify(body) })
           .then((r) => { if (!r.ok) throw new Error("write"); if (annStatus) annStatus.textContent = msg; loadAnnouncement(); })
           .catch(() => { if (annStatus) annStatus.textContent = t("ann_err"); });
       const postBtn = document.getElementById("ann-post");
@@ -5371,7 +5459,7 @@
       if (pv) pv.addEventListener("click", () => {
         const v = (document.getElementById("push-vapid").value || "").trim();
         if (!v) return;
-        fetch(base + "/stats/pushConfig.json", { method: "PUT", body: JSON.stringify({ vapid: v.slice(0, 200) }) })
+        authFetch(base + "/stats/pushConfig.json", { method: "PUT", body: JSON.stringify({ vapid: v.slice(0, 200) }) })
           .then((r) => { pushStatus.textContent = r.ok ? "✓" : t("promo_err"); })
           .catch(() => { pushStatus.textContent = t("promo_err"); });
       });
@@ -5461,7 +5549,7 @@
         const days = Math.max(1, Number(document.getElementById("pc-days").value) || 30);
         const max = Math.max(1, Number(document.getElementById("pc-max").value) || 20);
         if (!code) { pcStatus.textContent = "?"; return; }
-        fetch(base + "/stats/promo/" + code + ".json", {
+        authFetch(base + "/stats/promo/" + code + ".json", {
           method: "PUT",
           body: JSON.stringify({ days, max, used: 0, ts: Date.now() }),
         }).then((r) => {
@@ -5474,7 +5562,7 @@
       if (pcList) pcList.addEventListener("click", (e) => {
         const b = e.target.closest("[data-pc-del]");
         if (!b) return;
-        fetch(base + "/stats/promo/" + b.getAttribute("data-pc-del") + ".json", { method: "DELETE" })
+        authFetch(base + "/stats/promo/" + b.getAttribute("data-pc-del") + ".json", { method: "DELETE" })
           .then(() => renderAdminDashboard())
           .catch(() => {});
       });
@@ -5505,14 +5593,14 @@
         const body = { t: tt, ts: when, created: Date.now() };
         if (my) body.my = my;
         if (link) body.link = link;
-        fetch(base + "/stats/events.json", { method: "POST", body: JSON.stringify(body) })
+        authFetch(base + "/stats/events.json", { method: "POST", body: JSON.stringify(body) })
           .then((r) => { if (!r.ok) throw new Error("write"); evStatus.textContent = "✓"; loadEvents(); })
           .catch(() => { evStatus.textContent = t("ev_err"); });
       });
       if (evList) evList.addEventListener("click", (e) => {
         const b = e.target.closest("[data-ev-del]");
         if (!b) return;
-        fetch(base + "/stats/events/" + b.getAttribute("data-ev-del") + ".json", { method: "DELETE" })
+        authFetch(base + "/stats/events/" + b.getAttribute("data-ev-del") + ".json", { method: "DELETE" })
           .then(() => loadEvents()).catch(() => {});
       });
     }).catch(() => { mount.innerHTML = `<div class="empty"><h2>${t("lb_offline")}</h2></div>`; });
@@ -5917,6 +6005,7 @@
     }
     if (editId === "dashboard") return renderAdminDashboard();
     if (editId === "payments") return renderAdminPayments();
+    if (editId === "reports") return renderAdminReports();
     if (editId === "content") return renderContentCreator();
     const custom = loadCustomCourses();
     const editing = editId ? custom.find((c) => c.id === editId) : null;
@@ -5930,6 +6019,7 @@
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <a class="btn btn-outline btn-sm" href="#/admin/dashboard">📊 ${t("dash_admin_title")}</a>
             <a class="btn btn-outline btn-sm" href="#/admin/payments">💳 ${t("admin_payments")}</a>
+            <a class="btn btn-outline btn-sm" href="#/admin/reports">🚩 ${t("rep_title")}</a>
           </div>
         </div>
         <div class="panel">

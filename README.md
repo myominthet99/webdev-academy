@@ -73,7 +73,8 @@ Notes:
 A 💬 bubble (bottom-right) opens a group chat. Features:
 - **Per-room:** a global **Community** room, plus a separate room for each course (the chat follows you onto a course/lesson page).
 - **Delete your own messages** (🗑 on your bubbles) — with an ownership guard.
-- **Basic moderation:** anti-spam rate limit (max 8 messages / 10s per user) and a word-mask hook (`BADWORDS` in [js/chat.js](js/chat.js)).
+- **Moderation:** 🚩 report a message (goes to an admin queue at `#/admin/reports`), 🚫 block a user (hides their messages on your account, synced across your devices), and ⛔ admin ban (server-enforced — a banned account can't post anywhere). Plus an anti-spam rate limit and a word-mask hook (`BADWORDS` in [js/chat.js](js/chat.js)).
+- **Server-enforced security:** every cloud write carries the user's Firebase login token, and [firebase-rules.json](firebase-rules.json) enforces that you can only edit your own messages, read your own progress/premium, and that Premium can't be self-granted. **When deploying, follow [DEPLOY-SECURITY.md](DEPLOY-SECURITY.md)** — the rules and site code must ship together.
 - You must be **logged in** to post.
 
 By default it uses **localStorage** and syncs live **between tabs of the same browser** (open two tabs, log in as two accounts, and chat). There is no server, so it does **not** sync across different devices — for that, enable Firebase below.

@@ -1927,7 +1927,7 @@
     /* full tutor = premium or paid course; free students get the two
        comprehension chips (Simpler / Burmese), capped per day */
     const fullTutor = isPremiumUser() || (!isFree(course) && hasCourseAccess(course.id));
-    const freeChips = { simple: 1, burmese: 1, recap: 1 };
+    const freeChips = { simple: 1, burmese: 1, recap: 1, diagram: 1, realworld: 1, story: 1 };
     /* plain-text lesson body for context (tags stripped, capped) */
     const tmp = document.createElement("div");
     tmp.innerHTML = lesson.type === "quiz" ? "" : (lf(lesson, "content") || "");
@@ -1980,14 +1980,19 @@
     };
     const chipQs = {
       recap: "List the 3 most important things a beginner should remember from this lesson, as exactly 3 short bullet points. Start each line with '- '. Keep each bullet under 14 words. No intro, no code — just the 3 bullets.",
+      diagram: "Draw a simple text mind-map / diagram (ASCII art) of the key parts of this lesson and how they connect. Use indentation with ├─ └─ branches and → arrows. Put the WHOLE diagram inside one ``` code block and add nothing outside it. Keep it small, clear and beginner-friendly.",
       simple: "Re-explain this whole lesson in very simple English, like I am 12 years old. Use short sentences and one everyday real-life analogy to make the main idea click.",
       burmese: "Re-explain this whole lesson in simple Burmese (Myanmar language), step by step, so a beginner truly understands. Keep technical words (HTML, CSS, tag names, code) in English. Use short sentences.",
+      realworld: "Give ONE short, concrete real-world example of how the main idea of this lesson is used in a real website, app or everyday situation. 2-3 simple sentences a teenager can relate to.",
+      story: "Explain the main idea of this lesson as a very short, fun story (3-4 sentences): a character has a problem, then solves it using this lesson's idea. Keep it simple and friendly.",
       example: "Show me one more small code example for this lesson, different from the one in the lesson, and explain it briefly.",
       practice: "Give me one small practice exercise for this lesson. Do not show the solution — encourage me to try first.",
     };
-    /* 🎯 Recap is generated once per lesson, then cached so re-opening is
-       instant and costs nothing (and doesn't spend a free-use credit) */
-    const recapKey = () => ns("wda_recap::" + lesson.id);
+    /* These aids are stable per lesson, so cache the first result (per lesson
+       AND language) — re-opening is instant and spends no free-use credit. */
+    const CACHED = { recap: 1, diagram: 1, realworld: 1, story: 1 };
+    const langHint = lang === "my" ? " Reply in simple Burmese; keep technical words (HTML, CSS, tag names, code) in English." : "";
+    const cacheKeyFor = (kind) => ns("wda_aicache::" + kind + "::" + lang + "::" + lesson.id);
     const updateFreeLeft = () => {
       const el = box.querySelector("#tutor-free-left");
       if (el) el.textContent = t("tutor_free_left").replace("{n}", aiFreeLeft());
@@ -1996,9 +2001,9 @@
       b.addEventListener("click", () => {
         const kind = b.getAttribute("data-tq");
         const label = b.textContent.trim();
-        /* recap: serve the cached version instantly (no AI, no credit) */
-        if (kind === "recap") {
-          const cached = jget(recapKey(), null);
+        /* cached aids: serve instantly (no AI call, no credit spent) */
+        if (CACHED[kind]) {
+          const cached = jget(cacheKeyFor(kind), null);
           if (cached) { bubble("me", escapeHtml(label)); bubble("bot", fmt(cached)); return; }
         }
         /* free students: the comprehension chips are capped per day */
@@ -2011,8 +2016,8 @@
           aiFreeInc();
           updateFreeLeft();
         }
-        const p = ask(chipQs[kind], label);
-        if (kind === "recap" && p) p.then((reply) => { if (reply) jset(recapKey(), reply); });
+        const p = ask(chipQs[kind] + (CACHED[kind] ? langHint : ""), label);
+        if (CACHED[kind] && p) p.then((reply) => { if (reply) jset(cacheKeyFor(kind), reply); });
       })
     );
     if (form) form.addEventListener("submit", (e) => {
@@ -2270,8 +2275,11 @@
                    free-text Q&A stay Premium. */
                 return `<div class="tutor-chips">
                      <button type="button" data-tq="recap">🎯 ${t("tutor_recap")}</button>
+                     <button type="button" data-tq="diagram">🗺️ ${t("tutor_diagram")}</button>
                      <button type="button" data-tq="simple">💡 ${t("tutor_simple")}</button>
                      <button type="button" data-tq="burmese">🇲🇲 ${t("tutor_burmese")}</button>
+                     <button type="button" data-tq="realworld">📖 ${t("tutor_realworld")}</button>
+                     <button type="button" data-tq="story">🎭 ${t("tutor_story")}</button>
                      ${fullTutor ? `
                      <button type="button" data-tq="example">💻 ${t("tutor_example")}</button>
                      <button type="button" data-tq="practice">🏋️ ${t("tutor_practice")}</button>` : ""}

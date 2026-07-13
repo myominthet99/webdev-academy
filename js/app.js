@@ -214,6 +214,15 @@
   const bonusXp = () => Number(jget(ns("wda_xtra"), 0)) || 0;
   const addBonusXp = (n) => jset(ns("wda_xtra"), bonusXp() + n);
 
+  /* Free AI comprehension aids (Simpler / Burmese) are open to every student
+     but capped per day for non-paying users, so cost stays bounded while the
+     "understand any lesson" promise still holds. Premium = unlimited. */
+  const AI_FREE_DAILY = 5;
+  const aiFreeKey = () => ns("wda_ai_free::" + todayKey());
+  const aiFreeUsed = () => Number(jget(aiFreeKey(), 0)) || 0;
+  const aiFreeLeft = () => Math.max(0, AI_FREE_DAILY - aiFreeUsed());
+  const aiFreeInc = () => jset(aiFreeKey(), aiFreeUsed() + 1);
+
   /* Day-streak: bumped when a lesson is completed */
   /* ---------------- Study motivation ---------------- */
   const MOTIV = [
@@ -1860,10 +1869,13 @@
     const box = app.querySelector("#ai-tutor");
     if (!box) return;
     const log = box.querySelector(".tutor-log");
-    const form = box.querySelector(".tutor-form");
-    if (!form) return; /* premium-locked panel — nothing to wire */
-    const inp = form.querySelector("input");
+    const form = box.querySelector(".tutor-form"); /* present only for full-tutor users */
+    const inp = form ? form.querySelector("input") : null;
     const history = [];
+    /* full tutor = premium or paid course; free students get the two
+       comprehension chips (Simpler / Burmese), capped per day */
+    const fullTutor = isPremiumUser() || (!isFree(course) && hasCourseAccess(course.id));
+    const freeChips = { simple: 1, burmese: 1 };
     /* plain-text lesson body for context (tags stripped, capped) */
     const tmp = document.createElement("div");
     tmp.innerHTML = lesson.type === "quiz" ? "" : (lf(lesson, "content") || "");
@@ -1913,15 +1925,32 @@
       });
     };
     const chipQs = {
-      simple: "Explain this lesson in very simple words, like I am 12 years old.",
-      burmese: "Explain the main idea of this lesson in Burmese (Myanmar language). Keep technical words in English.",
+      simple: "Re-explain this whole lesson in very simple English, like I am 12 years old. Use short sentences and one everyday real-life analogy to make the main idea click.",
+      burmese: "Re-explain this whole lesson in simple Burmese (Myanmar language), step by step, so a beginner truly understands. Keep technical words (HTML, CSS, tag names, code) in English. Use short sentences.",
       example: "Show me one more small code example for this lesson, different from the one in the lesson, and explain it briefly.",
       practice: "Give me one small practice exercise for this lesson. Do not show the solution — encourage me to try first.",
     };
+    const updateFreeLeft = () => {
+      const el = box.querySelector("#tutor-free-left");
+      if (el) el.textContent = t("tutor_free_left").replace("{n}", aiFreeLeft());
+    };
     box.querySelectorAll("[data-tq]").forEach((b) =>
-      b.addEventListener("click", () => ask(chipQs[b.getAttribute("data-tq")], b.textContent.trim()))
+      b.addEventListener("click", () => {
+        const kind = b.getAttribute("data-tq");
+        /* free students: the two comprehension chips are capped per day */
+        if (!fullTutor && freeChips[kind]) {
+          if (aiFreeLeft() <= 0) {
+            bubble("bot", "🔒 " + escapeHtml(t("tutor_free_out")) +
+              ' <a href="#/premium">⭐ ' + escapeHtml(t("prem_go")) + "</a>");
+            return;
+          }
+          aiFreeInc();
+          updateFreeLeft();
+        }
+        ask(chipQs[kind], b.textContent.trim());
+      })
     );
-    form.addEventListener("submit", (e) => {
+    if (form) form.addEventListener("submit", (e) => {
       e.preventDefault();
       const q = inp.value.trim();
       if (!q) return;
@@ -2150,20 +2179,29 @@
             ${body}
             <div class="ai-tutor" id="ai-tutor">
               <div class="notes-head"><strong>🎓 ${t("tutor_title")}</strong> <span class="muted" style="font-size:12px">${t("tutor_sub")}</span></div>
-              ${(isPremiumUser() || (!isFree(c) && hasCourseAccess(c.id)))
-                ? `<div class="tutor-chips">
+              ${(() => {
+                const fullTutor = isPremiumUser() || (!isFree(c) && hasCourseAccess(c.id));
+                /* Simpler + Burmese are FREE for everyone — the core
+                   "understand any lesson" aid. Examples, practice and
+                   free-text Q&A stay Premium. */
+                return `<div class="tutor-chips">
                      <button type="button" data-tq="simple">💡 ${t("tutor_simple")}</button>
                      <button type="button" data-tq="burmese">🇲🇲 ${t("tutor_burmese")}</button>
+                     ${fullTutor ? `
                      <button type="button" data-tq="example">💻 ${t("tutor_example")}</button>
-                     <button type="button" data-tq="practice">🏋️ ${t("tutor_practice")}</button>
+                     <button type="button" data-tq="practice">🏋️ ${t("tutor_practice")}</button>` : ""}
                    </div>
                    <div class="tutor-log" hidden></div>
-                   <form class="tutor-form">
-                     <input type="text" maxlength="300" placeholder="${escapeHtml(t("tutor_ph"))}">
-                     <button class="btn btn-primary btn-sm" type="submit">${t("tutor_ask")}</button>
-                   </form>`
-                : `<p class="muted" style="margin:8px 0">🔒 ${t("tutor_premium")}</p>
-                   <a class="btn btn-primary btn-sm" href="#/premium">⭐ ${t("prem_go")}</a>`}
+                   ${fullTutor
+                     ? `<form class="tutor-form">
+                          <input type="text" maxlength="300" placeholder="${escapeHtml(t("tutor_ph"))}">
+                          <button class="btn btn-primary btn-sm" type="submit">${t("tutor_ask")}</button>
+                        </form>`
+                     : `<p class="muted tutor-upsell" style="margin:10px 0 0;font-size:12.5px">
+                          <span id="tutor-free-left">${t("tutor_free_left").replace("{n}", aiFreeLeft())}</span> ·
+                          <a href="#/premium">⭐ ${t("tutor_more")}</a>
+                        </p>`}`;
+              })()}
             </div>
             <div class="notes">
               <div class="notes-head"><strong>${t("notes_title")}</strong> <span class="notes-status" id="notes-status"></span></div>

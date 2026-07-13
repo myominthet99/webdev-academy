@@ -26,6 +26,7 @@
     "wda_notes",        /* lesson notes                     */
     "wda_bookmarks",    /* bookmarked lessons               */
     "wda_quiz",         /* quiz best scores                 */
+    "wda_srs",          /* spaced-repetition review deck    */
     "wda_streak",       /* day streak                       */
     "wda_last",         /* resume position                  */
     "wda_comments",     /* lesson discussions               */
@@ -137,7 +138,8 @@
         if (!best[lk] || ts >= best[lk].t) best[lk] = { v: row.v, t: ts };
       });
       Object.keys(best).forEach((lk) => origSet.call(localStorage, lk, best[lk].v));
-      /* re-render the current view with the restored data */
+      /* let the app re-read its in-memory state, then re-render */
+      window.dispatchEvent(new Event("wda-cloud-pull"));
       window.dispatchEvent(new Event("hashchange"));
     }).catch(() => { lastPulledFor = null; });
   }

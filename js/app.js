@@ -127,6 +127,14 @@
     }
     return en;
   }
+  /* Quiz text is stored inconsistently — some options raw ("<main>"), some
+     pre-escaped ("&lt;main&gt;"). Decode entities first, then escape, so both
+     display as literal text instead of being parsed as real elements. */
+  function qsafe(s) {
+    const ta = document.createElement("textarea");
+    ta.innerHTML = String(s == null ? "" : s);
+    return escapeHtml(ta.value);
+  }
 
   /* ---------------- State (persisted in localStorage) ---------------- */
   const STORE_PREFIX = "wda_state_v1";
@@ -1430,6 +1438,7 @@
       <div class="container">
         ${streakNudge()}
         ${dailyHomeCard()}
+        ${reviewHomeCard()}
         ${communityHomeCard()}
         ${motivHomeCard()}
         ${resumeBanner()}
@@ -2442,12 +2451,12 @@
       .map(
         (q, qi) => `
         <div class="q-block" data-q="${qi}">
-          <div class="q">${qi + 1}. ${q.q}</div>
+          <div class="q">${qi + 1}. ${qsafe(q.q)}</div>
           ${q.options
             .map(
               (opt, oi) =>
                 `<label class="q-opt" data-opt="${oi}">
-                   <input type="radio" name="q${qi}" value="${oi}"> <span>${opt}</span>
+                   <input type="radio" name="q${qi}" value="${oi}"> <span>${qsafe(opt)}</span>
                  </label>`
             )
             .join("")}
@@ -2856,31 +2865,252 @@
     return out;
   }
 
+  /* ---------------- Daily Review: spaced repetition (SM-2 lite) ----------------
+     Every question from a quiz the user has PASSED becomes a flashcard.
+     Cards store only a reference (lessonId::questionIndex) — the text stays
+     in data-core.js, so Burmese overrides and content edits keep working.
+     Deck lives in wda_srs::<uid> and is mirrored to the cloud. */
+  const srsLoad = () => { const d = jget(ns("wda_srs"), {}); if (!d.cards) d.cards = {}; if (!d.days) d.days = {}; return d; };
+  const srsSave = (d) => jset(ns("wda_srs"), d);
+
+  /* every quiz lesson the user has completed (= passed), with its course */
+  function srsSources() {
+    const out = [];
+    COURSES.forEach((c) => {
+      const done = completedSet(c.id);
+      if (!done.size) return;
+      c.sections.forEach((s) => s.lessons.forEach((l) => {
+        if (l.type === "quiz" && Array.isArray(l.questions) && done.has(l.id)) out.push({ course: c, lesson: l });
+      }));
+    });
+    return out;
+  }
+
+  /* every quiz question in the catalog, passed or not — used to resolve
+     cards and to prune ones whose question was removed in a content edit */
+  function srsCatalog() {
+    const map = {};
+    COURSES.forEach((c) => c.sections.forEach((s) => s.lessons.forEach((l) => {
+      if (l.type === "quiz" && Array.isArray(l.questions))
+        l.questions.forEach((q, qi) => { map[l.id + "::" + qi] = { course: c, lesson: l }; });
+    })));
+    return map;
+  }
+
+  /* add cards for newly passed quizzes; saves only when something changed
+     (home calls this every render). Prune ONLY questions gone from the
+     catalog — NEVER cards missing from completedSet: right after login the
+     local completion state can lag the cloud copy, and deleting on that
+     stale view would wipe (and re-upload) an empty deck. */
+  function srsSyncDeck(deck) {
+    const catalog = srsCatalog();
+    let changed = false;
+    srsSources().forEach((src) => src.lesson.questions.forEach((q, qi) => {
+      const id = src.lesson.id + "::" + qi;
+      if (!deck.cards[id]) { deck.cards[id] = { due: todayKey(), iv: 0, ease: 2.5, reps: 0, lapses: 0 }; changed = true; }
+    }));
+    Object.keys(deck.cards).forEach((id) => { if (!catalog[id]) { delete deck.cards[id]; changed = true; } });
+    if (changed) srsSave(deck);
+    return catalog;
+  }
+
+  const srsDueIds = (deck) => {
+    const today = todayKey();
+    return Object.keys(deck.cards).filter((id) => deck.cards[id].due <= today)
+      .sort((a, b) => (deck.cards[a].due < deck.cards[b].due ? -1 : 1));
+  };
+
+  /* one answer → new schedule. Correct: 1d → 3d → iv×ease. Wrong: back to 1d. */
+  function srsGrade(card, ok) {
+    if (ok) {
+      card.reps = (card.reps || 0) + 1;
+      card.iv = card.reps === 1 ? 1 : card.reps === 2 ? 3 : Math.max(4, Math.round((card.iv || 1) * card.ease));
+      card.ease = Math.min(2.8, (card.ease || 2.5) + 0.05);
+    } else {
+      card.reps = 0;
+      card.lapses = (card.lapses || 0) + 1;
+      card.ease = Math.max(1.3, (card.ease || 2.5) - 0.2);
+      card.iv = 1;
+    }
+    card.due = todayKey(card.iv);
+  }
+
+  const SRS_SESSION = 10;   /* cards per session */
+  const SRS_XP_CAP = 20;    /* max review XP per day (parity with daily challenge) */
+
+  /* resolve a card id back to its (translated) question + labels */
+  function srsCardView(id, avail) {
+    const src = avail[id];
+    if (!src) return null;
+    const qi = Number(id.split("::").pop());
+    const q = getQuestions(src.lesson)[qi];
+    if (!q) return null;
+    return { q, course: cf(src.course, "title"), lesson: lf(src.lesson, "title") };
+  }
+
+  function reviewHomeCard() {
+    if (!loggedIn()) return "";
+    const deck = srsLoad();
+    srsSyncDeck(deck);
+    if (!Object.keys(deck.cards).length) return ""; /* no quiz passed yet — don't nag */
+    const due = srsDueIds(deck).length;
+    const doneToday = (deck.days[todayKey()] || {}).n > 0;
+    const idle = !due && doneToday;
+    return `
+      <a class="daily-card ${idle ? "done" : ""}" href="#/review">
+        <span class="dc-ic">🧠</span>
+        <div class="dc-txt"><b>${t("review_title")}</b><span class="muted">${
+          due ? t("rv_home_due").replace("{n}", due) : doneToday ? t("rv_home_done") : t("rv_home_none")
+        }</span></div>
+        <span class="btn ${due ? "btn-primary" : "btn-outline"} btn-sm">${due ? due + " 🔁" : "✓"}</span>
+      </a>`;
+  }
+
   function renderReview() {
     if (!loggedIn()) { location.hash = "#/"; if (window.Auth) window.Auth.openModal("login"); return; }
+    const deck = srsLoad();
+    const avail = srsSyncDeck(deck);
+    const total = Object.keys(deck.cards).length;
+    const due = srsDueIds(deck);
+    const today = deck.days[todayKey()] || { n: 0, xp: 0 };
+
     app.innerHTML = `
       <div class="container" style="max-width:680px">
         <h2 class="section-title">🧠 ${t("review_title")}</h2>
         <p class="section-sub">${t("review_sub")}</p>
+        <div class="srs-stats">
+          <div class="stat"><strong>${due.length}</strong><span>${t("rv_stat_due")}</span></div>
+          <div class="stat"><strong>${total}</strong><span>${t("rv_stat_cards")}</span></div>
+          <div class="stat"><strong>🔥 ${dayStreak()}</strong><span>${t("rv_stat_streak")}</span></div>
+        </div>
         <div id="review-body"></div>
+        <div id="review-ai"></div>
       </div>`;
     const mount = document.getElementById("review-body");
-    if (!isPremiumUser()) {
-      mount.innerHTML = `<div class="panel"><p class="muted" style="margin:0 0 10px">🔒 ${t("review_premium")}</p><a class="btn btn-primary" href="#/premium">⭐ ${t("prem_go")}</a></div>`;
-      return;
+
+    if (!total) {
+      /* no cards yet — point at the nearest untaken quiz */
+      let firstQuiz = null;
+      COURSES.forEach((c) => { if (firstQuiz || !isEnrolled(c.id)) return;
+        const done = completedSet(c.id);
+        c.sections.forEach((s) => s.lessons.forEach((l) => {
+          if (!firstQuiz && l.type === "quiz" && !done.has(l.id)) firstQuiz = { c, l };
+        }));
+      });
+      mount.innerHTML = `<div class="empty"><h2>🃏</h2><p>${t("rv_empty")}</p>
+        ${firstQuiz
+          ? `<a class="btn btn-primary" href="#/learn/${firstQuiz.c.id}/${firstQuiz.l.id}">📝 ${t("rv_take_quiz")}</a>`
+          : `<a class="btn btn-primary" href="#/courses">${t("browse_courses")}</a>`}</div>`;
+    } else if (!due.length) {
+      /* caught up — show when the next card comes back */
+      const next = Object.values(deck.cards).map((c) => c.due).sort()[0];
+      mount.innerHTML = `<div class="panel" style="text-align:center">
+        <h2 style="font-size:40px;margin:6px 0">🌱</h2>
+        <h3 style="margin:0 0 6px">${t("rv_done_title")}</h3>
+        <p class="muted" style="margin:0 0 14px">${t("rv_done_sub").replace("{d}", next || todayKey(1))}</p>
+        <button class="btn btn-outline btn-sm" id="rv-ahead">💪 ${t("rv_ahead")}</button>
+        <p class="muted" style="font-size:12px;margin:8px 0 0">${t("rv_ahead_note")}</p></div>`;
+      const ah = document.getElementById("rv-ahead");
+      if (ah) ah.addEventListener("click", () => {
+        const soon = Object.keys(deck.cards).sort((a, b) => (deck.cards[a].due < deck.cards[b].due ? -1 : 1)).slice(0, SRS_SESSION);
+        srsSession(mount, soon, avail, true);
+      });
+    } else {
+      mount.innerHTML = `<div class="panel" style="text-align:center">
+        <p style="margin:4px 0 12px">${t("rv_ready").replace("{n}", due.length)}${today.n ? " · " + t("rv_today_count").replace("{n}", today.n) : ""}</p>
+        <button class="btn btn-primary" id="rv-start">🔁 ${t("rv_start").replace("{n}", Math.min(SRS_SESSION, due.length))}</button>
+      </div>`;
+      document.getElementById("rv-start").addEventListener("click", () => srsSession(mount, due.slice(0, SRS_SESSION), avail, false));
     }
-    if (!window.AI) { mount.innerHTML = `<div class="panel"><p class="muted">${escapeHtml(t("ai_no_key"))}</p></div>`; return; }
+
+    /* ✨ AI-written custom quiz stays as the Premium extra */
+    const aiMount = document.getElementById("review-ai");
     const done = collectCompletedLessons();
-    if (done.length < 3) {
-      mount.innerHTML = `<div class="empty"><h2>📚</h2><p>${t("review_need")}</p><a class="btn btn-primary" href="#/courses">${t("browse_courses")}</a></div>`;
-      return;
+    if (window.AI && done.length >= 3) {
+      aiMount.innerHTML = `<div class="panel">
+        <h3 style="margin-top:0">✨ ${t("rv_ai_title")} ${isPremiumUser() ? "" : "🔒"}</h3>
+        <p class="muted" style="margin:4px 0 10px;font-size:13.5px">${t("rv_ai_sub")}</p>
+        ${isPremiumUser()
+          ? `<button class="btn btn-outline btn-sm" id="review-start">✨ ${t("review_start")}</button>`
+          : `<a class="btn btn-outline btn-sm" href="#/premium">⭐ ${t("prem_go")}</a>`}</div>`;
+      const b = document.getElementById("review-start");
+      if (b) b.addEventListener("click", () => startReview(aiMount, done));
     }
-    mount.innerHTML = `<div class="panel">
-      <p>${t("review_ready").replace("{n}", done.length)}</p>
-      <button class="btn btn-primary" id="review-start">✨ ${t("review_start")}</button>
-    </div>`;
-    document.getElementById("review-start").addEventListener("click", () => startReview(mount, done));
     window.scrollTo(0, 0);
+  }
+
+  /* one flashcard at a time: answer → instant feedback → next */
+  function srsSession(mount, ids, avail, dry) {
+    const deck = srsLoad();
+    const cards = ids.map((id) => ({ id, view: srsCardView(id, avail) })).filter((x) => x.view);
+    if (!cards.length) { renderReview(); return; }
+    let i = 0, correct = 0;
+
+    const finish = () => {
+      let gained = 0;
+      if (!dry) {
+        const day = deck.days[todayKey()] || { n: 0, xp: 0 };
+        gained = Math.max(0, Math.min(correct * 2, SRS_XP_CAP - (day.xp || 0)));
+        day.n = (day.n || 0) + cards.length;
+        day.xp = (day.xp || 0) + gained;
+        deck.days[todayKey()] = day;
+        srsSave(deck);
+        if (gained) { addBonusXp(gained); pushLeaderboard(); setTimeout(maybeToastBadges, 400); }
+        bumpDayStreak(); /* reviewing counts as studying today */
+        saveState();
+      }
+      const moreDue = srsDueIds(deck).length;
+      mount.innerHTML = `<div class="panel" style="text-align:center">
+        <h2 style="font-size:40px;margin:6px 0">${correct === cards.length ? "🏆" : correct >= cards.length * 0.6 ? "🎉" : "💪"}</h2>
+        <h3 style="margin:0 0 4px">${t("rv_finish")}</h3>
+        <p style="margin:0 0 4px">${t("review_score").replace("{s}", correct).replace("{t}", cards.length)}
+          ${gained ? ` · <b class="srs-xp">+${gained} XP</b>` : ""}</p>
+        <p class="muted" style="margin:0 0 14px;font-size:13px">🔥 ${t("rv_streak_kept")}</p>
+        <div class="tl-row" style="justify-content:center">
+          ${moreDue && !dry ? `<button class="btn btn-primary btn-sm" id="rv-more">🔁 ${t("rv_more").replace("{n}", Math.min(SRS_SESSION, moreDue))}</button>` : ""}
+          <a class="btn btn-outline btn-sm" href="#/">${t("tab_home")}</a>
+        </div></div>`;
+      const more = document.getElementById("rv-more");
+      if (more) more.addEventListener("click", () => renderReview());
+    };
+
+    const show = () => {
+      if (i >= cards.length) { finish(); return; }
+      const { id, view } = cards[i];
+      const card = deck.cards[id] || { reps: 0 };
+      mount.innerHTML = `<div class="panel srs-card">
+        <div class="srs-top">
+          <span>${i + 1} / ${cards.length}${card.reps === 0 ? ` · <span class="srs-new">🆕 ${t("rv_new")}</span>` : ""}</span>
+          <span class="muted">${correct} ✓</span>
+        </div>
+        <div class="progress" style="margin:8px 0 14px"><span style="width:${Math.round((i / cards.length) * 100)}%"></span></div>
+        <div class="srs-src">📚 ${escapeHtml(view.course)} › ${escapeHtml(view.lesson)}</div>
+        <div class="qc-q" style="font-size:17px;margin:10px 0 12px">${qsafe(view.q.q)}</div>
+        <div class="qc-opts">${view.q.options.map((o, oi) => `<button type="button" class="qc-opt" data-i="${oi}">${qsafe(o)}</button>`).join("")}</div>
+        <div id="srs-fb" style="margin-top:12px"></div></div>`;
+      mount.querySelectorAll(".qc-opt").forEach((b) => b.addEventListener("click", () => {
+        if (mount.dataset.lock) return;
+        mount.dataset.lock = "1";
+        const pick = Number(b.getAttribute("data-i"));
+        const ok = pick === view.q.answer;
+        if (ok) correct++;
+        b.classList.add(ok ? "right" : "wrong");
+        if (!ok) { const r = mount.querySelector(`.qc-opt[data-i="${view.q.answer}"]`); if (r) r.classList.add("right"); }
+        mount.querySelectorAll(".qc-opt").forEach((o) => { o.disabled = true; });
+        if (!dry) { srsGrade(deck.cards[id], ok); srsSave(deck); }
+        const next = () => { delete mount.dataset.lock; i++; show(); };
+        if (ok) { setTimeout(next, 900); }
+        else {
+          /* wrong → let them study the correct answer, advance on tap */
+          document.getElementById("srs-fb").innerHTML =
+            `<div class="tl-status">💡 ${t("rv_wrong_note")}</div>
+             <button class="btn btn-primary btn-sm" id="srs-next" style="margin-top:8px">${t("rv_next")} →</button>`;
+          document.getElementById("srs-next").addEventListener("click", next);
+        }
+      }));
+      window.scrollTo(0, 0);
+    };
+    show();
   }
 
   function startReview(mount, done) {
@@ -4009,8 +4239,8 @@
       arena.innerHTML = head + `
         <div class="panel bt-q">
           <p class="muted" style="margin:0 0 6px">${t("bt_q")} ${myDone + 1} / ${qs.length}</p>
-          <h3 style="margin-top:0">${q.q}</h3>
-          ${q.options.map((o, i) => `<button class="qc-opt" data-i="${i}">${o}</button>`).join("")}
+          <h3 style="margin-top:0">${qsafe(q.q)}</h3>
+          ${q.options.map((o, i) => `<button class="qc-opt" data-i="${i}">${qsafe(o)}</button>`).join("")}
         </div>`;
       shownAt = Date.now();
       arena.querySelectorAll(".qc-opt").forEach((b) => b.addEventListener("click", () => {
@@ -4061,7 +4291,7 @@
         if (i === q.answer) cls += " right";
         else if (answered && st.picked === i) cls += " wrong";
       }
-      return `<button type="button" class="${cls}" data-daily-opt="${i}" ${highlight ? "disabled" : ""}>${o}</button>`;
+      return `<button type="button" class="${cls}" data-daily-opt="${i}" ${highlight ? "disabled" : ""}>${qsafe(o)}</button>`;
     }).join("");
 
     app.innerHTML = `
@@ -4073,7 +4303,7 @@
             <span>📅 ${date}</span>
             <span>🔥 ${t("daily_streak")}: <b>${Number(st.streak) || 0}</b></span>
           </div>
-          <div class="qc-q" style="font-size:17px">${q.q}</div>
+          <div class="qc-q" style="font-size:17px">${qsafe(q.q)}</div>
           <div class="qc-opts" id="daily-opts">${optHtml(answered)}</div>
           <div class="tl-status" id="daily-fb">${answered
             ? (st.correct ? "✅ " + t("daily_correct") : "❌ " + t("daily_wrong")) + " · " + t("daily_back").replace("{h}", hoursLeft)
@@ -6222,6 +6452,10 @@
   }
 
   /* ---------------- Boot ---------------- */
+  /* Cloud-sync just restored this account's rows into localStorage —
+     re-read the in-memory copy before its hashchange re-render, or every
+     view (and the SRS deck sync) would run on stale, empty progress. */
+  window.addEventListener("wda-cloud-pull", () => { state = loadState(); updateStreak(); });
   /* Reload this account's progress and re-render whenever auth changes. */
   refreshPremium(); /* fetch membership status for the current session */
   if (window.Auth && window.Auth.onChange) {

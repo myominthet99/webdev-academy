@@ -9,6 +9,7 @@ A **Udemy-style learning platform** for a web-development course, built as a sel
 - **Course detail pages** — ratings, what-you'll-learn, instructor, and an expandable curriculum (accordion)
 - **Lesson player** — video-style stage, readable lesson content with syntax-highlighted code, and a curriculum sidebar with completion checkmarks
 - **Interactive quizzes** that grade your answers and auto-complete the lesson when you pass
+- **Daily Review (spaced repetition)** — every question from a quiz you pass becomes a flashcard that comes back right before you'd forget it (1d → 3d → longer, SM-2 style). Earns XP, keeps your streak, syncs across devices. `#/review`
 - **Progress tracking** — enroll, mark lessons complete, per-course progress bars, and a "My Learning" dashboard
 - **Persistence** — everything saves to the browser's `localStorage`, so your progress survives refreshes (no account needed)
 - **Real content** — a full *Complete Web Development Bootcamp* (HTML, CSS, JavaScript, responsive design, a final project) plus 4 more courses

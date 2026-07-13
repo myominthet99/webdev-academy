@@ -1444,6 +1444,7 @@
         ${streakNudge()}
         ${dailyHomeCard()}
         ${reviewHomeCard()}
+        ${howtoHomeCard()}
         ${communityHomeCard()}
         ${motivHomeCard()}
         ${resumeBanner()}
@@ -3301,6 +3302,197 @@
         tlCopy(b, el.tagName === "TEXTAREA" || el.tagName === "INPUT" ? el.value : el.textContent);
       })
     );
+  }
+
+  /* ---------------- How-To: short copy-paste web-dev recipes ----------------
+     Each guide shows an explanation + code (tap to copy) + a "Try it" button
+     that opens the snippet in the Playground (buildRunnableDoc wraps CSS/JS). */
+  const HOWTO_CATS = [
+    { id: "layout", ic: "🎨", en: "Layout & CSS", my: "Layout နဲ့ CSS" },
+    { id: "forms", ic: "📝", en: "Forms & Buttons", my: "ဖောင်နဲ့ ခလုတ်" },
+    { id: "html", ic: "🔤", en: "HTML basics", my: "HTML အခြေခံ" },
+    { id: "js", ic: "⚡", en: "JavaScript", my: "JavaScript" },
+  ];
+  const HOWTOS = [
+    { cat: "layout", id: "center-div", q: "Center a div (flexbox)", qMy: "Div ကို အလယ်ချ (flexbox)",
+      a: "Make the parent a flex container, then center on both axes.",
+      aMy: "မိဘ element ကို flex ဖြစ်စေပြီး ဘေးနှစ်ဖက်လုံး အလယ်ချပါ။",
+      code: `<div style="display:flex; justify-content:center; align-items:center; height:180px; border:2px dashed #a435f0">
+  <div style="padding:16px; background:#a435f0; color:#fff; border-radius:8px">I'm centered!</div>
+</div>` },
+    { cat: "layout", id: "center-grid", q: "Center anything (grid)", qMy: "Grid နဲ့ အလယ်ချ",
+      a: "One line with grid — place-items centers content perfectly.",
+      aMy: "Grid တစ်ကြောင်းတည်း — place-items က အလယ်ချပေးတယ်။",
+      code: `<div style="display:grid; place-items:center; height:180px; border:2px dashed #16794c">
+  <p>Perfectly centered ✅</p>
+</div>` },
+    { cat: "layout", id: "responsive-row", q: "Responsive row of cards", qMy: "Card များ တန်းစီ (responsive)",
+      a: "flex-wrap lets cards drop to the next line on small screens.",
+      aMy: "flex-wrap က မျက်နှာပြင်သေးရင် card တွေ အောက်တန်းဆင်းပေးတယ်။",
+      code: `<div style="display:flex; flex-wrap:wrap; gap:12px">
+  <div style="flex:1 1 140px; padding:16px; background:#eee; border-radius:8px">Card 1</div>
+  <div style="flex:1 1 140px; padding:16px; background:#eee; border-radius:8px">Card 2</div>
+  <div style="flex:1 1 140px; padding:16px; background:#eee; border-radius:8px">Card 3</div>
+</div>` },
+    { cat: "layout", id: "card-shadow", q: "Card with a shadow", qMy: "အရိပ်ပါ Card",
+      a: "Rounded corners + a soft box-shadow = a modern card.",
+      aMy: "ထောင့်ကွေး + box-shadow ပျော့ပျော့ = ခေတ်မီ card။",
+      code: `<div style="max-width:260px; padding:20px; border-radius:12px; box-shadow:0 4px 14px rgba(0,0,0,.15); font-family:sans-serif">
+  <h3 style="margin:0 0 6px">Card title</h3>
+  <p style="margin:0; color:#666">A clean card with a soft shadow.</p>
+</div>` },
+    { cat: "forms", id: "basic-form", q: "A basic form", qMy: "အခြေခံ ဖောင်",
+      a: "Wrap inputs in a <form>; give each input a matching <label>.",
+      aMy: "input တွေကို <form> ထဲထည့်ပြီး input တိုင်းမှာ <label> တွဲပါ။",
+      code: `<form style="display:flex; flex-direction:column; gap:10px; max-width:280px; font-family:sans-serif">
+  <label>Name
+    <input type="text" placeholder="Your name" style="width:100%; padding:8px">
+  </label>
+  <label>Email
+    <input type="email" placeholder="you@email.com" style="width:100%; padding:8px">
+  </label>
+  <button type="submit">Send</button>
+</form>` },
+    { cat: "forms", id: "styled-button", q: "A nice button", qMy: "လှတဲ့ ခလုတ်",
+      a: "Padding, rounded corners and a hover color make a button pop.",
+      aMy: "padding, ထောင့်ကွေး, hover အရောင် — ခလုတ်ကို လှစေတယ်။",
+      code: `<button onmouseover="this.style.background='#8710d8'" onmouseout="this.style.background='#a435f0'"
+  style="padding:12px 22px; border:0; border-radius:999px; background:#a435f0; color:#fff; font-size:15px; font-weight:700; cursor:pointer">
+  Click me
+</button>` },
+    { cat: "forms", id: "required-field", q: "Require a field", qMy: "ဖြည့်ရမည့် ကွက်လပ်",
+      a: "Add required — the browser blocks submit until it's filled.",
+      aMy: "required ထည့်ပါ — မဖြည့်မချင်း submit မရဘူး။",
+      code: `<form>
+  <input type="text" required placeholder="This is required">
+  <button type="submit">Try to submit empty</button>
+</form>` },
+    { cat: "forms", id: "select-menu", q: "A dropdown menu", qMy: "Dropdown menu",
+      a: "<select> with <option>s makes a native dropdown.",
+      aMy: "<select> နဲ့ <option> တွေက dropdown ဖြစ်တယ်။",
+      code: `<label>Pick a course:
+  <select style="padding:8px">
+    <option>HTML</option>
+    <option>CSS</option>
+    <option>JavaScript</option>
+  </select>
+</label>` },
+    { cat: "html", id: "image-alt", q: "Add an image (with alt)", qMy: "ပုံထည့် (alt နဲ့)",
+      a: "Always give alt text — for accessibility and when the image fails to load.",
+      aMy: "alt စာသား အမြဲထည့်ပါ — အသုံးပြုသူအားလုံးအတွက်နဲ့ ပုံ error ဖြစ်ရင်။",
+      code: `<img src="https://picsum.photos/240/140" alt="A random placeholder photo" style="border-radius:8px">` },
+    { cat: "html", id: "link-newtab", q: "Link that opens a new tab", qMy: "Tab အသစ်ဖွင့်တဲ့ link",
+      a: "target=_blank opens a new tab; rel=noopener keeps it safe.",
+      aMy: "target=_blank က tab အသစ်ဖွင့်တယ်; rel=noopener က လုံခြုံစေတယ်။",
+      code: `<a href="https://developer.mozilla.org" target="_blank" rel="noopener">Open MDN in a new tab ↗</a>` },
+    { cat: "html", id: "list", q: "A bulleted list", qMy: "အစက်ပြ စာရင်း",
+      a: "<ul> for bullets, <ol> for numbers; each item is an <li>.",
+      aMy: "<ul> အစက်, <ol> နံပါတ်; item တစ်ခုချင်း <li>။",
+      code: `<ul>
+  <li>Learn HTML</li>
+  <li>Learn CSS</li>
+  <li>Learn JavaScript</li>
+</ul>` },
+    { cat: "html", id: "table", q: "A simple table", qMy: "ရိုးရှင်း table",
+      a: "<tr> is a row, <th> a header cell, <td> a data cell.",
+      aMy: "<tr> အတန်း, <th> ခေါင်းစဉ်ကွက်, <td> ဒေတာကွက်။",
+      code: `<table border="1" cellpadding="8" style="border-collapse:collapse">
+  <tr><th>Course</th><th>Level</th></tr>
+  <tr><td>HTML</td><td>Beginner</td></tr>
+  <tr><td>JavaScript</td><td>Intermediate</td></tr>
+</table>` },
+    { cat: "js", id: "click-change", q: "Button changes text", qMy: "ခလုတ်နှိပ်ရင် စာပြောင်း",
+      a: "Listen for a click, then update the element's textContent.",
+      aMy: "click ကို နားထောင်ပြီး element ရဲ့ textContent ကို ပြောင်းပါ။",
+      code: `<p id="msg">Tap the button 👇</p>
+<button onclick="document.getElementById('msg').textContent = 'You clicked it! 🎉'">
+  Click me
+</button>` },
+    { cat: "js", id: "show-hide", q: "Show / hide an element", qMy: "element ပြ/ဖျောက်",
+      a: "Toggle the hidden property on every click.",
+      aMy: "click တိုင်း hidden ကို ပြောင်းပါ။",
+      code: `<button onclick="var b=document.getElementById('box'); b.hidden=!b.hidden">Toggle</button>
+<div id="box" style="margin-top:10px; padding:16px; background:#a435f0; color:#fff">Peekaboo! 👀</div>` },
+    { cat: "js", id: "input-value", q: "Read what the user typed", qMy: "user ရိုက်တာ ဖတ်",
+      a: "Grab the input by id and read its .value.",
+      aMy: "input ကို id နဲ့ယူပြီး .value ဖတ်ပါ။",
+      code: `<input id="name" placeholder="Type your name">
+<button onclick="alert('Hi, ' + document.getElementById('name').value + '!')">Greet me</button>` },
+    { cat: "js", id: "loop-list", q: "Loop through a list", qMy: "list ကို loop",
+      a: "forEach runs your code once for every item in the array.",
+      aMy: "forEach က array ထဲက item တိုင်းအတွက် code ကို run ပေးတယ်။",
+      code: `<ul id="out"></ul>
+<script>
+  var courses = ["HTML", "CSS", "JavaScript"];
+  courses.forEach(function (c) {
+    document.getElementById("out").innerHTML += "<li>" + c + "</li>";
+  });
+<\/script>` },
+  ];
+
+  function renderHowto(catId) {
+    const cat = catId ? HOWTO_CATS.find((c) => c.id === catId) : null;
+    if (catId && !cat) return renderNotFound();
+    const catName = (c) => (lang === "my" ? c.my : c.en);
+    const gq = (g) => (lang === "my" && g.qMy ? g.qMy : g.q);
+    const ga = (g) => (lang === "my" && g.aMy ? g.aMy : g.a);
+    const cats = cat ? [cat] : HOWTO_CATS;
+
+    const chips = `<div class="chips" style="margin-bottom:16px">
+      <a class="chip ${!cat ? "active" : ""}" href="#/howto">✨ ${t("ht_all")}</a>
+      ${HOWTO_CATS.map((c) => `<a class="chip ${cat && cat.id === c.id ? "active" : ""}" href="#/howto/${c.id}">${c.ic} ${catName(c)}</a>`).join("")}
+    </div>`;
+
+    const sections = cats.map((c) => {
+      const gs = HOWTOS.filter((g) => g.cat === c.id);
+      if (!gs.length) return "";
+      return `<h3 class="section-title" style="font-size:19px">${c.ic} ${catName(c)}</h3>` +
+        gs.map((g) => `
+          <div class="panel howto-card" data-ht="${g.id}">
+            <button type="button" class="howto-head">
+              <span>${escapeHtml(gq(g))}</span><span class="howto-caret">▾</span>
+            </button>
+            <div class="howto-body" hidden>
+              <p class="muted" style="margin:6px 0 10px">${escapeHtml(ga(g))}</p>
+              <pre class="howto-code"><code>${escapeHtml(g.code)}</code></pre>
+              <div class="tl-row">
+                <button class="btn btn-outline btn-sm howto-copy" type="button">📋 ${t("tl_copy")}</button>
+                <a class="btn btn-primary btn-sm" href="#/playground/${pgEncode(g.code)}">▶ ${t("ht_try")}</a>
+              </div>
+            </div>
+          </div>`).join("");
+    }).join("");
+
+    app.innerHTML = `
+      <div class="container" style="max-width:760px">
+        <h2 class="section-title">💡 ${t("howto_title")}</h2>
+        <p class="section-sub">${t("howto_sub")}</p>
+        ${chips}
+        ${sections || `<div class="empty"><p>${t("howto_none")}</p></div>`}
+      </div>`;
+
+    app.querySelectorAll(".howto-card").forEach((card) => {
+      const head = card.querySelector(".howto-head");
+      const body = card.querySelector(".howto-body");
+      head.addEventListener("click", () => {
+        const wasOpen = !body.hidden;
+        body.hidden = wasOpen;
+        card.classList.toggle("open", !wasOpen);
+      });
+      const copy = card.querySelector(".howto-copy");
+      if (copy) copy.addEventListener("click", () => tlCopy(copy, card.querySelector("code").textContent));
+    });
+    window.scrollTo(0, 0);
+  }
+
+  /* home-feed discovery card for How-To */
+  function howtoHomeCard() {
+    return `
+      <a class="daily-card" href="#/howto">
+        <span class="dc-ic">💡</span>
+        <div class="dc-txt"><b>${t("howto_title")}</b><span class="muted">${t("howto_home_sub")}</span></div>
+        <span class="btn btn-outline btn-sm">→</span>
+      </a>`;
   }
 
   function hexToRgb(hex) {
@@ -6325,6 +6517,7 @@
       : ["courses", "course", "learn", "search", "roadmap", "map"].indexOf(parts[0]) >= 0 ? "courses"
       : parts[0] === "playground" ? "playground"
       : parts[0] === "tools" ? "tools"
+      : parts[0] === "howto" ? "tools"
       : parts[0] === "gallery" ? "gallery"
       : parts[0] === "daily" ? "home"
       : ["my-learning", "review", "leaderboard", "account", "certificate", "community", "call", "battle"].indexOf(parts[0]) >= 0 ? "me"
@@ -6338,6 +6531,7 @@
       ["courses", "course", "learn", "search", "map"].indexOf(parts[0]) >= 0 ? "nav-courses"
       : parts[0] === "gallery" ? "nav-gallery"
       : parts[0] === "roadmap" ? "nav-roadmap"
+      : parts[0] === "howto" ? "nav-howto"
       : parts[0] === "tools" ? "nav-tools"
       : parts[0] === "playground" ? "nav-playground"
       : parts[0] === "my-learning" ? "nav-mylearning"
@@ -6361,6 +6555,7 @@
     else if (parts[0] === "search") renderSearch(decodeURIComponent(parts[1] || ""));
     else if (parts[0] === "playground") renderPlayground(parts[1]);
     else if (parts[0] === "tools") renderTools(parts[1]);
+    else if (parts[0] === "howto") renderHowto(parts[1]);
     else if (parts[0] === "gallery") renderGallery();
     else if (parts[0] === "map" && parts[1]) renderCourseMap(parts[1]);
     else if (parts[0] === "start") renderStart();
@@ -6399,6 +6594,7 @@
     }
     set("nav-courses", t("nav_courses"));
     set("nav-roadmap", t("nav_roadmap"));
+    set("nav-howto", t("nav_howto"));
     set("nav-playground", t("nav_playground"));
     set("nav-tools", t("nav_tools"));
     set("nav-gallery", t("nav_gallery"));

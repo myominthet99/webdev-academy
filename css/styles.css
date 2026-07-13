@@ -1937,6 +1937,24 @@ input[type="range"].tl-range { width: 100%; accent-color: var(--purple); }
   }
 }
 
+/* ---------- How-To guides ---------- */
+.howto-card { padding: 0; overflow: hidden; margin-bottom: 10px; }
+.howto-head {
+  width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 15px 20px; background: none; border: 0; text-align: left;
+  font-size: 15px; font-weight: 700; color: var(--ink);
+}
+.howto-head:hover { color: var(--purple); }
+.howto-caret { color: var(--muted); transition: transform .15s ease; }
+.howto-card.open .howto-caret { transform: rotate(180deg); }
+.howto-body { padding: 0 20px 18px; }
+.howto-code {
+  background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px;
+  padding: 12px 14px; margin: 0 0 12px; overflow-x: auto;
+  font-family: "SFMono-Regular", Consolas, Menlo, monospace; font-size: 12.5px; line-height: 1.55;
+}
+[data-theme="dark"] .howto-code { background: #0f1113; }
+
 /* ---------- Chat moderation (report / block / ban) ---------- */
 .chat-actions .chat-report,
 .chat-actions .chat-block,

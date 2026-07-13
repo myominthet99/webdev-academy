@@ -857,6 +857,16 @@
     return { run, ta };
   }
 
+  /* 📚 Google Classroom — open Google's "Share to Classroom" dialog so a
+     teacher can assign this course/lesson URL to their class. No API key,
+     no backend, no OAuth: it just opens classroom.google.com/share. */
+  function shareToClassroom(hash, title) {
+    const url = location.origin + location.pathname + hash;
+    let share = "https://classroom.google.com/share?url=" + encodeURIComponent(url);
+    if (title) share += "&title=" + encodeURIComponent(String(title).slice(0, 120));
+    window.open(share, "wda-classroom", "width=600,height=640,noopener,noreferrer");
+  }
+
   function openPlayground(code) {
     const existing = document.querySelector("[data-playground]");
     if (existing) existing.remove();
@@ -1836,6 +1846,8 @@
             </div>
             <div class="panel">
               <h2>${t("share_course")}</h2>
+              <button class="btn btn-classroom btn-block" id="course-classroom" type="button">📚 ${t("classroom_assign")}</button>
+              <p class="muted" style="font-size:12px;margin:6px 0 10px">${t("classroom_hint")}</p>
               <a class="btn btn-primary btn-block" target="_blank" rel="noopener"
                  href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(location.origin + location.pathname + "#/course/" + c.id)}">📘 ${t("share_fb")}</a>
               <button class="btn btn-outline btn-block" id="course-share" type="button" style="margin-top:8px">🔗 ${t("cert_copy")}</button>
@@ -1886,6 +1898,8 @@
         else requireAuth(() => { if (hasCourseAccess(c.id)) go(); else location.hash = "#/premium"; });
       })
     );
+    const gcBtn = app.querySelector("#course-classroom");
+    if (gcBtn) gcBtn.addEventListener("click", () => shareToClassroom("#/course/" + c.id, cf(c, "title")));
     const shareBtn = app.querySelector("#course-share");
     if (shareBtn) shareBtn.addEventListener("click", () => {
       const link = location.origin + location.pathname + "#/course/" + c.id;
@@ -2326,6 +2340,7 @@
               </div>
               <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
                 <button class="btn btn-outline btn-sm" data-trylesson>🧪 ${t("pg_title")}</button>
+                <button class="btn btn-outline btn-sm" data-classroom title="${escapeHtml(t("classroom_assign"))}">📚 ${t("classroom_short")}</button>
                 <button class="btn btn-outline btn-sm" data-bookmark>${isBookmarked(current.id) ? "★ " + t("bookmarked") : "☆ " + t("bookmark")}</button>
                 ${
                   current.type !== "quiz"
@@ -2527,6 +2542,10 @@
     }
     const bm = app.querySelector("[data-bookmark]");
     if (bm) bm.addEventListener("click", () => { toggleBookmark(current.id); renderLearn(courseId, lessonId); });
+
+    const gcLesson = app.querySelector("[data-classroom]");
+    if (gcLesson) gcLesson.addEventListener("click", () =>
+      shareToClassroom("#/learn/" + c.id + "/" + current.id, cf(c, "title") + " — " + lf(current, "title")));
 
     /* Per-lesson demo: open the playground with this lesson's first code
        example, or a starter document when the lesson has none */

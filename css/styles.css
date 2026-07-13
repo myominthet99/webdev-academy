@@ -388,6 +388,10 @@ button { font-family: inherit; cursor: pointer; }
 .btn-outline { background: var(--surface); color: var(--ink); border: 1px solid var(--ink); }
 .btn-outline:hover { background: #f3f4f6; }
 .btn-ghost { background: transparent; color: var(--purple); border: 1px solid var(--purple); }
+/* Google Classroom brand green (deliberate third-party brand colour, like the
+   Google sign-in button) so the "Assign to Classroom" action is recognisable */
+.btn-classroom { background: #0f9d58; color: #fff; border: 0; }
+.btn-classroom:hover { background: #0b8043; }
 .btn-block { width: 100%; }
 .btn-sm { padding: 8px 14px; font-size: 14px; }
 

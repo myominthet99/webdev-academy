@@ -533,7 +533,59 @@
       tryBtn.textContent = t("try_yourself") + " »";
       tryBtn.addEventListener("click", () => openPlayground(codeTextOf(pre)));
       pre.insertAdjacentElement("afterend", tryBtn);
+
+      /* ▶ Run here — an editable live preview right inside the lesson, so
+         students tinker without leaving the page (only for runnable code) */
+      if (looksRunnable(codeTextOf(pre))) {
+        const runBtn = document.createElement("button");
+        runBtn.className = "run-here-btn";
+        runBtn.type = "button";
+        runBtn.textContent = "▶ " + t("run_here");
+        runBtn.addEventListener("click", () => toggleInlineRun(pre, runBtn));
+        pre.insertAdjacentElement("afterend", runBtn); /* sits before the Try-yourself button */
+      }
     });
+  }
+
+  /* Is this code block something the browser can actually render? Skip shell
+     commands, file trees and plain prose so "Run" only appears where useful. */
+  function looksRunnable(code) {
+    const c = String(code || "").trim();
+    if (c.length < 3) return false;
+    const first = (c.split("\n")[0] || "").trim();
+    if (/^(\$|#\s|>|npm |npx |yarn |git |cd |sudo |pip |python |node |mkdir |ls\b|cat |curl |echo )/i.test(first)) return false;
+    if (/<\w+[^>]*>/.test(c)) return true;                                   /* HTML */
+    if (/\{[^}]*[a-z-]+\s*:/i.test(c)) return true;                          /* CSS  */
+    if (/\b(function|const|let|var|document|console|alert|=>)\b/.test(c)) return true; /* JS */
+    return false;
+  }
+
+  /* Toggle an inline editable runner beneath a lesson code block. */
+  function toggleInlineRun(pre, btn) {
+    if (pre._ilr) { pre._ilr.remove(); pre._ilr = null; btn.textContent = "▶ " + t("run_here"); return; }
+    const panel = document.createElement("div");
+    panel.className = "ilr";
+    panel.innerHTML =
+      '<div class="ilr-head">✏️ ' + escapeHtml(t("run_edit_hint")) + "</div>" +
+      '<textarea class="ilr-code" spellcheck="false"></textarea>' +
+      '<div class="ilr-preview-label">' + escapeHtml(t("run_result")) + "</div>" +
+      '<iframe class="ilr-frame" sandbox="allow-scripts" title="result"></iframe>';
+    /* place it after the button row (Run + Try-yourself) */
+    let anchor = pre.nextElementSibling;
+    while (anchor && anchor.nextElementSibling &&
+      (anchor.nextElementSibling.classList.contains("try-yourself-btn") || anchor.nextElementSibling.classList.contains("run-here-btn"))) {
+      anchor = anchor.nextElementSibling;
+    }
+    (anchor || pre).insertAdjacentElement("afterend", panel);
+    pre._ilr = panel;
+    const ta = panel.querySelector(".ilr-code");
+    const frame = panel.querySelector(".ilr-frame");
+    ta.value = codeTextOf(pre);
+    const run = () => { frame.srcdoc = buildRunnableDoc(ta.value); };
+    run();
+    let deb;
+    ta.addEventListener("input", () => { clearTimeout(deb); deb = setTimeout(run, 450); });
+    btn.textContent = "▼ " + t("run_hide");
   }
 
   /* Live playground: edit on the left, live result on the right, real

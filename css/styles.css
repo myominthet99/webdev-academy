@@ -1937,6 +1937,9 @@ input[type="range"].tl-range { width: 100%; accent-color: var(--purple); }
   }
 }
 
+/* ---------- Standalone lesson self-check ---------- */
+.qc-standalone { margin: 22px 0; }
+
 /* ---------- How-To guides ---------- */
 .howto-card { padding: 0; overflow: hidden; margin-bottom: 10px; }
 .howto-head {

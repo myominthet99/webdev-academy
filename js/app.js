@@ -1875,7 +1875,7 @@
     /* full tutor = premium or paid course; free students get the two
        comprehension chips (Simpler / Burmese), capped per day */
     const fullTutor = isPremiumUser() || (!isFree(course) && hasCourseAccess(course.id));
-    const freeChips = { simple: 1, burmese: 1 };
+    const freeChips = { simple: 1, burmese: 1, recap: 1 };
     /* plain-text lesson body for context (tags stripped, capped) */
     const tmp = document.createElement("div");
     tmp.innerHTML = lesson.type === "quiz" ? "" : (lf(lesson, "content") || "");
@@ -1899,12 +1899,12 @@
       return d;
     };
     const ask = (question, displayText) => {
-      if (!window.AI) { bubble("bot", escapeHtml(t("ai_no_key"))); return; }
+      if (!window.AI) { bubble("bot", escapeHtml(t("ai_no_key"))); return Promise.resolve(null); }
       bubble("me", escapeHtml(displayText || question));
       const wait = bubble("bot", "⏳ " + escapeHtml(t("tutor_thinking")));
       const convo = history.slice(-6).map((h) => (h.me ? "Student" : "Tutor") + ": " + h.text).join("\n");
       history.push({ me: true, text: question.slice(0, 300) });
-      window.AI.complete(
+      return window.AI.complete(
         'The student is reading the lesson "' + lesson.title + '" in the course "' + course.title + '".\n' +
           (lessonText ? "Lesson text:\n" + lessonText + "\n" : "") +
           (convo ? "\nConversation so far:\n" + convo + "\n" : "") +
@@ -1919,17 +1919,23 @@
       ).then((reply) => {
         history.push({ me: false, text: String(reply).slice(0, 500) });
         wait.innerHTML = fmt(reply);
+        return reply;
       }).catch((err) => {
         const m = (err && err.message) || String(err);
         wait.innerHTML = m === "no-key" ? escapeHtml(t("ai_no_key")) : "⚠ AI: " + escapeHtml(m);
+        return null;
       });
     };
     const chipQs = {
+      recap: "List the 3 most important things a beginner should remember from this lesson, as exactly 3 short bullet points. Start each line with '- '. Keep each bullet under 14 words. No intro, no code — just the 3 bullets.",
       simple: "Re-explain this whole lesson in very simple English, like I am 12 years old. Use short sentences and one everyday real-life analogy to make the main idea click.",
       burmese: "Re-explain this whole lesson in simple Burmese (Myanmar language), step by step, so a beginner truly understands. Keep technical words (HTML, CSS, tag names, code) in English. Use short sentences.",
       example: "Show me one more small code example for this lesson, different from the one in the lesson, and explain it briefly.",
       practice: "Give me one small practice exercise for this lesson. Do not show the solution — encourage me to try first.",
     };
+    /* 🎯 Recap is generated once per lesson, then cached so re-opening is
+       instant and costs nothing (and doesn't spend a free-use credit) */
+    const recapKey = () => ns("wda_recap::" + lesson.id);
     const updateFreeLeft = () => {
       const el = box.querySelector("#tutor-free-left");
       if (el) el.textContent = t("tutor_free_left").replace("{n}", aiFreeLeft());
@@ -1937,7 +1943,13 @@
     box.querySelectorAll("[data-tq]").forEach((b) =>
       b.addEventListener("click", () => {
         const kind = b.getAttribute("data-tq");
-        /* free students: the two comprehension chips are capped per day */
+        const label = b.textContent.trim();
+        /* recap: serve the cached version instantly (no AI, no credit) */
+        if (kind === "recap") {
+          const cached = jget(recapKey(), null);
+          if (cached) { bubble("me", escapeHtml(label)); bubble("bot", fmt(cached)); return; }
+        }
+        /* free students: the comprehension chips are capped per day */
         if (!fullTutor && freeChips[kind]) {
           if (aiFreeLeft() <= 0) {
             bubble("bot", "🔒 " + escapeHtml(t("tutor_free_out")) +
@@ -1947,7 +1959,8 @@
           aiFreeInc();
           updateFreeLeft();
         }
-        ask(chipQs[kind], b.textContent.trim());
+        const p = ask(chipQs[kind], label);
+        if (kind === "recap" && p) p.then((reply) => { if (reply) jset(recapKey(), reply); });
       })
     );
     if (form) form.addEventListener("submit", (e) => {
@@ -2115,9 +2128,9 @@
         steps.splice(qcIndex, 0, `
           <div class="qc">
             <div class="qc-tag">⚡ ${t("qc_title")}</div>
-            <div class="qc-q">${qc.q}</div>
+            <div class="qc-q">${qsafe(qc.q)}</div>
             <div class="qc-opts">
-              ${qc.options.map((o, i) => `<button type="button" class="qc-opt" data-qc-opt="${i}">${o}</button>`).join("")}
+              ${qc.options.map((o, i) => `<button type="button" class="qc-opt" data-qc-opt="${i}">${qsafe(o)}</button>`).join("")}
             </div>
             <div class="qc-fb" hidden></div>
           </div>`);
@@ -2153,6 +2166,24 @@
     const secTitle = secName(c, flat[idx].sectionIdx);
     setLast(courseId, current.id);
 
+    /* ⚡ full-view self-check: the same retrieval question Step Mode weaves in,
+       so students reading in full view also get one check before moving on */
+    let fullQc = null;
+    if (!useSteps && (current.type === "article" || current.type === "video")) {
+      const bank = flat.filter((x) => x.lesson.type === "quiz")
+        .flatMap((x) => x.lesson.questions || [])
+        .filter((q) => q && q.q && (q.options || []).length >= 2);
+      if (bank.length) { let h = 0; for (const ch of current.id) h = (h * 31 + ch.charCodeAt(0)) >>> 0; fullQc = bank[h % bank.length]; }
+    }
+    const fullQcHtml = fullQc
+      ? `<div class="qc qc-standalone" id="full-qc">
+           <div class="qc-tag">⚡ ${t("qc_title")}</div>
+           <div class="qc-q">${qsafe(fullQc.q)}</div>
+           <div class="qc-opts">${fullQc.options.map((o, i) => `<button type="button" class="qc-opt" data-qc-opt="${i}">${qsafe(o)}</button>`).join("")}</div>
+           <div class="qc-fb" hidden></div>
+         </div>`
+      : "";
+
     app.innerHTML = `
       <div class="learn-wrap">
         <div class="player-main">
@@ -2177,6 +2208,7 @@
             <p class="lesson-sub">${secTitle} · ${current.duration} · ⏱ ${t("spent")}: <span id="time-spent">${formatTime(loadLessonTime(current.id).total)}</span></p>
             ${previewMode ? `<div class="preview-banner">🎁 ${t("preview_free").replace("{n}", PREVIEW_LESSONS)} · <a href="#/premium">⭐ ${t("preview_unlock")}</a></div>` : ""}
             ${body}
+            ${fullQcHtml}
             <div class="ai-tutor" id="ai-tutor">
               <div class="notes-head"><strong>🎓 ${t("tutor_title")}</strong> <span class="muted" style="font-size:12px">${t("tutor_sub")}</span></div>
               ${(() => {
@@ -2185,6 +2217,7 @@
                    "understand any lesson" aid. Examples, practice and
                    free-text Q&A stay Premium. */
                 return `<div class="tutor-chips">
+                     <button type="button" data-tq="recap">🎯 ${t("tutor_recap")}</button>
                      <button type="button" data-tq="simple">💡 ${t("tutor_simple")}</button>
                      <button type="button" data-tq="burmese">🇲🇲 ${t("tutor_burmese")}</button>
                      ${fullTutor ? `
@@ -2266,6 +2299,26 @@
     hydrateIdbVideos();
     addCopyButtons();
     wireAiTutor(c, current);
+
+    /* full-view self-check: tap an answer → instant feedback (one attempt state) */
+    const fqEl = app.querySelector("#full-qc");
+    if (fqEl && fullQc) {
+      fqEl.addEventListener("click", (e) => {
+        const opt = e.target.closest("[data-qc-opt]");
+        if (!opt || fqEl.dataset.done) return;
+        const fb = fqEl.querySelector(".qc-fb");
+        if (Number(opt.getAttribute("data-qc-opt")) === Number(fullQc.answer)) {
+          fqEl.dataset.done = "1";
+          opt.classList.add("right");
+          fqEl.querySelectorAll(".qc-opt").forEach((b) => { b.disabled = true; });
+          if (fb) { fb.hidden = false; fb.className = "qc-fb ok"; fb.textContent = "✅ " + t("qc_correct"); }
+        } else {
+          opt.classList.add("wrong");
+          setTimeout(() => opt.classList.remove("wrong"), 500);
+          if (fb) { fb.hidden = false; fb.className = "qc-fb no"; fb.textContent = "❌ " + t("qc_wrong"); }
+        }
+      });
+    }
 
     /* Step Mode wiring: show one card at a time with progress + nav */
     app.querySelectorAll("[data-lesson-mode]").forEach((b) =>

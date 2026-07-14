@@ -1882,7 +1882,11 @@
         <div class="container">
           <div>
             <div class="panel">
-              <h2>${t("what_learn")}</h2>
+              <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+                <h2 style="margin:0">${t("what_learn")}</h2>
+                <button class="btn btn-outline btn-sm" id="course-simple">💡 ${t("simple_points")}</button>
+              </div>
+              <div id="course-simple-out"></div>
               <ul class="learn-grid">${cf(c, "whatYouLearn").map((x) => `<li>${x}</li>`).join("")}</ul>
             </div>
             <div class="panel two-col">
@@ -1997,6 +2001,47 @@
     );
     const gcBtn = app.querySelector("#course-classroom");
     if (gcBtn) gcBtn.addEventListener("click", () => shareToClassroom("#/course/" + c.id, cf(c, "title")));
+
+    /* 💡 "Simple points" — a free, freeCodeCamp-plain explainer of the course
+       in the student's language, generated once then cached per course. */
+    const simpleBtn = app.querySelector("#course-simple");
+    const simpleOut = app.querySelector("#course-simple-out");
+    const drawSimple = (txt) => {
+      const items = String(txt).split("\n").map((l) => l.replace(/^\s*[-*•]\s*/, "").trim()).filter(Boolean).slice(0, 6);
+      if (!items.length) { simpleOut.innerHTML = ""; return; }
+      simpleOut.innerHTML = `<div class="callout tip" style="margin:12px 0 4px">
+        <strong>💡 ${t("simple_points")}</strong>
+        <ul style="margin:6px 0 0;padding-left:20px">${items.map((x) => `<li style="margin:4px 0">${escapeHtml(x)}</li>`).join("")}</ul></div>`;
+    };
+    if (simpleBtn && simpleOut) {
+      const key = ns("wda_csimple::" + lang + "::" + c.id);
+      const cached = jget(key, null);
+      if (cached) drawSimple(cached);
+      simpleBtn.addEventListener("click", () => {
+        const have = jget(key, null);
+        if (have) { drawSimple(have); simpleOut.scrollIntoView({ block: "nearest" }); return; }
+        if (!(window.AI && window.AI.ready())) { simpleOut.innerHTML = `<p class="muted" style="margin:8px 0 0">${escapeHtml(t("ai_no_key"))}</p>`; return; }
+        simpleBtn.disabled = true;
+        simpleOut.innerHTML = `<p class="muted" style="margin:8px 0 0">💡 ${escapeHtml(t("tutor_thinking"))}</p>`;
+        const learns = (cf(c, "whatYouLearn") || []).join("; ");
+        window.AI.complete(
+          "Explain the coding course \"" + cf(c, "title") + "\" (" + cf(c, "subtitle") + ") to a total beginner, " +
+          (lang === "my" ? "in simple Burmese — keep technical words (HTML, CSS…) in English. " : "in very simple English. ") +
+          "Give 3 to 5 short bullet points: what you'll be able to DO after it and why it matters. Dead simple, no jargon, like freeCodeCamp. " +
+          "Start each line with '- '. The course covers: " + learns,
+          { maxTokens: 500 }
+        ).then((res) => {
+          let txt = String(res || "").trim();
+          if (window.AI.stripFences) txt = window.AI.stripFences(txt);
+          jset(key, txt);
+          drawSimple(txt);
+          simpleBtn.disabled = false;
+        }).catch((e) => {
+          simpleOut.innerHTML = `<p class="muted" style="margin:8px 0 0">⚠ ${escapeHtml((e && e.message) || "AI")}</p>`;
+          simpleBtn.disabled = false;
+        });
+      });
+    }
     const shareBtn = app.querySelector("#course-share");
     if (shareBtn) shareBtn.addEventListener("click", () => {
       const link = location.origin + location.pathname + "#/course/" + c.id;

@@ -606,9 +606,13 @@
           '<div class="chat-msg ' + (mine ? "mine" : "") + (msg.bot ? " bot" : "") + (isPinned ? " pinned" : "") + (mentioned ? " mentioned" : "") + (grouped ? " grouped" : "") + '">' +
           (isPinned ? '<span class="chat-pin" title="Pinned">📌</span>' : "") +
           (mine ? "" : '<span class="chat-avatar' + (msg.bot ? " botav" : "") + (grouped ? " ghost" : "") + '">' + (grouped ? "" : (msg.bot ? ICON("bot") : esc(msg.initial || "?"))) + "</span>") +
-          '<div class="chat-bubble' + (msg.caseStudy ? " case" : "") + (msg.sticker ? " sticker" : "") + '">' +
+          '<div class="chat-bubble' + (msg.caseStudy ? " case" : "") + (msg.caseStudy && msg.solved ? " solved" : "") + (msg.sticker ? " sticker" : "") + '">' +
           (mine || grouped ? "" : '<div class="chat-name">' + esc(msg.name || "") + "</div>") +
-          (msg.caseStudy ? '<div class="case-tag">' + ICON("caseb") + " " + esc(t("case_tag")) + '</div><div class="case-heading">' + esc(String(msg.caseTitle || "").slice(0, 80)) + "</div>" : "") +
+          (msg.caseStudy
+            ? '<div class="case-tag' + (msg.solved ? " solved" : "") + '">' + ICON("caseb") + " " + esc(t("case_tag")) +
+              '<span class="case-status">' + (msg.solved ? "✅ " + esc(t("case_solved")) : "🟣 " + esc(t("case_open"))) + "</span></div>" +
+              '<div class="case-heading">' + esc(String(msg.caseTitle || "").slice(0, 80)) + "</div>"
+            : "") +
           (msg.reply ? '<div class="chat-quote">↩ <b>' + esc(msg.reply.name || "") + "</b> " + esc(String(msg.reply.text || "").slice(0, 80)) + "</div>" : "") +
           (function () {
             /* multi-screenshot gallery (imgs array) with single-img fallback;
@@ -631,6 +635,7 @@
           (!mine && !msg.bot && msg.userId ? '<button class="chat-block" data-block="' + esc(msg.userId) + '" data-bname="' + esc((msg.name || "?")) + '" title="' + esc(t("chat_block")) + '">🚫</button>' : "") +
           (!mine && msg.userId && u && u.admin ? '<button class="chat-banbtn" data-ban="' + esc(msg.userId) + '" data-bname="' + esc((msg.name || "?")) + '" title="' + esc(t("chat_ban")) + '">⛔</button>' : "") +
           (mine ? '<button class="chat-edit" data-edit="' + ref + '" title="Edit">' + ICON("edit") + "</button>" : "") +
+          (msg.caseStudy && (mine || (u && u.admin)) ? '<button class="chat-solve" data-solve="' + ref + '" title="' + esc(msg.solved ? t("case_reopen") : t("case_mark_solved")) + '">' + (msg.solved ? "↩" : "✅") + "</button>" : "") +
           (mine || (u && u.admin) ? '<button class="chat-pin" data-pin="' + ref + '" title="' + (isPinned ? "Unpin" : "Pin") + '">' + ICON("pin") + "</button>" : "") +
           (mine || (u && u.admin) ? '<button class="chat-del" data-del="' + ref + '" title="' + esc(t("chat_delete")) + '">' + ICON("trash") + "</button>" : "") +
           "</div></div></div></div>"
@@ -648,6 +653,9 @@
     );
     listEl.querySelectorAll("[data-pin]").forEach((b) =>
       b.addEventListener("click", () => togglePin(b.getAttribute("data-pin")))
+    );
+    listEl.querySelectorAll("[data-solve]").forEach((b) =>
+      b.addEventListener("click", () => toggleSolved(b.getAttribute("data-solve")))
     );
     listEl.querySelectorAll("[data-report]").forEach((b) =>
       b.addEventListener("click", () => report(b.getAttribute("data-report")))
@@ -1104,6 +1112,18 @@
     if (msg.userId !== u.id && !u.admin) return;
     msg.pinned = !msg.pinned;
     Promise.resolve(backend.setPath(room, ref, "pinned", msg.pinned ? true : null))
+      .catch(() => showStatus("⚠ " + t("chat_send_err")));
+  }
+
+  /* ✅ author (or admin) marks a case study solved / re-opens it */
+  function toggleSolved(ref) {
+    const u = me();
+    if (!u) return;
+    const msg = roomCache.find((m) => (m._key || m.id) === ref);
+    if (!msg || !msg.caseStudy) return;
+    if (msg.userId !== u.id && !u.admin) return;
+    msg.solved = !msg.solved;
+    Promise.resolve(backend.setPath(room, ref, "solved", msg.solved ? true : null))
       .catch(() => showStatus("⚠ " + t("chat_send_err")));
   }
 

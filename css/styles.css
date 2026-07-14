@@ -862,13 +862,21 @@ a.lesson-row:hover .ttl { color: var(--purple); }
 /* 📋 case study posts */
 .chat-bubble.case { border: 2px solid var(--purple); max-width: 100%; }
 .chat-msg.mine .chat-bubble.case { border-color: rgba(255, 255, 255, .5); }
+.chat-bubble.case.solved { border-color: var(--green); }
 .case-tag {
-  display: inline-flex; align-items: center; gap: 5px;
+  display: flex; align-items: center; gap: 5px;
   font-size: 10px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;
   color: var(--purple); margin-bottom: 2px;
 }
 .chat-msg.mine .case-tag { color: #fff; }
+.case-tag.solved { color: var(--green); }
 .case-tag .ci { width: 12px; height: 12px; }
+.case-status {
+  margin-left: auto; letter-spacing: 0; text-transform: none; font-size: 10.5px;
+  padding: 2px 8px; border-radius: 999px; background: rgba(164, 53, 240, .14); color: var(--purple);
+}
+.case-tag.solved .case-status { background: rgba(22, 121, 76, .16); color: var(--green); }
+.chat-msg.mine .case-status { background: rgba(255, 255, 255, .22); color: #fff; }
 .case-heading { font-weight: 800; font-size: 14.5px; line-height: 1.35; margin-bottom: 4px; }
 .case-form {
   background: var(--bg); border: 1px solid var(--line); border-radius: 12px;

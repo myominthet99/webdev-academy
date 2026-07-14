@@ -919,8 +919,11 @@ a.lesson-row:hover .ttl { color: var(--purple); }
 }
 
 /* ---------- Learn / player ---------- */
-.learn-wrap { display: grid; grid-template-columns: 1fr 360px; min-height: calc(100vh - 120px); }
-.player-main { background: #0f1113; color: #e9eaec; }
+/* minmax(0,1fr) + min-width:0 let the main column shrink below its content's
+   intrinsic width, so wide children (code, the stage, tables) scroll inside
+   themselves instead of forcing the whole page to scroll sideways on phones */
+.learn-wrap { display: grid; grid-template-columns: minmax(0, 1fr) 360px; min-height: calc(100vh - 120px); }
+.player-main { background: #0f1113; color: #e9eaec; min-width: 0; }
 .stage {
   aspect-ratio: 16 / 9;
   background: radial-gradient(700px 300px at 50% 0%, #26202f, #0f1113);
@@ -958,6 +961,10 @@ a.lesson-row:hover .ttl { color: var(--purple); }
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
 }
 .reader code { font-family: "SFMono-Regular", Consolas, Menlo, monospace; }
+/* keep wide lesson content from bursting the mobile viewport */
+.reader img { max-width: 100%; height: auto; }
+.reader table { display: block; max-width: 100%; overflow-x: auto; }
+.reader .flow { max-width: 100%; overflow-x: auto; }
 .reader p code, .reader li code { background: #f0eaf9; color: #6d28d9; padding: 2px 6px; border-radius: 5px; font-size: 13px; }
 .callout { background: #f3f0fb; border-left: 4px solid var(--purple); padding: 12px 16px; border-radius: 6px; margin: 18px 0; }
 .callout.tip { background: #eafaf1; border-left-color: var(--green); }
@@ -1022,7 +1029,7 @@ a.lesson-row:hover .ttl { color: var(--purple); }
 }
 @media (max-width: 960px) {
   .hero .container, .detail-hero .container, .detail-body .container { grid-template-columns: 1fr; }
-  .learn-wrap { grid-template-columns: 1fr; }
+  .learn-wrap { grid-template-columns: minmax(0, 1fr); }
   .player-side { position: static; max-height: none; border-left: 0; border-top: 1px solid var(--line); }
   .learn-grid { grid-template-columns: 1fr; }
 }

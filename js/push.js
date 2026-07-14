@@ -42,7 +42,9 @@
       method: "PUT",
       body: JSON.stringify({ ts: Date.now() }),
     });
-    try { localStorage.setItem("wda_push_on", "1"); } catch (e) {}
+    try { localStorage.setItem("wda_push_on", "1"); localStorage.setItem("wda_push_token", token); } catch (e) {}
+    /* let the app enrich this token row with streak state (for reminders) */
+    try { window.dispatchEvent(new Event("wda-push-enabled")); } catch (e) {}
 
     /* foreground messages → gentle in-app notification */
     msgMod.onMessage(messaging, (payload) => {
@@ -54,6 +56,7 @@
 
   window.Push = {
     enable: enable,
+    token: () => { try { return localStorage.getItem("wda_push_token") || ""; } catch (e) { return ""; } },
     enabled: () => { try { return localStorage.getItem("wda_push_on") === "1" && Notification.permission === "granted"; } catch (e) { return false; } },
     supported: () => "Notification" in window && "serviceWorker" in navigator,
   };

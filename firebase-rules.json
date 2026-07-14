@@ -110,7 +110,12 @@
         ".read": "auth != null && auth.token.email === 'mmtboy90@gmail.com'",
         "$token": {
           ".write": "auth != null",
-          "ts": { ".validate": "newData.isNumber()" }
+          "ts":     { ".validate": "newData.isNumber()" },
+          "streak": { ".validate": "newData.isNumber()" },
+          "last":   { ".validate": "newData.isString() && newData.val().length <= 10" },
+          "tz":     { ".validate": "newData.isNumber()" },
+          "lang":   { ".validate": "newData.isString() && newData.val().length <= 4" },
+          "rmd":    { ".validate": "newData.isString() && newData.val().length <= 10" }
         }
       },
       "events": {

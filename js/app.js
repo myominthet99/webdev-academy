@@ -271,6 +271,24 @@
   const weekCount = () => { const w = jget(ns("wda_week"), {}); return w.wk === weekKey() ? (Number(w.n) || 0) : 0; };
   const bumpWeek = () => { const wk = weekKey(); jset(ns("wda_week"), { wk, n: weekCount() + 1 }); };
 
+  /* Mirror this device's streak state onto its push-token row so the worker's
+     scheduled sender can remind only students whose streak is about to break.
+     (Needs login — the pushTokens write is auth-gated by the rules.) */
+  function updatePushMeta() {
+    const base = statsBase();
+    const tk = window.Push && window.Push.token ? window.Push.token() : "";
+    if (!base || !tk || !loggedIn()) return;
+    const s = jget(ns("wda_streak"), { last: "", count: 0 });
+    authFetch(base + "/stats/pushTokens/" + encodeURIComponent(tk) + ".json", {
+      method: "PUT",
+      body: JSON.stringify({
+        ts: Date.now(), streak: Number(s.count) || 0, last: String(s.last || ""),
+        tz: new Date().getTimezoneOffset(), lang: lang,
+      }),
+    }).catch(() => {});
+  }
+  window.addEventListener("wda-push-enabled", updatePushMeta);
+
   function bumpDayStreak() {
     const key = ns("wda_streak");
     const s = jget(key, { last: "", count: 0 });
@@ -282,6 +300,7 @@
     s.count = s.last === yStr ? (s.count || 0) + 1 : 1;
     s.last = today;
     jset(key, s);
+    updatePushMeta(); /* keep the reminder sender's view of the streak current */
   }
   const dayStreak = () => jget(ns("wda_streak"), { count: 0 }).count || 0;
 
@@ -7211,6 +7230,7 @@
   router();
   loadAnnouncement();
   maybeOnboard(); /* first-run welcome (once per device) */
+  setTimeout(updatePushMeta, 3000); /* refresh streak state for push reminders */
 
   /* 📲 PWA install: show an Install button when the browser offers it
      (Android/desktop Chrome). iOS has no such event — users add via Share. */

@@ -1725,6 +1725,113 @@ else {
   else if (s.gridTemplateColumns.split(" ").length !== 3) __exDone(false, "Make exactly 3 columns - try grid-template-columns: repeat(3, 1fr)");
   else __exDone(true, "");
 }`),
+          exercise("csx-hover", "Exercise: A Smooth Hover", "8 min", `
+<h3>🏋️ Your task</h3>
+<p>Buttons feel alive with motion. Add a <code>transition</code> to <code>.btn</code> so changes animate smoothly (e.g. <code>transition: all 0.2s;</code>).</p>`,
+`<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      .btn {
+        padding: 10px 20px; background: #a435f0; color: #fff; border: 0; border-radius: 8px;
+        /* add a transition here */
+
+      }
+      .btn:hover { background: #7b2ff7; transform: translateY(-3px); }
+    </style>
+  </head>
+  <body>
+    <button class="btn">Hover me</button>
+  </body>
+</html>`,
+`var b = document.querySelector(".btn");
+if (!b) { __exDone(false, "Keep the .btn button."); }
+else {
+  var cs = getComputedStyle(b);
+  if (!(parseFloat(cs.transitionDuration) > 0)) __exDone(false, "Add a transition with a duration, e.g. transition: all 0.2s.");
+  else __exDone(true, "");
+}`),
+          exercise("csx-shadow", "Exercise: Lift It With a Shadow", "7 min", `
+<h3>🏋️ Your task</h3>
+<p>Give <code>.card</code> a <code>box-shadow</code> so it floats off the page.</p>`,
+`<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      .card {
+        width: 200px; padding: 20px; border-radius: 12px; background: #fff;
+        /* add a box-shadow */
+
+      }
+      body { background: #f4f1ea; padding: 30px; }
+    </style>
+  </head>
+  <body>
+    <div class="card">Floating card</div>
+  </body>
+</html>`,
+`var c = document.querySelector(".card");
+if (!c) { __exDone(false, "Keep the .card."); }
+else {
+  var cs = getComputedStyle(c);
+  if (!cs.boxShadow || cs.boxShadow === "none") __exDone(false, "Add a box-shadow to the card.");
+  else __exDone(true, "");
+}`),
+          exercise("csx-position", "Exercise: Pin a Badge", "9 min", `
+<h3>🏋️ Your task</h3>
+<p>Pin the <code>.badge</code> to the top-right of the card. Give it <code>position: absolute</code> (the card is already <code>position: relative</code>).</p>`,
+`<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      .card { position: relative; width: 220px; height: 120px; background: #a435f0; border-radius: 12px; }
+      .badge {
+        top: 8px; right: 8px; background: #fff; padding: 3px 10px; border-radius: 999px; font-size: 12px;
+        /* position it */
+
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card"><span class="badge">NEW</span></div>
+  </body>
+</html>`,
+`var b = document.querySelector(".badge");
+if (!b) { __exDone(false, "Keep the .badge."); }
+else {
+  var cs = getComputedStyle(b);
+  if (cs.position !== "absolute") __exDone(false, "Set position: absolute on .badge.");
+  else __exDone(true, "");
+}`),
+          exercise("csx-column", "Exercise: Stack Them Vertically", "8 min", `
+<h3>🏋️ Your task</h3>
+<p>Make the items stack in a vertical column. Style <code>.stack</code> with:</p>
+<pre><code>display: flex;
+flex-direction: column;</code></pre>`,
+`<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      .stack {
+        gap: 8px;
+        /* your code here */
+
+      }
+      .stack > div { background: #a435f0; color: #fff; padding: 12px; border-radius: 6px; }
+    </style>
+  </head>
+  <body>
+    <div class="stack"><div>One</div><div>Two</div><div>Three</div></div>
+  </body>
+</html>`,
+`var s = document.querySelector(".stack");
+if (!s) { __exDone(false, "Keep the .stack container."); }
+else {
+  var cs = getComputedStyle(s);
+  if (cs.display !== "flex") __exDone(false, "Set display: flex on .stack.");
+  else if (cs.flexDirection !== "column") __exDone(false, "Add flex-direction: column.");
+  else __exDone(true, "");
+}`),
         ],
       },
     ],
@@ -1999,6 +2106,64 @@ if (!t) __exDone(false, "Add a <table> element.");
 else if (!t.querySelector("thead th")) __exDone(false, "Add a <thead> containing <th> header cells.");
 else if (t.querySelectorAll("tbody tr").length < 2) __exDone(false, "Add a <tbody> with at least 2 <tr> data rows.");
 else __exDone(true, "");`),
+          exercise("hdx-link", "Exercise: A Safe External Link", "6 min", `
+<h3>🏋️ Your task</h3>
+<p>Add a link to <code>https://developer.mozilla.org</code> that opens in a <strong>new tab</strong> (<code>target="_blank"</code>).</p>`,
+`<!DOCTYPE html>
+<html>
+  <body>
+    <!-- your link here -->
+
+  </body>
+</html>`,
+`var a = document.querySelector("a[href]");
+if (!a) { __exDone(false, "Add a link: an <a> with an href."); }
+else if (a.getAttribute("target") !== "_blank") { __exDone(false, "Make it open a new tab with target=_blank."); }
+else { __exDone(true, ""); }`),
+          exercise("hdx-img", "Exercise: An Accessible Image", "6 min", `
+<h3>🏋️ Your task</h3>
+<p>Add an <code>&lt;img&gt;</code> — and give it a meaningful <code>alt</code> so screen readers (and broken-image cases) describe it.</p>`,
+`<!DOCTYPE html>
+<html>
+  <body>
+    <!-- your image here (any src is fine) -->
+
+  </body>
+</html>`,
+`var img = document.querySelector("img");
+if (!img) { __exDone(false, "Add an <img> element."); }
+else if (!img.getAttribute("alt")) { __exDone(false, "Give the image an alt attribute describing it."); }
+else { __exDone(true, ""); }`),
+          exercise("hdx-list", "Exercise: An Ordered List", "7 min", `
+<h3>🏋️ Your task</h3>
+<p>Build an <strong>ordered</strong> list (<code>&lt;ol&gt;</code>) of at least <strong>3 steps</strong> — each an <code>&lt;li&gt;</code>.</p>`,
+`<!DOCTYPE html>
+<html>
+  <body>
+    <!-- your ordered list here -->
+
+  </body>
+</html>`,
+`var ol = document.querySelector("ol");
+if (!ol) { __exDone(false, "Add an <ol> (ordered list)."); }
+else if (ol.querySelectorAll("li").length < 3) { __exDone(false, "Add at least 3 <li> items."); }
+else { __exDone(true, ""); }`),
+          exercise("hdx-input", "Exercise: A Required Email Field", "8 min", `
+<h3>🏋️ Your task</h3>
+<p>Add an <code>&lt;input type="email"&gt;</code> that is <strong>required</strong> — the browser will then validate it for free.</p>`,
+`<!DOCTYPE html>
+<html>
+  <body>
+    <form>
+      <!-- your email input here -->
+
+    </form>
+  </body>
+</html>`,
+`var i = document.querySelector("input[type=email]");
+if (!i) { __exDone(false, "Add an <input type=email>."); }
+else if (!i.hasAttribute("required")) { __exDone(false, "Make the email input required."); }
+else { __exDone(true, ""); }`),
         ],
       },
     ],
@@ -2427,6 +2592,79 @@ greet("Aung") → "Hello, Aung!"</code></pre>
 else if (greet("Mya") !== "Hello, Mya!") __exDone(false, "greet(\\"Mya\\") should return exactly \\"Hello, Mya!\\" - got \\"" + greet("Mya") + "\\"");
 else if (greet("Aung") !== "Hello, Aung!") __exDone(false, "greet(\\"Aung\\") should return \\"Hello, Aung!\\"");
 else __exDone(true, "");`),
+          exercise("jsx-max", "Exercise: The Bigger Number", "8 min", `
+<h3>🏋️ Your task</h3>
+<p>Write a function <code>max(a, b)</code> that <strong>returns the larger</strong> of the two numbers.</p>`,
+`<!DOCTYPE html>
+<html>
+  <body>
+    <script>
+      function max(a, b) {
+
+      }
+    <\/script>
+  </body>
+</html>`,
+`if (typeof max !== "function") __exDone(false, "Define a function called max(a, b).");
+else if (max(3, 7) !== 7 || max(9, 2) !== 9) __exDone(false, "max(a, b) should return the bigger number.");
+else __exDone(true, "");`),
+          exercise("jsx-filter", "Exercise: Keep the Big Numbers", "9 min", `
+<h3>🏋️ Your task</h3>
+<p>From the <code>nums</code> array, make a new array <code>big</code> that keeps only the numbers <strong>greater than 10</strong>.</p>
+<p>Tip: <code>nums.filter(...)</code>.</p>`,
+`<!DOCTYPE html>
+<html>
+  <body>
+    <script>
+      var nums = [5, 20, 8, 15, 30];
+      var big = /* your filter here */ ;
+
+    <\/script>
+  </body>
+</html>`,
+`if (typeof big === "undefined") __exDone(false, "Make a variable called big.");
+else if (!Array.isArray(big)) __exDone(false, "big should be an array.");
+else if (big.length !== 3 || big.some(function (n) { return n <= 10; })) __exDone(false, "big should keep only the numbers greater than 10.");
+else __exDone(true, "");`),
+          exercise("jsx-grade", "Exercise: Pass or Fail", "8 min", `
+<h3>🏋️ Your task</h3>
+<p>Write a function <code>grade(score)</code> that returns <code>"Pass"</code> when the score is <strong>50 or more</strong>, otherwise <code>"Fail"</code>. (Hint: <code>if / else</code>.)</p>`,
+`<!DOCTYPE html>
+<html>
+  <body>
+    <script>
+      function grade(score) {
+
+      }
+    <\/script>
+  </body>
+</html>`,
+`if (typeof grade !== "function") __exDone(false, "Define a function grade(score).");
+else if (grade(80) !== "Pass" || grade(50) !== "Pass") __exDone(false, "grade should return Pass for 50 or more.");
+else if (grade(30) !== "Fail") __exDone(false, "grade should return Fail below 50.");
+else __exDone(true, "");`),
+          exercise("jsx-count", "Exercise: Count the Items", "9 min", `
+<h3>🏋️ Your task</h3>
+<p>Count how many <code>&lt;li&gt;</code> are on the page and put that number into <code>#count</code>.</p>
+<p>Tip: <code>document.querySelectorAll("li").length</code>.</p>`,
+`<!DOCTYPE html>
+<html>
+  <body>
+    <ul>
+      <li>Milk</li><li>Bread</li><li>Eggs</li><li>Tea</li>
+    </ul>
+    <p>Items: <b id="count"></b></p>
+    <script>
+      // put the count into #count
+
+    <\/script>
+  </body>
+</html>`,
+`var c = document.getElementById("count");
+var n = document.querySelectorAll("li").length;
+if (!c) { __exDone(false, "Keep the #count element."); }
+else if (c.textContent.trim() !== String(n)) { __exDone(false, "Put the number of list items (" + n + ") into #count."); }
+else { __exDone(true, ""); }`),
         ],
       },
     ],

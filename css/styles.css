@@ -1051,6 +1051,22 @@ a.lesson-row:hover .ttl { color: var(--purple); }
   .hero h1 { font-size: 26px; }
 }
 
+/* ---------- Mobile ergonomics polish ---------- */
+@media (max-width: 680px) {
+  /* comfortable touch targets for the header controls (min ~40px) */
+  .lang-btn, .chat-nav-btn, .btn-login { min-height: 40px; }
+  .lang-btn { display: inline-flex; align-items: center; }
+  .chat-nav-btn { width: 40px; height: 40px; }
+  .topnav:not(.right) a { padding: 10px 12px; }
+  /* the lesson "stage" is decorative for text lessons — shrink it so the
+     lesson content appears sooner (keeps full 16:9 for real videos) */
+  .stage:not(.has-video) { aspect-ratio: auto; height: 150px; }
+  /* roomier AI-tutor / How-To chips for thumbs */
+  .tutor-chips button { padding: 9px 14px; font-size: 13.5px; }
+  /* poll options: two per row reads better than a cramped three */
+  .poll-opt { min-width: calc(50% - 6px); }
+}
+
 /* ---------- Auth ---------- */
 .auth-area { display: flex; align-items: center; }
 .btn-login {

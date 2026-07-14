@@ -12678,6 +12678,413 @@ ORDER BY total DESC;</code></pre>
       },
     ],
   },
+  {
+    id: "it-project-management",
+    title: "IT Project Management",
+    subtitle: "Plan, run, and deliver software projects — Agile, Scrum, risk, and stakeholders, jargon-free.",
+    instructor: "Daniel Okafor",
+    category: "Career",
+    level: "All Levels",
+    rating: 4.7,
+    ratings: 9120,
+    students: 41300,
+    hours: 9,
+    price: "Free",
+    color: "linear-gradient(135deg,#2193b0,#6dd5ed)",
+    icon: "&#128203;",
+    description:
+      "Turn ideas into shipped software. Learn what a project manager actually does — scoping, planning, Agile & Scrum, estimating, managing risk, and keeping stakeholders happy — with plain-language examples you can use on Monday.",
+    whatYouLearn: [
+      "Understand the triple constraint: scope, time, cost",
+      "Run a project with Agile and Scrum",
+      "Estimate work and plan realistic timelines",
+      "Manage risks and communicate with stakeholders",
+    ],
+    sections: [
+      {
+        title: "Project Management Foundations",
+        lessons: [
+          article("pm-what", "What Is a Project (and a PM)?", "6 min", `
+<p>A <strong>project</strong> is temporary work that creates something new — a website, an app, a migration. It has a <em>start</em>, an <em>end</em>, and a <em>goal</em>. That's different from ongoing operations (like running support forever).</p>
+<h3>What a project manager really does</h3>
+<ul>
+  <li><strong>Plans</strong> the work — what, who, by when.</li>
+  <li><strong>Coordinates</strong> people so the right thing gets built.</li>
+  <li><strong>Removes blockers</strong> and keeps everyone informed.</li>
+  <li><strong>Manages risk</strong> before it becomes a crisis.</li>
+</ul>
+<div class="callout tip">A PM rarely writes the code. Your job is to make it easy for the people who do.</div>`),
+          article("pm-triple", "The Triple Constraint", "6 min", `
+<p>Every project balances three things — change one and the others move. This is the <strong>triple constraint</strong> (or "iron triangle").</p>
+<div class="flow">
+  <div class="flow-box">📋 Scope<br><small>what you build</small></div>
+  <div class="flow-arrow" data-label="vs"></div>
+  <div class="flow-box alt">⏰ Time<br><small>the deadline</small></div>
+  <div class="flow-arrow" data-label="vs"></div>
+  <div class="flow-box warn">💰 Cost<br><small>people & money</small></div>
+</div>
+<ul>
+  <li>Want it <strong>sooner</strong>? Cut scope or add people (money).</li>
+  <li>Want <strong>more features</strong>? It costs more time or money.</li>
+  <li>Fixed <strong>budget</strong>? Then scope or the date must flex.</li>
+</ul>
+<div class="callout">"Good, fast, cheap — pick two." Quality is what silently suffers when you pretend you can have all three.</div>`),
+          article("pm-lifecycle", "The Project Lifecycle", "6 min", `
+<p>Most projects move through five phases — a simple map you can apply to anything.</p>
+<ol>
+  <li><strong>Initiation</strong> — why are we doing this? Define the goal &amp; who's involved.</li>
+  <li><strong>Planning</strong> — scope, schedule, budget, risks.</li>
+  <li><strong>Execution</strong> — the team builds; you coordinate.</li>
+  <li><strong>Monitoring &amp; Control</strong> — track progress, handle changes.</li>
+  <li><strong>Closure</strong> — deliver, review lessons learned, celebrate.</li>
+</ol>
+<div class="callout tip">Monitoring runs <em>alongside</em> execution — you're always checking "are we still on track?"</div>`),
+        ],
+      },
+      {
+        title: "Ways of Working: Agile & Scrum",
+        lessons: [
+          article("pm-waterfall-agile", "Waterfall vs Agile", "7 min", `
+<p>Two ways to run a project — and why software mostly picks Agile.</p>
+<h3>Waterfall</h3>
+<p>Plan everything up front, then build in order: requirements → design → build → test → release. Great when requirements are <strong>fixed and known</strong> (e.g. building a bridge). Risky for software, where needs change.</p>
+<h3>Agile</h3>
+<p>Build in small slices, get feedback, adapt. Ship a little, learn, repeat. Better when requirements <strong>evolve</strong> — which is most software.</p>
+<div class="callout tip">Agile isn't "no plan" — it's "re-plan often as you learn."</div>`),
+          article("pm-scrum", "Scrum in 7 Minutes", "7 min", `
+<p><strong>Scrum</strong> is the most popular Agile framework. Work happens in short cycles called <strong>sprints</strong> (usually 1–2 weeks).</p>
+<h3>The three roles</h3>
+<ul>
+  <li><strong>Product Owner</strong> — decides <em>what</em> to build and the priority.</li>
+  <li><strong>Scrum Master</strong> — coaches the team, removes blockers.</li>
+  <li><strong>Developers</strong> — build the increment.</li>
+</ul>
+<h3>The key events</h3>
+<ul>
+  <li><strong>Sprint Planning</strong> — pick what to do this sprint.</li>
+  <li><strong>Daily Standup</strong> — 15 min: done / doing / blocked.</li>
+  <li><strong>Sprint Review</strong> — show the working result.</li>
+  <li><strong>Retrospective</strong> — how do we improve next time?</li>
+</ul>
+<div class="callout">The <strong>backlog</strong> is the prioritized to-do list. The top is always the next most valuable thing.</div>`),
+          article("pm-kanban", "Kanban & Visualizing Work", "5 min", `
+<p><strong>Kanban</strong> is a simpler flow: a board with columns the work moves across.</p>
+<div class="flow">
+  <div class="flow-box">📥 To Do</div>
+  <div class="flow-arrow" data-label="start"></div>
+  <div class="flow-box alt">🔨 In Progress</div>
+  <div class="flow-arrow" data-label="finish"></div>
+  <div class="flow-box warn">✅ Done</div>
+</div>
+<ul>
+  <li>See all work at a glance — nothing hidden.</li>
+  <li>Limit "In Progress" so the team <strong>finishes</strong> things instead of starting everything.</li>
+</ul>
+<div class="callout tip">Trello, Jira, and even a wall of sticky notes are Kanban boards.</div>`),
+        ],
+      },
+      {
+        title: "Running the Work",
+        lessons: [
+          article("pm-estimate", "Planning & Estimation", "7 min", `
+<p>Estimates are guesses — your job is to make them <em>useful</em>, not perfect.</p>
+<ul>
+  <li><strong>Break work down</strong> — small tasks are far easier to estimate than big ones.</li>
+  <li><strong>Estimate as a team</strong> — the people doing the work know best (try Planning Poker).</li>
+  <li><strong>Use ranges</strong> — "3–5 days" is more honest than "4 days".</li>
+  <li><strong>Add buffer</strong> — things always take longer. Padding isn't cheating; it's realism.</li>
+</ul>
+<div class="callout">Track your team's real <strong>velocity</strong> (work done per sprint) — past reality predicts the future better than hope.</div>`),
+          article("pm-risk", "Managing Risk", "6 min", `
+<p>A <strong>risk</strong> is something that <em>might</em> go wrong. Good PMs list them early and plan a response.</p>
+<h3>The simple risk drill</h3>
+<ol>
+  <li><strong>List</strong> what could go wrong (key person leaves, API is late, scope creeps).</li>
+  <li><strong>Rate</strong> each: how likely × how bad?</li>
+  <li><strong>Plan</strong> a response for the big ones: avoid, reduce, or have a backup.</li>
+</ol>
+<div class="callout tip">"Scope creep" — features quietly added without adjusting time or budget — is the #1 project killer. Say yes to change, but re-negotiate the triangle.</div>`),
+          article("pm-stakeholders", "Stakeholders & Communication", "6 min", `
+<p>A <strong>stakeholder</strong> is anyone who cares about the project — clients, users, your boss, the team. Half of project management is communication.</p>
+<ul>
+  <li><strong>Know who they are</strong> and what each one wants.</li>
+  <li><strong>Right message, right person</strong> — the CEO wants a summary; the team wants details.</li>
+  <li><strong>No surprises</strong> — share bad news early, with a plan. Trust is built by honesty.</li>
+  <li><strong>Keep a single source of truth</strong> — one board, one status everyone can see.</li>
+</ul>
+<div class="callout">A weekly one-line status ("on track / at risk / blocked — and why") prevents 90% of "why didn't anyone tell me?" moments.</div>`),
+          quiz("pm-quiz", "Quiz: IT Project Management", [
+            { q: "The triple constraint balances…", options: ["Design, code, test", "Scope, time, cost", "Frontend, backend, database", "Plan, build, ship"], answer: 1 },
+            { q: "In Scrum, who decides WHAT to build and its priority?", options: ["Scrum Master", "The Developers", "Product Owner", "The CEO"], answer: 2 },
+            { q: "A sprint is…", options: ["A 3-month release", "A short work cycle, usually 1–2 weeks", "A type of bug", "A meeting"], answer: 1 },
+            { q: "The #1 project killer is often…", options: ["Too many standups", "Scope creep — changes with no time/budget adjustment", "Writing tests", "Using Kanban"], answer: 1 },
+            { q: "The best way to handle bad news with stakeholders is…", options: ["Hide it until it's fixed", "Share it early, with a plan", "Blame the team", "Wait for the weekly report"], answer: 1 },
+          ]),
+        ],
+      },
+    ],
+  },
+  {
+    id: "hr-management",
+    title: "HR Management",
+    subtitle: "The people side of business — hiring, onboarding, performance, culture, and the basics of employment law.",
+    instructor: "Amara Nwosu",
+    category: "Career",
+    level: "All Levels",
+    rating: 4.6,
+    ratings: 7640,
+    students: 33800,
+    hours: 8,
+    price: "Free",
+    color: "linear-gradient(135deg,#f7971e,#ffd200)",
+    icon: "&#128101;",
+    description:
+      "People are every company's biggest asset — and cost. Learn how Human Resources really works: attracting and hiring talent, onboarding, managing performance, building culture, and staying on the right side of the law.",
+    whatYouLearn: [
+      "Understand HR's role across the employee lifecycle",
+      "Run fair, effective hiring and onboarding",
+      "Manage performance and grow your people",
+      "Build culture and know employment-law basics",
+    ],
+    sections: [
+      {
+        title: "HR Foundations",
+        lessons: [
+          article("hr-what", "What HR Actually Does", "6 min", `
+<p><strong>Human Resources</strong> is how an organisation finds, supports, and keeps its people. Good HR isn't just paperwork — it directly affects whether a company thrives.</p>
+<h3>The core areas</h3>
+<ul>
+  <li><strong>Recruitment</strong> — attract and hire the right people.</li>
+  <li><strong>Onboarding</strong> — help new hires succeed fast.</li>
+  <li><strong>Performance</strong> — feedback, reviews, growth.</li>
+  <li><strong>Rewards</strong> — pay, benefits, recognition.</li>
+  <li><strong>Compliance</strong> — follow labour law; treat people fairly.</li>
+</ul>
+<div class="callout tip">Modern HR is called "People Operations" for a reason — it's about enabling people, not policing them.</div>`),
+          article("hr-lifecycle", "The Employee Lifecycle", "6 min", `
+<p>Every employee moves through the same journey. HR supports each stage.</p>
+<div class="flow">
+  <div class="flow-box">🎯 Attract</div>
+  <div class="flow-arrow" data-label="hire"></div>
+  <div class="flow-box alt">👋 Onboard</div>
+  <div class="flow-arrow" data-label="grow"></div>
+  <div class="flow-box">📈 Develop</div>
+  <div class="flow-arrow" data-label="reward"></div>
+  <div class="flow-box warn">🔄 Retain / Exit</div>
+</div>
+<p>Thinking in a lifecycle helps you spot where people are lost — a great hire with a terrible first week may quit in a month.</p>
+<div class="callout">Even the <strong>exit</strong> matters: people who leave well become future re-hires, clients, and your reputation.</div>`),
+          article("hr-strategic", "HR as a Strategic Partner", "5 min", `
+<p>The best HR doesn't just react — it plans ahead with the business.</p>
+<ul>
+  <li><strong>Workforce planning</strong> — will we have the skills we need next year?</li>
+  <li><strong>Data-driven</strong> — track turnover, time-to-hire, engagement.</li>
+  <li><strong>Culture-shaping</strong> — the behaviours you hire, reward, and promote <em>are</em> the culture.</li>
+</ul>
+<div class="callout tip">"People leave managers, not companies." Training great managers is one of HR's highest-impact moves.</div>`),
+        ],
+      },
+      {
+        title: "People Operations",
+        lessons: [
+          article("hr-hiring", "Recruitment & Hiring", "7 min", `
+<p>Hiring well is the highest-leverage thing HR does — a bad hire is expensive; a great one compounds for years.</p>
+<h3>A fair hiring flow</h3>
+<ol>
+  <li><strong>Job description</strong> — clear role, must-have vs nice-to-have skills.</li>
+  <li><strong>Source</strong> — job boards, referrals, networks.</li>
+  <li><strong>Screen</strong> — CV + a short call.</li>
+  <li><strong>Interview</strong> — structured questions, same for every candidate.</li>
+  <li><strong>Decide</strong> — on evidence, not gut feeling.</li>
+</ol>
+<div class="callout">Use the <strong>same questions and scorecard</strong> for every candidate — it's fairer and reduces bias.</div>`),
+          article("hr-onboarding", "Onboarding That Sticks", "6 min", `
+<p>The first 90 days decide whether a hire stays and succeeds. Don't leave it to chance.</p>
+<ul>
+  <li><strong>Before day one</strong> — laptop, accounts, and a welcome ready.</li>
+  <li><strong>Week one</strong> — meet the team, learn the tools, one small real task.</li>
+  <li><strong>First 90 days</strong> — clear goals, a buddy, regular check-ins.</li>
+</ul>
+<div class="callout tip">A structured onboarding can dramatically cut early turnover — most quits in month one are avoidable.</div>`),
+          article("hr-performance", "Performance & Growth", "6 min", `
+<p>Performance management isn't a once-a-year form — it's ongoing, honest conversation.</p>
+<ul>
+  <li><strong>Set clear goals</strong> — people can't hit a target they can't see.</li>
+  <li><strong>Give feedback often</strong> — specific, timely, kind. Not saved up for review day.</li>
+  <li><strong>Grow people</strong> — training, stretch projects, mentoring.</li>
+  <li><strong>Handle underperformance</strong> — early, privately, with support and a clear plan.</li>
+</ul>
+<div class="callout">Good feedback describes the <em>behaviour</em> and its <em>impact</em> — "the report was late, so the client meeting slipped" — not the person's character.</div>`),
+        ],
+      },
+      {
+        title: "Culture, Law & Retention",
+        lessons: [
+          article("hr-culture", "Engagement & Culture", "6 min", `
+<p><strong>Culture</strong> is "how we do things here" — and engaged people do it better and stay longer.</p>
+<ul>
+  <li><strong>Purpose</strong> — people want their work to matter.</li>
+  <li><strong>Recognition</strong> — a genuine "thank you" is cheap and powerful.</li>
+  <li><strong>Voice</strong> — ask for feedback (surveys, 1:1s) and act on it.</li>
+  <li><strong>Fairness</strong> — nothing kills morale like inconsistent treatment.</li>
+</ul>
+<div class="callout tip">Culture isn't the posters on the wall — it's the worst behaviour you're willing to tolerate.</div>`),
+          article("hr-law", "Employment-Law Basics", "6 min", `
+<p>HR keeps the company legal and people protected. Exact rules vary by country, but the principles are universal.</p>
+<ul>
+  <li><strong>Contracts</strong> — clear terms: role, pay, hours, notice.</li>
+  <li><strong>Fair treatment</strong> — no discrimination on protected grounds (age, gender, religion, etc.).</li>
+  <li><strong>Safe workplace</strong> — health &amp; safety is a legal duty.</li>
+  <li><strong>Fair process</strong> — for discipline and dismissal, follow a documented, consistent procedure.</li>
+</ul>
+<div class="callout">When in doubt, <strong>document it</strong> and check local law or a lawyer. "We always did it this way" is not a legal defence.</div>`),
+          article("hr-retention", "Rewards & Retention", "6 min", `
+<p>Keeping good people is cheaper than replacing them. Reward is more than salary.</p>
+<ul>
+  <li><strong>Fair pay</strong> — competitive and consistent for similar roles.</li>
+  <li><strong>Benefits</strong> — health, leave, flexibility often matter as much as cash.</li>
+  <li><strong>Growth</strong> — people stay where they're learning and progressing.</li>
+  <li><strong>Good managers</strong> — again, the biggest driver of whether people stay.</li>
+</ul>
+<div class="callout tip">Run <strong>stay interviews</strong> — ask your best people what keeps them and what might make them leave — <em>before</em> they hand in notice.</div>`),
+          quiz("hr-quiz", "Quiz: HR Management", [
+            { q: "The employee lifecycle runs roughly…", options: ["Hire → fire", "Attract → onboard → develop → retain/exit", "Interview → salary", "Payroll → tax"], answer: 1 },
+            { q: "To reduce bias in interviews you should…", options: ["Ask whatever comes to mind", "Use the same structured questions & scorecard for everyone", "Only hire referrals", "Skip interviews"], answer: 1 },
+            { q: "Good feedback focuses on…", options: ["The person's character", "The behaviour and its impact", "Saving it all for the annual review", "Public criticism"], answer: 1 },
+            { q: "Company culture is really…", options: ["The wall posters", "The worst behaviour leaders tolerate", "The dress code", "The logo"], answer: 1 },
+            { q: "The biggest driver of whether people stay is usually…", options: ["Free snacks", "A good manager", "The office location", "The company name"], answer: 1 },
+          ]),
+        ],
+      },
+    ],
+  },
+  {
+    id: "erp-systems",
+    title: "ERP Systems",
+    subtitle: "How big companies run on one system — finance, inventory, HR and sales connected. SAP, Oracle, Odoo & more.",
+    instructor: "Rajesh Menon",
+    category: "Career",
+    level: "All Levels",
+    rating: 4.5,
+    ratings: 6210,
+    students: 27400,
+    hours: 8,
+    price: "Free",
+    color: "linear-gradient(135deg,#373b44,#4286f4)",
+    icon: "&#127970;",
+    description:
+      "ERP (Enterprise Resource Planning) is the software backbone of large organisations — one connected system for finance, supply chain, HR, and sales. Learn what ERP is, its core modules, the major vendors, and why implementations succeed or fail.",
+    whatYouLearn: [
+      "Explain what an ERP is and why companies use one",
+      "Know the core modules and how they connect",
+      "Compare major vendors (SAP, Oracle, Microsoft, Odoo)",
+      "Understand why ERP projects succeed or fail",
+    ],
+    sections: [
+      {
+        title: "What Is an ERP?",
+        lessons: [
+          article("erp-what", "One System to Run the Business", "6 min", `
+<p><strong>ERP</strong> stands for <strong>Enterprise Resource Planning</strong>. It's one big software system that runs a company's core operations — all sharing <strong>one database</strong>.</p>
+<p>Without ERP, departments use separate tools that don't talk: finance in one spreadsheet, the warehouse in another, sales in a third. Numbers never match.</p>
+<div class="flow">
+  <div class="flow-box">💰 Finance</div>
+  <div class="flow-arrow" data-label="one DB"></div>
+  <div class="flow-box alt">🗄️ One ERP</div>
+  <div class="flow-arrow" data-label="one DB"></div>
+  <div class="flow-box warn">📦 Inventory</div>
+</div>
+<div class="callout tip">The magic of ERP is a <strong>single source of truth</strong> — enter data once, and every department sees the same, up-to-date numbers.</div>`),
+          article("erp-why", "Why Companies Use ERP", "6 min", `
+<p>ERP is expensive and complex — so why do most large companies run one?</p>
+<ul>
+  <li><strong>No silos</strong> — finance, sales, and the warehouse share the same data.</li>
+  <li><strong>Automation</strong> — a sale can auto-update stock, invoicing, and accounts.</li>
+  <li><strong>Real-time reporting</strong> — leaders see the whole business at once.</li>
+  <li><strong>Scale &amp; compliance</strong> — consistent processes across many sites and countries.</li>
+</ul>
+<div class="callout">Example: a customer order in the ERP instantly reserves stock, triggers a shipment, creates an invoice, and books the revenue — no re-typing, no mismatched numbers.</div>`),
+          article("erp-history", "From MRP to Modern Cloud ERP", "5 min", `
+<p>A quick timeline so the buzzwords make sense.</p>
+<ul>
+  <li><strong>MRP (1970s)</strong> — software just for manufacturing &amp; materials.</li>
+  <li><strong>ERP (1990s)</strong> — expanded to finance, HR, sales — the whole enterprise.</li>
+  <li><strong>Cloud ERP (today)</strong> — runs online (SaaS), updated automatically, accessible anywhere.</li>
+</ul>
+<div class="callout tip">Most new ERP projects now choose <strong>cloud</strong> — less hardware, faster setup, lower upfront cost.</div>`),
+        ],
+      },
+      {
+        title: "The Core Modules",
+        lessons: [
+          article("erp-finance", "Finance & Accounting", "6 min", `
+<p>The heart of every ERP. It records all the money movements automatically.</p>
+<ul>
+  <li><strong>General Ledger</strong> — the master record of all transactions.</li>
+  <li><strong>Accounts Payable / Receivable</strong> — money you owe and money owed to you.</li>
+  <li><strong>Reporting</strong> — balance sheet, profit &amp; loss, cash flow, at any moment.</li>
+</ul>
+<div class="callout">Because every module posts to Finance, a warehouse action (goods received) instantly shows up in the accounts.</div>`),
+          article("erp-supply", "Supply Chain & Inventory", "6 min", `
+<p>Tracks the flow of goods — from buying materials to shipping products.</p>
+<ul>
+  <li><strong>Procurement</strong> — purchase orders to suppliers.</li>
+  <li><strong>Inventory</strong> — real-time stock levels across warehouses.</li>
+  <li><strong>Fulfilment</strong> — pick, pack, ship customer orders.</li>
+</ul>
+<div class="callout tip">ERP can auto-reorder stock when it drops below a set level — so you don't run out or over-buy.</div>`),
+          article("erp-hr-crm", "HR, Payroll, Sales & CRM", "6 min", `
+<p>ERPs also cover the people and customer sides.</p>
+<ul>
+  <li><strong>HR &amp; Payroll</strong> — employee records, salaries, leave, taxes.</li>
+  <li><strong>Sales &amp; CRM</strong> — customers, quotes, orders, and the sales pipeline.</li>
+  <li><strong>Manufacturing</strong> (for makers) — bills of materials, production planning.</li>
+</ul>
+<div class="callout">Because it's all one system, a sale (CRM) flows into stock (inventory), shipping (supply chain), and revenue (finance) — connected end to end.</div>`),
+        ],
+      },
+      {
+        title: "Choosing & Implementing ERP",
+        lessons: [
+          article("erp-vendors", "The Major Vendors", "6 min", `
+<p>A few big names run most of the world's ERPs.</p>
+<ul>
+  <li><strong>SAP</strong> — the market leader, huge enterprises (SAP S/4HANA).</li>
+  <li><strong>Oracle</strong> — Oracle Fusion / NetSuite (NetSuite is popular with mid-size firms).</li>
+  <li><strong>Microsoft Dynamics 365</strong> — integrates with the Microsoft world.</li>
+  <li><strong>Odoo</strong> — open-source, modular, popular with small &amp; growing businesses.</li>
+</ul>
+<div class="callout tip">There's no "best" ERP — only the best fit for a company's size, industry, and budget.</div>`),
+          article("erp-implement", "How an ERP Rollout Works", "7 min", `
+<p>Buying the software is the easy part. <strong>Implementing</strong> it is a major project (this is where your project-management skills matter!).</p>
+<ol>
+  <li><strong>Discovery</strong> — map current processes; decide what changes.</li>
+  <li><strong>Configure</strong> — set up modules to fit the business.</li>
+  <li><strong>Migrate data</strong> — move clean data from old systems.</li>
+  <li><strong>Test</strong> — check every process end-to-end.</li>
+  <li><strong>Train &amp; go live</strong> — people are the hardest part.</li>
+</ol>
+<div class="callout">"Big bang" (switch everything at once) is risky; a <strong>phased</strong> rollout by module or site is safer.</div>`),
+          article("erp-fail", "Why ERP Projects Fail", "6 min", `
+<p>ERP projects are famous for going over budget. The reasons are rarely technical.</p>
+<ul>
+  <li><strong>Over-customizing</strong> — bending the software too far instead of adapting the process.</li>
+  <li><strong>Bad data</strong> — migrating messy data ("garbage in, garbage out").</li>
+  <li><strong>No training</strong> — people revert to old habits.</li>
+  <li><strong>Weak sponsorship</strong> — leadership isn't fully behind it.</li>
+</ul>
+<div class="callout tip">The winning mindset: change the <em>business</em> to match proven ERP best-practices, not the other way around.</div>`),
+          quiz("erp-quiz", "Quiz: ERP Systems", [
+            { q: "ERP stands for…", options: ["Extra Rapid Processing", "Enterprise Resource Planning", "Employee Reward Program", "Electronic Records Portal"], answer: 1 },
+            { q: "The core benefit of an ERP is…", options: ["Cheaper laptops", "A single source of truth — one shared database", "Faster internet", "More meetings"], answer: 1 },
+            { q: "Which is a core ERP module?", options: ["Photo editing", "Finance & Accounting", "Video streaming", "Game design"], answer: 1 },
+            { q: "Which is an open-source ERP popular with small businesses?", options: ["SAP S/4HANA", "Odoo", "Photoshop", "Slack"], answer: 1 },
+            { q: "A common reason ERP projects fail is…", options: ["Too little customization", "Over-customizing and migrating bad data", "Using one database", "Training people too much"], answer: 1 },
+          ]),
+        ],
+      },
+    ],
+  },
 ];
 
 /* Expose to the app */

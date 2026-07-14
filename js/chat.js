@@ -596,6 +596,10 @@
           const list = Array.isArray(users) ? users : Object.values(users || {});
           return `<span class="chat-reaction" title="${esc(list.join(', '))}">${esc(emoji)} ${list.length}</span>`;
         }).join("");
+        /* 🔥 a message the room is loving (3+ total reactions) is Trending */
+        const totalReactions = Object.values(reactions).reduce((n, users) =>
+          n + (Array.isArray(users) ? users.length : Object.values(users || {}).length), 0);
+        const trending = totalReactions >= 3;
         const mentioned = !mine && mentionsMe(text);
         /* Messenger-style grouping: same sender within 5 min → tighter
            spacing, avatar and name shown only on the first of the run */
@@ -626,7 +630,7 @@
           })() +
           (msg.aud ? '<div class="chat-aud"><button type="button" data-aud="' + ref + '">' + ICON("play") + "</button><span class=\"aud-bar\"><i></i></span><span class=\"aud-dur\">" + (Number(msg.dur) ? Number(msg.dur) + "s" : "🎤") + "</span></div>" : "") +
           (text ? '<div class="chat-text">' + formatText(text) + (msg.editedText ? ' <span class="chat-edited">(edited)</span>' : "") + "</div>" : "") +
-          (reactionHtml ? '<div class="chat-reactions">' + reactionHtml + '</div>' : "") +
+          (reactionHtml ? '<div class="chat-reactions">' + reactionHtml + (trending ? '<span class="msg-trending">🔥 ' + esc(t("chat_trending")) + '</span>' : "") + '</div>' : "") +
           '<div class="chat-meta"><span class="chat-time">' + fmtTime(msg.ts) + "</span>" +
           '<div class="chat-actions">' +
           '<button class="chat-replybtn" data-reply="' + ref + '" title="' + esc(t("chat_reply")) + '">' + ICON("reply") + "</button>" +

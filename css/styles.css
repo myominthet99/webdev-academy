@@ -112,21 +112,67 @@ button { font-family: inherit; cursor: pointer; }
 .topnav.right { margin-left: 4px; }
 .topnav a { font-size: 15px; color: var(--ink); }
 .topnav a:hover { color: var(--purple); }
-/* Facebook-style main menu: icon tabs, gradient underline on the active page */
-.topnav:not(.right) { gap: 4px; }
+/* Main menu: 3D emoji app-tiles that pop on hover and float when active.
+   Still emoji-forward per DESIGN.md (no icon fonts); pure CSS, no assets. */
+.topnav:not(.right) { gap: 4px; perspective: 700px; }
 .topnav:not(.right) a {
-  display: flex; align-items: center; gap: 7px; position: relative;
-  padding: 8px 13px; border-radius: 10px; white-space: nowrap;
+  display: flex; align-items: center; gap: 8px; position: relative;
+  padding: 6px 11px; border-radius: 10px; white-space: nowrap;
   font-size: 14px; font-weight: 600; color: var(--muted);
   transition: background .2s ease, color .2s ease;
 }
-.topnav:not(.right) a .nv-ic { font-size: 17px; line-height: 1; }
-.topnav:not(.right) a:hover { background: var(--surface-2); color: var(--ink); }
+.topnav:not(.right) a .nv-ic {
+  font-size: 15px; line-height: 1;
+  width: 30px; height: 30px; flex: 0 0 auto; border-radius: 9px;
+  display: grid; place-items: center;
+  background: linear-gradient(180deg, var(--surface), var(--surface-2));
+  background: var(--tile, linear-gradient(180deg, var(--surface), var(--surface-2)));
+  border: 1px solid var(--line);
+  /* 3D chip: inset top gloss + solid bottom edge + ambient drop */
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, .5), 0 2px 0 rgba(0, 0, 0, .06), 0 3px 6px rgba(0, 0, 0, .10);
+  transform-style: preserve-3d;
+  transition: transform .22s cubic-bezier(.34, 1.56, .64, 1), box-shadow .22s ease, border-color .2s ease;
+}
+.topnav:not(.right) a:hover { color: var(--ink); }
+.topnav:not(.right) a:hover .nv-ic {
+  transform: translateY(-3px) rotateX(16deg) scale(1.08);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, .5), 0 7px 0 rgba(0, 0, 0, .07), 0 12px 18px rgba(0, 0, 0, .20);
+  border-color: var(--purple);
+  animation: nvPop .42s cubic-bezier(.34, 1.56, .64, 1);
+}
 .topnav:not(.right) a.active { color: var(--purple); }
+.topnav:not(.right) a.active .nv-ic {
+  background: linear-gradient(135deg, #7b2ff7, #a435f0);
+  border-color: transparent;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, .35), 0 3px 0 #611cc9, 0 6px 14px rgba(123, 47, 247, .45);
+  animation: nvFloat 2.6s ease-in-out infinite;
+}
 .topnav:not(.right) a.active::after {
-  content: ""; position: absolute; left: 12px; right: 12px; bottom: -1px;
+  content: ""; position: absolute; left: 12px; right: 12px; bottom: -3px;
   height: 3px; border-radius: 3px;
   background: linear-gradient(90deg, #7b2ff7, #a435f0);
+}
+@keyframes nvPop {
+  0%   { transform: translateY(0) rotateX(0) scale(1); }
+  55%  { transform: translateY(-5px) rotateX(18deg) scale(1.14); }
+  100% { transform: translateY(-3px) rotateX(16deg) scale(1.08); }
+}
+@keyframes nvFloat {
+  0%, 100% { transform: translateY(0) rotateX(0); }
+  50%      { transform: translateY(-3px) rotateX(12deg); }
+}
+/* per-item accent tint — color-mix over --surface stays theme-aware, and
+   degrades to the plain tile on browsers without color-mix */
+#nav-courses   { --tile: linear-gradient(160deg, color-mix(in srgb, #4b8bff 17%, var(--surface)), var(--surface)); }
+#nav-gallery   { --tile: linear-gradient(160deg, color-mix(in srgb, #ff5fa2 17%, var(--surface)), var(--surface)); }
+#nav-showcase  { --tile: linear-gradient(160deg, color-mix(in srgb, #ff7a1a 18%, var(--surface)), var(--surface)); }
+#nav-roadmap   { --tile: linear-gradient(160deg, color-mix(in srgb, #22c58b 17%, var(--surface)), var(--surface)); }
+#nav-howto     { --tile: linear-gradient(160deg, color-mix(in srgb, #ffb020 18%, var(--surface)), var(--surface)); }
+#nav-tools     { --tile: linear-gradient(160deg, color-mix(in srgb, #8b5cf6 17%, var(--surface)), var(--surface)); }
+#nav-playground{ --tile: linear-gradient(160deg, color-mix(in srgb, #12b5c9 17%, var(--surface)), var(--surface)); }
+@media (prefers-reduced-motion: reduce) {
+  .topnav:not(.right) a:hover .nv-ic { transform: translateY(-1px); animation: none; }
+  .topnav:not(.right) a.active .nv-ic { animation: none; }
 }
 /* Messenger-style chat button in the header */
 .chat-nav-btn {
@@ -303,10 +349,22 @@ button { font-family: inherit; cursor: pointer; }
     flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px;
     padding: 8px 0 9px; text-decoration: none; color: var(--muted);
   }
-  .tabbar a .tb-ic { font-size: 21px; line-height: 1; transition: transform .15s ease; }
+  .tabbar a .tb-ic {
+    font-size: 16px; line-height: 1; width: 32px; height: 32px; border-radius: 10px;
+    display: grid; place-items: center;
+    background: linear-gradient(180deg, var(--surface), var(--surface-2));
+    border: 1px solid var(--line);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, .5), 0 2px 4px rgba(0, 0, 0, .08);
+    transition: transform .2s cubic-bezier(.34, 1.56, .64, 1), box-shadow .2s ease, background .2s ease;
+  }
   .tabbar a .tb-lbl { font-size: 10.5px; font-weight: 700; }
   .tabbar a.active { color: var(--purple); }
-  .tabbar a.active .tb-ic { transform: translateY(-2px) scale(1.12); }
+  .tabbar a.active .tb-ic {
+    background: linear-gradient(135deg, #7b2ff7, #a435f0); border-color: transparent;
+    box-shadow: 0 3px 0 #611cc9, 0 6px 12px rgba(123, 47, 247, .4);
+    transform: translateY(-3px) scale(1.06);
+  }
+  .tabbar a:active .tb-ic { transform: translateY(-1px) scale(.97); }
   /* keep page content and the chat button clear of the bar */
   #app { padding-bottom: 76px; }
   #chat-widget { bottom: 84px; }
@@ -2103,6 +2161,60 @@ input[type="range"].tl-range { width: 100%; accent-color: var(--purple); }
 .srs-src { font-size: 12.5px; color: var(--muted); }
 .srs-xp { color: #1e9e62; }
 [data-theme="dark"] .progress { background: var(--surface-2); }
+
+/* ---------- 🚀 Build & Showcase (projects + portfolio) ---------- */
+.proj-brief { line-height: 1.65; }
+.proj-brief ul { margin: 8px 0 0; padding-left: 20px; }
+.proj-brief li { margin: 4px 0; }
+.proj-brief .callout { margin-top: 12px; }
+.proj-review { border-left: 4px solid #a435f0; }
+.proj-review .reader { line-height: 1.7; }
+.pf-item { padding: 16px; }
+.pf-head { display: flex; align-items: center; gap: 12px; }
+.pf-ic { font-size: 30px; line-height: 1; }
+.pf-review {
+  margin: 10px 0; padding: 10px 12px; background: var(--surface-2);
+  border-radius: 8px; font-size: 14px; line-height: 1.6;
+}
+.pf-item .tl-row { margin-top: 10px; }
+.sc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; }
+.sc-card { padding: 0; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+.sc-thumb {
+  position: relative; width: 100%; aspect-ratio: 16 / 10; overflow: hidden;
+  background: #fff; cursor: pointer; border-bottom: 1px solid var(--border);
+}
+.sc-frame {
+  position: absolute; top: 0; left: 0; width: 1000px; height: 625px;
+  border: 0; transform-origin: top left; pointer-events: none; background: #fff;
+}
+.sc-thumb-ic {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  font-size: 34px; background: var(--surface-2); transition: opacity .3s;
+}
+.sc-thumb.ready .sc-thumb-ic { opacity: 0; pointer-events: none; }
+.sc-thumb::after {
+  content: "▶"; position: absolute; right: 8px; bottom: 6px; font-size: 11px;
+  color: #fff; background: rgba(0, 0, 0, .5); border-radius: 6px; padding: 1px 7px;
+  opacity: 0; transition: opacity .2s;
+}
+.sc-thumb:hover::after { opacity: 1; }
+.sc-body { padding: 14px 16px 16px; display: flex; flex-direction: column; flex: 1; }
+.sc-body b { line-height: 1.35; }
+.sc-by { font-size: 12px; }
+.sc-body .tl-row { margin-top: auto; padding-top: 10px; align-items: center; }
+.sc-badge {
+  position: absolute; top: 10px; right: 10px; z-index: 2;
+  background: linear-gradient(135deg, #ff8a00, #ff2d55); color: #fff;
+  font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 999px;
+  box-shadow: 0 2px 6px rgba(255, 45, 85, .35); letter-spacing: .2px;
+}
+.sc-runs { white-space: nowrap; }
+/* 🔥 trending badge on hot chat messages */
+.msg-trending {
+  display: inline-block; margin-left: 6px; vertical-align: middle;
+  background: linear-gradient(135deg, #ff8a00, #ff2d55); color: #fff;
+  font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 999px;
+}
 
 /* ---------- Print (certificate) ---------- */
 @media print {

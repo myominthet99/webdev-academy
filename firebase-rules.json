@@ -75,6 +75,13 @@
           "$day": { ".validate": "newData.isNumber()" }
         }
       },
+      "showcase": {
+        ".read": true,
+        "$key": {
+          ".write": true,
+          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 1000000"
+        }
+      },
       "leaderboard": {
         ".read": true,
         "$uid": {
@@ -166,6 +173,22 @@
       "$ekey": {
         ".read": "auth != null && (auth.token.email === 'mmtboy90@gmail.com' || (auth.token.email != null && $ekey === auth.token.email.toLowerCase().replace('.', ',').replace('#', ',').replace('$', ',').replace('[', ',').replace(']', ',').replace('/', ',').replace('%', ',')))",
         ".write": "auth != null && (auth.token.email === 'mmtboy90@gmail.com' || (auth.token.email != null && $ekey === auth.token.email.toLowerCase().replace('.', ',').replace('#', ',').replace('$', ',').replace('[', ',').replace(']', ',').replace('/', ',').replace('%', ',')))"
+      }
+    },
+    "portfolio": {
+      ".read": true,
+      "$uid": {
+        ".write": "auth != null && ($uid === auth.uid || auth.token.email === 'mmtboy90@gmail.com')",
+        "$pid": {
+          "title":  { ".validate": "newData.isString() && newData.val().length <= 80" },
+          "ic":     { ".validate": "newData.isString() && newData.val().length <= 8" },
+          "code":   { ".validate": "newData.isString() && newData.val().length <= 100000" },
+          "review": { ".validate": "newData.isString() && newData.val().length <= 4000" },
+          "course": { ".validate": "newData.isString() && newData.val().length <= 60" },
+          "by":     { ".validate": "newData.isString() && newData.val().length <= 40" },
+          "ts":     { ".validate": "newData.isNumber()" },
+          "$other": { ".validate": false }
+        }
       }
     }
   }

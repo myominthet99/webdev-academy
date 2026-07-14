@@ -929,6 +929,310 @@
     buildPlayground(document.getElementById("pg-mount"), starter);
     window.scrollTo(0, 0);
   }
+
+  /* ===================== 🚀 Build & Showcase =====================
+     Capstone projects: build in the Playground → submit → AI code review →
+     saved to a shareable portfolio. Portfolio lives in localStorage and is
+     mirrored to Firebase under a stable anonymous handle for the public page. */
+  const PROJECTS = [
+    { id: "p-profile", course: "html-deep-dive", ic: "🙋", title: "Build Your Profile Page",
+      brief: `<p>Build a simple <strong>personal profile page</strong> about yourself.</p>
+        <p>Include:</p><ul><li>A heading with your name (<code>&lt;h1&gt;</code>)</li>
+        <li>A short paragraph about you</li><li>A list of 3 skills you're learning</li>
+        <li>A link to something you like</li></ul>
+        <div class="callout tip">Make it yours — colors, an emoji, anything. This is your first portfolio piece!</div>`,
+      starter: "<!DOCTYPE html>\n<html>\n<head>\n<style>\n  body { font-family: sans-serif; max-width: 600px; margin: 40px auto; }\n</style>\n</head>\n<body>\n\n  <h1>Your Name</h1>\n  <!-- build your profile here -->\n\n</body>\n</html>" },
+    { id: "p-card", course: "css-mastery", ic: "🎴", title: "A Beautiful Profile Card",
+      brief: `<p>Design a polished <strong>profile card</strong> with CSS.</p><ul>
+        <li>Rounded corners and a soft shadow</li><li>A name and a one-line bio</li>
+        <li>Nice colors and spacing</li></ul>`,
+      starter: "<!DOCTYPE html>\n<html>\n<head>\n<style>\n  body { display:grid; place-items:center; height:100vh; background:#f4f1ea; margin:0; }\n  .card {\n    /* style your card */\n  }\n</style>\n</head>\n<body>\n  <div class=\"card\">\n    <h2>Your Name</h2>\n    <p>Learning to code 🚀</p>\n  </div>\n</body>\n</html>" },
+    { id: "p-todo", course: "js-essentials", ic: "✅", title: "A To-Do List App",
+      brief: `<p>Build a working <strong>to-do list</strong> with JavaScript.</p><ul>
+        <li>An input box and an "Add" button</li><li>Clicking Add puts the text in the list</li>
+        <li>Bonus: click an item to remove it</li></ul>`,
+      starter: "<!DOCTYPE html>\n<html>\n<body style=\"font-family:sans-serif;max-width:400px;margin:30px auto\">\n\n  <h2>My To-Do List</h2>\n  <input id=\"task\" placeholder=\"What to do?\">\n  <button id=\"add\">Add</button>\n  <ul id=\"list\"></ul>\n\n  <script>\n    // wire the Add button to add tasks to #list\n\n  <\/script>\n</body>\n</html>" },
+    { id: "p-landing", course: "webdev-bootcamp", ic: "🚀", title: "A Product Landing Page",
+      brief: `<p>Build a one-page <strong>landing page</strong> for any product or idea.</p><ul>
+        <li>A big headline and a short tagline</li><li>3 feature points</li>
+        <li>A call-to-action button, styled with CSS</li></ul>`,
+      starter: "<!DOCTYPE html>\n<html>\n<head>\n<style>\n  body { font-family: sans-serif; margin:0; text-align:center; }\n  .hero { padding:60px 20px; background:#a435f0; color:#fff; }\n  button { padding:12px 26px; border:0; border-radius:8px; font-size:16px; cursor:pointer; }\n</style>\n</head>\n<body>\n  <div class=\"hero\">\n    <h1>Your Product</h1>\n    <p>Your tagline here</p>\n    <button>Get Started</button>\n  </div>\n  <!-- add 3 feature points below -->\n</body>\n</html>" },
+    { id: "p-tip", course: "js-essentials", ic: "🧮", title: "A Tip Calculator",
+      brief: `<p>Build a <strong>tip calculator</strong>.</p><ul>
+        <li>An input for the bill amount</li><li>A button to calculate 10% tip</li>
+        <li>Show the tip and the total</li></ul>`,
+      starter: "<!DOCTYPE html>\n<html>\n<body style=\"font-family:sans-serif;max-width:360px;margin:30px auto\">\n  <h2>Tip Calculator</h2>\n  <input id=\"bill\" type=\"number\" placeholder=\"Bill amount\">\n  <button id=\"calc\">Calculate 10%</button>\n  <p id=\"out\"></p>\n  <script>\n    // read #bill, compute the tip + total, show in #out\n\n  <\/script>\n</body>\n</html>" },
+    { id: "p-quiz", course: "webdev-bootcamp", ic: "❓", title: "A Mini Quiz",
+      brief: `<p>Build a <strong>one-question quiz</strong>.</p><ul>
+        <li>Show a question and 3 answer buttons</li><li>The right one says "Correct!"</li>
+        <li>A wrong one says "Try again"</li></ul>`,
+      starter: "<!DOCTYPE html>\n<html>\n<body style=\"font-family:sans-serif;max-width:420px;margin:30px auto;text-align:center\">\n  <h3>What does HTML stand for?</h3>\n  <button>Hyper Text Markup Language</button>\n  <button>Hot Tea Made Late</button>\n  <button>How To Make Lunch</button>\n  <p id=\"result\"></p>\n  <script>\n    // add click handlers that set #result\n\n  <\/script>\n</body>\n</html>" },
+  ];
+  const projectFor = (courseId) => PROJECTS.find((p) => p.course === courseId);
+
+  const loadPortfolio = () => jget(ns("wda_portfolio"), []);
+  const savePortfolioItem = (item) => {
+    const p = loadPortfolio();
+    const i = p.findIndex((x) => x.id === item.id);
+    if (i >= 0) p[i] = item; else p.push(item);
+    jset(ns("wda_portfolio"), p);
+  };
+  /* stable handle for the public portfolio URL. When logged in this is the
+     Firebase uid, so security rules can enforce owner-only writes; offline it
+     falls back to a random local id (no cloud sync happens offline anyway). */
+  const myHandle = () => {
+    const u = window.Auth && window.Auth.current ? window.Auth.current() : null;
+    if (u && u.id) return u.id;
+    let h = jget(ns("wda_handle"), null);
+    if (!h) { h = "u" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); jset(ns("wda_handle"), h); }
+    return h;
+  };
+  const fmtReview = (s) => escapeHtml(String(s || ""))
+    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*([^*\n]+)\*/g, "<em>$1</em>")
+    .replace(/\n/g, "<br>");
+  function reviewPrompt(code, proj) {
+    return "You are a warm, encouraging coding mentor at WebDev Academy, a free coding school for Myanmar students. A beginner just submitted their project: \"" + proj.title + "\". " +
+      (lang === "my" ? "Reply in simple Burmese (keep code terms like HTML/CSS in English). " : "Reply in simple, encouraging English. ") +
+      "In UNDER 120 words: (1) one genuine thing they did WELL, (2) one or two specific, kind suggestions to improve, (3) one short encouraging closing line. Be specific to THEIR code. Do NOT rewrite their whole project.\n\nTheir code:\n" +
+      String(code).slice(0, 4000);
+  }
+  /* mirror one submitted project to Firebase for the public portfolio +
+     community showcase pages */
+  function syncPortfolio(item) {
+    const base = statsBase();
+    if (!base || !loggedIn()) return;
+    const u = window.Auth && window.Auth.current ? window.Auth.current() : null;
+    const by = u ? String(u.name || u.email || "").split(" ")[0] : "";
+    authFetch(base + "/portfolio/" + encodeURIComponent(myHandle()) + "/" + encodeURIComponent(item.id) + ".json", {
+      method: "PUT",
+      body: JSON.stringify({
+        title: String(item.title || "").slice(0, 80), ic: item.ic || "🚀",
+        code: String(item.code || "").slice(0, 100000), review: String(item.review || "").slice(0, 4000),
+        course: String(item.course || "").slice(0, 60), by: by.slice(0, 40), ts: item.ts || Date.now(),
+      }),
+    }).catch(() => {});
+  }
+
+  function renderProject(id) {
+    const proj = PROJECTS.find((p) => p.id === id);
+    if (!proj) return renderNotFound();
+    const c = courseById(proj.course);
+    const saved = loadPortfolio().find((x) => x.id === proj.id);
+    app.innerHTML = `
+      <div class="container" style="max-width:1100px">
+        <div class="crumbs">${c ? `<a href="#/course/${c.id}">${cf(c, "title")}</a> › ` : ""}🚀 ${t("proj_word")}</div>
+        <h2 class="section-title">${proj.ic} ${escapeHtml(proj.title)}</h2>
+        <div class="panel proj-brief">${proj.brief}</div>
+        <div class="playground pg-page" id="proj-pg"></div>
+        <div class="tl-row" style="margin-top:12px">
+          <button class="btn btn-primary" id="proj-submit">🚀 ${t("proj_submit")}</button>
+          <a class="btn btn-outline" href="#/portfolio">📁 ${t("portfolio_mine")}</a>
+          <span class="muted" id="proj-status" style="font-size:13px"></span>
+        </div>
+        <div id="proj-review"></div>
+      </div>`;
+    buildPlayground(document.getElementById("proj-pg"), (saved && saved.code) || proj.starter);
+    document.getElementById("proj-submit").addEventListener("click", () => {
+      if (!loggedIn()) { requireAuth(() => renderProject(id)); return; }
+      const code = (document.querySelector("#proj-pg .pg-code") || {}).value || "";
+      const item = { id: proj.id, title: proj.title, ic: proj.ic, course: c ? cf(c, "title") : "", code: code, ts: Date.now() };
+      const rv = document.getElementById("proj-review");
+      const done = () => { savePortfolioItem(item); syncPortfolio(item); addBonusXp(20); pushLeaderboard(); };
+      if (window.AI && window.AI.ready()) {
+        rv.innerHTML = `<div class="panel"><p class="muted">🤖 ${escapeHtml(t("proj_reviewing"))}</p></div>`;
+        window.AI.complete(reviewPrompt(code, proj), { maxTokens: 600 }).then((res) => {
+          let txt = String(res || "").trim(); if (window.AI.stripFences) txt = window.AI.stripFences(txt);
+          item.review = txt; done();
+          rv.innerHTML = `<div class="panel proj-review"><h3 style="margin-top:0">🤖 ${t("proj_feedback")} <span class="srs-xp">+20 XP</span></h3>
+            <div class="reader">${fmtReview(txt)}</div>
+            <a class="btn btn-primary btn-sm" href="#/portfolio">📁 ${t("proj_saved_go")}</a></div>`;
+          rv.scrollIntoView({ block: "nearest" });
+        }).catch(() => {
+          done();
+          rv.innerHTML = `<div class="panel"><p class="tl-status ok">✓ ${t("proj_saved")}</p><a class="btn btn-primary btn-sm" href="#/portfolio">📁 ${t("portfolio_mine")}</a></div>`;
+        });
+      } else {
+        done();
+        rv.innerHTML = `<div class="panel"><p class="tl-status ok">✓ ${t("proj_saved")} · +20 XP</p><a class="btn btn-primary btn-sm" href="#/portfolio">📁 ${t("portfolio_mine")}</a></div>`;
+      }
+    });
+    window.scrollTo(0, 0);
+  }
+
+  function renderPortfolio(handle) {
+    const own = !handle;
+    app.innerHTML = `
+      <div class="container" style="max-width:760px">
+        <h2 class="section-title">📁 ${own ? t("portfolio_mine") : t("portfolio_title")}</h2>
+        <p class="section-sub">${t("portfolio_sub")}</p>
+        ${own ? `<div class="tl-row" style="margin-bottom:14px">
+          <button class="btn btn-outline btn-sm" id="pf-share">🔗 ${t("portfolio_share")}</button>
+          <a class="btn btn-outline btn-sm" href="#/showcase">🌟 ${t("showcase_browse")}</a>
+          <span class="muted" id="pf-share-status" style="font-size:12px;overflow-wrap:anywhere"></span></div>` : ""}
+        <div id="pf-list"><p class="muted">⏳</p></div>
+        ${own ? `<div class="panel" style="margin-top:16px"><h3 style="margin-top:0">🚀 ${t("proj_pick")}</h3>
+          <div class="chips">${PROJECTS.map((p) => `<a class="chip" href="#/project/${p.id}">${p.ic} ${escapeHtml(p.title)}</a>`).join("")}</div></div>` : ""}
+      </div>`;
+    const list = document.getElementById("pf-list");
+    const draw = (items) => {
+      if (!items.length) {
+        list.innerHTML = `<div class="empty"><h2>📁</h2><p>${own ? t("portfolio_empty") : t("portfolio_empty_pub")}</p>
+          ${own ? `<a class="btn btn-primary" href="#/project/${PROJECTS[0].id}">🚀 ${t("portfolio_start")}</a>` : ""}</div>`;
+        return;
+      }
+      list.innerHTML = items.map((it, i) => `
+        <div class="panel pf-item">
+          <div class="pf-head"><span class="pf-ic">${it.ic || "🚀"}</span>
+            <div><b>${escapeHtml(it.title || "Project")}</b>${it.course ? `<div class="muted" style="font-size:12px">${escapeHtml(it.course)}</div>` : ""}</div></div>
+          ${it.review ? `<div class="pf-review reader">${fmtReview(String(it.review).slice(0, 600))}</div>` : ""}
+          <div class="tl-row">
+            <button class="btn btn-outline btn-sm" data-pf-run="${i}">▶ ${t("proj_run")}</button>
+            ${own ? `<a class="btn btn-outline btn-sm" href="#/project/${escapeHtml(it.id)}">✏️ ${t("proj_edit")}</a>` : ""}
+          </div>
+        </div>`).join("");
+      list.querySelectorAll("[data-pf-run]").forEach((b) => b.addEventListener("click", () => {
+        const it = items[Number(b.getAttribute("data-pf-run"))];
+        if (it && it.code) openPlayground(it.code);
+      }));
+    };
+    if (own) {
+      draw(loadPortfolio().slice().sort((a, b) => (b.ts || 0) - (a.ts || 0)));
+      const sh = document.getElementById("pf-share");
+      if (sh) sh.addEventListener("click", () => {
+        const link = location.origin + location.pathname + "#/portfolio/" + myHandle();
+        const st = document.getElementById("pf-share-status");
+        const done = () => { if (st) st.textContent = "✓ " + link; };
+        if (navigator.clipboard) navigator.clipboard.writeText(link).then(done).catch(() => fallbackCopy(link, done)); else fallbackCopy(link, done);
+        /* make sure the current portfolio is mirrored before sharing */
+        loadPortfolio().forEach(syncPortfolio);
+      });
+    } else {
+      const base = statsBase();
+      if (!base) { draw([]); return; }
+      fetch(base + "/portfolio/" + encodeURIComponent(handle) + ".json").then((r) => r.json()).then((val) => {
+        const items = Object.entries(val || {}).map(([id, v]) => Object.assign({ id }, v)).sort((a, b) => (b.ts || 0) - (a.ts || 0));
+        draw(items);
+      }).catch(() => draw([]));
+    }
+    window.scrollTo(0, 0);
+  }
+
+  /* 🌟 Community Showcase — every student's submitted projects in one gallery.
+     Reads the public `portfolio` tree (all handles) and shows the newest. */
+  function collectShowcase(all) {
+    const items = [];
+    Object.entries(all || {}).forEach(([uid, projs]) => {
+      Object.entries(projs || {}).forEach(([pid, v]) => {
+        if (v && v.code) items.push(Object.assign({ uid, pid }, v));
+      });
+    });
+    return items.sort((a, b) => (b.ts || 0) - (a.ts || 0));
+  }
+  function showcaseCard(it, i) {
+    return `<div class="panel sc-card">
+        ${it.trending ? `<span class="sc-badge">🔥 ${t("trending_word")}</span>` : ""}
+        <div class="sc-thumb" data-thumb="${i}" title="${t("proj_run")}">
+          <iframe class="sc-frame" sandbox="allow-scripts" scrolling="no" tabindex="-1" title="preview"></iframe>
+          <span class="sc-thumb-ic">${it.ic || "🚀"}</span>
+        </div>
+        <div class="sc-body">
+          <b>${escapeHtml(it.title || "Project")}</b>
+          ${it.by ? `<div class="muted sc-by">${t("by_word")} ${escapeHtml(it.by)}</div>` : ""}
+          ${it.course ? `<div class="muted" style="font-size:12px">${escapeHtml(it.course)}</div>` : ""}
+          <div class="tl-row" style="margin-top:8px">
+            <button class="btn btn-outline btn-sm" data-sc-run="${i}">▶ ${t("proj_run")}</button>
+            <a class="btn btn-ghost btn-sm" href="#/portfolio/${encodeURIComponent(it.uid)}">📁</a>
+            <span class="muted sc-runs" style="font-size:12px;margin-left:auto">${it.hot ? "▶ " + it.hot : ""}</span>
+          </div>
+        </div>
+      </div>`;
+  }
+  /* Render a scaled, non-interactive live preview of each project into its card
+     thumbnail — lazily (as it scrolls into view) and sandboxed (no same-origin,
+     so untrusted student code can't touch the page). */
+  function wireShowcaseThumbs(grid, items, openFn) {
+    const paint = (thumb) => {
+      const it = items[Number(thumb.getAttribute("data-thumb"))];
+      const frame = thumb.querySelector(".sc-frame");
+      if (!it || !frame || frame.dataset.done) return;
+      frame.dataset.done = "1";
+      const w = thumb.clientWidth || 240;
+      frame.style.transform = "scale(" + (w / 1000).toFixed(4) + ")";
+      try { frame.srcdoc = buildRunnableDoc(String(it.code || "")); thumb.classList.add("ready"); } catch (e) {}
+    };
+    grid.querySelectorAll(".sc-thumb").forEach((thumb) => {
+      thumb.addEventListener("click", () => {
+        const it = items[Number(thumb.getAttribute("data-thumb"))];
+        if (it && it.code && openFn) openFn(it, thumb);
+      });
+    });
+    if (typeof IntersectionObserver === "function") {
+      const io = new IntersectionObserver((entries, obs) => {
+        entries.forEach((en) => { if (en.isIntersecting) { paint(en.target); obs.unobserve(en.target); } });
+      }, { rootMargin: "200px" });
+      grid.querySelectorAll(".sc-thumb").forEach((th) => io.observe(th));
+    } else {
+      grid.querySelectorAll(".sc-thumb").forEach(paint);
+    }
+  }
+  /* best-effort public popularity counter (like stats/courses): each time a
+     showcase project is opened it ticks up; the most-run ones become 🔥 Trending. */
+  function bumpHot(key) {
+    const base = statsBase();
+    if (!base) return;
+    const url = base + "/stats/showcase/" + encodeURIComponent(key) + ".json";
+    fetch(url).then((r) => r.json()).then((n) => fetch(url, { method: "PUT", body: JSON.stringify((Number(n) || 0) + 1) })).catch(() => {});
+  }
+  function renderShowcase(sort) {
+    sort = sort === "new" ? "new" : "hot";
+    app.innerHTML = `
+      <div class="container" style="max-width:960px">
+        <h2 class="section-title">🌟 ${t("showcase_title")}</h2>
+        <p class="section-sub">${t("showcase_sub")}</p>
+        <div class="chips" style="margin:2px 0 14px;align-items:center">
+          <button class="chip ${sort === "hot" ? "active" : ""}" data-sc-sort="hot">🔥 ${t("trending_word")}</button>
+          <button class="chip ${sort === "new" ? "active" : ""}" data-sc-sort="new">🆕 ${t("newest_word")}</button>
+          <a class="btn btn-primary btn-sm" href="#/portfolio" style="margin-left:auto">🚀 ${t("showcase_build")}</a>
+        </div>
+        <div id="sc-grid"><div class="empty"><h2>⏳</h2></div></div>
+      </div>`;
+    app.querySelectorAll("[data-sc-sort]").forEach((b) => b.addEventListener("click", () => renderShowcase(b.getAttribute("data-sc-sort"))));
+    const grid = document.getElementById("sc-grid");
+    const empty = () => { grid.innerHTML = `<div class="empty"><h2>🌟</h2><p>${t("showcase_empty")}</p><a class="btn btn-primary" href="#/portfolio">🚀 ${t("showcase_build")}</a></div>`; };
+    const base = statsBase();
+    if (!base) { empty(); return; }
+    Promise.all([
+      fetch(base + "/portfolio.json").then((r) => r.json()).catch(() => null),
+      fetch(base + "/stats/showcase.json").then((r) => r.json()).catch(() => ({})),
+    ]).then(([all, hot]) => {
+      hot = hot || {};
+      const items = collectShowcase(all);
+      items.forEach((it) => { it.hot = Number(hot[it.uid + "::" + it.pid]) || 0; });
+      const maxHot = items.reduce((m, it) => Math.max(m, it.hot), 0);
+      const thresh = Math.max(2, Math.ceil(maxHot * 0.5));
+      items.forEach((it) => { it.trending = it.hot >= thresh; });
+      if (sort === "hot") items.sort((a, b) => (b.hot - a.hot) || ((b.ts || 0) - (a.ts || 0)));
+      else items.sort((a, b) => (b.ts || 0) - (a.ts || 0));
+      const top = items.slice(0, 60);
+      if (!top.length) { empty(); return; }
+      grid.innerHTML = `<div class="sc-grid">${top.map(showcaseCard).join("")}</div>`;
+      const openProj = (it, cardEl) => {
+        if (!it || !it.code) return;
+        openPlayground(it.code);
+        bumpHot(it.uid + "::" + it.pid);
+        it.hot += 1;
+        const cnt = cardEl && cardEl.querySelector(".sc-runs");
+        if (cnt) cnt.textContent = "▶ " + it.hot;
+      };
+      grid.querySelectorAll("[data-sc-run]").forEach((b) => b.addEventListener("click", () => {
+        openProj(top[Number(b.getAttribute("data-sc-run"))], b.closest(".sc-card"));
+      }));
+      wireShowcaseThumbs(grid, top, (it, thumb) => openProj(it, thumb.closest(".sc-card")));
+    }).catch(empty);
+    window.scrollTo(0, 0);
+  }
+
   function fallbackCopy(text, done) {
     const ta = document.createElement("textarea");
     ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
@@ -1861,6 +2165,7 @@
               ${enrolled && pct > 0 ? `<div class="progress" style="margin-bottom:14px"><span style="width:${pct}%"></span></div><div class="muted" style="margin-bottom:14px">${pct}% ${t("pct_complete_word")} · ⏱ ${formatTime(getTotalTimeSpent(c.id))}</div>` : ""}
               ${cta}${buyOne}
               <a class="btn btn-outline btn-block" style="margin-top:10px" href="#/map/${c.id}">🗺️ ${t("map_view")}</a>
+              ${projectFor(c.id) ? `<a class="btn btn-outline btn-block" style="margin-top:10px" href="#/project/${projectFor(c.id).id}">🚀 ${t("course_project")}</a>` : ""}
               ${!isFree(c) && !isPremiumUser() && premiumCoursesMap[c.id] ? `<div class="tl-status ok" style="text-align:center">✓ ${t("purchased")}</div>` : ""}
               ${enrolled && pct === 100 ? `<a class="btn btn-ghost btn-block" style="margin-top:10px" href="#/certificate/${c.id}">🎓 ${t("cert_view")}</a>` : ""}
               <div class="includes-title">${t("includes_title")}</div>
@@ -3666,6 +3971,8 @@
           <h2 class="section-title">${t("dash_title")}</h2>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <a class="btn btn-outline btn-sm" href="#/review">🧠 ${t("review_title")}</a>
+            <a class="btn btn-outline btn-sm" href="#/portfolio">📁 ${t("portfolio_mine")}</a>
+            <a class="btn btn-outline btn-sm" href="#/showcase">🌟 ${t("showcase_title")}</a>
             <a class="btn btn-outline btn-sm" href="#/leaderboard">🏆 ${t("lb_title")}</a>
           </div>
         </div>
@@ -7091,6 +7398,7 @@
     const navOf =
       ["courses", "course", "learn", "search", "map"].indexOf(parts[0]) >= 0 ? "nav-courses"
       : parts[0] === "gallery" ? "nav-gallery"
+      : ["showcase", "portfolio", "project"].indexOf(parts[0]) >= 0 ? "nav-showcase"
       : parts[0] === "roadmap" ? "nav-roadmap"
       : parts[0] === "howto" ? "nav-howto"
       : parts[0] === "tools" ? "nav-tools"
@@ -7117,6 +7425,9 @@
     else if (parts[0] === "playground") renderPlayground(parts[1]);
     else if (parts[0] === "tools") renderTools(parts[1]);
     else if (parts[0] === "howto") renderHowto(parts[1]);
+    else if (parts[0] === "project" && parts[1]) renderProject(parts[1]);
+    else if (parts[0] === "portfolio") renderPortfolio(parts[1]);
+    else if (parts[0] === "showcase") renderShowcase();
     else if (parts[0] === "gallery") renderGallery();
     else if (parts[0] === "map" && parts[1]) renderCourseMap(parts[1]);
     else if (parts[0] === "start") renderStart();
@@ -7159,6 +7470,7 @@
     set("nav-playground", t("nav_playground"));
     set("nav-tools", t("nav_tools"));
     set("nav-gallery", t("nav_gallery"));
+    set("nav-showcase", t("nav_showcase"));
     set("nav-mylearning", t("nav_mylearning"));
     set("tab-home", t("tab_home"));
     set("tab-courses", t("nav_courses"));

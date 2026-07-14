@@ -6475,13 +6475,14 @@
         : "Write in simple, warm English. ";
       let prompt;
       if (kind === "tiktok") {
-        prompt = "You write viral 30-second TikTok/Reels scripts for a Myanmar coding school (WebDev Academy). " +
-          (inMM ? "Write the SPOKEN lines in natural, casual Burmese. " : "Write in casual, energetic English. ") +
-          "Topic: \"" + title + "\" (related course: \"" + c.title + "\"). Format EXACTLY:\n" +
-          "HOOK (0-3s): one pattern-interrupt spoken line + [on-screen text]\n" +
-          "POINT 1 (3-10s): spoken line + [on-screen text]\nPOINT 2 (10-18s): same\nPOINT 3 (18-25s): same\n" +
-          "CTA (25-30s): spoken line telling them the course is free to start at WebDev Academy — link in bio + [on-screen text]\n" +
-          "Keep every spoken line under 12 words. No hashtags in the script; add 5 hashtags on the last line. " + STYLE_COMMON.replace("HTML", "text");
+        prompt = "You write a short (25-35s) vertical TikTok/Reels script for a Myanmar coding school (WebDev Academy), " +
+          "as a scene-by-scene shot list a beginner can film on a phone. Topic: \"" + title + "\" (course: \"" + c.title + "\").\n" +
+          "Use 5-6 scenes. Scene 1 is a 1.5s HOOK, the last scene is a CTA (the course is FREE at WebDev Academy — link in bio). " +
+          "For EACH scene write EXACTLY on its own lines:\n" +
+          "SCENE n (time) — what to film\nCAPTION EN: short on-screen text\nCAPTION MM: the same caption in Burmese\n" +
+          "SAY: one spoken line under 12 words (" + (inMM ? "in casual Burmese" : "in casual English") + ")\n" +
+          "After all scenes, add ONE line 'THUMBNAIL: <a short vivid description for the cover image>' " +
+          "then a final line of 5 hashtags. " + STYLE_COMMON.replace("HTML", "text");
       } else if (kind === "flowchart") {
         prompt = "You create teaching diagrams for WebDev Academy, a beginner coding school. " + langRule +
           "Output ONLY " + FLOW_SPEC +
@@ -6510,6 +6511,16 @@
         if (window.AI.stripFences) out = window.AI.stripFences(out);
         $("cc2-out").value = out;
         $("cc2-status").textContent = out ? ic + " ✓ — paste into ✏️ " + t("admin_title") : t("ai_bad_reply");
+        /* 🎬 → 🖼️: prefill the free thumbnail prompt from the script's
+           THUMBNAIL: line so a cover image is one tap away */
+        if (kind === "tiktok" && out) {
+          const m = out.match(/THUMBNAIL:\s*(.+)/i);
+          const ap = $("aimg-p");
+          if (ap) {
+            ap.value = (m ? m[1].trim() : (title + ", coding, vibrant flat illustration")).slice(0, 200);
+            $("cc2-status").textContent += " · 🖼️ " + t("vid_thumb_ready");
+          }
+        }
       }).catch((e) => { $("cc2-status").textContent = "⚠ " + ((e && e.message) || "AI"); });
     };
 

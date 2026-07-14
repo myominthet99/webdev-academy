@@ -2498,6 +2498,8 @@
                    <div class="stage-center">
                      ${c.image ? "" : `<span class="stage-ic">${c.icon || "📚"}</span>`}
                      <span class="si-note">📖 ${t("lesson_read_below")}</span>
+                     ${current.type === "video" ? `<a class="btn btn-youtube btn-sm" target="_blank" rel="noopener" style="margin-top:10px"
+                        href="https://www.youtube.com/results?search_query=${encodeURIComponent(lf(current, "title") + " " + c.category + " tutorial")}">🎥 ${t("watch_video")}</a>` : ""}
                    </div>
                    <div class="stage-label">${secTitle} · ${t("lesson_word")} ${idx + 1} / ${flat.length}</div>`
             }

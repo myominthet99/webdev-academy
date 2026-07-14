@@ -549,6 +549,7 @@ window.I18N = {
 
       lesson_word: "Lesson",
       lesson_read_below: "Read the full lesson below 👇",
+      watch_video: "Watch a video",
       mark_complete: "Mark complete",
       completed: "✓ Completed",
       next_lesson: "Next lesson →",
@@ -1341,6 +1342,7 @@ window.I18N = {
 
       lesson_word: "သင်ခန်းစာ",
       lesson_read_below: "သင်ခန်းစာ အပြည့်အစုံကို အောက်တွင် ဖတ်ပါ 👇",
+      watch_video: "ဗီဒီယို ကြည့်ရန်",
       mark_complete: "ပြီးစီးအဖြစ်မှတ်ရန်",
       completed: "✓ ပြီးစီးပြီး",
       next_lesson: "နောက်သင်ခန်းစာ →",

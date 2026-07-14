@@ -611,6 +611,141 @@ else {
   if (m.textContent.trim() === "Hello!") __exDone(true, "");
   else __exDone(false, "After a click, #msg should say exactly Hello! (now it says \\"" + m.textContent.trim() + "\\")");
 }`),
+          exercise("bcx-nav", "Exercise: A Semantic Page Skeleton", "8 min", `
+<h3>🏋️ Your task</h3>
+<p>Real pages aren't just <code>&lt;div&gt;</code>s. Build a proper skeleton using the three landmark tags:</p>
+<ul>
+  <li>a <code>&lt;header&gt;</code> at the top</li>
+  <li>a <code>&lt;main&gt;</code> for the content</li>
+  <li>a <code>&lt;footer&gt;</code> at the bottom</li>
+</ul>
+<p>Press <strong>▶ Run &amp; Check</strong> to earn +15 XP!</p>`,
+`<!DOCTYPE html>
+<html>
+  <body>
+    <!-- build your skeleton here -->
+
+  </body>
+</html>`,
+`if (!document.querySelector("header")) { __exDone(false, "Add a <header> element."); }
+else if (!document.querySelector("main")) { __exDone(false, "Add a <main> element."); }
+else if (!document.querySelector("footer")) { __exDone(false, "Add a <footer> element."); }
+else { __exDone(true, ""); }`),
+          exercise("bcx-form", "Exercise: A Labelled Form Field", "8 min", `
+<h3>🏋️ Your task</h3>
+<p>Build an accessible form field — the base of every sign-up page:</p>
+<ul>
+  <li>a <code>&lt;form&gt;</code></li>
+  <li>with a <code>&lt;label&gt;</code> and an <code>&lt;input&gt;</code> inside it</li>
+</ul>`,
+`<!DOCTYPE html>
+<html>
+  <body>
+    <!-- your form here -->
+
+  </body>
+</html>`,
+`var f = document.querySelector("form");
+if (!f) { __exDone(false, "Add a <form> element."); }
+else if (!f.querySelector("label")) { __exDone(false, "Put a <label> inside the form."); }
+else if (!f.querySelector("input")) { __exDone(false, "Add an <input> inside the form."); }
+else { __exDone(true, ""); }`),
+          exercise("bcx-link", "Exercise: Open a Link in a New Tab", "6 min", `
+<h3>🏋️ Your task</h3>
+<p>Add a link to <code>https://developer.mozilla.org</code> that opens in a <strong>new tab</strong>.</p>
+<p>Hint: an anchor with <code>target="_blank"</code>.</p>`,
+`<!DOCTYPE html>
+<html>
+  <body>
+    <!-- your link here -->
+
+  </body>
+</html>`,
+`var a = document.querySelector("a[href]");
+if (!a) { __exDone(false, "Add a link: an <a> with an href."); }
+else if (a.getAttribute("target") !== "_blank") { __exDone(false, "Make it open a new tab with target=_blank."); }
+else { __exDone(true, ""); }`),
+          exercise("bcx-btnstyle", "Exercise: Style a Button", "8 min", `
+<h3>🏋️ Your task</h3>
+<p>Turn the plain button into a nice one. In the <code>&lt;style&gt;</code>, give the button:</p>
+<ul>
+  <li><code>padding</code> of <strong>8px or more</strong></li>
+  <li><code>border-radius</code> of <strong>6px or more</strong></li>
+</ul>`,
+`<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      button {
+
+      }
+    </style>
+  </head>
+  <body>
+    <button>Click me</button>
+  </body>
+</html>`,
+`var b = document.querySelector("button");
+if (!b) { __exDone(false, "Keep the <button>."); }
+else {
+  var cs = getComputedStyle(b);
+  if (parseFloat(cs.paddingTop) < 8) __exDone(false, "Give the button padding of 8px or more.");
+  else if (parseFloat(cs.borderRadius) < 6) __exDone(false, "Round the corners: border-radius 6px or more.");
+  else __exDone(true, "");
+}`),
+          exercise("bcx-flexwrap", "Exercise: A Responsive Row", "9 min", `
+<h3>🏋️ Your task</h3>
+<p>Make the three cards sit in a row that <strong>wraps</strong> onto the next line on small screens. Style <code>.row</code> with:</p>
+<pre><code>display: flex;
+flex-wrap: wrap;</code></pre>`,
+`<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      .row {
+        gap: 10px;
+        /* your flex code here */
+
+      }
+      .row > div { flex: 1 1 120px; background: #a435f0; color: #fff; padding: 20px; text-align: center; }
+    </style>
+  </head>
+  <body>
+    <div class="row">
+      <div>1</div><div>2</div><div>3</div>
+    </div>
+  </body>
+</html>`,
+`var r = document.querySelector(".row");
+if (!r) { __exDone(false, "Keep the .row container."); }
+else {
+  var cs = getComputedStyle(r);
+  if (cs.display !== "flex") __exDone(false, "Set display: flex on .row.");
+  else if (cs.flexWrap !== "wrap") __exDone(false, "Add flex-wrap: wrap so the cards wrap.");
+  else __exDone(true, "");
+}`),
+          exercise("bcx-loop", "Exercise: Build a List With a Loop", "10 min", `
+<h3>🏋️ Your task</h3>
+<p>Use a <strong>loop</strong> to turn the <code>fruits</code> array into list items — add one <code>&lt;li&gt;</code> to <code>#list</code> for each fruit.</p>
+<p>Tip: <code>forEach</code> makes this easy.</p>`,
+`<!DOCTYPE html>
+<html>
+  <body>
+    <ul id="list"></ul>
+    <script>
+      var fruits = ["Apple", "Banana", "Mango"];
+      // your loop here
+
+    <\/script>
+  </body>
+</html>`,
+`var ul = document.getElementById("list");
+if (!ul) { __exDone(false, "Keep the <ul id=list>."); }
+else {
+  var lis = ul.querySelectorAll("li");
+  if (lis.length < 3) __exDone(false, "Loop through the array and add an <li> for each fruit (need 3).");
+  else __exDone(true, "");
+}`),
         ],
       },
     ],

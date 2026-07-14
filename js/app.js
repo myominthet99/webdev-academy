@@ -1432,6 +1432,71 @@
   }
 
   /* ---------------- View: Find-my-course starter quiz ---------------- */
+  /* 👋 First-run onboarding — a short, dismissible welcome that explains how
+     the app works (learn → run code → habit → certificate) and sets a weekly
+     goal, so new students aren't dropped into XP/streaks/chat with no context.
+     Shown once per device (wda_onboarded). */
+  const ONB_CARDS = [
+    { ic: "👋", tk: "onb1_t", bk: "onb1_b" },
+    { ic: "🏃", tk: "onb2_t", bk: "onb2_b" },
+    { ic: "🔥", tk: "onb3_t", bk: "onb3_b", goal: true },
+    { ic: "🎓", tk: "onb4_t", bk: "onb4_b", cta: true },
+  ];
+  function maybeOnboard() {
+    try { if (localStorage.getItem("wda_onboarded")) return; } catch (e) { return; }
+    renderOnboarding();
+  }
+  function finishOnboard(dest) {
+    try { localStorage.setItem("wda_onboarded", "1"); } catch (e) {}
+    const ov = document.querySelector(".onb-overlay");
+    if (ov) ov.remove();
+    if (dest) location.hash = dest;
+  }
+  function renderOnboarding() {
+    if (document.querySelector(".onb-overlay")) return;
+    let i = 0;
+    const wrap = document.createElement("div");
+    wrap.className = "onb-overlay";
+    document.body.appendChild(wrap);
+    const draw = () => {
+      const c = ONB_CARDS[i];
+      const last = i === ONB_CARDS.length - 1;
+      wrap.innerHTML = `
+        <div class="onb-card">
+          <button class="onb-skip" type="button">${t("onb_skip")}</button>
+          <div class="onb-ic">${c.ic}</div>
+          <h2>${t(c.tk)}</h2>
+          <p>${t(c.bk)}</p>
+          ${c.goal ? `<div class="onb-goal">
+            <div class="muted" style="font-size:13px;margin-bottom:6px">${t("onb_goal_q")}</div>
+            <div class="tl-row" style="justify-content:center">
+              ${[3, 5, 10].map((g) => `<button class="btn btn-outline btn-sm" data-goal="${g}">${g} ${t("lessons_word")}</button>`).join("")}
+            </div></div>` : ""}
+          <div class="onb-dots">${ONB_CARDS.map((_, k) => `<span class="${k === i ? "on" : ""}"></span>`).join("")}</div>
+          ${c.cta
+            ? `<div class="onb-cta">
+                 <a class="btn btn-primary btn-block" href="#/start" data-onb-go>🧭 ${t("onb_cta_quiz")}</a>
+                 <a class="btn btn-outline btn-block" style="margin-top:8px" href="#/courses" data-onb-go>📚 ${t("onb_cta_browse")}</a>
+               </div>`
+            : `<button class="btn btn-primary btn-block onb-next" type="button">${t("onb_next")} →</button>`}
+        </div>`;
+      wrap.querySelector(".onb-skip").addEventListener("click", () => finishOnboard(null));
+      const next = wrap.querySelector(".onb-next");
+      if (next) next.addEventListener("click", () => { i++; draw(); });
+      wrap.querySelectorAll("[data-goal]").forEach((b) => b.addEventListener("click", () => {
+        jset(ns("wda_goal"), Number(b.getAttribute("data-goal")));
+        wrap.querySelectorAll("[data-goal]").forEach((x) => x.classList.remove("btn-primary"));
+        b.classList.add("btn-primary");
+        setTimeout(() => { i++; draw(); }, 250);
+      }));
+      wrap.querySelectorAll("[data-onb-go]").forEach((b) => b.addEventListener("click", (e) => {
+        e.preventDefault();
+        finishOnboard(b.getAttribute("href"));
+      }));
+    };
+    draw();
+  }
+
   function renderStart() {
     const PICKS = {
       job: { new: "zero-to-hero", some: "webdev-bootcamp", pro: "fullstack", alts: ["git-basics", "dev-career"] },
@@ -7145,6 +7210,7 @@
   updateStreak();
   router();
   loadAnnouncement();
+  maybeOnboard(); /* first-run welcome (once per device) */
 
   /* 📲 PWA install: show an Install button when the browser offers it
      (Android/desktop Chrome). iOS has no such event — users add via Share. */

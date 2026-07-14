@@ -6264,6 +6264,24 @@
           </div>
           <img id="img-prev" class="cc-imgprev" hidden alt="card preview">
         </div>
+
+        <div class="panel">
+          <h3>🎨 ${t("aimg_title")} <span class="muted" style="font-size:12px;font-weight:400">— ${t("aimg_sub")}</span></h3>
+          <div class="tl-row">
+            <input class="tl-in" id="aimg-p" placeholder="${escapeHtml(t("aimg_ph"))}" maxlength="200" style="flex:1;min-width:200px">
+            <button class="btn btn-primary btn-sm" id="aimg-gen">🎨 ${t("cc_generate")}</button>
+            <a class="btn btn-outline btn-sm" id="aimg-dl" hidden target="_blank" rel="noopener">⬇ ${t("tl_copy") === "Copy" ? "Save" : "သိမ်း"}</a>
+          </div>
+          <div class="chips" style="margin-top:8px">
+            ${["a friendly cartoon laptop learning to code",
+               "a Myanmar teenager coding on a phone, flat illustration",
+               "colorful HTML CSS JavaScript logos, minimal",
+               "a rocket launching, coding success, vibrant"].map((p) =>
+              `<button type="button" class="chip" data-aimg="${escapeHtml(p)}">${escapeHtml(p.split(",")[0])}</button>`).join("")}
+          </div>
+          <div id="aimg-status" class="muted" style="font-size:13px;margin-top:6px"></div>
+          <img id="aimg-prev" class="cc-imgprev" hidden alt="AI image">
+        </div>
       </div>`;
 
     const $ = (s) => document.getElementById(s);
@@ -6639,6 +6657,27 @@
       prev.src = url; prev.hidden = false;
       dl.href = url; dl.hidden = false;
     });
+
+    /* 🎨 free AI image via Pollinations.ai — no API key, no cost, no geo-block.
+       The image IS the URL, so we just point an <img> at it. */
+    let aimgSeed = 1;
+    const genAImg = () => {
+      const p = ($("aimg-p").value || "").trim();
+      if (!p) { $("aimg-status").textContent = t("aimg_need"); return; }
+      const prompt = p + ", clean, high quality, for a coding school";
+      const url = "https://image.pollinations.ai/prompt/" + encodeURIComponent(prompt) +
+        "?width=1024&height=1024&nologo=true&seed=" + (aimgSeed++);
+      const prev = $("aimg-prev"), dl = $("aimg-dl"), st = $("aimg-status");
+      st.textContent = "🎨 " + t("aimg_making");
+      prev.hidden = true;
+      prev.onload = () => { prev.hidden = false; st.textContent = "✓ " + t("aimg_done"); dl.href = url; dl.hidden = false; };
+      prev.onerror = () => { st.textContent = "⚠ " + t("chat_send_err"); };
+      prev.src = url;
+    };
+    $("aimg-gen").addEventListener("click", genAImg);
+    $("aimg-p").addEventListener("keydown", (e) => { if (e.key === "Enter") genAImg(); });
+    document.querySelectorAll("[data-aimg]").forEach((b) =>
+      b.addEventListener("click", () => { $("aimg-p").value = b.getAttribute("data-aimg"); genAImg(); }));
 
     /* real student count for the milestone post */
     const base = statsBase();

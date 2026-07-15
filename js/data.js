@@ -15166,7 +15166,7 @@ Key developer leaves          2  5   10    Sam    Pair on the core
     rating: 4.5,
     ratings: 6210,
     students: 27400,
-    hours: 8,
+    hours: 16,
     price: "Free",
     color: "linear-gradient(135deg,#373b44,#4286f4)",
     icon: "&#127970;",
@@ -15180,104 +15180,245 @@ Key developer leaves          2  5   10    Sam    Pair on the core
     ],
     sections: [
       {
-        title: "What Is an ERP?",
+        title: "1 · What Is an ERP?",
         lessons: [
-          article("erp-what", "One System to Run the Business", "6 min", `
-<p><strong>ERP</strong> stands for <strong>Enterprise Resource Planning</strong>. It's one big software system that runs a company's core operations — all sharing <strong>one database</strong>.</p>
-<p>Without ERP, departments use separate tools that don't talk: finance in one spreadsheet, the warehouse in another, sales in a third. Numbers never match.</p>
+          article("erp-what", "One System to Run the Business", "7 min", `
+<p><strong>ERP</strong> = Enterprise Resource Planning. Ignore the name — it explains nothing. Here's the real idea.</p>
+<h3>The problem it solves</h3>
+<p>A growing company ends up with Finance in one spreadsheet, stock in another, HR in a folder, and sales in someone's inbox. Then:</p>
+<ul>
+  <li>Sales promises 200 units. Nobody actually knows if 200 exist.</li>
+  <li>Finance invoices for a delivery that was cancelled.</li>
+  <li>Three departments hold three different customer addresses.</li>
+  <li>The monthly report takes two weeks — and it's already wrong.</li>
+</ul>
+<p>Nobody is incompetent. The <em>data is fragmented</em>, so nobody can see the whole picture.</p>
+<h3>The ERP idea, in one line</h3>
+<div class="callout"><strong>One shared database, many modules.</strong> Finance, inventory, HR, sales and purchasing all read and write the same data.</div>
+<h3>Why that changes everything</h3>
+<p>Now a sale <em>automatically</em> reserves stock, triggers a purchase order when stock is low, creates the invoice, and updates the accounts. Not because someone remembered — because it's one system.</p>
 <div class="flow">
-  <div class="flow-box">💰 Finance</div>
-  <div class="flow-arrow" data-label="one DB"></div>
-  <div class="flow-box alt">🗄️ One ERP</div>
-  <div class="flow-arrow" data-label="one DB"></div>
-  <div class="flow-box warn">📦 Inventory</div>
+  <div class="flow-box">🛒 Sale</div>
+  <div class="flow-arrow" data-label="reserves"></div>
+  <div class="flow-box alt">📦 Stock</div>
+  <div class="flow-arrow" data-label="triggers"></div>
+  <div class="flow-box">🧾 Invoice</div>
+  <div class="flow-arrow" data-label="posts"></div>
+  <div class="flow-box warn">💰 Accounts</div>
 </div>
-<div class="callout tip">The magic of ERP is a <strong>single source of truth</strong> — enter data once, and every department sees the same, up-to-date numbers.</div>`),
-          article("erp-why", "Why Companies Use ERP", "6 min", `
-<p>ERP is expensive and complex — so why do most large companies run one?</p>
+<h3>Single source of truth</h3>
+<p>That phrase is the whole point. One customer record. One stock number. One version of the truth that everyone argues <em>from</em>, instead of arguing <em>about</em>.</p>
+<div class="callout tip">If you've ever heard "which spreadsheet is the latest one?" — you've met the problem ERP exists to solve.</div>`),
+          article("erp-why", "Why Companies Use ERP (and What It Costs)", "7 min", `
+<p>ERP is expensive, slow to implement and disruptive. Companies do it anyway. Here's the honest trade.</p>
+<h3>What they get</h3>
 <ul>
-  <li><strong>No silos</strong> — finance, sales, and the warehouse share the same data.</li>
-  <li><strong>Automation</strong> — a sale can auto-update stock, invoicing, and accounts.</li>
-  <li><strong>Real-time reporting</strong> — leaders see the whole business at once.</li>
-  <li><strong>Scale &amp; compliance</strong> — consistent processes across many sites and countries.</li>
+  <li><strong>Visibility</strong> — real numbers, today, not a two-week-old report.</li>
+  <li><strong>Automation</strong> — one event updates everything; less re-typing, fewer errors.</li>
+  <li><strong>Standard processes</strong> — the same way of working in every branch.</li>
+  <li><strong>Compliance &amp; audit</strong> — who changed what, when. Auditors require this.</li>
+  <li><strong>Scale</strong> — spreadsheets stop working at a certain size. Hard stop.</li>
 </ul>
-<div class="callout">Example: a customer order in the ERP instantly reserves stock, triggers a shipment, creates an invoice, and books the revenue — no re-typing, no mismatched numbers.</div>`),
-          article("erp-history", "From MRP to Modern Cloud ERP", "5 min", `
-<p>A quick timeline so the buzzwords make sense.</p>
+<h3>What it costs</h3>
 <ul>
-  <li><strong>MRP (1970s)</strong> — software just for manufacturing &amp; materials.</li>
-  <li><strong>ERP (1990s)</strong> — expanded to finance, HR, sales — the whole enterprise.</li>
-  <li><strong>Cloud ERP (today)</strong> — runs online (SaaS), updated automatically, accessible anywhere.</li>
+  <li><strong>Money</strong> — licences, consultants, training. Often more consultants than software.</li>
+  <li><strong>Time</strong> — months to years.</li>
+  <li><strong>Disruption</strong> — everyone's job changes.</li>
+  <li><strong>Rigidity</strong> — the system now enforces the process. That's the feature <em>and</em> the complaint.</li>
 </ul>
-<div class="callout tip">Most new ERP projects now choose <strong>cloud</strong> — less hardware, faster setup, lower upfront cost.</div>`),
-        ],
-      },
-      {
-        title: "The Core Modules",
-        lessons: [
-          article("erp-finance", "Finance & Accounting", "6 min", `
-<p>The heart of every ERP. It records all the money movements automatically.</p>
+<h3>The real reason it's hard</h3>
+<p>ERP is not really an IT project. It's a <strong>business-change project wearing IT clothes</strong>. The software works; the difficulty is 400 people changing how they work — including the person who's done it their way for 20 years.</p>
+<h3>When you don't need one</h3>
+<p>A 5-person shop does not need SAP. Well-run spreadsheets plus accounting software is fine — and far cheaper. ERP earns its cost when coordination between departments is the bottleneck.</p>
+<div class="callout warn">The consultant's fee usually exceeds the licence. When someone quotes "$50k for the software", ask what the implementation costs. It's often 2-3x.</div>`),
+          article("erp-history", "From MRP to Modern Cloud ERP", "6 min", `
+<p>Knowing the history explains why ERP systems feel the way they do.</p>
+<h3>The path</h3>
 <ul>
-  <li><strong>General Ledger</strong> — the master record of all transactions.</li>
-  <li><strong>Accounts Payable / Receivable</strong> — money you owe and money owed to you.</li>
-  <li><strong>Reporting</strong> — balance sheet, profit &amp; loss, cash flow, at any moment.</li>
+  <li><strong>1960s — Inventory control.</strong> Just: what do we have?</li>
+  <li><strong>1970s — MRP</strong> (Material Requirements Planning). To build 100 chairs we need 400 legs by Tuesday.</li>
+  <li><strong>1980s — MRP II.</strong> Add machines, labour, capacity.</li>
+  <li><strong>1990s — ERP.</strong> Add finance, HR, sales. The whole business, one system. The term is coined.</li>
+  <li><strong>2000s — Extended.</strong> CRM, e-commerce, suppliers plugged in.</li>
+  <li><strong>2010s-now — Cloud ERP.</strong> Subscription, browser-based, no server room.</li>
 </ul>
-<div class="callout">Because every module posts to Finance, a warehouse action (goods received) instantly shows up in the accounts.</div>`),
-          article("erp-supply", "Supply Chain & Inventory", "6 min", `
-<p>Tracks the flow of goods — from buying materials to shipping products.</p>
+<h3>On-premise vs cloud</h3>
 <ul>
-  <li><strong>Procurement</strong> — purchase orders to suppliers.</li>
-  <li><strong>Inventory</strong> — real-time stock levels across warehouses.</li>
-  <li><strong>Fulfilment</strong> — pick, pack, ship customer orders.</li>
+  <li><strong>On-premise</strong> — your servers, your control, huge upfront cost, you handle upgrades. Still common where data must stay in-country.</li>
+  <li><strong>Cloud (SaaS)</strong> — monthly fee, vendor upgrades it, reachable anywhere. Less control, and you must accept their release schedule.</li>
 </ul>
-<div class="callout tip">ERP can auto-reorder stock when it drops below a set level — so you don't run out or over-buy.</div>`),
-          article("erp-hr-crm", "HR, Payroll, Sales & CRM", "6 min", `
-<p>ERPs also cover the people and customer sides.</p>
-<ul>
-  <li><strong>HR &amp; Payroll</strong> — employee records, salaries, leave, taxes.</li>
-  <li><strong>Sales &amp; CRM</strong> — customers, quotes, orders, and the sales pipeline.</li>
-  <li><strong>Manufacturing</strong> (for makers) — bills of materials, production planning.</li>
-</ul>
-<div class="callout">Because it's all one system, a sale (CRM) flows into stock (inventory), shipping (supply chain), and revenue (finance) — connected end to end.</div>`),
-        ],
-      },
-      {
-        title: "Choosing & Implementing ERP",
-        lessons: [
-          article("erp-vendors", "The Major Vendors", "6 min", `
-<p>A few big names run most of the world's ERPs.</p>
-<ul>
-  <li><strong>SAP</strong> — the market leader, huge enterprises (SAP S/4HANA).</li>
-  <li><strong>Oracle</strong> — Oracle Fusion / NetSuite (NetSuite is popular with mid-size firms).</li>
-  <li><strong>Microsoft Dynamics 365</strong> — integrates with the Microsoft world.</li>
-  <li><strong>Odoo</strong> — open-source, modular, popular with small &amp; growing businesses.</li>
-</ul>
-<div class="callout tip">There's no "best" ERP — only the best fit for a company's size, industry, and budget.</div>`),
-          article("erp-implement", "How an ERP Rollout Works", "7 min", `
-<p>Buying the software is the easy part. <strong>Implementing</strong> it is a major project (this is where your project-management skills matter!).</p>
-<ol>
-  <li><strong>Discovery</strong> — map current processes; decide what changes.</li>
-  <li><strong>Configure</strong> — set up modules to fit the business.</li>
-  <li><strong>Migrate data</strong> — move clean data from old systems.</li>
-  <li><strong>Test</strong> — check every process end-to-end.</li>
-  <li><strong>Train &amp; go live</strong> — people are the hardest part.</li>
-</ol>
-<div class="callout">"Big bang" (switch everything at once) is risky; a <strong>phased</strong> rollout by module or site is safer.</div>`),
-          article("erp-fail", "Why ERP Projects Fail", "6 min", `
-<p>ERP projects are famous for going over budget. The reasons are rarely technical.</p>
-<ul>
-  <li><strong>Over-customizing</strong> — bending the software too far instead of adapting the process.</li>
-  <li><strong>Bad data</strong> — migrating messy data ("garbage in, garbage out").</li>
-  <li><strong>No training</strong> — people revert to old habits.</li>
-  <li><strong>Weak sponsorship</strong> — leadership isn't fully behind it.</li>
-</ul>
-<div class="callout tip">The winning mindset: change the <em>business</em> to match proven ERP best-practices, not the other way around.</div>`),
-          quiz("erp-quiz", "Quiz: ERP Systems", [
+<h3>Why the old ones look old</h3>
+<p>Many ERPs carry 30 years of accumulated features. That "ugly, complicated" screen usually encodes a real regulation from 1998 that somebody still needs. It's not incompetence — it's history you can't delete.</p>
+<div class="callout tip">Most new deployments are cloud now. But a big manufacturer running on-premise SAP since 2005 isn't "behind" — migrating is a multi-year, multi-million-dollar decision.</div>`),
+          quiz("erp-quiz-1", "Quiz: ERP Basics", [
             { q: "ERP stands for…", options: ["Extra Rapid Processing", "Enterprise Resource Planning", "Employee Reward Program", "Electronic Records Portal"], answer: 1 },
-            { q: "The core benefit of an ERP is…", options: ["Cheaper laptops", "A single source of truth — one shared database", "Faster internet", "More meetings"], answer: 1 },
-            { q: "Which is a core ERP module?", options: ["Photo editing", "Finance & Accounting", "Video streaming", "Game design"], answer: 1 },
+            { q: "The core idea of an ERP is…", options: ["Cheaper laptops", "One shared database, many modules — a single source of truth", "Faster internet", "More meetings"], answer: 1 },
+            { q: "The root problem ERP solves is…", options: ["Slow computers", "Fragmented data — nobody can see the whole picture", "Bad staff", "Expensive software"], answer: 1 },
+            { q: "An ERP project is really a…", options: ["Pure IT project", "Business-change project wearing IT clothes", "Marketing project", "Hardware upgrade"], answer: 1 },
+            { q: "ERP grew out of…", options: ["Email", "MRP — material requirements planning", "Spreadsheets", "CRM"], answer: 1 },
+            { q: "For a 5-person shop, ERP is usually…", options: ["Essential", "Overkill — spreadsheets + accounting software is fine", "Free", "Legally required"], answer: 1 },
+            { q: "The implementation cost compared to the licence is typically…", options: ["Much less", "Often 2-3x more", "Identical", "Zero"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "2 · The Core Modules",
+        lessons: [
+          article("erp-finance", "Finance & Accounting", "7 min", `
+<p>Finance is the heart of every ERP. Every other module eventually posts here.</p>
+<h3>The pieces</h3>
+<ul>
+  <li><strong>General Ledger (GL)</strong> — the master record of every transaction. The single book of truth.</li>
+  <li><strong>Accounts Receivable (AR)</strong> — money owed <em>to</em> us.</li>
+  <li><strong>Accounts Payable (AP)</strong> — money we owe.</li>
+  <li><strong>Fixed assets</strong> — buildings, machines, depreciation.</li>
+  <li><strong>Budgeting &amp; reporting</strong> — planned vs actual.</li>
+</ul>
+<h3>The chart of accounts</h3>
+<p>The list of every "bucket" money can sit in. Designing it badly is one of the most expensive early mistakes — every report forever is shaped by it, and restructuring it later is brutal.</p>
+<h3>Why integration matters here</h3>
+<p>Without ERP, someone re-types the warehouse's delivery note into the accounts. That's a delay and a typo waiting to happen. With ERP, goods received <em>posts the accounting entry itself</em>, instantly.</p>
+<h3>The month-end close</h3>
+<p>Every month finance "closes the books". Companies on spreadsheets take weeks. A well-run ERP shrinks that to days. That gap — knowing your numbers on the 3rd instead of the 20th — is often the whole business case.</p>
+<div class="callout warn">Finance modules encode real law: tax rules, audit trails, currency handling. This is exactly where you must NOT "customise it to how we like it".</div>`),
+          article("erp-supply", "Supply Chain & Inventory", "7 min", `
+<p>Where ERP earns its money in any company that moves physical things.</p>
+<h3>The flow</h3>
+<div class="flow">
+  <div class="flow-box">📝 Purchase order</div>
+  <div class="flow-arrow" data-label="arrives"></div>
+  <div class="flow-box alt">📦 Goods received</div>
+  <div class="flow-arrow" data-label="sold"></div>
+  <div class="flow-box">🚚 Delivery</div>
+  <div class="flow-arrow" data-label="billed"></div>
+  <div class="flow-box warn">🧾 Invoice</div>
+</div>
+<h3>The concepts</h3>
+<ul>
+  <li><strong>SKU</strong> — a unique code for each product variant.</li>
+  <li><strong>BOM</strong> (Bill of Materials) — what a product is made of.</li>
+  <li><strong>Reorder point</strong> — stock level that auto-triggers a purchase.</li>
+  <li><strong>Lead time</strong> — how long the supplier actually takes.</li>
+  <li><strong>Three-way match</strong> — the order, the delivery and the invoice must agree before we pay.</li>
+</ul>
+<h3>Three-way match is the anti-fraud control</h3>
+<p>We ordered 100, received 100, so we pay for 100 — not the 120 on the invoice. Doing that by hand across thousands of invoices is impossible; the ERP does it automatically. This one control pays for a lot of software.</p>
+<h3>Stock is money sitting still</h3>
+<p>Too much stock = cash frozen on a shelf, possibly expiring. Too little = lost sales and idle factories. ERP's job is visibility so you can walk that line deliberately.</p>
+<div class="callout tip">The classic ERP win: a sales order automatically checks stock, reserves it, and raises a purchase order when it dips below the reorder point — with nobody remembering to do anything.</div>`),
+          article("erp-hr-crm", "HR, Payroll, Sales & CRM", "7 min", `
+<p>The people-and-customer side of the same database.</p>
+<h3>HR &amp; Payroll</h3>
+<ul>
+  <li><strong>Employee master data</strong> — one record per person, everywhere.</li>
+  <li><strong>Payroll</strong> — salary, tax, contributions. Deeply local: every country's rules differ.</li>
+  <li><strong>Time &amp; attendance</strong> — hours, leave, shifts.</li>
+  <li><strong>Recruitment &amp; performance.</strong></li>
+</ul>
+<p>The integration win: hours worked flow into payroll, and payroll costs post straight to finance and to the right project. No re-typing.</p>
+<h3>Sales &amp; CRM</h3>
+<ul>
+  <li><strong>Leads → opportunities → quotes → orders.</strong></li>
+  <li><strong>Customer master data</strong> — one address, not four.</li>
+  <li><strong>Pricing &amp; discounts</strong> — enforced rules, not favours.</li>
+  <li><strong>After-sales</strong> — support and returns tied to the actual order.</li>
+</ul>
+<h3>ERP vs CRM</h3>
+<p><strong>CRM</strong> looks outward (winning and keeping customers). <strong>ERP</strong> looks inward (running the company). They overlap at the order — which is why big ERPs bundle a CRM, and why many firms still use Salesforce alongside SAP and wire the two together.</p>
+<div class="callout warn">Payroll is the module most likely to be local or heavily configured — tax law changes yearly and is different in every country. Never assume a global template just works in Myanmar.</div>`),
+          quiz("erp-quiz-2", "Quiz: The Core Modules", [
+            { q: "The General Ledger is…", options: ["A stock list", "The master record of every financial transaction", "A CRM", "A report"], answer: 1 },
+            { q: "The chart of accounts matters because…", options: ["It's colourful", "It shapes every report forever and is brutal to restructure later", "It's optional", "It speeds up the system"], answer: 1 },
+            { q: "A three-way match compares…", options: ["Three suppliers", "Order, delivery and invoice — before you pay", "Three currencies", "Three reports"], answer: 1 },
+            { q: "A BOM (Bill of Materials) is…", options: ["An invoice", "What a product is made of", "A purchase order", "A payslip"], answer: 1 },
+            { q: "A reorder point does what?", options: ["Sets the price", "Auto-triggers a purchase when stock drops below it", "Closes the books", "Pays the supplier"], answer: 1 },
+            { q: "Too much stock means…", options: ["More profit", "Cash frozen on a shelf", "Faster delivery", "Lower cost"], answer: 1 },
+            { q: "The difference between CRM and ERP is…", options: ["None", "CRM looks outward at customers; ERP looks inward at running the company", "CRM is cheaper", "ERP has no customers"], answer: 1 },
+            { q: "Which module is most affected by local law?", options: ["Inventory", "Payroll", "CRM", "Reporting"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "3 · Choosing & Implementing ERP",
+        lessons: [
+          article("erp-vendors", "The Major Vendors", "7 min", `
+<p>The landscape, honestly — including where each one actually fits.</p>
+<h3>The big two</h3>
+<ul>
+  <li><strong>SAP</strong> — the giant, especially in manufacturing and large enterprise. Enormously capable, expensive, steep learning curve. SAP skills are a career in themselves.</li>
+  <li><strong>Oracle</strong> (NetSuite / Fusion) — strong in finance; NetSuite is popular with mid-size and fast-growing firms.</li>
+</ul>
+<h3>The rest worth knowing</h3>
+<ul>
+  <li><strong>Microsoft Dynamics 365</strong> — familiar if you live in Office/Teams; strong mid-market.</li>
+  <li><strong>Odoo</strong> — open-source, modular, dramatically cheaper. Very popular with small and mid-size businesses, and common across Southeast Asia.</li>
+  <li><strong>ERPNext</strong> — open-source, free to self-host.</li>
+  <li><strong>Zoho, Sage, Infor</strong> — solid mid-market options.</li>
+</ul>
+<h3>How to actually choose</h3>
+<ol>
+  <li><strong>Your industry</strong> — a system built for manufacturing fits a factory better than a generic one.</li>
+  <li><strong>Your size</strong> — SAP in a 20-person firm is a punishment.</li>
+  <li><strong>Local support</strong> — is there anyone in your country who can implement and support it? This matters more than the feature list.</li>
+  <li><strong>Total cost</strong> — licence + implementation + training + upgrades. Not the sticker price.</li>
+  <li><strong>Fit without customising</strong> — the best system is the one you can use nearly as it ships.</li>
+</ol>
+<div class="callout tip">Open-source ERP (Odoo, ERPNext) is genuinely worth evaluating for a small business. No licence fee, and you can start with two modules and grow.</div>`),
+          article("erp-implement", "How an ERP Rollout Works", "8 min", `
+<p>The phases are predictable. So are the places it goes wrong.</p>
+<h3>The phases</h3>
+<ol>
+  <li><strong>Discovery</strong> — how do we actually work today? (Usually a shock.)</li>
+  <li><strong>Design</strong> — how will we work in the new system?</li>
+  <li><strong>Configure</strong> — set it up. Customise only if you truly must.</li>
+  <li><strong>Data migration</strong> — move customers, products, balances.</li>
+  <li><strong>Test</strong> — including <strong>UAT</strong>: real users, real scenarios.</li>
+  <li><strong>Train</strong> — everyone, properly.</li>
+  <li><strong>Go-live</strong> — big bang, or phased.</li>
+  <li><strong>Support</strong> — the weeks after, when reality arrives.</li>
+</ol>
+<h3>Big bang vs phased</h3>
+<ul>
+  <li><strong>Big bang</strong> — everything switches at once. Cheaper, faster, terrifying. One bad weekend can stop the company.</li>
+  <li><strong>Phased</strong> — module by module or site by site. Safer, slower, and you must run two systems in parallel for a while.</li>
+</ul>
+<h3>Data migration is where projects die</h3>
+<p>Your old data is dirty: duplicate customers, products nobody sells, balances that don't reconcile. <strong>Migrating bad data into a shiny new ERP gives you a shiny new mess.</strong> Clean it first — and budget far more time for this than feels reasonable.</p>
+<h3>Configure, don't customise</h3>
+<p><strong>Configuration</strong> = using the settings the vendor gave you. <strong>Customisation</strong> = changing the code. Every customisation must be re-tested and possibly re-built at every upgrade, forever. It's a mortgage, not a purchase.</p>
+<div class="callout warn">"But this is how we've always done it" is the most expensive sentence in an ERP project. Sometimes your process is genuinely special. Usually it's just a habit — and adapting is far cheaper than customising.</div>`),
+          article("erp-fail", "Why ERP Projects Fail", "8 min", `
+<p>A large share of ERP projects run over budget, over time, or quietly fail to deliver. The reasons repeat — and almost none are technical.</p>
+<h3>The causes</h3>
+<ul>
+  <li><strong>Over-customisation.</strong> The system is bent to fit old habits. Now upgrades are impossible and you're stuck on a version nobody supports.</li>
+  <li><strong>Dirty data migrated.</strong> Garbage in, garbage in a nicer window.</li>
+  <li><strong>No executive sponsor.</strong> Nobody with power forces the hard decisions, so departments quietly opt out.</li>
+  <li><strong>Training treated as an afterthought.</strong> A week before go-live, one session, in a room. People then invent workarounds — usually spreadsheets.</li>
+  <li><strong>Scope creep.</strong> "While we're at it…" until nothing ships.</li>
+  <li><strong>Underestimating change.</strong> The technical work is the easy half.</li>
+</ul>
+<h3>The shadow spreadsheet</h3>
+<p>The truest sign of failure: six months after go-live, a department is still keeping its own spreadsheet "because the system doesn't do what we need". You now have <em>two</em> sources of truth — which is worse than the one you started with.</p>
+<h3>Doing it right</h3>
+<ul>
+  <li><strong>Sponsor with real authority.</strong></li>
+  <li><strong>Clean the data first.</strong></li>
+  <li><strong>Configure, don't customise</strong> — challenge every exception.</li>
+  <li><strong>Train early and often</strong>, with your own real data.</li>
+  <li><strong>Phase it</strong> if you can afford to.</li>
+  <li><strong>Involve the people who do the work</strong> — they know where the process really is.</li>
+</ul>
+<div class="callout tip">Ask "what will people do on the Monday after go-live?" If the answer isn't concrete and rehearsed, you are not ready — no matter what the plan says.</div>`),
+          quiz("erp-quiz", "Final Quiz: ERP Systems", [
             { q: "Which is an open-source ERP popular with small businesses?", options: ["SAP S/4HANA", "Odoo", "Photoshop", "Slack"], answer: 1 },
             { q: "A common reason ERP projects fail is…", options: ["Too little customization", "Over-customizing and migrating bad data", "Using one database", "Training people too much"], answer: 1 },
+            { q: "'Configure, don't customise' matters because customisation…", options: ["Is illegal", "Must be re-tested/rebuilt at every upgrade — forever", "Is slower to write", "Voids the licence"], answer: 1 },
+            { q: "Migrating dirty data gives you…", options: ["A clean start", "A shiny new mess", "Faster reports", "Better audits"], answer: 1 },
+            { q: "The clearest sign an ERP rollout failed is…", options: ["Slow screens", "Departments still keeping shadow spreadsheets", "Too many users", "A big licence bill"], answer: 1 },
+            { q: "Big bang go-live is…", options: ["Always safest", "Cheaper and faster, but one bad weekend can stop the company", "Illegal", "Phased"], answer: 1 },
+            { q: "When choosing a vendor, what matters more than the feature list?", options: ["The logo", "Local support and total cost of ownership", "The website", "The sales rep"], answer: 1 },
+            { q: "The hardest part of an ERP project is…", options: ["The code", "People changing how they work", "Buying servers", "The database"], answer: 1 },
           ]),
         ],
       },

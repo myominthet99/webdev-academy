@@ -331,6 +331,18 @@
           }
         }
       }
+    },
+    "customCourses": {
+      ".read": true,
+      "$cid": {
+        ".write": "auth != null && auth.token.email === 'mmtboy90@gmail.com'",
+        "id": {
+          ".validate": "newData.isString() && newData.val().length <= 60"
+        },
+        "title": {
+          ".validate": "newData.isString() && newData.val().length <= 120"
+        }
+      }
     }
   }
 }

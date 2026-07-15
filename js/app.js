@@ -41,11 +41,20 @@
     try { return JSON.parse(localStorage.getItem(CUSTOM_KEY)) || []; } catch (e) { return []; }
   }
   function saveCustomCourses(list) { localStorage.setItem(CUSTOM_KEY, JSON.stringify(list)); }
+  /* Courses the admin built and published — fetched from the cloud so every
+     student sees them. Before this they lived only in the author's own
+     localStorage, which meant nobody else could ever open them. */
+  let cloudCourses = [];
   function syncCourses() {
     COURSES.length = 0;
     /* built-in courses get generated cover art (tools/gen-covers.js) */
     BUILTIN_COURSES.forEach((c) => COURSES.push(c.image ? c : Object.assign({}, c, { image: "covers/" + c.id + ".svg" })));
-    loadCustomCourses().forEach((c) => COURSES.push(Object.assign({ custom: true }, c)));
+    /* the author's local copy wins over the published one, so their
+       in-progress edits are what they see */
+    const local = loadCustomCourses();
+    const seen = new Set(local.map((c) => c.id));
+    local.forEach((c) => COURSES.push(Object.assign({ custom: true }, c)));
+    cloudCourses.forEach((c) => { if (!seen.has(c.id)) COURSES.push(Object.assign({ custom: true, published: true }, c)); });
   }
   syncCourses();
 
@@ -1361,6 +1370,34 @@
     (window.Auth && window.Auth.idToken ? window.Auth.idToken() : Promise.resolve(null))
       .then((tk) => fetch(url + (tk ? (url.indexOf("?") >= 0 ? "&" : "?") + "auth=" + encodeURIComponent(tk) : ""), opts));
   const dateKey = (offset) => new Date(Date.now() - offset * 86400000).toISOString().slice(0, 10);
+
+  /* ---- Published (admin-built) courses ---------------------------------
+     Read is public so students get them; writes are admin-only (rules). */
+  function loadCloudCourses() {
+    const base = statsBase();
+    if (!base) return;
+    fetch(base + "/customCourses.json").then((r) => r.json()).then((val) => {
+      const list = Object.values(val || {}).filter((c) => c && c.id && Array.isArray(c.sections));
+      if (!list.length) return;
+      cloudCourses = list;
+      syncCourses();
+      router(); /* re-render so published courses appear without a reload */
+    }).catch(() => {});
+  }
+  const isAdminUser = () => !!(window.Auth && window.Auth.isAdmin && window.Auth.isAdmin());
+  function publishCourse(course) {
+    const base = statsBase();
+    if (!base || !isAdminUser()) return Promise.resolve();
+    return authFetch(base + "/customCourses/" + encodeURIComponent(course.id) + ".json", {
+      method: "PUT", body: JSON.stringify(course),
+    }).catch(() => {});
+  }
+  function unpublishCourse(id) {
+    const base = statsBase();
+    if (!base || !isAdminUser()) return Promise.resolve();
+    cloudCourses = cloudCourses.filter((c) => c.id !== id);
+    return authFetch(base + "/customCourses/" + encodeURIComponent(id) + ".json", { method: "DELETE" }).catch(() => {});
+  }
 
   /* 📢 Site-wide announcement banner: the admin posts one message
      (stats/announcement); every student sees it until they dismiss it. */
@@ -7519,13 +7556,16 @@
       list.push(course);
       saveCustomCourses(list);
       syncCourses();
+      publishCourse(course);   /* make it real for students, not just this browser */
       location.hash = "#/course/" + id;
     });
 
     app.querySelectorAll("[data-del-course]").forEach((b) =>
       b.addEventListener("click", () => {
         if (!window.confirm(t("admin_deleteq"))) return;
-        saveCustomCourses(loadCustomCourses().filter((c) => c.id !== b.getAttribute("data-del-course")));
+        const delId = b.getAttribute("data-del-course");
+        saveCustomCourses(loadCustomCourses().filter((c) => c.id !== delId));
+        unpublishCourse(delId);
         syncCourses();
         renderAdmin();
       }));
@@ -7797,6 +7837,7 @@
   updateStreak();
   router();
   loadAnnouncement();
+  loadCloudCourses();
   maybeOnboard(); /* first-run welcome (once per device) */
   setTimeout(updatePushMeta, 3000); /* refresh streak state for push reminders */
 

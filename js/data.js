@@ -6399,7 +6399,7 @@ students.sort((a, b) =&gt; b.xp - a.xp);</code></pre>
     rating: 4.8,
     ratings: 26700,
     students: 195000,
-    hours: 7,
+    hours: 12,
     price: "Free",
     free: true,
     color: "linear-gradient(135deg,#f05033,#3e2c00)",
@@ -6414,224 +6414,358 @@ students.sort((a, b) =&gt; b.xp - a.xp);</code></pre>
     ],
     sections: [
       {
-        title: "Git Foundations",
+        title: "1 · Git Foundations",
         lessons: [
-          article("git-commit", "The Commit Loop", "10 min", `
-<h3>🎯 Intro</h3>
-<p>Git takes snapshots of your project. Each snapshot (commit) is a save point you can always return to.</p>
-<h3>💻 Example</h3>
-<pre><code>git init                      # start tracking this folder
-git add index.html            # stage a file
-git commit -m "Add homepage"  # snapshot with a message
-
-git status                    # what changed?
-git log --oneline             # history</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> create a folder, init a repo, add a file, and make two commits with clear messages.</div>`),
-          article("git-branch", "Branches & Merging", "12 min", `
-<h3>🎯 Intro</h3>
-<p>Branches let you try ideas without touching the working version.</p>
-<h3>💻 Example</h3>
-<pre><code>git branch feature-menu     # create a branch
-git switch feature-menu     # work on it
-# ...edit files, commit...
-git switch main             # back to main
-git merge feature-menu      # bring the work in</code></pre>
-<div class="callout tip">Golden rule: main always works; experiments live on branches.</div>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> create a branch, change a file, commit, then merge it back to main.</div>`),
-          article("git-github", "Push to GitHub", "10 min", `
-<h3>🎯 Intro</h3>
-<p>GitHub hosts your repositories online — backup, portfolio, and teamwork in one.</p>
-<h3>💻 Example</h3>
-<pre><code>git remote add origin https://github.com/you/project.git
-git push -u origin main     # first push
-git push                    # every time after
-
-git pull                    # get teammates' changes</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> create a GitHub repo and push your practice project — then check it appears on your profile.</div>`),
-          quiz("git-quiz", "Quiz: Git", [
-            { q: "Which command creates a snapshot?", options: ["git snapshot", "git save", "git commit", "git push"], answer: 2 },
-            { q: "Branches are for...", options: ["Backups only", "Working on ideas without breaking main", "Deleting history", "Speed"], answer: 1 },
-            { q: "git push does what?", options: ["Downloads changes", "Uploads your commits to the remote", "Merges branches", "Deletes the repo"], answer: 1 },
+          article("git-what", "Why Version Control Exists", "6 min", `
+<p>Everyone invents version control badly before they learn Git.</p>
+<pre><code>site.html
+site-final.html
+site-final-FINAL.html
+site-final-FINAL-v2-real.html   😱</code></pre>
+<p>You've done it. It doesn't work: you can't tell what changed, you can't undo one part, and two people can't work at once.</p>
+<h3>What Git gives you</h3>
+<ul>
+  <li><strong>A time machine</strong> — go back to any earlier working version.</li>
+  <li><strong>A history</strong> — what changed, when, by whom, and <em>why</em>.</li>
+  <li><strong>Fearless experiments</strong> — try something wild; throw it away in one command.</li>
+  <li><strong>Teamwork</strong> — many people, one codebase, nobody overwriting anybody.</li>
+  <li><strong>A backup</strong> — pushed to GitHub, your work survives a dead laptop.</li>
+</ul>
+<h3>Git vs GitHub</h3>
+<ul>
+  <li><strong>Git</strong> — the tool, on your machine. Works offline. Free forever.</li>
+  <li><strong>GitHub</strong> — a website that hosts Git repos and adds collaboration.</li>
+</ul>
+<p>Git is the engine; GitHub is one garage. GitLab and Bitbucket are others.</p>
+<h3>It's not just for teams</h3>
+<p>Solo, Git is still worth it: it's your undo button, your backup, and — via GitHub — your public portfolio.</p>
+<div class="callout tip">Every professional developer uses Git every single day. It's not optional knowledge; it's the shared language of the whole industry.</div>`),
+          article("git-commit", "The Commit Loop", "7 min", `
+<p>The rhythm you'll repeat for the rest of your career.</p>
+<pre><code>git init                    # start tracking (once)
+git status                  # what changed?
+git add index.html          # stage one file
+git add .                   # stage everything
+git commit -m "Add nav bar" # save a snapshot
+git log --oneline           # see history</code></pre>
+<h3>The three areas</h3>
+<div class="flow">
+  <div class="flow-box">✏️ Working</div>
+  <div class="flow-arrow" data-label="git add"></div>
+  <div class="flow-box alt">📋 Staging</div>
+  <div class="flow-arrow" data-label="git commit"></div>
+  <div class="flow-box">📦 History</div>
+</div>
+<ul>
+  <li><strong>Working directory</strong> — your files as they are now.</li>
+  <li><strong>Staging area</strong> — what you've chosen to include in the next commit.</li>
+  <li><strong>History</strong> — permanent snapshots.</li>
+</ul>
+<p>Staging exists so you can commit <em>part</em> of your work. Fixed a bug and started a feature? Stage and commit only the bug fix.</p>
+<h3>git status is your friend</h3>
+<p>Run it constantly. It tells you what changed, what's staged, and usually suggests the exact command you want next.</p>
+<h3>Write messages for humans</h3>
+<pre><code>git commit -m "Fix login redirect on mobile"   ✓
+git commit -m "stuff"                          ✗
+git commit -m "asdf"                           ✗</code></pre>
+<p>Use the imperative — "Add", "Fix", "Remove" — and say <em>why</em>, not what. The diff already shows what.</p>
+<h3>Commit small and often</h3>
+<p>One idea per commit. A commit touching 40 files can't be reviewed or reverted cleanly.</p>
+<div class="callout warn">Set your identity once or your commits are anonymous:<br>git config --global user.name "Your Name"<br>git config --global user.email "you@example.com"</div>`),
+          article("git-branch", "Branches & Merging", "7 min", `
+<p>A <strong>branch</strong> is a parallel line of work. This is Git's best idea.</p>
+<pre><code>git branch                    # list
+git switch -c add-contact     # create + switch
+# ...work, commit...
+git switch main               # back
+git merge add-contact         # bring it in
+git branch -d add-contact     # tidy up</code></pre>
+<p>(<strong>git switch</strong> is the modern form; you'll still see <strong>git checkout -b</strong> everywhere.)</p>
+<h3>Why bother?</h3>
+<p><strong>main</strong> stays working and shippable. Your half-finished experiment lives on its own branch and can't break anything. If it turns out badly, delete the branch — main never knew.</p>
+<div class="flow">
+  <div class="flow-box">main</div>
+  <div class="flow-arrow" data-label="branch off"></div>
+  <div class="flow-box alt">feature</div>
+  <div class="flow-arrow" data-label="merge back"></div>
+  <div class="flow-box">main ✓</div>
+</div>
+<h3>Branches are cheap</h3>
+<p>A branch is just a pointer to a commit — creating one is instant and costs nothing. Make one for every task, however small.</p>
+<h3>The normal workflow</h3>
+<ol>
+  <li>Branch off main.</li>
+  <li>Commit a few times.</li>
+  <li>Merge back (usually via a Pull Request).</li>
+  <li>Delete the branch.</li>
+</ol>
+<div class="callout tip">Commit before switching branches. Uncommitted work follows you around and causes confusion — or use git stash to park it.</div>`),
+          article("git-github", "Push to GitHub", "6 min", `
+<p>Your repo is local until you push it somewhere.</p>
+<pre><code>git remote add origin https://github.com/you/repo.git
+git push -u origin main       # first push
+git push                      # afterwards
+git pull                      # get others' work
+git clone https://github.com/you/repo.git   # copy an existing repo</code></pre>
+<h3>What's what</h3>
+<ul>
+  <li><strong>origin</strong> — the nickname for your remote. Just a convention.</li>
+  <li><strong>-u</strong> — remember this pairing, so later you can type just <strong>git push</strong>.</li>
+  <li><strong>git pull</strong> = fetch + merge.</li>
+</ul>
+<h3>Pull before you push</h3>
+<p>If someone else pushed first, your push is rejected. Pull, resolve anything, then push. Start every session with a pull.</p>
+<h3>Passwords don't work any more</h3>
+<p>GitHub stopped accepting account passwords over HTTPS. Use a <strong>personal access token</strong>, or set up <strong>SSH keys</strong> (nicer once configured).</p>
+<h3>Public vs private</h3>
+<p>Public = anyone can read it (great for a portfolio). Private = only you and invitees. Both are free.</p>
+<div class="callout warn">Pushing a password or API key makes it compromised the moment it lands — bots scan GitHub constantly. Rotate the key; deleting the file does NOT remove it from history.</div>`),
+          quiz("git-quiz", "Quiz: Git Foundations", [
+            { q: "Git and GitHub are…", options: ["The same thing", "Git is the tool; GitHub hosts Git repos", "Both websites", "Both offline"], answer: 1 },
+            { q: "Which command saves a snapshot?", options: ["git add", "git commit", "git status", "git push"], answer: 1 },
+            { q: "The staging area exists so you can…", options: ["Work faster", "Commit only PART of your changes", "Skip commits", "Store passwords"], answer: 1 },
+            { q: "A good commit message is…", options: ["'stuff'", "'Fix login redirect on mobile'", "'asdf'", "'update'"], answer: 1 },
+            { q: "'origin' is…", options: ["Your first commit", "The nickname for your remote repo", "The main branch", "A file"], answer: 1 },
+            { q: "git pull does…", options: ["Only fetch", "Fetch + merge", "Only merge", "Push"], answer: 1 },
+            { q: "Branches are worth using because…", options: ["They're expensive", "main stays working while you experiment safely", "They speed up Git", "They compress files"], answer: 1 },
           ]),
         ],
       },
       {
-        title: "Branches, Teams & Fixing Mistakes",
+        title: "2 · Branches, Teams & Fixing Mistakes",
         lessons: [
-          article("git-undo", "Undo Anything — Git's Time Machine", "10 min", `
-<h3>🎯 The fear killer</h3>
-<p>Beginners fear Git because "what if I break it?" Truth: with commits, almost NOTHING is ever lost. Three undo tools, from soft to hard:</p>
-<div class="flow">
-  <div class="flow-box">📄 git restore file.js<br><small>throw away UNCOMMITTED<br>edits in one file</small></div>
-  <div class="flow-arrow" data-label="or"></div>
-  <div class="flow-box alt">↩️ git revert abc123<br><small>NEW commit that cancels<br>an old one — safe, shareable</small></div>
-  <div class="flow-arrow" data-label="or"></div>
-  <div class="flow-box warn">⏪ git reset --hard<br><small>rewind history —<br>local work only!</small></div>
-</div>
-<h3>💻 The situations you'll actually meet</h3>
-<pre><code># "I messed up this file, give me the last committed version"
-git restore style.css
-
-# "That commit from yesterday broke things — cancel it"
-git revert a1b2c3d
-
-# "Show me what changed before I commit"
-git diff</code></pre>
-<h3>📝 Rule of thumb</h3>
-<p>On shared branches use <strong>revert</strong> (adds history, breaks nobody). Keep <strong>reset --hard</strong> for local experiments — it rewrites history, and rewriting shared history makes teammates cry.</p>
-<div class="callout tip"><strong>Try it yourself:</strong> in a practice repo: edit a file → git restore it → watch your edits vanish. Then commit a change and git revert it. Fear = gone.</div>`),
-          article("git-ignore", ".gitignore — Keep Repos Clean", "8 min", `
-<h3>🎯 Not everything belongs in history</h3>
-<p>Some files must NEVER be committed: dependencies (huge, reinstallable), build output, and above all <strong>secrets</strong>.</p>
-<h3>💻 A solid starter .gitignore</h3>
-<pre><code># dependencies (reinstall with npm install)
+          article("git-undo", "Undo Anything — Git's Time Machine", "8 min", `
+<p>Git's real gift: almost nothing is permanent. Here's the map — match the tool to the mistake.</p>
+<h3>Not committed yet</h3>
+<pre><code>git restore index.html        # throw away changes to a file
+git restore .                 # throw away ALL changes
+git restore --staged file     # unstage, keep the edit</code></pre>
+<h3>Just committed, message is wrong</h3>
+<pre><code>git commit --amend -m "Better message"</code></pre>
+<p>Only if you haven't pushed. Amending rewrites history.</p>
+<h3>Forgot a file in the last commit</h3>
+<pre><code>git add forgotten.js
+git commit --amend --no-edit</code></pre>
+<h3>Undo a commit</h3>
+<pre><code>git reset --soft HEAD~1    # undo commit, KEEP changes staged
+git reset HEAD~1           # undo commit, keep changes unstaged
+git reset --hard HEAD~1    # undo commit AND delete the changes 💀</code></pre>
+<h3>Undo something already pushed</h3>
+<pre><code>git revert &lt;hash&gt;</code></pre>
+<p><strong>revert</strong> makes a <em>new</em> commit that undoes an old one. It's safe for shared branches because it doesn't rewrite history. Use this on main — not reset.</p>
+<h3>Park work for later</h3>
+<pre><code>git stash            # hide changes
+git stash pop        # bring them back</code></pre>
+<h3>The safety net</h3>
+<pre><code>git reflog</code></pre>
+<p>Every move you've made, even "lost" commits. If you've committed it at some point, reflog can usually get it back.</p>
+<div class="callout warn">--hard permanently deletes uncommitted work — the one Git command that genuinely loses data. Read it twice before you press enter.</div>`),
+          article("git-ignore", ".gitignore — Keep Repos Clean", "6 min", `
+<p>Not everything belongs in Git.</p>
+<h3>Never commit</h3>
+<ul>
+  <li><strong>Secrets</strong> — .env, API keys, passwords, certificates.</li>
+  <li><strong>Dependencies</strong> — node_modules/ (huge, and rebuildable).</li>
+  <li><strong>Build output</strong> — dist/, build/.</li>
+  <li><strong>OS/editor junk</strong> — .DS_Store, Thumbs.db, .vscode/.</li>
+  <li><strong>Logs and databases</strong> — *.log, *.sqlite.</li>
+</ul>
+<h3>A real .gitignore</h3>
+<pre><code># dependencies
 node_modules/
 
-# environment secrets - NEVER commit!
+# secrets
 .env
+.env.local
 
-# build output
+# build
 dist/
 build/
 
-# editor & OS noise
-.vscode/
-.DS_Store</code></pre>
-<h3>📝 Why this matters more than it looks</h3>
-<ul>
-  <li><strong>Security</strong> — a committed .env with API keys is public FOREVER (even after deleting it, history remembers). Scanners find leaked keys within minutes.</li>
-  <li><strong>Size</strong> — node_modules can be 300MB; your actual code 300KB. Nobody wants to clone the difference.</li>
-  <li><strong>Professionalism</strong> — a clean repo is the first thing reviewers notice.</li>
-</ul>
-<div class="callout tip"><strong>Try it yourself:</strong> add a .gitignore to your practice repo with the content above, create a fake .env file, run git status — Git now politely ignores it.</div>`),
-          article("git-conflict", "Merge Conflicts Without Fear", "12 min", `
-<h3>🎯 The rite of passage</h3>
-<p>Two people change the SAME line → Git can't choose → it asks YOU. That's all a conflict is: a question, not a disaster.</p>
-<h3>💻 What a conflict looks like</h3>
+# os
+.DS_Store
+Thumbs.db
+
+# logs
+*.log</code></pre>
+<h3>The rule of thumb</h3>
+<p>If it can be <em>regenerated</em> (node_modules, dist) or must stay <em>secret</em> (.env), ignore it. Commit source, not output.</p>
+<h3>Already committed by mistake?</h3>
+<pre><code>git rm -r --cached node_modules
+git commit -m "Remove node_modules"</code></pre>
+<p><strong>--cached</strong> removes it from Git but keeps it on your disk.</p>
+<h3>The hard truth about secrets</h3>
+<p>Adding a key to .gitignore <em>after</em> committing it doesn't help — it's already in history forever. The only real fix is to <strong>rotate the key</strong>.</p>
+<div class="callout tip">Create .gitignore before your first commit. gitignore.io generates a solid one for your stack in seconds.</div>`),
+          article("git-conflict", "Merge Conflicts Without Fear", "7 min", `
+<p>A <strong>conflict</strong> means two people changed the same lines and Git won't guess. That's it. It's not an error — it's a question.</p>
+<h3>What you'll see</h3>
 <pre><code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
-  price = 1500;        // your version
+&lt;h1&gt;My Site&lt;/h1&gt;
 =======
-  price = 2000;        // their version
-&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature/new-prices</code></pre>
-<h3>📝 The calm 4-step fix</h3>
-<ol>
-  <li>Open the file — the markers show BOTH versions.</li>
-  <li>Decide: yours, theirs, or a mix. Edit the block into the final code.</li>
-  <li>Delete the three marker lines completely.</li>
-  <li><code>git add file</code> → <code>git commit</code> — conflict resolved.</li>
-</ol>
-<div class="flow">
-  <div class="flow-box warn">⚡ Conflict<br><small>same line changed<br>on two branches</small></div>
-  <div class="flow-arrow" data-label="you decide"></div>
-  <div class="flow-box alt">✍️ Edit the block<br><small>keep the right code,<br>remove markers</small></div>
-  <div class="flow-arrow" data-label="add + commit"></div>
-  <div class="flow-box">✅ Merged<br><small>history continues</small></div>
-</div>
-<div class="callout"><strong>Prevention beats cure:</strong> small branches merged often conflict rarely. A branch that lives for a month WILL fight you.</div>
-<div class="callout tip"><strong>Try it yourself:</strong> create a conflict on purpose (edit the same line on two branches, merge) and fix it. Doing it once on purpose means never panicking again.</div>`),
-          article("git-pr", "Pull Requests — How Teams Really Work", "12 min", `
-<h3>🎯 The heartbeat of every dev team</h3>
-<p>Nobody pushes straight to main in a real team. Work flows through <strong>pull requests</strong>:</p>
-<div class="flow">
-  <div class="flow-box">🌿 Branch<br><small>feature/login</small></div>
-  <div class="flow-arrow" data-label="push + open PR"></div>
-  <div class="flow-box alt">🔍 Review<br><small>teammates comment,<br>CI tests run</small></div>
-  <div class="flow-arrow" data-label="approved"></div>
-  <div class="flow-box">🔀 Merge<br><small>main stays always<br>releasable</small></div>
-</div>
-<h3>📝 Writing a PR that gets approved fast</h3>
+&lt;h1&gt;Our Site&lt;/h1&gt;
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature-branch</code></pre>
 <ul>
-  <li><strong>Small</strong> — 200 lines gets a careful review; 2000 gets a tired shrug.</li>
-  <li><strong>Title says the change</strong> — "Add KBZPay to checkout", not "updates".</li>
-  <li><strong>Description says WHY</strong> + how to test it. Screenshots for UI changes.</li>
-  <li><strong>Respond to review kindly</strong> — comments target the code, not you. Every senior was reviewed thousands of times.</li>
+  <li>Above <strong>=======</strong> — your version (HEAD).</li>
+  <li>Below — the incoming version.</li>
 </ul>
-<h3>💡 Solo? Still use PRs</h3>
-<p>Branch → PR → merge, even alone: you get a clean history, a place to write what you did, and the exact habit employers expect on day one. (This academy's own repo works this way!)</p>
-<div class="callout tip"><strong>Try it yourself:</strong> in your practice repo make a branch, change something small, push, open a PR on GitHub and merge it yourself. That green "Merged" badge = team-ready.</div>`),
+<h3>Fixing it</h3>
+<ol>
+  <li>Open the file.</li>
+  <li>Decide what the result should be — theirs, yours, or a blend.</li>
+  <li><strong>Delete all the markers</strong> (&lt;&lt;&lt;, ===, &gt;&gt;&gt;).</li>
+  <li>git add the file.</li>
+  <li>git commit.</li>
+</ol>
+<h3>Escape hatch</h3>
+<pre><code>git merge --abort     # back to before the merge</code></pre>
+<p>Nothing is broken. You can always retreat and try again.</p>
+<h3>Avoiding them</h3>
+<ul>
+  <li><strong>Pull often</strong> — small conflicts beat one giant one.</li>
+  <li><strong>Short-lived branches</strong> — a branch alive for a month <em>will</em> hurt.</li>
+  <li><strong>Small commits.</strong></li>
+  <li><strong>Talk</strong> — don't both rewrite the same file all week.</li>
+</ul>
+<div class="callout warn">Leaving a &lt;&lt;&lt;&lt;&lt;&lt;&lt; marker in your code and committing it is a rite of passage. Search for it before you commit — it breaks the file.</div>`),
+          article("git-pr", "Pull Requests — How Teams Really Work", "7 min", `
+<p>Professionals rarely push straight to main. They open a <strong>Pull Request</strong>.</p>
+<h3>The flow</h3>
+<ol>
+  <li><strong>Branch</strong> off main.</li>
+  <li><strong>Commit</strong> your work.</li>
+  <li><strong>Push</strong> the branch.</li>
+  <li><strong>Open a PR</strong> on GitHub.</li>
+  <li><strong>Review</strong> — teammates comment; you push fixes.</li>
+  <li><strong>Merge</strong>, then delete the branch.</li>
+</ol>
+<h3>Why it exists</h3>
+<ul>
+  <li><strong>Review</strong> — a second pair of eyes catches real bugs.</li>
+  <li><strong>Discussion</strong> — attached to the code, not lost in chat.</li>
+  <li><strong>CI</strong> — tests run automatically before merge.</li>
+  <li><strong>Main stays green</strong> — nothing broken reaches it.</li>
+</ul>
+<h3>A good PR</h3>
+<ul>
+  <li><strong>Small.</strong> 50 lines get a real review; 2,000 get "LGTM 👍".</li>
+  <li><strong>One purpose.</strong> Don't mix a refactor with a feature.</li>
+  <li><strong>Explain why</strong>, and how to test it. Screenshots for UI.</li>
+</ul>
+<h3>Reviewing well</h3>
+<p>Comment on the <em>code</em>, never the person. Ask questions rather than issue orders. Say what's good too — review isn't only fault-finding.</p>
+<h3>Contributing to open source</h3>
+<p><strong>Fork</strong> → branch → PR. That's how you contribute to any public project on earth. Your first accepted PR is a genuinely great feeling.</p>
+<div class="callout tip">A PR that takes 30 seconds to understand gets merged today. One that takes an hour sits for a week. Small PRs are a kindness — and they ship faster.</div>`),
           quiz("git-quiz2", "Quiz: Teamwork Git", [
-            { q: "Canceling a commit on a SHARED branch safely uses…", options: ["git reset --hard", "git revert — a new commit that undoes it", "Deleting the repo", "git push --force"], answer: 1 },
-            { q: "Which file should NEVER be committed?", options: ["index.html", ".env with API keys", "README.md", "style.css"], answer: 1 },
-            { q: "Conflict markers in a file mean…", options: ["The repo is broken", "Git wants YOU to choose between two versions of the same lines", "You must start over", "GitHub is down"], answer: 1 },
-            { q: "The best pull request is…", options: ["Huge, once a month", "Small and focused, with a clear title and why", "Untested", "Direct to main"], answer: 1 },
-            { q: "node_modules/ belongs…", options: ["In every commit", "In .gitignore — dependencies are reinstallable", "On a USB stick", "In the README"], answer: 1 },
+            { q: "Which command permanently DELETES uncommitted work?", options: ["git revert", "git reset --hard", "git stash", "git restore --staged"], answer: 1 },
+            { q: "To undo a commit that's already pushed to main, use…", options: ["git reset --hard", "git revert", "git commit --amend", "git rm"], answer: 1 },
+            { q: "A merge conflict means…", options: ["Git is broken", "Two people changed the same lines — Git needs you to decide", "You lost data", "The branch is corrupt"], answer: 1 },
+            { q: "After fixing a conflict you must…", options: ["Leave the markers", "Delete the markers, git add, git commit", "Force push", "Delete the branch"], answer: 1 },
+            { q: "Adding a leaked API key to .gitignore after committing…", options: ["Fixes it", "Does NOT help — it's in history; rotate the key", "Deletes it", "Encrypts it"], answer: 1 },
+            { q: "git rm --cached does what?", options: ["Deletes the file from disk", "Removes it from Git but keeps it on disk", "Ignores it", "Commits it"], answer: 1 },
+            { q: "A good Pull Request is…", options: ["As large as possible", "Small and single-purpose", "Unexplained", "Merged without review"], answer: 1 },
+            { q: "Which command rescues 'lost' commits?", options: ["git log", "git reflog", "git status", "git clean"], answer: 1 },
           ]),
         ],
       },
       {
-        title: "Ship & Shine",
+        title: "3 · Ship & Shine",
         lessons: [
-          article("git-pages", "Free Hosting with GitHub Pages", "10 min", `
-<h3>🎯 Repo → live website in one minute</h3>
+          article("git-pages", "Free Hosting with GitHub Pages", "6 min", `
+<p>Your repo can <em>be</em> a live website. Free, with HTTPS.</p>
+<h3>How</h3>
 <ol>
-  <li>Make sure your repo's homepage file is named exactly <code>index.html</code>.</li>
-  <li>Repo → <strong>Settings → Pages</strong> → Source: <strong>main</strong> branch → Save.</li>
-  <li>Wait ~1 minute → your site is live at <code>yourname.github.io/repo-name</code>.</li>
+  <li>Push a repo containing <strong>index.html</strong>.</li>
+  <li>Settings → Pages.</li>
+  <li>Source: your branch (main), folder: / (root).</li>
+  <li>Save. A minute later it's live at <strong>you.github.io/repo</strong>.</li>
 </ol>
-<div class="flow">
-  <div class="flow-box">📁 index.html<br><small>in your repo</small></div>
-  <div class="flow-arrow" data-label="Settings → Pages"></div>
-  <div class="flow-box alt">⚙️ One dropdown<br><small>source: main</small></div>
-  <div class="flow-arrow" data-label="every push after"></div>
-  <div class="flow-box warn">🌍 Auto-deploys<br><small>push = live in<br>~1 minute</small></div>
-</div>
-<h3>📝 What Pages is perfect for</h3>
+<h3>Why it's brilliant for you</h3>
 <ul>
-  <li>Your portfolio (employers click links, not screenshots)</li>
-  <li>Every course project — build in public!</li>
-  <li>Small business pages for your first clients (free hosting = pure profit)</li>
+  <li>Free forever, HTTPS included.</li>
+  <li><strong>git push = deploy.</strong> No pipeline to learn.</li>
+  <li>Perfect for portfolios, docs, and every project in this academy.</li>
 </ul>
-<div class="callout"><strong>Proof it scales:</strong> this entire academy — 38 courses, chat, AI tutor — is hosted on GitHub Pages for exactly 0 Ks/month.</div>
-<div class="callout tip"><strong>Try it yourself:</strong> deploy ANY html file today. The moment your URL loads on your phone is the moment "I'm learning coding" becomes "I ship websites".</div>`),
-          article("git-profile", "A GitHub Profile That Gets Noticed", "10 min", `
-<h3>🎯 Employers check GitHub before your CV</h3>
-<p>Your profile is a free billboard. Five upgrades, 30 minutes total:</p>
+<h3>The gotchas</h3>
+<ul>
+  <li><strong>Case sensitivity.</strong> Image.PNG ≠ image.png. Works on your laptop, 404s live — the #1 surprise.</li>
+  <li><strong>Paths</strong> — a project site lives under /repo/, so absolute paths like /style.css break. Use relative ones (style.css).</li>
+  <li><strong>Static only</strong> — HTML/CSS/JS. No server code, no database.</li>
+  <li>Give it a minute; it isn't instant.</li>
+</ul>
+<h3>Custom domain</h3>
+<p>Own a domain? Point it at Pages in the settings. Free hosting, your own name.</p>
+<div class="callout tip">Name a repo <strong>yourname.github.io</strong> and it's served at that address directly — the standard home for a developer portfolio.</div>`),
+          article("git-profile", "A GitHub Profile That Gets Noticed", "6 min", `
+<p>For a junior developer, GitHub <em>is</em> the CV. Recruiters genuinely look.</p>
+<h3>The profile README</h3>
+<p>Create a repo named <strong>exactly your username</strong>, add a README.md, and it appears at the top of your profile. Free introduction:</p>
+<ul>
+  <li>Who you are and what you're learning.</li>
+  <li>2-3 projects worth clicking, with <em>live links</em>.</li>
+  <li>How to contact you.</li>
+</ul>
+<h3>Every project needs a README</h3>
+<p>A repo with no README looks abandoned. Include:</p>
+<ul>
+  <li><strong>What it is</strong> — one sentence.</li>
+  <li><strong>A screenshot or GIF</strong> — people scroll, they don't read.</li>
+  <li><strong>A live demo link.</strong></li>
+  <li><strong>How to run it</strong> — the exact commands.</li>
+  <li><strong>What you learned</strong> — this is what juniors forget, and it's what employers actually want to see.</li>
+</ul>
+<h3>Quality over quantity</h3>
+<p>Three finished, documented, <em>deployed</em> projects beat forty abandoned tutorial forks. Pin your best six.</p>
+<h3>The green squares myth</h3>
+<p>Nobody hires you for a contribution graph. They click your best repo and read the code. Don't grind commits — build one good thing.</p>
+<div class="callout tip">Add a live demo link to the top of every README. A recruiter who can click and SEE it working is worth ten who won't clone it.</div>`),
+          article("git-cheat", "The Everyday Cheat Sheet", "7 min", `
+<p>Realistically, this is 95% of the Git you'll ever type.</p>
+<h3>Daily</h3>
+<pre><code>git status                  # what's going on
+git add .                   # stage everything
+git commit -m "message"     # save
+git push                    # send up
+git pull                    # get others' work
+git log --oneline --graph   # pretty history</code></pre>
+<h3>Branching</h3>
+<pre><code>git switch -c new-feature   # create + switch
+git switch main             # go back
+git merge new-feature       # bring it in
+git branch -d new-feature   # delete</code></pre>
+<h3>Undoing</h3>
+<pre><code>git restore file            # discard changes
+git restore --staged file   # unstage
+git commit --amend          # fix last commit
+git revert &lt;hash&gt;           # safely undo a pushed commit
+git reflog                  # find lost commits</code></pre>
+<h3>Inspecting</h3>
+<pre><code>git diff                    # unstaged changes
+git diff --staged           # staged changes
+git show &lt;hash&gt;             # one commit
+git blame file              # who wrote each line
+</code></pre>
+<h3>Setup once</h3>
+<pre><code>git config --global user.name "Your Name"
+git config --global user.email "you@example.com"
+git config --global init.defaultBranch main</code></pre>
+<h3>When it goes wrong</h3>
 <ol>
-  <li><strong>Real name + photo + one-line bio</strong> — "Learning full stack · Yangon · open to junior roles".</li>
-  <li><strong>The magic README repo</strong> — create a repo named exactly your username; its README shows on your profile. Introduce yourself, list skills, link projects.</li>
-  <li><strong>Pin your best 4 repos</strong> — the 3-project portfolio + this academy's exercises. Pinned = what visitors see first.</li>
-  <li><strong>READMEs everywhere</strong> — each project: what it does, screenshot, live link, what you learned.</li>
-  <li><strong>Green squares</strong> — commit small and often. A steady month of activity says more than any certificate line.</li>
+  <li><strong>git status</strong> — it usually tells you the fix.</li>
+  <li>Search the exact error message.</li>
+  <li><strong>git reflog</strong> — almost nothing is truly lost.</li>
 </ol>
-<h3>💡 The signal hierarchy</h3>
-<p>Recruiters read (in order): pinned projects with live links → activity graph → README quality. Notice: none of these require years of experience — only consistency and care. You can compete TODAY.</p>
-<div class="callout tip"><strong>Try it yourself:</strong> do upgrade #2 right now — the username README repo takes 10 minutes and instantly makes your profile look intentional.</div>`),
-          article("git-cheat", "The Everyday Cheat Sheet", "8 min", `
-<h3>🎯 The 12 commands that are 95% of real usage</h3>
-<pre><code># starting
-git init                  # new repo here
-git clone URL             # copy an existing repo
-
-# the daily loop
-git status                # what changed?
-git add .                 # stage everything changed
-git commit -m "message"   # snapshot
-git push                  # upload
-git pull                  # download teammates' work
-
-# branches
-git checkout -b feature/x # new branch + switch
-git checkout main         # switch back
-git merge feature/x       # bring branch into current
-
-# inspect & rescue
-git log --oneline         # history at a glance
-git restore file          # discard uncommitted edits</code></pre>
-<h3>📝 The mental model in one line each</h3>
-<ul>
-  <li><strong>Working folder</strong> → your live edits · <strong>Stage</strong> → chosen for next snapshot · <strong>History</strong> → permanent commits · <strong>Remote</strong> → the GitHub copy.</li>
-  <li>add moves work → stage; commit moves stage → history; push moves history → remote. That's Git.</li>
-</ul>
-<div class="callout tip"><strong>Graduation task:</strong> write these 12 from memory (yes, on paper). Then take the final quiz and claim your certificate 🎓 — and put "Git & GitHub" on your CV with a clear conscience.</div>`),
+<div class="callout tip">Don't memorise this. Use it, look things up, and after a month the daily commands will be muscle memory. Every developer still googles the rare ones.</div>`),
           quiz("git-final", "Final Quiz: Git & GitHub", [
-            { q: "The daily Git loop is…", options: ["push → commit → add", "edit → add → commit → push", "clone → delete → clone", "merge → conflict → cry"], answer: 1 },
-            { q: "git pull does what?", options: ["Uploads commits", "Downloads and merges teammates' commits", "Deletes branches", "Renames files"], answer: 1 },
-            { q: "Your site goes live on GitHub Pages from…", options: ["A paid server", "Settings → Pages with an index.html on main", "Email support", "FTP"], answer: 1 },
-            { q: "The repo that becomes your profile page is named…", options: ["profile", "Exactly your username", "README", "main"], answer: 1 },
-            { q: "add → commit → push moves work…", options: ["remote → history → stage", "working → stage → history → remote", "history → working", "randomly"], answer: 1 },
+            { q: "GitHub Pages serves…", options: ["Node servers", "Static sites (HTML/CSS/JS)", "Databases", "Docker"], answer: 1 },
+            { q: "Your site works locally but 404s on Pages. Most likely cause?", options: ["GitHub is down", "Filename capitalisation — servers are case-sensitive", "Missing CSS", "Wrong branch always"], answer: 1 },
+            { q: "A repo named exactly your-username creates…", options: ["Nothing", "Your profile README at the top of your GitHub", "A private repo", "An organisation"], answer: 1 },
+            { q: "The most valuable thing in a project README is…", options: ["Your CV", "A screenshot and a live demo link", "The licence", "The commit count"], answer: 1 },
+            { q: "For hiring, what matters most?", options: ["Green squares every day", "A few finished, documented, deployed projects", "Number of repos", "Forks of tutorials"], answer: 1 },
+            { q: "Which shows who wrote each line?", options: ["git log", "git blame", "git diff", "git show"], answer: 1 },
+            { q: "Something went wrong. First command to run?", options: ["git reset --hard", "git status", "git push -f", "git clean"], answer: 1 },
+            { q: "On a project Pages site, absolute paths like /style.css…", options: ["Work fine", "Break — the site lives under /repo/, use relative paths", "Are faster", "Are required"], answer: 1 },
           ]),
         ],
       },
@@ -8311,7 +8445,7 @@ $(el).closest("li")   → el.closest("li")</code></pre>
     rating: 4.7,
     ratings: 29400,
     students: 201000,
-    hours: 13,
+    hours: 22,
     price: "Free",
     free: true,
     color: "linear-gradient(135deg,#215732,#68a063)",
@@ -8328,252 +8462,469 @@ $(el).closest("li")   → el.closest("li")</code></pre>
     ],
     sections: [
       {
-        title: "Node Foundations",
+        title: "1 · Node Foundations",
         lessons: [
-          article("nd-hello", "Node, npm & Your First Script", "11 min", `
-<h3>🎯 Intro</h3>
-<p>Node runs JavaScript directly on your computer — the same language you know from the browser, now with access to files, networks and the operating system.</p>
-<h3>📝 Summary</h3>
+          article("nd-what", "What Node Actually Is", "6 min", `
+<p>For years JavaScript could only run in a browser. <strong>Node.js</strong> took the browser's JS engine out and let it run anywhere — so one language now covers the whole stack.</p>
+<h3>What you can build</h3>
 <ul>
-  <li>Install from <strong>nodejs.org</strong> (LTS version); check with <code>node --version</code></li>
-  <li>Run any file: <code>node app.js</code></li>
-  <li><code>npm init -y</code> creates <code>package.json</code> — your project's ID card</li>
-  <li><code>npm install &lt;package&gt;</code> downloads into <code>node_modules</code></li>
+  <li><strong>Web servers &amp; APIs</strong> — the focus of this course.</li>
+  <li><strong>Command-line tools</strong>.</li>
+  <li><strong>Build tooling</strong> — Vite, webpack, ESLint are all Node.</li>
+  <li><strong>Scripts</strong> — rename 500 files, call an API, process a CSV.</li>
 </ul>
-<h3>💻 Example</h3>
-<pre><code>// info.js
-const os = require("os");
-
-console.log("Node version:", process.version);
-console.log("Platform:", os.platform());
-console.log("CPU cores:", os.cpus().length);
-console.log("Free memory:", Math.round(os.freemem() / 1e6), "MB");
-
-// terminal:
-//   node info.js</code></pre>
-<div class="callout tip">Add <code>"start": "node app.js"</code> under scripts in package.json — then <code>npm start</code> runs your app the standard way.</div>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> write a script that prints today's date, your username (os.userInfo().username), and how long the computer has been on (os.uptime(), in hours).</div>`),
-          article("nd-modules", "Modules: Splitting Your Code", "11 min", `
-<h3>🎯 Intro</h3>
-<p>Real projects are many small files, not one giant one. Modules let files share functions cleanly.</p>
-<h3>📝 Summary</h3>
+<h3>Browser JS vs Node JS</h3>
 <ul>
-  <li>Export: <code>module.exports = { fn1, fn2 }</code></li>
-  <li>Import: <code>const { fn1 } = require("./myfile")</code> — note the <code>./</code></li>
-  <li>No <code>./</code> means npm package or built-in (express, os, fs)</li>
-  <li>Each module's variables are private unless exported</li>
+  <li><strong>Browser</strong> — has window, document, DOM, fetch. No file access (for safety).</li>
+  <li><strong>Node</strong> — has files, network, processes, env vars. <em>No DOM at all.</em></li>
 </ul>
-<h3>💻 Example</h3>
+<p>Same language, different toolbox. <strong>document is not defined</strong> in Node isn't a bug — there's no page.</p>
+<h3>Single-threaded, but not slow</h3>
+<p>Node runs your code on one thread and hands slow work (disk, network) to the system, carrying on meanwhile. That's why it handles thousands of connections cheaply — it's almost never <em>computing</em>, it's waiting.</p>
+<div class="callout warn">The flip side: a heavy loop blocks everything for everyone, because there's one thread. Node is superb at I/O, poor at raw number-crunching.</div>`),
+          article("nd-hello", "Node, npm & Your First Script", "6 min", `
+<p>Install Node from <strong>nodejs.org</strong> (take the LTS version — it's the stable one).</p>
+<pre><code>node --version
+npm --version</code></pre>
+<h3>Your first script</h3>
+<pre><code>// app.js
+console.log("Hello from Node!");</code></pre>
+<pre><code>node app.js</code></pre>
+<p>No browser, no HTML. Just JavaScript on your machine.</p>
+<h3>Reading arguments</h3>
+<pre><code>const name = process.argv[2] || "world";
+console.log(\`Hello, \${name}\`);</code></pre>
+<pre><code>node app.js Su      # Hello, Su</code></pre>
+<p><strong>process.argv[0]</strong> is node, <strong>[1]</strong> is your file, so real arguments start at <strong>[2]</strong>.</p>
+<h3>Environment variables</h3>
+<pre><code>const port = process.env.PORT || 3000;</code></pre>
+<p>This is how real apps get config — never hard-code a port or a password.</p>
+<div class="callout tip">Type node with no file for a REPL — an instant JavaScript playground in your terminal. Great for testing one line.</div>`),
+          article("nd-npm", "npm & package.json", "6 min", `
+<p><strong>npm</strong> is the world's largest package registry. It's most of why Node is everywhere.</p>
+<h3>Start a project</h3>
+<pre><code>npm init -y          # creates package.json
+npm install express  # add a dependency</code></pre>
+<h3>package.json is the project's identity</h3>
+<pre><code>{
+  "name": "my-api",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "node --watch app.js"
+  },
+  "dependencies": { "express": "^4.19.2" }
+}</code></pre>
+<p><strong>npm run dev</strong> runs your script. <strong>--watch</strong> restarts on save — no more stopping and starting by hand.</p>
+<h3>dependencies vs devDependencies</h3>
+<ul>
+  <li><strong>dependencies</strong> — needed to <em>run</em> (express).</li>
+  <li><strong>devDependencies</strong> (<strong>-D</strong>) — only to develop (test tools, linters).</li>
+</ul>
+<h3>The two you must know</h3>
+<ul>
+  <li><strong>node_modules/</strong> — the downloaded code. Huge. <em>Never</em> commit it — always .gitignore it.</li>
+  <li><strong>package-lock.json</strong> — the exact versions. <em>Always</em> commit it, so everyone gets identical installs.</li>
+</ul>
+<h3>Semver</h3>
+<p><strong>^4.19.2</strong> means "4.x, but not 5" — patches and features, no breaking changes.</p>
+<div class="callout warn">Deleting node_modules and running npm install fixes a surprising number of "impossible" errors. It's the Node equivalent of turning it off and on again.</div>`),
+          article("nd-modules", "Modules: Splitting Your Code", "6 min", `
+<p>One giant file doesn't scale. <strong>Modules</strong> split it up.</p>
+<h3>ES Modules (modern)</h3>
 <pre><code>// math.js
-function add(a, b) { return a + b; }
-function average(list) {
-  return list.reduce((s, x) =&gt; s + x, 0) / list.length;
-}
-module.exports = { add, average };
+export function add(a, b) { return a + b; }
+export default class Calculator {}
 
 // app.js
-const { add, average } = require("./math");
+import Calculator, { add } from "./math.js";</code></pre>
+<p>Add <strong>"type": "module"</strong> to package.json to enable this.</p>
+<h3>CommonJS (older, still everywhere)</h3>
+<pre><code>// math.js
+function add(a, b) { return a + b; }
+module.exports = { add };
 
-console.log(add(3, 4));                 // 7
-console.log(average([75, 92, 58]));     // 75</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> create text.js exporting shout(s) (uppercase + "!") and initials(fullName); use both from app.js.</div>`),
-          article("nd-fs", "Files with the fs Module", "12 min", `
-<h3>🎯 Intro</h3>
-<p>Servers constantly read and write files: configs, logs, uploads, data. Node's <code>fs</code> module handles it all.</p>
-<h3>📝 Summary</h3>
+// app.js
+const { add } = require("./math");</code></pre>
+<h3>Which?</h3>
+<p><strong>ESM</strong> for new projects — it's the standard, and matches browser JS. You'll still meet <strong>require</strong> constantly in tutorials and older code, so recognise both.</p>
+<h3>Three kinds of import</h3>
 <ul>
-  <li><code>fs.readFileSync / fs.writeFileSync</code> — simple, blocking versions</li>
-  <li><code>JSON.parse / JSON.stringify</code> turn files into data and back</li>
-  <li>Wrap reads in try/catch — files may not exist yet</li>
+  <li><strong>Built-in</strong> — import fs from "node:fs"</li>
+  <li><strong>Installed</strong> — import express from "express"</li>
+  <li><strong>Yours</strong> — import { add } from "./math.js" (the <strong>./</strong> and the <strong>.js</strong> are required in ESM)</li>
 </ul>
-<h3>💻 Example</h3>
-<pre><code>const fs = require("fs");
+<div class="callout warn">Mixing them causes "Cannot use import statement outside a module". Pick one per project — and in ESM, don't forget the file extension.</div>`),
+          article("nd-fs", "Files with the fs Module", "6 min", `
+<p>Something the browser can never do: touch the file system.</p>
+<pre><code>import fs from "node:fs/promises";
 
-// save data
-const students = [{ name: "Aye", score: 85 }, { name: "Ko", score: 55 }];
-fs.writeFileSync("students.json", JSON.stringify(students, null, 2));
-
-// load data safely
-function load() {
-  try {
-    return JSON.parse(fs.readFileSync("students.json", "utf-8"));
-  } catch (e) {
-    return [];   // first run — no file yet
-  }
-}
-
-const data = load();
-console.log(\`Loaded \${data.length} students\`);</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> build a tiny visit counter: read count.json, add 1, save it back, print "Visit #N". Run it three times.</div>`),
+const text = await fs.readFile("notes.txt", "utf8");
+await fs.writeFile("out.txt", "Hello");
+await fs.appendFile("log.txt", "another line\\n");</code></pre>
+<p>Use the <strong>/promises</strong> version and <strong>await</strong> — far cleaner than callbacks.</p>
+<h3>Always pass "utf8"</h3>
+<p>Without it you get a raw <strong>Buffer</strong> (bytes), not a string. That surprises everyone once.</p>
+<h3>Working with JSON</h3>
+<pre><code>const data = JSON.parse(await fs.readFile("db.json", "utf8"));
+data.push({ id: 1 });
+await fs.writeFile("db.json", JSON.stringify(data, null, 2));</code></pre>
+<p><strong>null, 2</strong> pretty-prints it so a human can read the file.</p>
+<h3>Handle failure</h3>
+<pre><code>try {
+  await fs.readFile("missing.txt", "utf8");
+} catch (err) {
+  if (err.code === "ENOENT") console.log("No such file");
+}</code></pre>
+<h3>Paths</h3>
+<p>Use the <strong>path</strong> module — path.join("data", "db.json") — so your code works on Windows and Linux. Hard-coded slashes break on one of them.</p>
+<div class="callout warn">writeFile REPLACES the whole file, instantly and silently. Use appendFile to add. This has cost people real data.</div>`),
           quiz("nd-quiz-1", "Quiz: Node Foundations", [
-            { q: "npm install express does what?", options: ["Runs the server", "Downloads the package into node_modules", "Creates routes", "Compiles JS"], answer: 1 },
-            { q: "require(\"./math\") vs require(\"express\") — the ./ means...", options: ["Nothing", "A local file in your project", "A global install", "A URL"], answer: 1 },
-            { q: "JSON.stringify(data, null, 2) produces...", options: ["Compressed JSON", "Pretty-printed JSON text", "A JavaScript object", "A file handle"], answer: 1 },
-            { q: "Reading a file that doesn't exist...", options: ["Returns null", "Returns \"\"", "Throws an error you should catch", "Creates the file"], answer: 2 },
+            { q: "Node is JavaScript…", options: ["In the browser", "Running outside the browser, on your machine/server", "A framework", "A database"], answer: 1 },
+            { q: "'document is not defined' in Node means…", options: ["A bug", "There's no DOM in Node — that's browser-only", "Node is broken", "Missing import"], answer: 1 },
+            { q: "Which should NEVER be committed to git?", options: ["package.json", "node_modules/", "package-lock.json", "app.js"], answer: 1 },
+            { q: "Which SHOULD always be committed?", options: ["node_modules/", "package-lock.json", ".env", "logs"], answer: 1 },
+            { q: "Real command-line arguments start at…", options: ["process.argv[0]", "process.argv[1]", "process.argv[2]", "process.args[0]"], answer: 2 },
+            { q: "readFile without 'utf8' returns…", options: ["A string", "A Buffer of raw bytes", "null", "An error"], answer: 1 },
+            { q: "fs.writeFile on an existing file…", options: ["Appends", "Replaces the entire contents", "Errors", "Creates a copy"], answer: 1 },
           ]),
         ],
       },
       {
-        title: "Express Essentials",
+        title: "2 · Express Essentials",
         lessons: [
-          article("nd-express", "Your First Express Server", "13 min", `
-<h3>🎯 Intro</h3>
-<p>Express maps URLs to functions — that's the whole idea. A route says: "when this URL is requested, run this code."</p>
-<h3>📝 Summary</h3>
-<ul>
-  <li><code>npm install express</code>, then create the app and listen on a port</li>
-  <li><code>app.get(path, handler)</code> — handler gets <code>(req, res)</code></li>
-  <li><code>res.json()</code> for data, <code>res.send()</code> for text/HTML</li>
-</ul>
-<h3>💻 Example</h3>
-<pre><code>const express = require("express");
+          article("nd-express", "Your First Express Server", "7 min", `
+<p>Node can serve HTTP on its own, but it's painful. <strong>Express</strong> is the framework almost everyone uses.</p>
+<pre><code>import express from "express";
+
 const app = express();
 
 app.get("/", (req, res) =&gt; {
-  res.send("&lt;h1&gt;WebDev Academy API&lt;/h1&gt;");
+  res.send("Hello!");
 });
 
-app.get("/api/health", (req, res) =&gt; {
-  res.json({ ok: true, time: new Date().toISOString() });
-});
-
-app.listen(3000, () =&gt;
-  console.log("Running at http://localhost:3000"));</code></pre>
-<div class="callout">Test in the browser, or from a terminal: <code>curl http://localhost:3000/api/health</code></div>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> add /api/about returning JSON with your academy's name and version, and a /bye route that sends plain text.</div>`),
-          article("nd-routes", "Route Params & Query Strings", "13 min", `
-<h3>🎯 Intro</h3>
-<p>Real URLs carry information: <code>/api/courses/3</code>, <code>/search?q=html</code>. Express parses both for you.</p>
-<h3>📝 Summary</h3>
+app.listen(3000, () =&gt; {
+  console.log("http://localhost:3000");
+});</code></pre>
+<p><strong>npm install express</strong>, then <strong>node app.js</strong>. You now run a web server.</p>
+<h3>The shape of every route</h3>
+<div class="flow">
+  <div class="flow-box">📨 Request</div>
+  <div class="flow-arrow" data-label="match route"></div>
+  <div class="flow-box alt">⚙️ Handler</div>
+  <div class="flow-arrow" data-label="res.send"></div>
+  <div class="flow-box">📤 Response</div>
+</div>
 <ul>
-  <li><code>/:id</code> in the path → <code>req.params.id</code> (always a string!)</li>
-  <li><code>?q=html&amp;limit=5</code> → <code>req.query.q</code>, <code>req.query.limit</code></li>
-  <li>Missing things deserve a <code>404</code>, not a crash</li>
+  <li><strong>req</strong> — what they asked for (url, params, body, headers).</li>
+  <li><strong>res</strong> — what you send back.</li>
 </ul>
-<h3>💻 Example</h3>
-<pre><code>const courses = [
-  { id: 1, title: "HTML Deep Dive" },
-  { id: 2, title: "React Fundamentals" },
-  { id: 3, title: "Node & Express" },
-];
+<h3>Methods = intent</h3>
+<pre><code>app.get(...)     // read
+app.post(...)    // create
+app.put(...)     // replace
+app.patch(...)   // partly update
+app.delete(...)  // remove</code></pre>
+<h3>Sending things</h3>
+<pre><code>res.send("text");
+res.json({ ok: true });          // sets the right header
+res.status(404).json({ error: "Not found" });
+</code></pre>
+<h3>Serving files</h3>
+<pre><code>app.use(express.static("public"));</code></pre>
+<p>Now anything in <strong>public/</strong> is served — your whole front-end, one line.</p>
+<div class="callout warn">Every route must end the response exactly once. Forget res.send and the browser hangs; send twice and you get "Cannot set headers after they are sent".</div>`),
+          article("nd-routes", "Route Params & Query Strings", "6 min", `
+<p>Two ways a request carries data in the URL.</p>
+<h3>Route params — identify a thing</h3>
+<pre><code>app.get("/courses/:id", (req, res) =&gt; {
+  res.json({ id: req.params.id });
+});
+// GET /courses/42  ->  { "id": "42" }</code></pre>
+<p><strong>:id</strong> is a placeholder. Params are <em>always strings</em> — convert with Number() before comparing to a numeric id.</p>
+<h3>Query strings — modify a request</h3>
+<pre><code>app.get("/courses", (req, res) =&gt; {
+  const { level, page = 1 } = req.query;
+  res.json({ level, page });
+});
+// GET /courses?level=beginner&page=2</code></pre>
+<h3>Which to use</h3>
+<ul>
+  <li><strong>Param</strong> — <em>which</em> resource: /courses/42</li>
+  <li><strong>Query</strong> — <em>how</em> to filter/sort/paginate: ?level=beginner&sort=new</li>
+</ul>
+<h3>Order matters</h3>
+<pre><code>app.get("/courses/new", ...)   // must come FIRST
+app.get("/courses/:id", ...)   // else "new" is read as an id</code></pre>
+<p>Express matches top to bottom and stops at the first hit. Put specific routes above dynamic ones.</p>
+<div class="callout tip">Everything from a URL is a string — "42", not 42. A === comparison against a number silently fails. Convert at the edge.</div>`),
+          article("nd-middleware", "Middleware & POST Bodies", "7 min", `
+<p><strong>Middleware</strong> is a function that runs <em>between</em> the request arriving and your route answering.</p>
+<pre><code>app.use((req, res, next) =&gt; {
+  console.log(req.method, req.url);
+  next();          // pass it along
+});</code></pre>
+<p>Forget <strong>next()</strong> and the request hangs forever — the single most common Express bug.</p>
+<h3>The pipeline</h3>
+<div class="flow">
+  <div class="flow-box">📨 Request</div>
+  <div class="flow-arrow" data-label="logger"></div>
+  <div class="flow-box alt">🔎 Auth</div>
+  <div class="flow-arrow" data-label="parse body"></div>
+  <div class="flow-box">🎯 Route</div>
+</div>
+<h3>Reading a POST body</h3>
+<pre><code>app.use(express.json());        // ← required!
 
-app.get("/api/courses/:id", (req, res) =&gt; {
-  const course = courses.find(c =&gt; c.id === Number(req.params.id));
+app.post("/courses", (req, res) =&gt; {
+  const { title } = req.body;
+  res.status(201).json({ title });
+});</code></pre>
+<p>Without <strong>express.json()</strong>, req.body is <strong>undefined</strong>. Everyone hits this once.</p>
+<h3>Route-specific middleware</h3>
+<pre><code>function auth(req, res, next) {
+  if (!req.headers.authorization)
+    return res.status(401).json({ error: "No token" });
+  next();
+}
+
+app.get("/admin", auth, (req, res) =&gt; res.send("secret"));</code></pre>
+<h3>Order is everything</h3>
+<p>Middleware runs in the order you declare it. express.json() must come <em>before</em> routes that read a body.</p>
+<div class="callout warn">req.body undefined on a POST? You forgot app.use(express.json()). It's not optional — Express doesn't parse bodies by default.</div>`),
+          quiz("nd-quiz-2", "Quiz: Express", [
+            { q: "Which sends JSON with the correct header?", options: ["res.send()", "res.json()", "res.write()", "res.end()"], answer: 1 },
+            { q: "req.body is undefined on POST because…", options: ["The client is wrong", "You forgot app.use(express.json())", "Express is broken", "You need a database"], answer: 1 },
+            { q: "Forgetting next() in middleware causes…", options: ["An error", "The request to hang forever", "A 404", "A redirect"], answer: 1 },
+            { q: "req.params.id is always a…", options: ["Number", "String", "Boolean", "Object"], answer: 1 },
+            { q: "Use a route param (/courses/:id) to…", options: ["Filter results", "Identify WHICH resource", "Sort", "Paginate"], answer: 1 },
+            { q: "/courses/new must be declared…", options: ["After /courses/:id", "Before /courses/:id", "Anywhere", "In a separate file"], answer: 1 },
+            { q: "app.use(express.static('public')) does what?", options: ["Caches", "Serves the files in public/ automatically", "Compresses", "Blocks access"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "3 · Building a Real API",
+        lessons: [
+          article("nd-rest", "REST: The Rules of a Good API", "6 min", `
+<p><strong>REST</strong> is a set of conventions. Follow them and any developer understands your API instantly.</p>
+<h3>Nouns, not verbs</h3>
+<pre><code>GET  /courses        ✓ list
+GET  /courses/42     ✓ one
+POST /courses        ✓ create
+GET  /getCourses     ✗ verb in the URL
+POST /deleteCourse   ✗ wrong method</code></pre>
+<p>The <em>method</em> is the verb. The URL is the thing.</p>
+<h3>The standard shape</h3>
+<pre><code>GET    /courses       list all
+POST   /courses       create        -> 201
+GET    /courses/:id   read one      -> 404 if absent
+PUT    /courses/:id   replace
+PATCH  /courses/:id   partly update
+DELETE /courses/:id   remove        -> 204</code></pre>
+<h3>Status codes carry meaning</h3>
+<ul>
+  <li><strong>200</strong> OK · <strong>201</strong> Created · <strong>204</strong> No content</li>
+  <li><strong>400</strong> Bad request (their fault) · <strong>401</strong> Not logged in · <strong>403</strong> Logged in, not allowed · <strong>404</strong> Not found</li>
+  <li><strong>500</strong> Server error (your fault)</li>
+</ul>
+<p>Returning 200 with {"error": "..."} is a classic mistake — the client can't tell success from failure without reading your prose.</p>
+<h3>Be consistent</h3>
+<p>Plural nouns, lowercase, hyphens. Pick one shape for errors and never vary it.</p>
+<div class="callout tip">4xx means the caller made a mistake; 5xx means you did. Getting that split right makes your API debuggable by strangers.</div>`),
+          article("nd-crud", "Build the Courses API (Full CRUD)", "10 min", `
+<p>Everything so far, in one real API.</p>
+<pre><code>import express from "express";
+const app = express();
+app.use(express.json());
+
+let courses = [
+  { id: 1, title: "HTML Basics" },
+  { id: 2, title: "CSS Mastery" }
+];
+let nextId = 3;
+
+// LIST  (with optional search)
+app.get("/courses", (req, res) =&gt; {
+  const { q } = req.query;
+  const list = q
+    ? courses.filter((c) =&gt; c.title.toLowerCase().includes(q.toLowerCase()))
+    : courses;
+  res.json(list);
+});
+
+// READ ONE
+app.get("/courses/:id", (req, res) =&gt; {
+  const course = courses.find((c) =&gt; c.id === Number(req.params.id));
   if (!course) return res.status(404).json({ error: "Not found" });
   res.json(course);
 });
 
-app.get("/api/search", (req, res) =&gt; {
-  const q = (req.query.q || "").toLowerCase();
-  res.json(courses.filter(c =&gt; c.title.toLowerCase().includes(q)));
-});</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> add ?limit=N support to /api/search using .slice(0, limit) with a sensible default.</div>`),
-          article("nd-middleware", "Middleware & POST Bodies", "14 min", `
-<h3>🎯 Intro</h3>
-<p>Middleware are functions that run <em>before</em> your routes — logging, auth, parsing. They're Express's superpower.</p>
-<h3>📝 Summary</h3>
-<ul>
-  <li><code>app.use(fn)</code> runs fn for every request; call <code>next()</code> to continue</li>
-  <li><code>app.use(express.json())</code> parses JSON bodies into <code>req.body</code></li>
-  <li>Validate input and answer <code>400</code> for bad requests</li>
-</ul>
-<h3>💻 Example</h3>
-<pre><code>app.use(express.json());
-
-// logger middleware
-app.use((req, res, next) =&gt; {
-  console.log(\`\${req.method} \${req.url}\`);
-  next();
-});
-
-app.post("/api/courses", (req, res) =&gt; {
+// CREATE
+app.post("/courses", (req, res) =&gt; {
   const { title } = req.body;
-  if (!title || title.trim().length &lt; 3) {
-    return res.status(400).json({ error: "title (3+ chars) required" });
-  }
-  const course = { id: Date.now(), title: title.trim() };
+  if (!title || !title.trim())
+    return res.status(400).json({ error: "title is required" });
+
+  const course = { id: nextId++, title: title.trim() };
   courses.push(course);
   res.status(201).json(course);
+});
+
+// UPDATE
+app.patch("/courses/:id", (req, res) =&gt; {
+  const course = courses.find((c) =&gt; c.id === Number(req.params.id));
+  if (!course) return res.status(404).json({ error: "Not found" });
+  if (req.body.title) course.title = req.body.title;
+  res.json(course);
+});
+
+// DELETE
+app.delete("/courses/:id", (req, res) =&gt; {
+  const i = courses.findIndex((c) =&gt; c.id === Number(req.params.id));
+  if (i === -1) return res.status(404).json({ error: "Not found" });
+  courses.splice(i, 1);
+  res.status(204).end();
+});
+
+app.listen(3000);</code></pre>
+<h3>Notice the patterns</h3>
+<ul>
+  <li><strong>Number(req.params.id)</strong> — params are strings.</li>
+  <li><strong>Validate before acting</strong> — 400 for bad input.</li>
+  <li><strong>404 before using</strong> — never assume it exists.</li>
+  <li><strong>return</strong> on every early exit, or you'll send twice.</li>
+</ul>
+<h3>Test it</h3>
+<pre><code>curl localhost:3000/courses
+curl -X POST localhost:3000/courses \\
+  -H "Content-Type: application/json" \\
+  -d '{"title":"Node"}'</code></pre>
+<div class="callout warn">This data lives in memory — restart the server and it's gone. That's fine for learning; next you'd swap the array for a database, keeping the routes identical.</div>`),
+          article("nd-errors", "Errors, Validation & Security", "7 min", `
+<p>The difference between a demo and something you'd let strangers use.</p>
+<h3>Never trust input</h3>
+<pre><code>const { title, hours } = req.body;
+if (typeof title !== "string" || !title.trim())
+  return res.status(400).json({ error: "title required" });
+if (hours !== undefined &amp;&amp; Number.isNaN(Number(hours)))
+  return res.status(400).json({ error: "hours must be a number" });</code></pre>
+<p>Front-end validation is a courtesy. Anyone can curl your endpoint directly — <strong>the server is the only real gate</strong>.</p>
+<h3>One error handler for everything</h3>
+<pre><code>app.use((err, req, res, next) =&gt; {   // 4 args = error handler
+  console.error(err);
+  res.status(500).json({ error: "Something went wrong" });
 });</code></pre>
-<div class="callout tip">Status codes tell the story: 200 OK, 201 Created, 400 bad input, 404 missing, 500 server error.</div>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> write middleware that adds req.requestTime = Date.now(), and a route that reports how old the request is.</div>`),
-          quiz("nd-quiz-2", "Quiz: Express", [
-            { q: "req.params.id from /courses/:id is...", options: ["A number", "Always a string", "An object", "undefined"], answer: 1 },
-            { q: "Which middleware fills req.body for JSON?", options: ["express.static()", "express.json()", "body.get()", "None needed"], answer: 1 },
-            { q: "Creating a resource successfully should return status...", options: ["200", "201", "301", "404"], answer: 1 },
-            { q: "A middleware that never calls next()...", options: ["Speeds things up", "Leaves the request hanging unless it responds itself", "Crashes Express", "Is ignored"], answer: 1 },
+<p>Declare it <em>last</em>. The four arguments are what mark it as an error handler.</p>
+<h3>A 404 catch-all</h3>
+<pre><code>app.use((req, res) =&gt; res.status(404).json({ error: "Not found" }));</code></pre>
+<h3>Async errors need catching</h3>
+<pre><code>app.get("/x", async (req, res, next) =&gt; {
+  try { ... } catch (err) { next(err); }
+});</code></pre>
+<p>A thrown error inside an async handler won't reach Express on its own — pass it to <strong>next(err)</strong>.</p>
+<h3>The security basics</h3>
+<ul>
+  <li><strong>Secrets in .env</strong>, never in code. .gitignore it.</li>
+  <li><strong>CORS</strong> — decide which sites may call you.</li>
+  <li><strong>Rate limit</strong> — stop abuse.</li>
+  <li><strong>Never leak stack traces</strong> to users — log them, return something generic.</li>
+</ul>
+<div class="callout warn">Committing an API key to a public repo means it's compromised — bots scan GitHub within minutes. Rotate it immediately; don't just delete the file.</div>`),
+          quiz("nd-quiz-3", "Quiz: Building a Real API", [
+            { q: "Which URL is RESTful?", options: ["POST /deleteCourse", "GET /getCourses", "DELETE /courses/42", "POST /courses/delete/42"], answer: 2 },
+            { q: "A successful POST that creates a resource returns…", options: ["200", "201", "204", "301"], answer: 1 },
+            { q: "The caller sent invalid data. Which status?", options: ["500", "400", "200", "404"], answer: 1 },
+            { q: "Your code crashed unexpectedly. Which status?", options: ["400", "404", "500", "201"], answer: 2 },
+            { q: "An Express error handler is identified by…", options: ["Its name", "Having FOUR arguments (err, req, res, next)", "app.error()", "A comment"], answer: 1 },
+            { q: "Front-end validation is…", options: ["Enough on its own", "A courtesy — the server must re-validate", "Required by law", "Slower"], answer: 1 },
+            { q: "An API key committed to a public repo should be…", options: ["Deleted from the file", "Rotated immediately — bots scan within minutes", "Ignored", "Encrypted later"], answer: 1 },
+            { q: "In an async route, a thrown error must be passed to…", options: ["throw", "next(err)", "res.error()", "console.log"], answer: 1 },
           ]),
         ],
       },
       {
-        title: "Project: Complete CRUD API",
+        title: "4 · Going Further",
         lessons: [
-          article("nd-crud", "Build the Courses API (Full CRUD)", "22 min", `
-<h3>🎯 Intro</h3>
-<p>Create, Read, Update, Delete — every real backend is built on these four. Here's a complete, correct API in ~50 lines.</p>
-<h3>💻 Complete solution — study it, then build yours</h3>
-<pre><code>const express = require("express");
-const app = express();
-app.use(express.json());
+          article("nd-db", "Adding a Real Database", "6 min", `
+<p>An in-memory array dies on restart. A database is the fix.</p>
+<h3>Two families</h3>
+<ul>
+  <li><strong>SQL</strong> (PostgreSQL, MySQL, SQLite) — tables, strict shape, powerful queries, relationships.</li>
+  <li><strong>NoSQL</strong> (MongoDB) — flexible documents that look like JSON.</li>
+</ul>
+<p>SQL is the safer default: your data usually <em>does</em> have a shape, and constraints stop bad rows.</p>
+<h3>The routes barely change</h3>
+<pre><code>// before
+const course = courses.find((c) =&gt; c.id === id);
 
-let courses = [{ id: 1, title: "HTML Deep Dive", hours: 4.5 }];
-let nextId = 2;
+// after
+const course = await db.get("SELECT * FROM courses WHERE id = ?", id);</code></pre>
+<p>Same REST design, different storage. That's why we built it this way round.</p>
+<h3>Parameterised queries — always</h3>
+<pre><code>db.get("SELECT * FROM users WHERE name = ?", name);   // ✓
 
-// READ all + READ one
-app.get("/api/courses", (req, res) =&gt; res.json(courses));
-app.get("/api/courses/:id", (req, res) =&gt; {
-  const c = courses.find(x =&gt; x.id === Number(req.params.id));
-  if (!c) return res.status(404).json({ error: "Not found" });
-  res.json(c);
-});
+db.get("SELECT * FROM users WHERE name = '" + name + "'");  // ✗ SQL injection</code></pre>
+<p>String-concatenating user input into SQL is how databases get dumped. The <strong>?</strong> placeholder is the whole defence.</p>
+<h3>Start with SQLite</h3>
+<p>It's a single file, needs no server, and uses the same SQL you'd use in production. Perfect for learning and plenty of real apps.</p>
+<div class="callout warn">SQL injection is decades old and still in the OWASP top ten. Never build a query by gluing strings. Ever.</div>`),
+          article("nd-auth", "Authentication Basics", "6 min", `
+<p>Who are you, and what may you do?</p>
+<h3>Two different words</h3>
+<ul>
+  <li><strong>Authentication</strong> — who you are (login). Fails → <strong>401</strong>.</li>
+  <li><strong>Authorisation</strong> — what you're allowed to do. Fails → <strong>403</strong>.</li>
+</ul>
+<h3>Never store a raw password</h3>
+<pre><code>import bcrypt from "bcrypt";
 
-// CREATE
-app.post("/api/courses", (req, res) =&gt; {
-  const { title, hours } = req.body;
-  if (!title) return res.status(400).json({ error: "title required" });
-  const c = { id: nextId++, title, hours: Number(hours) || 0 };
-  courses.push(c);
-  res.status(201).json(c);
-});
-
-// UPDATE
-app.put("/api/courses/:id", (req, res) =&gt; {
-  const c = courses.find(x =&gt; x.id === Number(req.params.id));
-  if (!c) return res.status(404).json({ error: "Not found" });
-  if (req.body.title) c.title = req.body.title;
-  if (req.body.hours !== undefined) c.hours = Number(req.body.hours);
-  res.json(c);
-});
-
-// DELETE
-app.delete("/api/courses/:id", (req, res) =&gt; {
-  const before = courses.length;
-  courses = courses.filter(x =&gt; x.id !== Number(req.params.id));
-  if (courses.length === before)
-    return res.status(404).json({ error: "Not found" });
-  res.status(204).end();
-});
-
-app.listen(3000, () =&gt; console.log("API ready on :3000"));</code></pre>
-<h3>🧪 Test it</h3>
-<pre><code>curl http://localhost:3000/api/courses
-curl -X POST -H "Content-Type: application/json" \\
-     -d '{"title":"React","hours":15}' \\
-     http://localhost:3000/api/courses
-curl -X DELETE http://localhost:3000/api/courses/1</code></pre>
-<h3>🏋️ Level up</h3>
-<div class="callout tip"><strong>Extend it yourself:</strong> persist courses to courses.json with fs on every change (load at startup), and add ?q= search to the list route. Bonus: connect it to your React Study Tracker!</div>`),
-          quiz("nd-quiz-3", "Final Quiz: Node & Express", [
-            { q: "CRUD stands for...", options: ["Code, Run, Update, Debug", "Create, Read, Update, Delete", "Connect, Route, Use, Deploy", "None"], answer: 1 },
-            { q: "Which HTTP method conventionally updates an existing resource?", options: ["GET", "POST", "PUT", "DELETE"], answer: 2 },
-            { q: "res.status(204).end() means...", options: ["Error", "Success with no body to return", "Redirect", "Timeout"], answer: 1 },
-            { q: "Why Number(req.params.id)?", options: ["Style preference", "Params are strings; the ids are numbers — types must match for ===", "Express requires it", "It validates auth"], answer: 1 },
+const hash = await bcrypt.hash(password, 10);   // on signup
+const ok = await bcrypt.compare(password, hash); // on login</code></pre>
+<p>Hashing is one-way — even you can't read it back. If your database leaks, the passwords are still useless. Storing plain passwords is indefensible.</p>
+<h3>Tokens</h3>
+<p>After login you issue a token (often a <strong>JWT</strong>). The client sends it on every request:</p>
+<pre><code>Authorization: Bearer &lt;token&gt;</code></pre>
+<p>Your auth middleware verifies it and attaches <strong>req.user</strong>.</p>
+<h3>The rules</h3>
+<ul>
+  <li>Check permission <em>on the server</em>, every time. Hiding a button is not security.</li>
+  <li>Expire tokens.</li>
+  <li>HTTPS only — a token over plain HTTP is readable by anyone between.</li>
+  <li>Prefer a proven library (or Firebase Auth, Auth0) over rolling your own.</li>
+</ul>
+<div class="callout warn">"They can't reach that page in the UI" is not authorisation. Anyone can call your endpoint directly. Check on the server, always.</div>`),
+          article("nd-deploy", "Deploying Your API", "6 min", `
+<p>An API on localhost helps nobody.</p>
+<h3>Where to put it</h3>
+<ul>
+  <li><strong>Render</strong> / <strong>Railway</strong> / <strong>Fly.io</strong> — connect a repo, it deploys. Generous free tiers.</li>
+  <li><strong>Cloudflare Workers</strong> / <strong>Vercel</strong> — serverless functions.</li>
+  <li><strong>A VPS</strong> — full control, more work.</li>
+</ul>
+<h3>Make it deployable</h3>
+<pre><code>const port = process.env.PORT || 3000;
+app.listen(port);</code></pre>
+<p>The host <em>tells</em> you the port through an env var. Hard-code 3000 and your deploy fails — this is the classic first error.</p>
+<h3>The checklist</h3>
+<ul>
+  <li><strong>PORT from env</strong> ✓</li>
+  <li><strong>Secrets from env</strong>, set in the host's dashboard — never committed.</li>
+  <li><strong>"start" script</strong> in package.json.</li>
+  <li><strong>node_modules ignored</strong>, package-lock committed.</li>
+  <li><strong>CORS</strong> set for your real front-end domain.</li>
+  <li><strong>A /health route</strong> that returns 200 — hosts ping it.</li>
+</ul>
+<h3>Logs are your eyes</h3>
+<p>You can't console.log into a browser you can't see. Read your host's log stream — that's where the crash is explained.</p>
+<div class="callout tip">Deploy early, while it's tiny. Deploying a small working thing teaches you the pipeline; deploying six months of code teaches you despair.</div>`),
+          quiz("nd-quiz-4", "Quiz: Going Further", [
+            { q: "Building a SQL query by gluing user input allows…", options: ["Faster queries", "SQL injection", "Better caching", "Nothing"], answer: 1 },
+            { q: "The safe way to pass a value into SQL is…", options: ["String concatenation", "A ? placeholder (parameterised query)", "eval", "JSON.stringify"], answer: 1 },
+            { q: "Passwords must be stored…", options: ["Plain, for support", "Hashed one-way (e.g. bcrypt)", "Base64", "Encrypted with a shared key"], answer: 1 },
+            { q: "Logged in but not allowed returns…", options: ["401", "403", "404", "200"], answer: 1 },
+            { q: "Hiding a button in the UI is…", options: ["Real security", "Not security — the server must check", "Enough for admin", "A 403"], answer: 1 },
+            { q: "A deploy fails because you hard-coded…", options: ["The route", "The port instead of using process.env.PORT", "The JSON", "The logger"], answer: 1 },
+            { q: "Secrets should live…", options: ["In the code", "In env vars set on the host", "In package.json", "In the README"], answer: 1 },
           ]),
         ],
       },

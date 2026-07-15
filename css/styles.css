@@ -1239,10 +1239,18 @@ a.lesson-row:hover .ttl { color: var(--purple); }
 /* Messenger-style light header: surface bg + ink text, theme-aware */
 .chat-head {
   display: flex; align-items: center; justify-content: space-between;
+  gap: 6px; flex-wrap: nowrap;
   padding: 12px 14px; background: var(--surface); color: var(--ink);
   border-bottom: 1px solid var(--line);
 }
-.chat-title { font-weight: 700; font-size: 15px; }
+/* the room name must never wrap — a long (or Burmese) title used to push the
+   header to 3 lines and swallow the conversation on a phone */
+.chat-title {
+  font-weight: 700; font-size: 15px;
+  flex: 1 1 auto; min-width: 0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.chat-head > :not(.chat-title):not(.chat-search) { flex: 0 0 auto; }
 .chat-close { border: 0; background: transparent; color: inherit; font-size: 22px; cursor: pointer; line-height: 1; opacity: .75; }
 .chat-close:hover { opacity: 1; }
 .chat-list { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 14px; display: flex; flex-direction: column; gap: 10px; background: var(--surface-2); }
@@ -1808,7 +1816,9 @@ a.lesson-row:hover .ttl { color: var(--purple); }
     height: calc(100vh - 100px); max-height: none;
   }
   .chat-presence { display: none; } /* keep the header uncluttered */
-  .chat-search { max-width: 110px; }
+  /* the title now truncates, so the search can have its room back */
+  .chat-search { max-width: 132px; margin: 0 6px; }
+  .chat-head { padding: 10px 12px; }
   .chat-msg { max-width: 95%; }
 }
 

@@ -2245,6 +2245,22 @@ input[type="range"].tl-range { width: 100%; accent-color: var(--purple); }
   border-radius: 8px; font-size: 14px; line-height: 1.6;
 }
 .pf-item .tl-row { margin-top: 10px; }
+/* ---------- 📉 Insights (admin drop-off) ---------- */
+.ins-course { padding: 16px; margin-bottom: 14px; }
+.ins-head { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.ins-ic { font-size: 26px; line-height: 1; }
+.ins-cliff {
+  background: var(--warn-bg); color: var(--warn); border-radius: 8px;
+  padding: 8px 11px; font-size: 13px; margin-bottom: 12px;
+}
+.ins-bars { display: flex; flex-direction: column; gap: 5px; }
+.ins-row { display: grid; grid-template-columns: minmax(0, 1fr) 2fr 40px; align-items: center; gap: 8px; }
+.ins-lbl { font-size: 12px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ins-bar { background: var(--surface-2); border-radius: 999px; height: 12px; overflow: hidden; }
+.ins-bar i { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, #7b2ff7, #a435f0); }
+.ins-n { font-size: 12px; font-weight: 700; text-align: right; color: var(--ink); }
+@media (max-width: 600px) { .ins-row { grid-template-columns: minmax(0, 1fr) 1fr 34px; } }
+
 /* ---------- 📓 Smart Notebook ---------- */
 .nb-search {
   width: 100%; padding: 11px 14px; margin: 4px 0 16px;

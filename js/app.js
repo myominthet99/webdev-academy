@@ -471,7 +471,18 @@
     if (done) { bumpDayStreak(); bumpWeek(); }
     saveState();
     if (typeof pushLeaderboard === "function") pushLeaderboard();
-    if (done) setTimeout(maybeToastBadges, 500);
+    if (done) { setTimeout(maybeToastBadges, 500); trackLessonDone(courseId, lessonId); }
+  }
+  /* Anonymous lesson-completion counter — the only way to see WHERE students
+     stop. Same fire-and-forget server-increment pattern as trackCourseView;
+     no user id is sent, so it can't identify anyone. */
+  function trackLessonDone(courseId, lessonId) {
+    const base = statsBase();
+    if (!base) return;
+    fetch(base + "/stats/funnel/" + encodeURIComponent(courseId) + "/" + encodeURIComponent(lessonId) + ".json", {
+      method: "PUT",
+      body: JSON.stringify({ ".sv": { increment: 1 } }),
+    }).catch(() => {});
   }
   function enroll(courseId) {
     if (!isEnrolled(courseId)) {
@@ -1156,7 +1167,7 @@
         <div class="panel nb-item">
           <div class="nb-head">
             <span class="nb-ic">${n.icon || "📘"}</span>
-            <div><b>${escapeHtml(n.lesson)}</b><div class="muted" style="font-size:12px">${escapeHtml(n.course)}</div></div>
+            <div><b>${n.lesson}</b><div class="muted" style="font-size:12px">${n.course}</div></div>
           </div>
           <div class="nb-text">${escapeHtml(n.text)}</div>
           <a class="btn btn-outline btn-sm" href="#/learn/${n.cid}/${n.lid}">↗ ${t("nb_open")}</a>
@@ -6087,6 +6098,7 @@
           <h2 class="section-title">🚩 ${t("rep_title")}</h2>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <a class="btn btn-outline btn-sm" href="#/admin/dashboard">📊 ${t("dash_admin_title")}</a>
+            <a class="btn btn-outline btn-sm" href="#/admin/insights">📉 ${t("ins_title")}</a>
             <a class="btn btn-outline btn-sm" href="#/admin/payments">💳 ${t("admin_payments")}</a>
           </div>
         </div>
@@ -6274,6 +6286,68 @@
           (v ? '<text x="' + (i * bw + bw / 2).toFixed(1) + '" y="' + (h - bh - 4) + '" class="val">' + v + "</text>" : "") +
           (i % 2 ? '<text x="' + (i * bw + bw / 2).toFixed(1) + '" y="' + (h + 14) + '" class="lab">' + lab + "</text>" : "");
       }).join("") + "</svg>";
+  }
+
+  /* 📉 Insights — where do students actually stop?
+     Reads the anonymous stats/funnel counters and turns them into a
+     drop-off view per course. This is the question the app could never
+     answer before: completion was only ever stored on the device. */
+  function renderAdminInsights() {
+    app.innerHTML = `
+      <div class="container" style="max-width:900px">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+          <h2 class="section-title">📉 ${t("ins_title")}</h2>
+          <a class="btn btn-outline btn-sm" href="#/admin/dashboard">📊 ${t("dash_admin_title")}</a>
+        </div>
+        <p class="section-sub">${t("ins_sub")}</p>
+        <div id="ins-body"><div class="empty"><h2>⏳</h2></div></div>
+      </div>`;
+    const body = document.getElementById("ins-body");
+    const base = statsBase();
+    if (!base) { body.innerHTML = `<div class="empty"><h2>📉</h2><p>${t("lb_offline")}</p></div>`; return; }
+    fetch(base + "/stats/funnel.json").then((r) => r.json()).then((all) => {
+      all = all || {};
+      const rows = COURSES.map((c) => {
+        const counts = all[c.id] || {};
+        const flat = lessonsOf(c);
+        const steps = flat.map((x) => ({ id: x.lesson.id, title: lf(x.lesson, "title") || x.lesson.title, n: Number(counts[x.lesson.id]) || 0 }));
+        const started = steps.length ? steps[0].n : 0;
+        const finished = steps.length ? steps[steps.length - 1].n : 0;
+        return { c, steps, started, finished, total: steps.reduce((a, s) => a + s.n, 0) };
+      }).filter((r) => r.total > 0).sort((a, b) => b.started - a.started);
+
+      if (!rows.length) {
+        body.innerHTML = `<div class="panel"><h3 style="margin-top:0">${t("ins_none")}</h3><p class="muted">${t("ins_none_sub")}</p></div>`;
+        return;
+      }
+      body.innerHTML = rows.map((r) => {
+        const max = Math.max(1, r.started);
+        /* biggest single drop between consecutive lessons = the cliff */
+        let cliff = null;
+        for (let i = 1; i < r.steps.length; i++) {
+          const lost = r.steps[i - 1].n - r.steps[i].n;
+          if (lost > 0 && (!cliff || lost > cliff.lost)) cliff = { lost: lost, at: r.steps[i], prev: r.steps[i - 1] };
+        }
+        const pct = r.started ? Math.round((r.finished / r.started) * 100) : 0;
+        return `<div class="panel ins-course">
+          <div class="ins-head">
+            <span class="ins-ic">${r.c.icon || "📘"}</span>
+            <div><b>${cf(r.c, "title")}</b>
+              <div class="muted" style="font-size:12px">${r.started} ${t("ins_started")} · ${r.finished} ${t("ins_finished")} · <b>${pct}%</b> ${t("ins_completion")}</div>
+            </div>
+          </div>
+          ${cliff ? `<div class="ins-cliff">⚠️ ${t("ins_cliff")} <b>${cliff.at.title}</b> — ${t("ins_lost").replace("{n}", cliff.lost)}</div>` : ""}
+          <div class="ins-bars">
+            ${r.steps.map((s) => `<div class="ins-row" title="${s.title}">
+              <span class="ins-lbl">${s.title}</span>
+              <span class="ins-bar"><i style="width:${Math.round((s.n / max) * 100)}%"></i></span>
+              <span class="ins-n">${s.n}</span>
+            </div>`).join("")}
+          </div>
+        </div>`;
+      }).join("");
+    }).catch(() => { body.innerHTML = `<div class="empty"><h2>📉</h2><p>${t("ins_none_sub")}</p></div>`; });
+    window.scrollTo(0, 0);
   }
 
   function renderAdminDashboard() {
@@ -7149,6 +7223,7 @@
     if (editId === "dashboard") return renderAdminDashboard();
     if (editId === "payments") return renderAdminPayments();
     if (editId === "reports") return renderAdminReports();
+    if (editId === "insights") return renderAdminInsights();
     if (editId === "content") return renderContentCreator();
     const custom = loadCustomCourses();
     const editing = editId ? custom.find((c) => c.id === editId) : null;

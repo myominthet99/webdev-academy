@@ -5,23 +5,45 @@
       "$uid": {
         ".read": "auth != null && auth.uid === $uid",
         ".write": "auth != null && auth.token.email === 'mmtboy90@gmail.com'",
-        "name": { ".validate": "newData.isString() && newData.val().length <= 40" },
-        "by":   { ".validate": "newData.isString()" },
-        "ts":   { ".validate": "newData.isNumber()" }
+        "name": {
+          ".validate": "newData.isString() && newData.val().length <= 40"
+        },
+        "by": {
+          ".validate": "newData.isString()"
+        },
+        "ts": {
+          ".validate": "newData.isNumber()"
+        }
       }
     },
     "reports": {
       ".read": "auth != null && auth.token.email === 'mmtboy90@gmail.com'",
       "$rid": {
         ".write": "auth != null && (data.exists() ? auth.token.email === 'mmtboy90@gmail.com' : newData.child('by').val() === auth.uid)",
-        "room":   { ".validate": "newData.isString() && newData.val().length <= 120" },
-        "msg":    { ".validate": "newData.isString() && newData.val().length <= 120" },
-        "uid":    { ".validate": "newData.isString() && newData.val().length <= 128" },
-        "name":   { ".validate": "newData.isString() && newData.val().length <= 40" },
-        "text":   { ".validate": "newData.isString() && newData.val().length <= 300" },
-        "by":     { ".validate": "newData.isString() && newData.val().length <= 128" },
-        "byName": { ".validate": "newData.isString() && newData.val().length <= 40" },
-        "ts":     { ".validate": "newData.isNumber()" }
+        "room": {
+          ".validate": "newData.isString() && newData.val().length <= 120"
+        },
+        "msg": {
+          ".validate": "newData.isString() && newData.val().length <= 120"
+        },
+        "uid": {
+          ".validate": "newData.isString() && newData.val().length <= 128"
+        },
+        "name": {
+          ".validate": "newData.isString() && newData.val().length <= 40"
+        },
+        "text": {
+          ".validate": "newData.isString() && newData.val().length <= 300"
+        },
+        "by": {
+          ".validate": "newData.isString() && newData.val().length <= 128"
+        },
+        "byName": {
+          ".validate": "newData.isString() && newData.val().length <= 40"
+        },
+        "ts": {
+          ".validate": "newData.isNumber()"
+        }
       }
     },
     "rooms": {
@@ -31,24 +53,50 @@
           "$msg": {
             ".write": "auth != null && !root.child('banned').child(auth.uid).exists() && (data.exists() ? (((data.child('userId').val() === auth.uid || data.child('u').val() === auth.uid) && (!newData.exists() || newData.child('userId').val() === data.child('userId').val())) || auth.token.email === 'mmtboy90@gmail.com') : (newData.child('userId').val() === auth.uid || newData.child('u').val() === auth.uid))",
             "reactions": {
-              "$emoji": { ".write": "auth != null && !root.child('banned').child(auth.uid).exists()" }
+              "$emoji": {
+                ".write": "auth != null && !root.child('banned').child(auth.uid).exists()"
+              }
             },
             "pinned": {
               ".write": "auth != null && (data.parent().child('userId').val() === auth.uid || auth.token.email === 'mmtboy90@gmail.com')",
               ".validate": "newData.isBoolean()"
             },
-            "userId":     { ".validate": "newData.isString() && newData.val().length <= 128" },
-            "text":       { ".validate": "newData.isString() && newData.val().length <= 2000" },
-            "editedText": { ".validate": "newData.isString() && newData.val().length <= 2000" },
-            "name":       { ".validate": "newData.isString() && newData.val().length <= 60" },
-            "img":        { ".validate": "newData.isString() && newData.val().length <= 500000" },
-            "aud":        { ".validate": "newData.isString() && newData.val().length <= 500000" },
-            "dur":        { ".validate": "newData.isNumber()" },
-            "ts":         { ".validate": "newData.isNumber()" }
+            "userId": {
+              ".validate": "newData.isString() && newData.val().length <= 128"
+            },
+            "text": {
+              ".validate": "newData.isString() && newData.val().length <= 2000"
+            },
+            "editedText": {
+              ".validate": "newData.isString() && newData.val().length <= 2000"
+            },
+            "name": {
+              ".validate": "newData.isString() && newData.val().length <= 60"
+            },
+            "img": {
+              ".validate": "newData.isString() && newData.val().length <= 500000"
+            },
+            "aud": {
+              ".validate": "newData.isString() && newData.val().length <= 500000"
+            },
+            "dur": {
+              ".validate": "newData.isNumber()"
+            },
+            "ts": {
+              ".validate": "newData.isNumber()"
+            }
           }
         },
-        "presence": { "$uid": { ".write": "auth != null && $uid === auth.uid" } },
-        "typing":   { "$uid": { ".write": "auth != null && $uid === auth.uid" } }
+        "presence": {
+          "$uid": {
+            ".write": "auth != null && $uid === auth.uid"
+          }
+        },
+        "typing": {
+          "$uid": {
+            ".write": "auth != null && $uid === auth.uid"
+          }
+        }
       }
     },
     "sync": {
@@ -56,8 +104,12 @@
         ".read": "auth != null && (auth.token.email === 'mmtboy90@gmail.com' || (auth.token.email != null && $ekey === auth.token.email.toLowerCase().replace('.', ',').replace('#', ',').replace('$', ',').replace('[', ',').replace(']', ',').replace('/', ',').replace('%', ',')))",
         ".write": "auth != null && auth.token.email != null && $ekey === auth.token.email.toLowerCase().replace('.', ',').replace('#', ',').replace('$', ',').replace('[', ',').replace(']', ',').replace('/', ',').replace('%', ',')",
         "$row": {
-          "k": { ".validate": "newData.isString()" },
-          "v": { ".validate": "newData.isString()" }
+          "k": {
+            ".validate": "newData.isString()"
+          },
+          "v": {
+            ".validate": "newData.isString()"
+          }
         }
       }
     },
@@ -65,14 +117,20 @@
       "announcement": {
         ".read": true,
         ".write": "auth != null && auth.token.email === 'mmtboy90@gmail.com'",
-        "text": { ".validate": "newData.isString() && newData.val().length <= 300" },
-        "ts":   { ".validate": "newData.isNumber()" }
+        "text": {
+          ".validate": "newData.isString() && newData.val().length <= 300"
+        },
+        "ts": {
+          ".validate": "newData.isNumber()"
+        }
       },
       "courses": {
         ".read": true,
         "$cid": {
           ".write": true,
-          "$day": { ".validate": "newData.isNumber()" }
+          "$day": {
+            ".validate": "newData.isNumber()"
+          }
         }
       },
       "showcase": {
@@ -86,12 +144,24 @@
         ".read": true,
         "$uid": {
           ".write": "auth != null && ($uid === auth.uid || auth.token.email === 'mmtboy90@gmail.com')",
-          "name":    { ".validate": "newData.isString() && newData.val().length <= 40" },
-          "xp":      { ".validate": "newData.isNumber()" },
-          "lessons": { ".validate": "newData.isNumber()" },
-          "courses": { ".validate": "newData.isNumber()" },
-          "streak":  { ".validate": "newData.isNumber()" },
-          "ts":      { ".validate": "newData.isNumber()" }
+          "name": {
+            ".validate": "newData.isString() && newData.val().length <= 40"
+          },
+          "xp": {
+            ".validate": "newData.isNumber()"
+          },
+          "lessons": {
+            ".validate": "newData.isNumber()"
+          },
+          "courses": {
+            ".validate": "newData.isNumber()"
+          },
+          "streak": {
+            ".validate": "newData.isNumber()"
+          },
+          "ts": {
+            ".validate": "newData.isNumber()"
+          }
         }
       },
       "promo": {
@@ -103,37 +173,67 @@
             ".write": "auth != null",
             ".validate": "newData.isNumber() && newData.val() >= 0"
           },
-          "days": { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 3650" },
-          "max":  { ".validate": "newData.isNumber() && newData.val() >= 1" },
-          "ts":   { ".validate": "newData.isNumber()" }
+          "days": {
+            ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 3650"
+          },
+          "max": {
+            ".validate": "newData.isNumber() && newData.val() >= 1"
+          },
+          "ts": {
+            ".validate": "newData.isNumber()"
+          }
         }
       },
       "pushConfig": {
         ".read": true,
         ".write": "auth != null && auth.token.email === 'mmtboy90@gmail.com'",
-        "vapid": { ".validate": "newData.isString() && newData.val().length <= 200" }
+        "vapid": {
+          ".validate": "newData.isString() && newData.val().length <= 200"
+        }
       },
       "pushTokens": {
         ".read": "auth != null && auth.token.email === 'mmtboy90@gmail.com'",
         "$token": {
           ".write": "auth != null",
-          "ts":     { ".validate": "newData.isNumber()" },
-          "streak": { ".validate": "newData.isNumber()" },
-          "last":   { ".validate": "newData.isString() && newData.val().length <= 10" },
-          "tz":     { ".validate": "newData.isNumber()" },
-          "lang":   { ".validate": "newData.isString() && newData.val().length <= 4" },
-          "rmd":    { ".validate": "newData.isString() && newData.val().length <= 10" }
+          "ts": {
+            ".validate": "newData.isNumber()"
+          },
+          "streak": {
+            ".validate": "newData.isNumber()"
+          },
+          "last": {
+            ".validate": "newData.isString() && newData.val().length <= 10"
+          },
+          "tz": {
+            ".validate": "newData.isNumber()"
+          },
+          "lang": {
+            ".validate": "newData.isString() && newData.val().length <= 4"
+          },
+          "rmd": {
+            ".validate": "newData.isString() && newData.val().length <= 10"
+          }
         }
       },
       "events": {
         ".read": true,
         "$eid": {
           ".write": "auth != null && auth.token.email === 'mmtboy90@gmail.com'",
-          "t":       { ".validate": "newData.isString() && newData.val().length <= 80" },
-          "my":      { ".validate": "newData.isString() && newData.val().length <= 120" },
-          "ts":      { ".validate": "newData.isNumber()" },
-          "link":    { ".validate": "newData.isString() && newData.val().length <= 200" },
-          "created": { ".validate": "newData.isNumber()" }
+          "t": {
+            ".validate": "newData.isString() && newData.val().length <= 80"
+          },
+          "my": {
+            ".validate": "newData.isString() && newData.val().length <= 120"
+          },
+          "ts": {
+            ".validate": "newData.isNumber()"
+          },
+          "link": {
+            ".validate": "newData.isString() && newData.val().length <= 200"
+          },
+          "created": {
+            ".validate": "newData.isNumber()"
+          }
         }
       },
       "polls": {
@@ -141,9 +241,15 @@
         "$lid": {
           "$vote": {
             ".write": "auth != null && newData.exists() && !root.child('banned').child(auth.uid).exists()",
-            "o":  { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 2" },
-            "ts": { ".validate": "newData.isNumber()" },
-            "$other": { ".validate": false }
+            "o": {
+              ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 2"
+            },
+            "ts": {
+              ".validate": "newData.isNumber()"
+            },
+            "$other": {
+              ".validate": false
+            }
           }
         }
       },
@@ -152,11 +258,30 @@
         "$cid": {
           "$uid": {
             ".write": "auth != null && $uid === auth.uid",
-            "r":       { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 5" },
-            "text":    { ".validate": "newData.isString() && newData.val().length <= 300" },
-            "name":    { ".validate": "newData.isString() && newData.val().length <= 40" },
-            "initial": { ".validate": "newData.isString() && newData.val().length <= 4" },
-            "ts":      { ".validate": "newData.isNumber()" }
+            "r": {
+              ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 5"
+            },
+            "text": {
+              ".validate": "newData.isString() && newData.val().length <= 300"
+            },
+            "name": {
+              ".validate": "newData.isString() && newData.val().length <= 40"
+            },
+            "initial": {
+              ".validate": "newData.isString() && newData.val().length <= 4"
+            },
+            "ts": {
+              ".validate": "newData.isNumber()"
+            }
+          }
+        }
+      },
+      "funnel": {
+        ".read": true,
+        "$cid": {
+          "$lid": {
+            ".write": true,
+            ".validate": "newData.isNumber() && newData.val() >= 0"
           }
         }
       }
@@ -180,14 +305,30 @@
       "$uid": {
         ".write": "auth != null && ($uid === auth.uid || auth.token.email === 'mmtboy90@gmail.com')",
         "$pid": {
-          "title":  { ".validate": "newData.isString() && newData.val().length <= 80" },
-          "ic":     { ".validate": "newData.isString() && newData.val().length <= 8" },
-          "code":   { ".validate": "newData.isString() && newData.val().length <= 100000" },
-          "review": { ".validate": "newData.isString() && newData.val().length <= 4000" },
-          "course": { ".validate": "newData.isString() && newData.val().length <= 60" },
-          "by":     { ".validate": "newData.isString() && newData.val().length <= 40" },
-          "ts":     { ".validate": "newData.isNumber()" },
-          "$other": { ".validate": false }
+          "title": {
+            ".validate": "newData.isString() && newData.val().length <= 80"
+          },
+          "ic": {
+            ".validate": "newData.isString() && newData.val().length <= 8"
+          },
+          "code": {
+            ".validate": "newData.isString() && newData.val().length <= 100000"
+          },
+          "review": {
+            ".validate": "newData.isString() && newData.val().length <= 4000"
+          },
+          "course": {
+            ".validate": "newData.isString() && newData.val().length <= 60"
+          },
+          "by": {
+            ".validate": "newData.isString() && newData.val().length <= 40"
+          },
+          "ts": {
+            ".validate": "newData.isNumber()"
+          },
+          "$other": {
+            ".validate": false
+          }
         }
       }
     }

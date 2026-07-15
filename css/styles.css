@@ -132,6 +132,38 @@ button { font-family: inherit; cursor: pointer; }
 .topnav:not(.right) a.active::after {
   content: ""; position: absolute; left: 12px; right: 12px; bottom: -1px;
   height: 2px; border-radius: 2px; background: var(--purple);
+  transform-origin: center; animation: nvBar .28s ease-out;
+}
+
+/* Icon micro-motion: each icon animates to mean what it is. Transform-only
+   (GPU-cheap), ~220ms, and fully disabled under prefers-reduced-motion. */
+.topnav:not(.right) a .nv-ic svg,
+.topnav:not(.right) a .nv-ic svg > * {
+  transition: transform .22s cubic-bezier(.34, 1.2, .64, 1), filter .22s ease;
+  transform-origin: center; transform-box: fill-box;
+}
+#nav-courses:hover    .nv-ic svg { transform: rotate(-7deg) translateY(-1px); }   /* book tips open */
+#nav-gallery:hover    .nv-ic svg { transform: scale(1.1); }                       /* photo zooms in */
+#nav-showcase:hover   .nv-ic svg { transform: translate(1.5px, -2px); }           /* arrow trends up */
+#nav-roadmap:hover    .nv-ic svg { transform: translateY(-2px) rotate(-3deg); }   /* map lifts */
+#nav-howto:hover      .nv-ic svg { transform: scale(1.1); filter: drop-shadow(0 0 4px currentColor); } /* bulb lights up */
+#nav-tools:hover      .nv-ic svg { transform: rotate(-18deg); }                   /* wrench turns */
+#nav-playground:hover .nv-ic svg > polyline:first-child { transform: translateX(1.6px); }
+#nav-playground:hover .nv-ic svg > polyline:last-child  { transform: translateX(-1.6px); } /* brackets spread */
+/* the icon pops in when its page becomes active */
+.topnav:not(.right) a.active .nv-ic svg { animation: nvIn .34s cubic-bezier(.34, 1.4, .64, 1); }
+@keyframes nvIn {
+  0%   { transform: scale(.7); opacity: .3; }
+  60%  { transform: scale(1.12); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes nvBar { from { transform: scaleX(0); opacity: 0; } to { transform: scaleX(1); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .topnav:not(.right) a .nv-ic svg,
+  .topnav:not(.right) a .nv-ic svg > *,
+  .topnav:not(.right) a.active::after { transition: none; animation: none; transform: none; }
+  #nav-courses:hover .nv-ic svg, #nav-gallery:hover .nv-ic svg, #nav-showcase:hover .nv-ic svg,
+  #nav-roadmap:hover .nv-ic svg, #nav-howto:hover .nv-ic svg, #nav-tools:hover .nv-ic svg { transform: none; filter: none; }
 }
 /* Messenger-style chat button in the header */
 .chat-nav-btn {
@@ -317,7 +349,11 @@ button { font-family: inherit; cursor: pointer; }
   .tabbar a .tb-lbl { font-size: 10.5px; font-weight: 700; }
   .tabbar a.active { color: var(--purple); }
   .tabbar a.active .tb-ic { transform: translateY(-1px); }
+  .tabbar a.active .tb-ic svg { animation: nvIn .34s cubic-bezier(.34, 1.4, .64, 1); }
   .tabbar a:active .tb-ic { transform: scale(.94); }
+  @media (prefers-reduced-motion: reduce) {
+    .tabbar a .tb-ic, .tabbar a.active .tb-ic svg { transition: none; animation: none; }
+  }
   /* keep page content and the chat button clear of the bar */
   #app { padding-bottom: 76px; }
   #chat-widget { bottom: 84px; }

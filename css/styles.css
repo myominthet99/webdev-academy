@@ -2245,6 +2245,26 @@ input[type="range"].tl-range { width: 100%; accent-color: var(--purple); }
   border-radius: 8px; font-size: 14px; line-height: 1.6;
 }
 .pf-item .tl-row { margin-top: 10px; }
+/* ---------- 📓 Smart Notebook ---------- */
+.nb-search {
+  width: 100%; padding: 11px 14px; margin: 4px 0 16px;
+  border: 1px solid var(--line); border-radius: 999px;
+  background: var(--surface-2); color: var(--ink);
+  font-size: 14px; font-family: inherit;
+}
+.nb-search:focus { outline: none; border-color: var(--purple); }
+.nb-item { padding: 16px; margin-bottom: 12px; }
+.nb-head { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.nb-ic { font-size: 26px; line-height: 1; }
+.nb-text {
+  white-space: pre-wrap; overflow-wrap: anywhere;
+  background: var(--surface-2); border-left: 3px solid var(--purple);
+  border-radius: 8px; padding: 10px 12px; margin-bottom: 10px;
+  font-size: 14px; line-height: 1.6;
+}
+.nb-link { margin-left: auto; font-size: 12px; font-weight: 700; color: var(--purple); }
+.nb-link:hover { text-decoration: underline; }
+
 /* ---------- My Learning first-run: "What will you learn first?" ---------- */
 .ml-empty { max-width: 460px; margin: 0 auto; padding: 26px 0 8px; text-align: center; }
 .ml-empty-art { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }

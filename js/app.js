@@ -1118,6 +1118,70 @@
     window.scrollTo(0, 0);
   }
 
+  /* 📓 Smart Notebook — every note the student has written, in one place.
+     Notes are already saved per lesson; this makes them findable again. */
+  function collectNotes() {
+    const notes = loadNotes();
+    const out = [];
+    COURSES.forEach((c) =>
+      c.sections.forEach((s) =>
+        s.lessons.forEach((l) => {
+          const text = (notes[l.id] || "").trim();
+          if (text) out.push({ cid: c.id, course: cf(c, "title"), icon: c.icon, lid: l.id, lesson: lf(l, "title") || l.title || l.id, section: s.title, text: text });
+        })
+      )
+    );
+    return out;
+  }
+  function renderNotes() {
+    const all = collectNotes();
+    app.innerHTML = `
+      <div class="container" style="max-width:720px">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+          <h2 class="section-title">📓 ${t("nb_title")}</h2>
+          ${all.length ? `<button class="btn btn-outline btn-sm" id="nb-export">⬇️ ${t("nb_export")}</button>` : ""}
+        </div>
+        <p class="section-sub">${t("nb_sub")}</p>
+        ${all.length ? `<input id="nb-search" class="nb-search" type="search" placeholder="${escapeHtml(t("nb_search"))}" aria-label="${escapeHtml(t("nb_search"))}">` : ""}
+        <div id="nb-list"></div>
+      </div>`;
+    const list = document.getElementById("nb-list");
+    const draw = (items) => {
+      if (!all.length) {
+        list.innerHTML = `<div class="empty"><h2>📓</h2><p>${t("nb_empty")}</p><a class="btn btn-primary" href="#/courses">${t("browse_courses")}</a></div>`;
+        return;
+      }
+      if (!items.length) { list.innerHTML = `<div class="empty"><h2>🔍</h2><p>${t("nb_none")}</p></div>`; return; }
+      list.innerHTML = items.map((n) => `
+        <div class="panel nb-item">
+          <div class="nb-head">
+            <span class="nb-ic">${n.icon || "📘"}</span>
+            <div><b>${escapeHtml(n.lesson)}</b><div class="muted" style="font-size:12px">${escapeHtml(n.course)}</div></div>
+          </div>
+          <div class="nb-text">${escapeHtml(n.text)}</div>
+          <a class="btn btn-outline btn-sm" href="#/learn/${n.cid}/${n.lid}">↗ ${t("nb_open")}</a>
+        </div>`).join("");
+    };
+    draw(all);
+    const search = document.getElementById("nb-search");
+    if (search) search.addEventListener("input", () => {
+      const q = search.value.trim().toLowerCase();
+      draw(!q ? all : all.filter((n) =>
+        (n.text + " " + n.lesson + " " + n.course).toLowerCase().indexOf(q) >= 0));
+    });
+    const ex = document.getElementById("nb-export");
+    if (ex) ex.addEventListener("click", () => {
+      const txt = all.map((n) => "## " + n.course + " — " + n.lesson + "\n\n" + n.text + "\n").join("\n---\n\n");
+      const blob = new Blob(["# " + t("nb_title") + "\n\n" + txt], { type: "text/plain;charset=utf-8" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "my-notes.txt";
+      a.click();
+      URL.revokeObjectURL(a.href);
+    });
+    window.scrollTo(0, 0);
+  }
+
   /* 🌟 Community Showcase — every student's submitted projects in one gallery.
      Reads the public `portfolio` tree (all handles) and shows the newest. */
   function collectShowcase(all) {
@@ -2849,7 +2913,7 @@
               })()}
             </div>
             <div class="notes">
-              <div class="notes-head"><strong>${t("notes_title")}</strong> <span class="notes-status" id="notes-status"></span></div>
+              <div class="notes-head"><strong>${t("notes_title")}</strong> <span class="notes-status" id="notes-status"></span><a class="nb-link" href="#/notes">📓 ${t("nb_all")}</a></div>
               <textarea id="lesson-notes" placeholder="${escapeHtml(t("notes_placeholder"))}">${escapeHtml(loadNotes()[current.id] || "")}</textarea>
             </div>
             <div id="comments-section" style="margin-top:32px;border-top:1px solid var(--line);padding-top:20px">
@@ -3971,6 +4035,7 @@
           <h2 class="section-title">${t("dash_title")}</h2>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <a class="btn btn-outline btn-sm" href="#/review">🧠 ${t("review_title")}</a>
+            <a class="btn btn-outline btn-sm" href="#/notes">📓 ${t("nb_title")}</a>
             <a class="btn btn-outline btn-sm" href="#/portfolio">📁 ${t("portfolio_mine")}</a>
             <a class="btn btn-outline btn-sm" href="#/showcase">🌟 ${t("showcase_title")}</a>
             <a class="btn btn-outline btn-sm" href="#/leaderboard">🏆 ${t("lb_title")}</a>
@@ -7446,6 +7511,7 @@
     else if (parts[0] === "project" && parts[1]) renderProject(parts[1]);
     else if (parts[0] === "portfolio") renderPortfolio(parts[1]);
     else if (parts[0] === "showcase") renderShowcase();
+    else if (parts[0] === "notes") renderNotes();
     else if (parts[0] === "gallery") renderGallery();
     else if (parts[0] === "map" && parts[1]) renderCourseMap(parts[1]);
     else if (parts[0] === "start") renderStart();

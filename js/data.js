@@ -14517,7 +14517,7 @@ ORDER BY total DESC;</code></pre>
     rating: 4.7,
     ratings: 9120,
     students: 41300,
-    hours: 9,
+    hours: 20,
     price: "Free",
     color: "linear-gradient(135deg,#2193b0,#6dd5ed)",
     icon: "&#128203;",
@@ -14531,123 +14531,321 @@ ORDER BY total DESC;</code></pre>
     ],
     sections: [
       {
-        title: "Project Management Foundations",
+        title: "1 · Project Management Foundations",
         lessons: [
-          article("pm-what", "What Is a Project (and a PM)?", "6 min", `
-<p>A <strong>project</strong> is temporary work that creates something new — a website, an app, a migration. It has a <em>start</em>, an <em>end</em>, and a <em>goal</em>. That's different from ongoing operations (like running support forever).</p>
-<h3>What a project manager really does</h3>
+          article("pm-what", "What Is a Project (and a PM)?", "7 min", `
+<p>A <strong>project</strong> is temporary and unique: it has a start, an end, and it produces something that didn't exist before. Running the payroll every month is <em>operations</em>. Replacing the payroll system is a <em>project</em>.</p>
+<h3>What a PM actually does</h3>
+<p>Not "tell developers what to code". A project manager's real job is to <strong>remove obstacles and keep everyone honest about reality</strong>:</p>
 <ul>
-  <li><strong>Plans</strong> the work — what, who, by when.</li>
-  <li><strong>Coordinates</strong> people so the right thing gets built.</li>
-  <li><strong>Removes blockers</strong> and keeps everyone informed.</li>
-  <li><strong>Manages risk</strong> before it becomes a crisis.</li>
+  <li><strong>Clarify</strong> — what are we building, and why?</li>
+  <li><strong>Plan</strong> — roughly what, by roughly when, with whom.</li>
+  <li><strong>Unblock</strong> — the highest-value thing you do all day.</li>
+  <li><strong>Communicate</strong> — up, down and sideways.</li>
+  <li><strong>Decide or escalate</strong> — never let a decision rot.</li>
 </ul>
-<div class="callout tip">A PM rarely writes the code. Your job is to make it easy for the people who do.</div>`),
-          article("pm-triple", "The Triple Constraint", "6 min", `
-<p>Every project balances three things — change one and the others move. This is the <strong>triple constraint</strong> (or "iron triangle").</p>
+<h3>Authority vs responsibility</h3>
+<p>The classic trap: a PM is responsible for delivery but often has <em>no authority</em> over the people doing the work. So the job runs on influence, clarity and trust — not commands. PMs who try to command get ignored.</p>
+<h3>The bad PM vs the good PM</h3>
+<ul>
+  <li><strong>Bad</strong> — asks for status, forwards it upward, adds pressure. A human spreadsheet.</li>
+  <li><strong>Good</strong> — already knows the status, has removed two blockers before standup, and protects the team from noise.</li>
+</ul>
+<div class="callout tip">If your team's honest answer to "what's blocking you?" is "nothing, but I'm waiting on Finance" — that waiting IS the job. Go get it.</div>`),
+          article("pm-triple", "The Triple Constraint", "7 min", `
+<p>Every project is squeezed by three things — and they're connected. Pull one and the others move.</p>
 <div class="flow">
-  <div class="flow-box">📋 Scope<br><small>what you build</small></div>
-  <div class="flow-arrow" data-label="vs"></div>
-  <div class="flow-box alt">⏰ Time<br><small>the deadline</small></div>
-  <div class="flow-arrow" data-label="vs"></div>
-  <div class="flow-box warn">💰 Cost<br><small>people & money</small></div>
+  <div class="flow-box">📋 Scope</div>
+  <div class="flow-arrow" data-label="costs"></div>
+  <div class="flow-box alt">⏱️ Time</div>
+  <div class="flow-arrow" data-label="needs"></div>
+  <div class="flow-box warn">💰 Cost</div>
 </div>
 <ul>
-  <li>Want it <strong>sooner</strong>? Cut scope or add people (money).</li>
-  <li>Want <strong>more features</strong>? It costs more time or money.</li>
-  <li>Fixed <strong>budget</strong>? Then scope or the date must flex.</li>
+  <li><strong>Scope</strong> — how much we build.</li>
+  <li><strong>Time</strong> — when it must be done.</li>
+  <li><strong>Cost</strong> — money and people.</li>
 </ul>
-<div class="callout">"Good, fast, cheap — pick two." Quality is what silently suffers when you pretend you can have all three.</div>`),
+<p>In the middle sits <strong>quality</strong> — and it's what silently gets sacrificed when the other three are squeezed.</p>
+<h3>Pick two</h3>
+<p>Want it faster <em>and</em> the same scope? Then it costs more. Want it cheaper and faster? Scope must shrink. Refuse to trade anything and you don't get a miracle — you get bugs, burnout and a missed date anyway.</p>
+<h3>The myth of adding people</h3>
+<p>Adding people to a late project makes it later. New people need onboarding from the very people who are already the bottleneck. Nine women cannot make a baby in one month.</p>
+<h3>Say the trade-off out loud</h3>
+<pre><code>✗ "We'll try to fit it in."
+✓ "We can add that — it moves the date two weeks,
+   or we drop the reporting screen. Which?"</code></pre>
+<p>That's not obstruction. It's the entire job: making an invisible trade-off visible so someone with authority can choose.</p>
+<div class="callout warn">"Try" is the most dangerous word in project management. It means nobody chose — so everyone assumes they got everything, and the date slips silently.</div>`),
           article("pm-lifecycle", "The Project Lifecycle", "6 min", `
-<p>Most projects move through five phases — a simple map you can apply to anything.</p>
-<ol>
-  <li><strong>Initiation</strong> — why are we doing this? Define the goal &amp; who's involved.</li>
-  <li><strong>Planning</strong> — scope, schedule, budget, risks.</li>
-  <li><strong>Execution</strong> — the team builds; you coordinate.</li>
-  <li><strong>Monitoring &amp; Control</strong> — track progress, handle changes.</li>
-  <li><strong>Closure</strong> — deliver, review lessons learned, celebrate.</li>
-</ol>
-<div class="callout tip">Monitoring runs <em>alongside</em> execution — you're always checking "are we still on track?"</div>`),
+<p>Whatever the methodology, projects move through the same phases.</p>
+<div class="flow">
+  <div class="flow-box">💡 Initiate</div>
+  <div class="flow-arrow" data-label="plan"></div>
+  <div class="flow-box alt">📐 Plan</div>
+  <div class="flow-arrow" data-label="build"></div>
+  <div class="flow-box">🔨 Execute</div>
+  <div class="flow-arrow" data-label="close"></div>
+  <div class="flow-box warn">✅ Close</div>
+</div>
+<ul>
+  <li><strong>Initiate</strong> — why are we doing this? Who's the sponsor? What does success look like?</li>
+  <li><strong>Plan</strong> — scope, rough schedule, people, risks.</li>
+  <li><strong>Execute &amp; monitor</strong> — build it; track reality against the plan.</li>
+  <li><strong>Close</strong> — hand over, document, and learn.</li>
+</ul>
+<h3>Initiation is where projects are won or lost</h3>
+<p>Most failures trace back to a fuzzy start: no clear sponsor, no agreed definition of success, no honest "why". If you can't say who wants this and how we'll know it worked — the plan is decoration.</p>
+<h3>Closing is the phase everyone skips</h3>
+<p>The team gets pulled onto the next thing and nobody documents anything, hands over properly, or asks what went wrong. So the same mistakes are repeated next quarter, by the same people, sincerely.</p>
+<div class="callout tip">Write the one-line success measure at initiation and pin it where everyone sees it. "Cut checkout time from 4 minutes to 90 seconds" settles a hundred future arguments.</div>`),
+          quiz("pm-quiz-1", "Quiz: PM Foundations", [
+            { q: "A project is…", options: ["Any work", "Temporary and unique — a start, an end, a new outcome", "Ongoing operations", "A meeting series"], answer: 1 },
+            { q: "A PM's highest-value daily activity is usually…", options: ["Collecting status", "Removing blockers", "Updating Gantt charts", "Attending meetings"], answer: 1 },
+            { q: "The classic PM trap is…", options: ["Too much authority", "Responsible for delivery but with no authority over the team", "Too few meetings", "Too much budget"], answer: 1 },
+            { q: "The triple constraint is…", options: ["People, tools, money", "Scope, time, cost — with quality in the middle", "Plan, build, ship", "Risk, cost, fear"], answer: 1 },
+            { q: "Adding people to a late project…", options: ["Speeds it up", "Usually makes it later", "Has no effect", "Cuts scope"], answer: 1 },
+            { q: "'We'll try to fit it in' is dangerous because…", options: ["It's rude", "Nobody chose — the trade-off stays invisible and the date slips", "It's too honest", "It's slow"], answer: 1 },
+            { q: "Most project failures trace back to…", options: ["Bad developers", "A fuzzy initiation — no clear sponsor or definition of success", "Wrong tools", "Small budgets"], answer: 1 },
+          ]),
         ],
       },
       {
-        title: "Ways of Working: Agile & Scrum",
+        title: "2 · Ways of Working: Agile & Scrum",
         lessons: [
           article("pm-waterfall-agile", "Waterfall vs Agile", "7 min", `
-<p>Two ways to run a project — and why software mostly picks Agile.</p>
+<p>Two philosophies about one question: <em>how much can we know up front?</em></p>
 <h3>Waterfall</h3>
-<p>Plan everything up front, then build in order: requirements → design → build → test → release. Great when requirements are <strong>fixed and known</strong> (e.g. building a bridge). Risky for software, where needs change.</p>
+<p>Plan everything, then build it in sequence: requirements → design → build → test → release. It works when the requirements genuinely won't change — a bridge, a payroll migration, a regulated rollout.</p>
+<p>It fails when you can't know everything up front. You spend six months building precisely the thing that was specified — and by delivery it's the wrong thing.</p>
 <h3>Agile</h3>
-<p>Build in small slices, get feedback, adapt. Ship a little, learn, repeat. Better when requirements <strong>evolve</strong> — which is most software.</p>
-<div class="callout tip">Agile isn't "no plan" — it's "re-plan often as you learn."</div>`),
-          article("pm-scrum", "Scrum in 7 Minutes", "7 min", `
-<p><strong>Scrum</strong> is the most popular Agile framework. Work happens in short cycles called <strong>sprints</strong> (usually 1–2 weeks).</p>
-<h3>The three roles</h3>
-<ul>
-  <li><strong>Product Owner</strong> — decides <em>what</em> to build and the priority.</li>
-  <li><strong>Scrum Master</strong> — coaches the team, removes blockers.</li>
-  <li><strong>Developers</strong> — build the increment.</li>
-</ul>
-<h3>The key events</h3>
-<ul>
-  <li><strong>Sprint Planning</strong> — pick what to do this sprint.</li>
-  <li><strong>Daily Standup</strong> — 15 min: done / doing / blocked.</li>
-  <li><strong>Sprint Review</strong> — show the working result.</li>
-  <li><strong>Retrospective</strong> — how do we improve next time?</li>
-</ul>
-<div class="callout">The <strong>backlog</strong> is the prioritized to-do list. The top is always the next most valuable thing.</div>`),
-          article("pm-kanban", "Kanban & Visualizing Work", "5 min", `
-<p><strong>Kanban</strong> is a simpler flow: a board with columns the work moves across.</p>
+<p>Build a slice, show it, learn, adjust. Short cycles, working software, constant feedback.</p>
 <div class="flow">
-  <div class="flow-box">📥 To Do</div>
-  <div class="flow-arrow" data-label="start"></div>
-  <div class="flow-box alt">🔨 In Progress</div>
-  <div class="flow-arrow" data-label="finish"></div>
-  <div class="flow-box warn">✅ Done</div>
+  <div class="flow-box">🔨 Build a slice</div>
+  <div class="flow-arrow" data-label="show it"></div>
+  <div class="flow-box alt">👀 Feedback</div>
+  <div class="flow-arrow" data-label="adjust"></div>
+  <div class="flow-box">🔁 Again</div>
 </div>
+<h3>What Agile actually said</h3>
+<p>The manifesto values individuals over process, working software over documents, collaboration over contracts, and responding to change over following a plan — while noting the things on the right still have value.</p>
+<h3>"Agile" as practised is often neither</h3>
+<p>Daily status meetings, a fixed 12-month scope, and a backlog renamed from "requirements" is <strong>Waterfall with standups</strong>. If you can't change scope based on what you learn, you are not agile — you just have shorter meetings.</p>
+<h3>Neither is "better"</h3>
+<p>Match the method to the uncertainty. Building something nobody's built before? Agile. Migrating a known system with a legal deadline? Plan it properly.</p>
+<div class="callout warn">Agile is not "no planning" and not "no documentation". It's planning in smaller, more honest increments — and being willing to change your mind when reality disagrees.</div>`),
+          article("pm-scrum", "Scrum in 7 Minutes", "8 min", `
+<p><strong>Scrum</strong> is the most common Agile framework. It's deliberately small: 3 roles, 4 events, 3 artefacts.</p>
+<h3>The roles</h3>
 <ul>
-  <li>See all work at a glance — nothing hidden.</li>
-  <li>Limit "In Progress" so the team <strong>finishes</strong> things instead of starting everything.</li>
+  <li><strong>Product Owner</strong> — owns the <em>what</em> and the priority. One person, not a committee.</li>
+  <li><strong>Scrum Master</strong> — owns the <em>process</em>; removes blockers, protects the team. A coach, not a boss.</li>
+  <li><strong>Developers</strong> — own the <em>how</em>. They decide how much they can take on.</li>
 </ul>
-<div class="callout tip">Trello, Jira, and even a wall of sticky notes are Kanban boards.</div>`),
+<h3>The events</h3>
+<ul>
+  <li><strong>Sprint planning</strong> — what will we do this sprint (1-4 weeks)?</li>
+  <li><strong>Daily scrum</strong> — 15 minutes, for the <em>team</em>: what's blocking us? It is not a status report to a manager.</li>
+  <li><strong>Sprint review</strong> — show working software to stakeholders, get feedback.</li>
+  <li><strong>Retrospective</strong> — how do we work better? <em>The most valuable and most skipped event.</em></li>
+</ul>
+<h3>The artefacts</h3>
+<ul>
+  <li><strong>Product backlog</strong> — everything we might do, ordered.</li>
+  <li><strong>Sprint backlog</strong> — what we committed to now.</li>
+  <li><strong>Increment</strong> — working, shippable output.</li>
+</ul>
+<h3>The rule people break</h3>
+<p><strong>The sprint scope is fixed once it starts.</strong> That's the deal: the team gets a protected window, and the business gets a guaranteed cadence. Injecting "just one urgent thing" every Tuesday destroys the point — and the team's trust.</p>
+<h3>User stories</h3>
+<pre><code>As a student, I want to reset my password
+so that I can get back in without emailing support.</code></pre>
+<p>The value is the <strong>so that</strong>. Without it you're just writing tasks with extra words.</p>
+<div class="callout tip">If your retro produces the same complaints every time and nothing changes, stop running retros and fix that first — a ritual that changes nothing teaches the team that speaking up is pointless.</div>`),
+          article("pm-kanban", "Kanban & Visualising Work", "7 min", `
+<p><strong>Kanban</strong> is simpler than Scrum: no sprints, no fixed roles. Just make the work visible and stop starting things.</p>
+<h3>The board</h3>
+<pre><code>To Do    |  Doing (3)  |  Review (2)  |  Done
+---------|-------------|--------------|------
+ task    |  task       |  task        | task
+ task    |  task       |              | task</code></pre>
+<h3>The one rule that matters: WIP limits</h3>
+<p>Those numbers — <strong>Doing (3)</strong> — cap how much can be in progress. If Doing is full, <em>you may not start anything new</em>. You must go help finish something.</p>
+<h3>Why limiting work speeds you up</h3>
+<p>It feels backwards. But a person juggling 5 things finishes nothing for weeks; every switch costs context. Five tasks at 90% done deliver <strong>zero</strong> value. One task at 100% delivers value today.</p>
+<p><strong>Stop starting. Start finishing.</strong></p>
+<h3>The board tells the truth</h3>
+<p>Work piling up in "Review" isn't a developer problem — it's a reviewer bottleneck. The board makes that visible without anyone having to accuse anyone.</p>
+<h3>Scrum or Kanban?</h3>
+<ul>
+  <li><strong>Scrum</strong> — project work you can plan in chunks; needs a cadence.</li>
+  <li><strong>Kanban</strong> — continuous flow, unpredictable arrivals: support, ops, maintenance.</li>
+</ul>
+<div class="callout tip">If you adopt one thing from this whole course, adopt WIP limits. Nothing else so reliably makes a team faster while doing less.</div>`),
+          quiz("pm-quiz-2", "Quiz: Agile & Scrum", [
+            { q: "Waterfall works best when…", options: ["Requirements are unknown", "Requirements genuinely won't change", "Speed matters most", "Always"], answer: 1 },
+            { q: "Fixed 12-month scope + daily standups is…", options: ["Real Agile", "Waterfall with standups", "Kanban", "Scrum"], answer: 1 },
+            { q: "The daily scrum is…", options: ["A status report to the manager", "15 minutes for the TEAM — what's blocking us?", "A planning session", "Optional"], answer: 1 },
+            { q: "Who decides how much work a sprint takes on?", options: ["The Product Owner", "The Developers", "The Scrum Master", "The sponsor"], answer: 1 },
+            { q: "Injecting urgent work mid-sprint every week…", options: ["Is agile", "Destroys the point of the sprint and the team's trust", "Speeds delivery", "Is required"], answer: 1 },
+            { q: "The most valuable and most skipped Scrum event is…", options: ["Planning", "The retrospective", "The daily scrum", "The review"], answer: 1 },
+            { q: "A WIP limit means…", options: ["Work faster", "If 'Doing' is full you may not start anything new — go help finish", "Hire more", "Longer sprints"], answer: 1 },
+            { q: "Five tasks at 90% done deliver…", options: ["90% value", "Zero value", "Most of the value", "More than one at 100%"], answer: 1 },
+          ]),
         ],
       },
       {
-        title: "Running the Work",
+        title: "3 · Running the Work",
         lessons: [
-          article("pm-estimate", "Planning & Estimation", "7 min", `
-<p>Estimates are guesses — your job is to make them <em>useful</em>, not perfect.</p>
+          article("pm-estimate", "Planning & Estimation", "8 min", `
+<p>Estimates are guesses. The skill is being honest about that while still being useful.</p>
+<h3>Why estimates are always wrong</h3>
+<p>You're predicting work nobody has done before. If it were predictable it'd be copy-paste. Add optimism bias — humans are systematically over-confident — and you get the universal 2x overrun.</p>
+<h3>Relative beats absolute</h3>
+<p>People are terrible at "how many hours?" and much better at "is this bigger than that?" Hence <strong>story points</strong>: size work against each other, then use the team's measured <strong>velocity</strong> (points completed per sprint) to forecast.</p>
+<h3>Ranges, not numbers</h3>
+<pre><code>✗ "It'll take 6 days."
+✓ "Best case 4, likely 6, worst case 12 —
+   the unknown is the payment API."</code></pre>
+<p>A single number hides everything you don't know. A range communicates the risk honestly.</p>
+<h3>Break it down</h3>
+<p>Anything estimated at "3 months" is not an estimate, it's a wish. Break work down until pieces are days, not months. The act of decomposing is where you <em>discover</em> what you'd forgotten — that's the real value, not the number.</p>
+<h3>Padding vs honesty</h3>
+<p>Everyone secretly pads, and everyone's manager secretly cuts it. Both sides know. Better: give the honest range and name the risks out loud.</p>
+<h3>The deadline is often not negotiable</h3>
+<p>Fine — then <strong>scope</strong> is the variable. There's always a variable. If none of scope, time or cost can move, the project is already failing; someone just hasn't said it yet.</p>
+<div class="callout warn">Never let someone convert an estimate into a commitment without you noticing. "Around 6 weeks" said on a Tuesday becomes "they PROMISED 6 weeks" in the board pack by Friday.</div>`),
+          article("pm-risk", "Managing Risk", "7 min", `
+<p>A <strong>risk</strong> is something that <em>might</em> happen and would hurt. An <strong>issue</strong> is a risk that already happened. Risk management is just thinking ahead on purpose.</p>
+<h3>The register</h3>
+<p>For each risk: what it is, how <strong>likely</strong> (1-5), how <strong>bad</strong> (1-5), the score, who owns it, and the plan.</p>
+<pre><code>Risk                          L  I  Score  Owner  Plan
+Payment vendor API delayed    4  5   20    Ana    Start integration
+                                                  early; sandbox now
+Key developer leaves          2  5   10    Sam    Pair on the core
+                                                  module; document</code></pre>
+<h3>Four responses</h3>
 <ul>
-  <li><strong>Break work down</strong> — small tasks are far easier to estimate than big ones.</li>
-  <li><strong>Estimate as a team</strong> — the people doing the work know best (try Planning Poker).</li>
-  <li><strong>Use ranges</strong> — "3–5 days" is more honest than "4 days".</li>
-  <li><strong>Add buffer</strong> — things always take longer. Padding isn't cheating; it's realism.</li>
+  <li><strong>Avoid</strong> — change the plan so it can't happen.</li>
+  <li><strong>Mitigate</strong> — make it less likely or less painful.</li>
+  <li><strong>Transfer</strong> — insurance, a contract, a vendor SLA.</li>
+  <li><strong>Accept</strong> — eyes open, with a fallback.</li>
 </ul>
-<div class="callout">Track your team's real <strong>velocity</strong> (work done per sprint) — past reality predicts the future better than hope.</div>`),
-          article("pm-risk", "Managing Risk", "6 min", `
-<p>A <strong>risk</strong> is something that <em>might</em> go wrong. Good PMs list them early and plan a response.</p>
-<h3>The simple risk drill</h3>
-<ol>
-  <li><strong>List</strong> what could go wrong (key person leaves, API is late, scope creeps).</li>
-  <li><strong>Rate</strong> each: how likely × how bad?</li>
-  <li><strong>Plan</strong> a response for the big ones: avoid, reduce, or have a backup.</li>
-</ol>
-<div class="callout tip">"Scope creep" — features quietly added without adjusting time or budget — is the #1 project killer. Say yes to change, but re-negotiate the triangle.</div>`),
-          article("pm-stakeholders", "Stakeholders & Communication", "6 min", `
-<p>A <strong>stakeholder</strong> is anyone who cares about the project — clients, users, your boss, the team. Half of project management is communication.</p>
+<h3>The register is a habit, not a document</h3>
+<p>A risk log written once at kickoff and never reopened is theatre. Review it every couple of weeks: what's changed, what's now an issue, what's gone away?</p>
+<h3>The risks that kill projects</h3>
+<p>Rarely technical. Usually: <em>the sponsor left</em>, <em>nobody agreed what done means</em>, <em>the one person who understood the legacy system is on holiday</em>, <em>another team's deadline slipped and we depend on them</em>. Look at dependencies and people, not just tech.</p>
+<div class="callout tip">Ask the team: "What are you quietly worried about?" The most dangerous risks are the ones everyone senses and nobody has said in a meeting.</div>`),
+          article("pm-stakeholders", "Stakeholders & Communication", "8 min", `
+<p>Most PM work is communication. Most project failure is communication.</p>
+<h3>Map them</h3>
+<p>Plot everyone by <strong>power</strong> and <strong>interest</strong>:</p>
 <ul>
-  <li><strong>Know who they are</strong> and what each one wants.</li>
-  <li><strong>Right message, right person</strong> — the CEO wants a summary; the team wants details.</li>
-  <li><strong>No surprises</strong> — share bad news early, with a plan. Trust is built by honesty.</li>
-  <li><strong>Keep a single source of truth</strong> — one board, one status everyone can see.</li>
+  <li><strong>High power, high interest</strong> — manage closely. Your sponsor.</li>
+  <li><strong>High power, low interest</strong> — keep satisfied. Brief, no noise.</li>
+  <li><strong>Low power, high interest</strong> — keep informed. Often your users.</li>
+  <li><strong>Low power, low interest</strong> — monitor.</li>
 </ul>
-<div class="callout">A weekly one-line status ("on track / at risk / blocked — and why") prevents 90% of "why didn't anyone tell me?" moments.</div>`),
-          quiz("pm-quiz", "Quiz: IT Project Management", [
-            { q: "The triple constraint balances…", options: ["Design, code, test", "Scope, time, cost", "Frontend, backend, database", "Plan, build, ship"], answer: 1 },
-            { q: "In Scrum, who decides WHAT to build and its priority?", options: ["Scrum Master", "The Developers", "Product Owner", "The CEO"], answer: 2 },
-            { q: "A sprint is…", options: ["A 3-month release", "A short work cycle, usually 1–2 weeks", "A type of bug", "A meeting"], answer: 1 },
-            { q: "The #1 project killer is often…", options: ["Too many standups", "Scope creep — changes with no time/budget adjustment", "Writing tests", "Using Kanban"], answer: 1 },
-            { q: "The best way to handle bad news with stakeholders is…", options: ["Hide it until it's fixed", "Share it early, with a plan", "Blame the team", "Wait for the weekly report"], answer: 1 },
+<p>The classic mistake is emailing everyone the same 12-page update. The executive won't read it; the user needed a different part of it.</p>
+<h3>The sponsor is your lifeline</h3>
+<p>The sponsor pays and clears roadblocks. If they're disengaged, the project is in danger and you may be the last to know. No sponsor = no project; just work.</p>
+<h3>Bad news early</h3>
+<p>The instinct is to wait — maybe we'll recover it. You won't, and the delay turns a manageable problem into a betrayal. <strong>Bad news does not improve with age.</strong> A slip flagged early is a decision; the same slip revealed at the deadline is a scandal.</p>
+<h3>Status that's actually useful</h3>
+<pre><code>✗ "Ongoing. 60% complete."
+
+✓ RAG: AMBER
+  - Login done, dashboard in review
+  - RISK: vendor API 1 week late → date moves
+    unless we cut the export screen
+  - NEED FROM YOU: decision by Friday</code></pre>
+<p>Say what changed, what's at risk, and what you need from <em>them</em>. Every update should make a decision possible.</p>
+<div class="callout warn">"60% complete" is meaningless — the last 10% is always half the work. Report what's DONE and demonstrable, not a feeling as a percentage.</div>`),
+          quiz("pm-quiz", "Quiz: Running the Work", [
+            { q: "A good estimate is expressed as…", options: ["One confident number", "A range, with the unknowns named", "A deadline", "A percentage"], answer: 1 },
+            { q: "Story points exist because people are…", options: ["Lazy", "Bad at absolute hours but decent at relative size", "Slow", "Optimistic"], answer: 1 },
+            { q: "An estimate of '3 months' should be…", options: ["Accepted", "Broken down until pieces are days", "Doubled", "Ignored"], answer: 1 },
+            { q: "The difference between a risk and an issue is…", options: ["Nothing", "A risk might happen; an issue already has", "Cost", "Who owns it"], answer: 1 },
+            { q: "Which is NOT a risk response?", options: ["Avoid", "Mitigate", "Ignore and hope", "Transfer"], answer: 2 },
+            { q: "The risks that kill projects are usually…", options: ["Technical", "People and dependencies — sponsor leaves, another team slips", "Hardware", "Licensing"], answer: 1 },
+            { q: "Bad news should be delivered…", options: ["At the deadline", "Early — it doesn't improve with age", "Never", "Only if asked"], answer: 1 },
+            { q: "'60% complete' is a poor status because…", options: ["It's too precise", "The last 10% is always half the work — report what's DONE", "It's too long", "It's negative"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "4 · Delivery in the Real World",
+        lessons: [
+          article("pm-tools", "Tools: Jira, Boards & Documentation", "6 min", `
+<p>Tools don't manage projects. People do. But the right tool makes reality visible.</p>
+<h3>The landscape</h3>
+<ul>
+  <li><strong>Jira</strong> — the industry standard for software. Powerful; easily turned into bureaucracy.</li>
+  <li><strong>Trello / Asana / Monday</strong> — lighter boards, great for small teams.</li>
+  <li><strong>Confluence / Notion</strong> — the written record: decisions, specs, runbooks.</li>
+  <li><strong>Slack / Teams</strong> — conversation, not memory. Decisions made here vanish.</li>
+</ul>
+<h3>The rule</h3>
+<p><strong>One source of truth.</strong> If the board says one thing, the spreadsheet another and Slack a third, nobody trusts any of them and you're back to asking people.</p>
+<h3>Don't let the tool become the job</h3>
+<p>If updating Jira takes longer than the work, you've built a bureaucracy. Ticket hygiene serves delivery — not the reverse. Every mandatory field is a small tax on every ticket forever.</p>
+<h3>Write decisions down</h3>
+<p>Not chat. In six months nobody remembers <em>why</em> you chose that database — and the person who knew has left. A short decision record (what, why, alternatives, date) is worth more than any Gantt chart.</p>
+<div class="callout tip">A board that isn't updated daily is worse than no board — it's a confident lie. Either keep it true or stop pretending.</div>`),
+          article("pm-metrics", "Metrics That Tell the Truth", "7 min", `
+<p>Measure to <em>learn</em>, not to judge. The moment a metric is used to punish, people optimise the metric instead of the work.</p>
+<h3>Useful flow metrics</h3>
+<ul>
+  <li><strong>Velocity</strong> — points per sprint. For <em>forecasting</em>, nothing else.</li>
+  <li><strong>Cycle time</strong> — start → done for one item. Often the single most useful number.</li>
+  <li><strong>Throughput</strong> — items finished per week.</li>
+  <li><strong>Burndown</strong> — work left vs time.</li>
+  <li><strong>Blocked time</strong> — how long items sit waiting. Usually shocking.</li>
+</ul>
+<h3>Velocity is not productivity</h3>
+<p>This is the most abused number in the industry. Compare two teams' velocity and you'll get inflated estimates within a sprint — points are relative to <em>that team</em>. Push for "more velocity" and you get bigger numbers, not more software. It's a forecasting tool. That's all.</p>
+<h3>Goodhart's Law</h3>
+<div class="callout"><strong>When a measure becomes a target, it stops being a good measure.</strong></div>
+<p>Measure tickets closed → you get lots of tiny tickets. Measure lines of code → you get verbose code. Measure bugs found → testers and developers start fighting.</p>
+<h3>Look at waiting, not working</h3>
+<p>Map an item's life and you'll usually find it spent 2 days being worked on and 9 days waiting — for review, for approval, for another team. Nobody's lazy; the <em>system</em> is slow. That's where your improvement is.</p>
+<div class="callout tip">Ask "how long did this sit blocked?" instead of "why isn't this done?" One finds the bottleneck; the other finds a scapegoat.</div>`),
+          article("pm-fail", "Why Projects Fail (and How to Land Them)", "8 min", `
+<p>Most projects don't fail from one dramatic disaster. They fail slowly, and everyone saw it coming.</p>
+<h3>The real causes</h3>
+<ul>
+  <li><strong>Unclear goals</strong> — nobody agreed what success means, so it can never be reached.</li>
+  <li><strong>Scope creep</strong> — a hundred small yeses. No single one was unreasonable.</li>
+  <li><strong>No real sponsor</strong> — nobody with power actually needs this.</li>
+  <li><strong>Optimism</strong> — a plan with no slack, where everything must go right.</li>
+  <li><strong>Silent bad news</strong> — the slip everyone knew about at week 3, reported at week 20.</li>
+  <li><strong>Ignoring the users</strong> — delivered exactly what was specified; nobody wants it.</li>
+</ul>
+<h3>Scope creep and the polite no</h3>
+<p>You will not stop change — requirements <em>should</em> change as you learn. You must stop <strong>invisible</strong> change.</p>
+<pre><code>"Yes, we can add that. It's about a week —
+ so either the date moves to the 20th, or we
+ drop the export screen. Which would you prefer?"</code></pre>
+<p>Never "no". Always "yes, and here's what it costs" — then let the person with authority choose. That one sentence is most of the job.</p>
+<h3>The death march</h3>
+<p>When a project is clearly doomed and everyone keeps marching because nobody wants to say it. Your job is to say it — early, with numbers and options. Cancelling a bad project is a <em>success</em>: you just saved six months.</p>
+<h3>Landing it</h3>
+<ul>
+  <li><strong>Define done</strong> at the start, in writing.</li>
+  <li><strong>Ship something small early</strong> — real feedback beats any spec.</li>
+  <li><strong>Protect slack.</strong> A plan at 100% utilisation has zero capacity to absorb reality.</li>
+  <li><strong>Close properly</strong> — hand over, document, retro, and tell people what they achieved.</li>
+</ul>
+<div class="callout tip">The best PMs are boring: no heroics, no all-nighters, no drama. Heroics are usually the visible symptom of a planning failure three months earlier.</div>`),
+          quiz("pm-quiz-4", "Quiz: Delivery in the Real World", [
+            { q: "The most important tooling rule is…", options: ["Use Jira", "One source of truth", "More fields", "Daily reports"], answer: 1 },
+            { q: "Decisions recorded only in Slack…", options: ["Are permanent", "Vanish — nobody remembers why in six months", "Are searchable enough", "Are ideal"], answer: 1 },
+            { q: "Velocity should be used for…", options: ["Comparing teams", "Forecasting for that one team", "Performance reviews", "Bonuses"], answer: 1 },
+            { q: "Goodhart's Law says…", options: ["Measure everything", "When a measure becomes a target, it stops being a good measure", "Metrics are useless", "Velocity is productivity"], answer: 1 },
+            { q: "Mapping an item's life usually reveals it spent most time…", options: ["Being worked on", "Waiting — blocked for review or approval", "In testing", "In planning"], answer: 1 },
+            { q: "The right answer to a scope request is…", options: ["'No'", "'Yes, and here's what it costs — you choose'", "'We'll try'", "Silence"], answer: 1 },
+            { q: "Cancelling a clearly doomed project is…", options: ["A failure", "A success — you saved six months", "Never allowed", "The sponsor's fault"], answer: 1 },
+            { q: "A plan running at 100% utilisation…", options: ["Is efficient", "Has zero capacity to absorb reality", "Is agile", "Is ideal"], answer: 1 },
           ]),
         ],
       },
@@ -14663,7 +14861,7 @@ ORDER BY total DESC;</code></pre>
     rating: 4.6,
     ratings: 7640,
     students: 33800,
-    hours: 8,
+    hours: 18,
     price: "Free",
     color: "linear-gradient(135deg,#f7971e,#ffd200)",
     icon: "&#128101;",
@@ -14677,21 +14875,28 @@ ORDER BY total DESC;</code></pre>
     ],
     sections: [
       {
-        title: "HR Foundations",
+        title: "1 · HR Foundations",
         lessons: [
-          article("hr-what", "What HR Actually Does", "6 min", `
-<p><strong>Human Resources</strong> is how an organisation finds, supports, and keeps its people. Good HR isn't just paperwork — it directly affects whether a company thrives.</p>
+          article("hr-what", "What HR Actually Does", "7 min", `
+<p><strong>Human Resources</strong> is how an organisation finds, supports and keeps its people. Most people meet HR twice — being hired and having a problem — so they assume that's the whole job. It isn't.</p>
 <h3>The core areas</h3>
 <ul>
   <li><strong>Recruitment</strong> — attract and hire the right people.</li>
   <li><strong>Onboarding</strong> — help new hires succeed fast.</li>
   <li><strong>Performance</strong> — feedback, reviews, growth.</li>
   <li><strong>Rewards</strong> — pay, benefits, recognition.</li>
+  <li><strong>Culture</strong> — the behaviours you hire, reward and tolerate.</li>
   <li><strong>Compliance</strong> — follow labour law; treat people fairly.</li>
 </ul>
-<div class="callout tip">Modern HR is called "People Operations" for a reason — it's about enabling people, not policing them.</div>`),
-          article("hr-lifecycle", "The Employee Lifecycle", "6 min", `
-<p>Every employee moves through the same journey. HR supports each stage.</p>
+<h3>The uncomfortable truth</h3>
+<p>HR is not your friend, and it isn't your enemy either. <strong>HR works for the organisation.</strong> Good HR knows that protecting the company and treating people well are usually the same thing — because lawsuits, turnover and bad reputations are expensive. Pretending otherwise is how HR loses trust.</p>
+<h3>Why it matters commercially</h3>
+<p>People are usually the biggest cost <em>and</em> the biggest asset. Replacing someone can cost several months of their salary once you count recruiting, lost output and the ramp-up. Keeping good people isn't kindness — it's maths.</p>
+<h3>"People Operations"</h3>
+<p>Many companies renamed HR for a reason: the job is enabling people to do their best work, not policing them.</p>
+<div class="callout tip">If HR only appears when something goes wrong, it's failing. The best HR is invisible: good hires, clear expectations, fair pay, problems handled early.</div>`),
+          article("hr-lifecycle", "The Employee Lifecycle", "7 min", `
+<p>Every employee travels the same journey. HR supports each stage — and each stage can be measured.</p>
 <div class="flow">
   <div class="flow-box">🎯 Attract</div>
   <div class="flow-arrow" data-label="hire"></div>
@@ -14701,87 +14906,251 @@ ORDER BY total DESC;</code></pre>
   <div class="flow-arrow" data-label="reward"></div>
   <div class="flow-box warn">🔄 Retain / Exit</div>
 </div>
-<p>Thinking in a lifecycle helps you spot where people are lost — a great hire with a terrible first week may quit in a month.</p>
-<div class="callout">Even the <strong>exit</strong> matters: people who leave well become future re-hires, clients, and your reputation.</div>`),
-          article("hr-strategic", "HR as a Strategic Partner", "5 min", `
-<p>The best HR doesn't just react — it plans ahead with the business.</p>
+<h3>Why think in a lifecycle?</h3>
+<p>It shows you <em>where</em> you lose people. A brilliant hire with a terrible first week may quit within a month — and you'll blame recruitment when onboarding was the problem. Measure each stage and the real gap becomes obvious.</p>
+<h3>What to watch at each stage</h3>
 <ul>
-  <li><strong>Workforce planning</strong> — will we have the skills we need next year?</li>
-  <li><strong>Data-driven</strong> — track turnover, time-to-hire, engagement.</li>
-  <li><strong>Culture-shaping</strong> — the behaviours you hire, reward, and promote <em>are</em> the culture.</li>
+  <li><strong>Attract</strong> — time-to-hire, quality of applicants.</li>
+  <li><strong>Onboard</strong> — 90-day turnover. High? Onboarding or the job ad is lying.</li>
+  <li><strong>Develop</strong> — internal promotion rate.</li>
+  <li><strong>Retain</strong> — regretted turnover (the people you wanted to keep).</li>
 </ul>
-<div class="callout tip">"People leave managers, not companies." Training great managers is one of HR's highest-impact moves.</div>`),
-        ],
-      },
-      {
-        title: "People Operations",
-        lessons: [
-          article("hr-hiring", "Recruitment & Hiring", "7 min", `
-<p>Hiring well is the highest-leverage thing HR does — a bad hire is expensive; a great one compounds for years.</p>
-<h3>A fair hiring flow</h3>
-<ol>
-  <li><strong>Job description</strong> — clear role, must-have vs nice-to-have skills.</li>
-  <li><strong>Source</strong> — job boards, referrals, networks.</li>
-  <li><strong>Screen</strong> — CV + a short call.</li>
-  <li><strong>Interview</strong> — structured questions, same for every candidate.</li>
-  <li><strong>Decide</strong> — on evidence, not gut feeling.</li>
-</ol>
-<div class="callout">Use the <strong>same questions and scorecard</strong> for every candidate — it's fairer and reduces bias.</div>`),
-          article("hr-onboarding", "Onboarding That Sticks", "6 min", `
-<p>The first 90 days decide whether a hire stays and succeeds. Don't leave it to chance.</p>
+<h3>The exit matters most of all</h3>
+<p>People who leave well become re-hires, clients, referrers — or the review that stops your next ten applicants. How you treat someone on the way out is watched closely by <em>everyone who stays</em>.</p>
+<div class="callout">Count "regretted" turnover separately. Losing someone who wasn't working out is a success. Averaging the two together hides both stories.</div>`),
+          article("hr-strategic", "HR as a Strategic Partner", "6 min", `
+<p>Weak HR reacts: someone quits, so they post a job. Strong HR plans ahead with the business.</p>
+<h3>What "strategic" actually means</h3>
 <ul>
-  <li><strong>Before day one</strong> — laptop, accounts, and a welcome ready.</li>
-  <li><strong>Week one</strong> — meet the team, learn the tools, one small real task.</li>
-  <li><strong>First 90 days</strong> — clear goals, a buddy, regular check-ins.</li>
+  <li><strong>Workforce planning</strong> — will we have the skills we need in a year? If we win that contract, who does the work?</li>
+  <li><strong>Data-driven</strong> — track turnover, time-to-hire, engagement, and act on it.</li>
+  <li><strong>Culture-shaping</strong> — the behaviours you hire, reward and promote <em>are</em> the culture.</li>
+  <li><strong>Manager quality</strong> — training managers is HR's highest-leverage move.</li>
 </ul>
-<div class="callout tip">A structured onboarding can dramatically cut early turnover — most quits in month one are avoidable.</div>`),
-          article("hr-performance", "Performance & Growth", "6 min", `
-<p>Performance management isn't a once-a-year form — it's ongoing, honest conversation.</p>
-<ul>
-  <li><strong>Set clear goals</strong> — people can't hit a target they can't see.</li>
-  <li><strong>Give feedback often</strong> — specific, timely, kind. Not saved up for review day.</li>
-  <li><strong>Grow people</strong> — training, stretch projects, mentoring.</li>
-  <li><strong>Handle underperformance</strong> — early, privately, with support and a clear plan.</li>
-</ul>
-<div class="callout">Good feedback describes the <em>behaviour</em> and its <em>impact</em> — "the report was late, so the client meeting slipped" — not the person's character.</div>`),
-        ],
-      },
-      {
-        title: "Culture, Law & Retention",
-        lessons: [
-          article("hr-culture", "Engagement & Culture", "6 min", `
-<p><strong>Culture</strong> is "how we do things here" — and engaged people do it better and stay longer.</p>
-<ul>
-  <li><strong>Purpose</strong> — people want their work to matter.</li>
-  <li><strong>Recognition</strong> — a genuine "thank you" is cheap and powerful.</li>
-  <li><strong>Voice</strong> — ask for feedback (surveys, 1:1s) and act on it.</li>
-  <li><strong>Fairness</strong> — nothing kills morale like inconsistent treatment.</li>
-</ul>
-<div class="callout tip">Culture isn't the posters on the wall — it's the worst behaviour you're willing to tolerate.</div>`),
-          article("hr-law", "Employment-Law Basics", "6 min", `
-<p>HR keeps the company legal and people protected. Exact rules vary by country, but the principles are universal.</p>
-<ul>
-  <li><strong>Contracts</strong> — clear terms: role, pay, hours, notice.</li>
-  <li><strong>Fair treatment</strong> — no discrimination on protected grounds (age, gender, religion, etc.).</li>
-  <li><strong>Safe workplace</strong> — health &amp; safety is a legal duty.</li>
-  <li><strong>Fair process</strong> — for discipline and dismissal, follow a documented, consistent procedure.</li>
-</ul>
-<div class="callout">When in doubt, <strong>document it</strong> and check local law or a lawyer. "We always did it this way" is not a legal defence.</div>`),
-          article("hr-retention", "Rewards & Retention", "6 min", `
-<p>Keeping good people is cheaper than replacing them. Reward is more than salary.</p>
-<ul>
-  <li><strong>Fair pay</strong> — competitive and consistent for similar roles.</li>
-  <li><strong>Benefits</strong> — health, leave, flexibility often matter as much as cash.</li>
-  <li><strong>Growth</strong> — people stay where they're learning and progressing.</li>
-  <li><strong>Good managers</strong> — again, the biggest driver of whether people stay.</li>
-</ul>
-<div class="callout tip">Run <strong>stay interviews</strong> — ask your best people what keeps them and what might make them leave — <em>before</em> they hand in notice.</div>`),
-          quiz("hr-quiz", "Quiz: HR Management", [
+<h3>Bring numbers, not vibes</h3>
+<p>"People seem unhappy" gets ignored. "Regretted turnover is 18%, each exit costs us roughly 3 months' salary, and 6 of 8 leavers named the same manager" gets action. Same problem, one gets a budget.</p>
+<h3>Build vs buy</h3>
+<p>Need a skill? You can <strong>hire</strong> it (fast, expensive, risky) or <strong>train</strong> it (slower, cheaper, builds loyalty). Most companies default to hiring and wonder why nobody stays — people leave when they stop growing.</p>
+<div class="callout tip">"People leave managers, not companies" is a cliché because it's true. If one team bleeds staff and the others don't, you don't have an HR problem — you have a manager problem.</div>`),
+          quiz("hr-quiz-1", "Quiz: HR Foundations", [
+            { q: "HR ultimately works for…", options: ["The employee", "The organisation — though good HR knows fair treatment protects it", "The union", "Nobody"], answer: 1 },
             { q: "The employee lifecycle runs roughly…", options: ["Hire → fire", "Attract → onboard → develop → retain/exit", "Interview → salary", "Payroll → tax"], answer: 1 },
-            { q: "To reduce bias in interviews you should…", options: ["Ask whatever comes to mind", "Use the same structured questions & scorecard for everyone", "Only hire referrals", "Skip interviews"], answer: 1 },
-            { q: "Good feedback focuses on…", options: ["The person's character", "The behaviour and its impact", "Saving it all for the annual review", "Public criticism"], answer: 1 },
+            { q: "High 90-day turnover usually points to a problem in…", options: ["Payroll", "Onboarding or a job ad that oversold the role", "The exit process", "Pensions"], answer: 1 },
+            { q: "'Regretted turnover' means…", options: ["Everyone who left", "The people you wanted to keep", "People you fired", "Retirees"], answer: 1 },
+            { q: "To get action from leadership, HR should bring…", options: ["Feelings", "Numbers and cost", "Longer meetings", "A poster"], answer: 1 },
+            { q: "HR's highest-leverage investment is usually…", options: ["Free snacks", "Training managers", "A new logo", "More policies"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "2 · People Operations",
+        lessons: [
+          article("hr-hiring", "Recruitment & Hiring", "8 min", `
+<p>Hiring is the highest-leverage thing HR does. A great hire compounds for years; a bad one costs money, morale and months.</p>
+<h3>A fair, effective flow</h3>
+<ol>
+  <li><strong>Job description</strong> — the real role, must-have vs nice-to-have.</li>
+  <li><strong>Source</strong> — job boards, referrals, networks.</li>
+  <li><strong>Screen</strong> — CV plus a short call.</li>
+  <li><strong>Interview</strong> — the same structured questions for everyone.</li>
+  <li><strong>Decide</strong> — a scorecard, not "I liked them".</li>
+  <li><strong>Offer</strong> — quickly. Good people have options.</li>
+</ol>
+<h3>Structured interviews beat gut feel</h3>
+<p>Unstructured chats mostly measure <em>similarity to the interviewer</em>. Same questions, same scorecard, several interviewers scoring independently — that's how you get a signal instead of a vibe.</p>
+<h3>Ask about behaviour, not hypotheticals</h3>
+<pre><code>✗ "How would you handle a difficult customer?"
+✓ "Tell me about a time you handled a difficult
+   customer. What did you do? How did it end?"</code></pre>
+<p>Anyone can imagine being great. Past behaviour is evidence.</p>
+<h3>Bias is the default, not the exception</h3>
+<ul>
+  <li><strong>Affinity</strong> — "we clicked" often means "we're similar".</li>
+  <li><strong>Halo</strong> — one impressive thing colours everything.</li>
+  <li><strong>First-impression</strong> — deciding in 30 seconds, then hunting for proof.</li>
+</ul>
+<p>Structure, scorecards and multiple interviewers reduce all three. Good intentions do not.</p>
+<div class="callout warn">Never ask about age, marital status, pregnancy, religion or ethnicity. It's illegal in many countries, it's irrelevant everywhere, and it will cost you.</div>`),
+          article("hr-onboarding", "Onboarding That Sticks", "7 min", `
+<p>The offer isn't the finish line. The first 90 days decide whether that hire was worth it.</p>
+<h3>Before day one</h3>
+<p>Contract signed, laptop ready, accounts created, desk exists, team told. Arriving to "who are you?" and no computer tells someone exactly how organised you are — on day one.</p>
+<h3>The first week</h3>
+<ul>
+  <li>A <strong>buddy</strong> — someone to ask the stupid questions.</li>
+  <li>A <strong>real task</strong> — something small they can finish. Confidence is built by shipping.</li>
+  <li><strong>Meet the people</strong> they'll depend on.</li>
+  <li><strong>The unwritten rules</strong> — how we actually talk, decide, disagree.</li>
+</ul>
+<h3>The first 90 days</h3>
+<p>Be explicit about what success looks like at 30, 60 and 90 days. Most new starters are anxious not because the work is hard, but because <em>nobody told them what good looks like</em>.</p>
+<h3>Why it pays</h3>
+<p>Strong onboarding measurably improves retention and gets people productive sooner. Weak onboarding wastes everything recruitment just spent.</p>
+<div class="callout tip">Ask every new hire at 30 days: "What surprised you? What's still confusing?" They have fresh eyes — and they'll never see your company that clearly again.</div>`),
+          article("hr-performance", "Performance & Growth", "8 min", `
+<p>Managing performance is mostly about being clear and being honest — early.</p>
+<h3>Feedback that works</h3>
+<p>Describe the <strong>behaviour</strong> and its <strong>impact</strong>, not the person's character:</p>
+<pre><code>✗ "You're careless."
+✓ "The report went out with the wrong figures, so
+   the client asked us to re-check everything.
+   How do we stop that happening again?"</code></pre>
+<p>The first is an attack and invites defence. The second is a problem two people can fix.</p>
+<h3>No surprises</h3>
+<p>An annual review that contains news is a management failure. Feedback should be so regular that the review is a summary of things already said. Saving up a year of criticism for one meeting is cowardice with a calendar invite.</p>
+<h3>Ratings are political — use them carefully</h3>
+<p>Forced rankings ("only 10% can be excellent") pit colleagues against each other and kill collaboration. If you rate, rate against the <em>role</em>, not against each other.</p>
+<h3>Growth isn't only promotion</h3>
+<p>There aren't enough manager jobs for everyone, and most great engineers make poor managers. Offer <strong>depth</strong> (mastery, mentoring, harder problems) as a real path — or you'll promote your best specialist into a job they hate and lose them twice.</p>
+<h3>Underperformance</h3>
+<p>Be clear, be specific, be early. Say what must change, by when, and what support they get. Most "performance problems" are unclear expectations or a bad role fit — not bad people.</p>
+<div class="callout warn">Never give feedback in anger or in public. Praise in public, correct in private — the audience changes a conversation into a humiliation.</div>`),
+          quiz("hr-quiz-2", "Quiz: People Operations", [
+            { q: "To reduce bias in interviews you should…", options: ["Trust your gut", "Use the same structured questions and a scorecard for everyone", "Only hire referrals", "Interview alone"], answer: 1 },
+            { q: "Which question gives better evidence?", options: ["'How would you handle a hard client?'", "'Tell me about a time you handled a hard client'", "'Are you a team player?'", "'Do you work hard?'"], answer: 1 },
+            { q: "'We really clicked' is often…", options: ["Great signal", "Affinity bias — you're similar", "Proof of skill", "Required"], answer: 1 },
+            { q: "A new hire should ideally get, in week one…", options: ["Nothing to do", "A buddy and a small real task they can finish", "A performance review", "A big project alone"], answer: 1 },
+            { q: "An annual review should contain…", options: ["A year of saved-up surprises", "No surprises — it summarises what's already been said", "Only praise", "Only ratings"], answer: 1 },
+            { q: "Good feedback focuses on…", options: ["The person's character", "The behaviour and its impact", "Other people's opinions", "Public criticism"], answer: 1 },
+            { q: "Offering only 'promotion to manager' as growth…", options: ["Is ideal", "Loses great specialists into jobs they hate", "Saves money", "Is required by law"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "3 · Culture, Law & Retention",
+        lessons: [
+          article("hr-culture", "Engagement & Culture", "7 min", `
+<p>Culture is not the posters, the snacks or the values page. <strong>Culture is the worst behaviour leadership tolerates.</strong></p>
+<h3>Why that definition is the honest one</h3>
+<p>You can print "Respect" on the wall. If your top salesperson humiliates people and keeps their job because they hit target, then the real value is "results excuse behaviour" — and everybody learns it within a week. Culture is what you <em>tolerate</em>, promote and reward.</p>
+<h3>Engagement isn't happiness</h3>
+<p>Engaged people care about the outcome and give discretionary effort. You can be happy and unproductive; you can be engaged and frustrated. Measure engagement, not smiles.</p>
+<h3>What actually drives it</h3>
+<ul>
+  <li><strong>Autonomy</strong> — some say over how the work is done.</li>
+  <li><strong>Mastery</strong> — getting better at something.</li>
+  <li><strong>Purpose</strong> — knowing why it matters.</li>
+  <li><strong>Fairness</strong> — especially about pay and promotion.</li>
+  <li><strong>A decent manager.</strong></li>
+</ul>
+<p>Notice what isn't there: ping-pong tables and pizza Fridays. Perks are nice; they never fix a bad manager or unfair pay.</p>
+<h3>Surveys without action are worse than no survey</h3>
+<p>Asking people what's wrong and then doing nothing teaches them that speaking up is pointless. Only run a survey if you'll publish the results and act on something.</p>
+<div class="callout tip">Want to know your real culture? Ask a new joiner at 30 days what surprised them, and ask leavers what finally decided it. Both will tell you the truth.</div>`),
+          article("hr-law", "Employment-Law Basics", "8 min", `
+<p>Laws differ by country — but the <em>principles</em> travel, and ignoring them is expensive.</p>
+<h3>Contracts</h3>
+<p>Put it in writing: role, pay, hours, leave, notice period, probation. A verbal deal is a dispute waiting to happen, and in most places the employee wins ties.</p>
+<h3>Discrimination</h3>
+<p>Most countries protect characteristics such as sex, age, race, religion, disability and pregnancy. You must not use them in hiring, pay, promotion or dismissal. This applies to the <em>effect</em>, not just intent — a rule that quietly excludes a group is still a problem.</p>
+<h3>Working time and pay</h3>
+<p>Minimum wage, maximum hours, rest breaks, overtime, paid leave. "They agreed to it" usually does not make an illegal term legal — you generally cannot contract out of statutory rights.</p>
+<h3>Dismissal</h3>
+<p>Nearly everywhere requires a <strong>fair reason</strong> and a <strong>fair process</strong>: warnings, a chance to improve, a chance to respond, documentation. Firing someone on the spot in anger is how companies lose tribunals they should have won.</p>
+<h3>Documentation is your defence</h3>
+<p>If it isn't written down, it didn't happen. Notes of meetings, warnings, decisions and reasons — dated. "We always did it this way" is not a legal defence.</p>
+<h3>Data protection</h3>
+<p>Employee records are sensitive personal data. Collect what you need, protect it, keep it only as long as necessary.</p>
+<div class="callout warn">This is an overview, not legal advice. Employment law is local and changes. For anything involving dismissal, discrimination or a contract dispute — check your country's law or a lawyer. Guessing is the expensive option.</div>`),
+          article("hr-retention", "Rewards & Retention", "7 min", `
+<p>Keeping a good person is far cheaper than replacing them. Reward is much more than salary — but salary comes first.</p>
+<h3>Pay: get it right or nothing else matters</h3>
+<p>Money is not a great <em>motivator</em>, but it is a brutal <strong>de-motivator</strong>. Underpay someone relative to the market — or to the person beside them doing the same job — and no amount of culture will save it. Fairness matters more than the absolute number.</p>
+<h3>The rest of the package</h3>
+<ul>
+  <li><strong>Benefits</strong> — health, leave, flexibility. Often valued as much as cash.</li>
+  <li><strong>Growth</strong> — people stay where they're learning.</li>
+  <li><strong>Recognition</strong> — specific and timely, not an annual certificate.</li>
+  <li><strong>Flexibility</strong> — frequently the cheapest, most valued benefit you have.</li>
+  <li><strong>A good manager</strong> — still the biggest single factor.</li>
+</ul>
+<h3>The counter-offer trap</h3>
+<p>Someone resigns; you panic and offer more money. They often leave within a year anyway — because money usually wasn't the real reason, and now both sides know they were only kept by a threat. Fix pay <em>before</em> the resignation.</p>
+<h3>Stay interviews</h3>
+<p>Exit interviews are an autopsy. Ask your best people <em>now</em>: What keeps you here? What might tempt you away? What would you change? Then do something about it — while you still can.</p>
+<div class="callout tip">The cheapest retention move most managers never make: tell your good people, specifically and out loud, that they're valued and where they're heading. Silence reads as indifference.</div>`),
+          quiz("hr-quiz", "Quiz: Culture, Law & Retention", [
             { q: "Company culture is really…", options: ["The wall posters", "The worst behaviour leaders tolerate", "The dress code", "The logo"], answer: 1 },
-            { q: "The biggest driver of whether people stay is usually…", options: ["Free snacks", "A good manager", "The office location", "The company name"], answer: 1 },
+            { q: "Engagement drivers include all EXCEPT…", options: ["Autonomy", "Mastery and purpose", "Free snacks", "Fairness"], answer: 2 },
+            { q: "Running a survey and doing nothing…", options: ["Is harmless", "Is worse than no survey — it teaches people not to speak up", "Improves morale", "Is required"], answer: 1 },
+            { q: "Dismissal nearly always requires…", options: ["Just a reason", "A fair reason AND a fair process, documented", "A manager's mood", "Nothing"], answer: 1 },
+            { q: "'They agreed to it' when a term breaks statutory rights…", options: ["Makes it legal", "Usually doesn't — you can't contract out of statutory rights", "Is a defence", "Is fine in writing"], answer: 1 },
+            { q: "Money is best described as…", options: ["A great motivator", "A weak motivator but a brutal de-motivator if unfair", "Irrelevant", "The only factor"], answer: 1 },
+            { q: "A counter-offer after resignation usually…", options: ["Works long-term", "Delays the exit — they often leave within a year anyway", "Is illegal", "Costs nothing"], answer: 1 },
+            { q: "A 'stay interview' is…", options: ["An exit interview", "Asking your best people NOW what keeps them", "A performance review", "An onboarding step"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "4 · HR in the Real World",
+        lessons: [
+          article("hr-conflict", "Difficult Conversations", "7 min", `
+<p>The conversations people avoid are exactly the ones that decide whether a team works.</p>
+<h3>Why avoidance costs more</h3>
+<p>The quiet problem doesn't stay quiet. It becomes resentment, then a resignation, then a tribunal. Nearly every disaster HR handles started as a conversation somebody didn't want to have six months earlier.</p>
+<h3>How to run one</h3>
+<ol>
+  <li><strong>Prepare</strong> — what specifically happened? What must change?</li>
+  <li><strong>Private, and soon</strong> — not in front of the team, not months later.</li>
+  <li><strong>Facts first</strong> — "The last three reports were late" beats "you're unreliable".</li>
+  <li><strong>Then listen.</strong> Genuinely. There is usually context you don't have.</li>
+  <li><strong>Agree what changes</strong>, by when, and what support.</li>
+  <li><strong>Write it down</strong> and follow up.</li>
+</ol>
+<h3>Handling a complaint</h3>
+<p>Take it seriously, keep it confidential, don't promise an outcome, investigate properly, document everything. Brushing off a complaint is how a small problem becomes a legal one.</p>
+<h3>Mediation before escalation</h3>
+<p>Two colleagues in conflict usually need a neutral third person and one honest conversation — not a formal process. Escalate when it's serious (harassment, safety, discrimination); mediate when it's human friction.</p>
+<div class="callout tip">Start with: "I want to talk about something, and I'd like to understand your side." It costs nothing and it changes the room from a trial into a conversation.</div>`),
+          article("hr-data", "HR Metrics That Matter", "7 min", `
+<p>"People stuff can't be measured" is an excuse. It can — and measuring it is how HR gets taken seriously.</p>
+<h3>The core numbers</h3>
+<ul>
+  <li><strong>Turnover %</strong> — and split it: regretted vs not.</li>
+  <li><strong>90-day turnover</strong> — hiring/onboarding quality.</li>
+  <li><strong>Time-to-hire</strong> — slow processes lose the best candidates.</li>
+  <li><strong>Cost-per-hire</strong> — makes retention's value visible.</li>
+  <li><strong>Absence</strong> — a spike in one team is a signal.</li>
+  <li><strong>Internal promotion rate</strong> — are we growing people or just buying them?</li>
+  <li><strong>Pay gaps</strong> — by gender and by role. Look, even if you're afraid to.</li>
+</ul>
+<h3>Segment, or you'll see nothing</h3>
+<p>Company turnover of 12% looks fine — until you split it and find one team at 40% while everyone else sits at 5%. <strong>The average hides the story.</strong> Always cut by team, manager, tenure and location.</p>
+<h3>Correlation isn't cause</h3>
+<p>Leavers took less training — so training prevents leaving? Or people already planning to leave skip training? Numbers point you at questions; they rarely answer them.</p>
+<h3>Translate to money</h3>
+<p>"Turnover is 18%" is a fact. "Turnover is 18%, that's 9 people, roughly 3 months' salary each to replace — so about a quarter of a million" is a business case.</p>
+<div class="callout warn">Never publish a metric that identifies an individual. "Engagement in the 3-person team" is not anonymous, and people will notice.</div>`),
+          article("hr-remote", "Remote, Hybrid & Modern Work", "7 min", `
+<p>Where and how people work changed permanently. HR sets the rules that make it fair — or unfair.</p>
+<h3>The models</h3>
+<ul>
+  <li><strong>Office</strong> — easy culture, limited talent pool.</li>
+  <li><strong>Remote</strong> — hire anywhere, needs deliberate communication.</li>
+  <li><strong>Hybrid</strong> — most common, and the hardest to do well.</li>
+</ul>
+<h3>Proximity bias is the real danger</h3>
+<p>In hybrid teams, the people in the room get the interesting work, the credit and the promotions — not because they're better, but because they're <em>visible</em>. Left unmanaged this quietly punishes carers, disabled staff and anyone far away. Managers must promote on output, not on presence.</p>
+<h3>Write things down</h3>
+<p>Remote work runs on written, async communication. A decision made in a corridor doesn't exist for half the team. Default to writing: decisions, reasons, docs.</p>
+<h3>Hours are not output</h3>
+<p>Monitoring keystrokes measures anxiety, not productivity, and it tells your staff you don't trust them. Agree what "done" looks like and manage that.</p>
+<h3>The rules to actually set</h3>
+<ul>
+  <li>Core overlap hours (especially across time zones).</li>
+  <li>A right to disconnect — no expectation of replies at 11pm.</li>
+  <li>Equipment and internet: who pays?</li>
+  <li>Which meetings genuinely need everyone in a room.</li>
+</ul>
+<div class="callout tip">If one person is remote, run the whole meeting as if everyone is — everyone on their own camera. Otherwise the remote person is a voice in a speaker that the room forgets.</div>`),
+          quiz("hr-quiz-4", "Quiz: HR in the Real World", [
+            { q: "Most HR disasters started as…", options: ["Bad luck", "A conversation nobody wanted to have months earlier", "A policy gap", "A payroll error"], answer: 1 },
+            { q: "In a difficult conversation you should lead with…", options: ["Your judgement of them", "Specific facts, then genuinely listen", "A warning letter", "An audience"], answer: 1 },
+            { q: "Company turnover of 12% is…", options: ["Always fine", "An average that can hide one team at 40%", "Illegal", "Meaningless"], answer: 1 },
+            { q: "To make leadership act on turnover, translate it into…", options: ["A percentage", "Money — replacement cost", "A survey", "A meeting"], answer: 1 },
+            { q: "Proximity bias in hybrid teams means…", options: ["Remote staff work less", "In-office staff get credit and promotion for being visible, not better", "Offices are cheaper", "Nothing"], answer: 1 },
+            { q: "Monitoring keystrokes mainly measures…", options: ["Productivity", "Anxiety — and signals distrust", "Output", "Quality"], answer: 1 },
+            { q: "Remote work runs on…", options: ["More meetings", "Written, async communication and decisions", "Longer hours", "Webcams always on"], answer: 1 },
           ]),
         ],
       },

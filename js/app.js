@@ -6425,13 +6425,35 @@
         `<span class="sd-chip ${cls}">${escapeHtml(x.q)} <b>${x.n}</b></span>`).join("");
       mount.innerHTML = `
         <div class="panel">
-          <h3 style="margin-top:0">🔎 ${t("sd_title")}</h3>
-          ${top.length ? `<p class="muted" style="font-size:13px;margin:0 0 8px">${t("sd_top")}</p>
-            <div class="sd-wrap">${chips(top, "")}</div>` : ""}
-          ${miss.length ? `<p class="muted" style="font-size:13px;margin:14px 0 8px">⚠️ ${t("sd_zero")}</p>
-            <div class="sd-wrap">${chips(miss, "zero")}</div>
-            <p class="muted" style="font-size:12px;margin:10px 0 0">${t("sd_hint")}</p>` : ""}
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">
+            <h3 style="margin:0">🔎 ${t("sd_title")}</h3>
+            <button class="btn btn-outline btn-sm" id="sd-clear">🗑️ ${t("sd_clear")}</button>
+          </div>
+          <div id="sd-lists" style="margin-top:10px">
+            ${top.length ? `<p class="muted" style="font-size:13px;margin:0 0 8px">${t("sd_top")}</p>
+              <div class="sd-wrap">${chips(top, "")}</div>` : ""}
+            ${miss.length ? `<p class="muted" style="font-size:13px;margin:14px 0 8px">⚠️ ${t("sd_zero")}</p>
+              <div class="sd-wrap">${chips(miss, "zero")}</div>
+              <p class="muted" style="font-size:12px;margin:10px 0 0">${t("sd_hint")}</p>` : ""}
+          </div>
         </div>`;
+      /* Clearing deletes each key individually: the rules grant write on
+         stats/search/$q, not on the parent, so a single DELETE of the whole
+         node would be rejected. */
+      const clearBtn = document.getElementById("sd-clear");
+      clearBtn.addEventListener("click", () => {
+        if (!window.confirm(t("sd_clearq"))) return;
+        const keys = [].concat(
+          Object.keys(all || {}).map((q) => ["search", q]),
+          Object.keys(zero || {}).map((q) => ["searchZero", q])
+        );
+        if (!keys.length) return;
+        clearBtn.disabled = true;
+        clearBtn.textContent = "⏳ " + t("sd_clearing");
+        Promise.all(keys.map(([path, q]) =>
+          fetch(base + "/stats/" + path + "/" + encodeURIComponent(q) + ".json", { method: "DELETE" }).catch(() => {})
+        )).then(() => renderSearchDemand(mount));
+      });
     }).catch(() => {});
   }
 

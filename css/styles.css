@@ -112,67 +112,26 @@ button { font-family: inherit; cursor: pointer; }
 .topnav.right { margin-left: 4px; }
 .topnav a { font-size: 15px; color: var(--ink); }
 .topnav a:hover { color: var(--purple); }
-/* Main menu: 3D emoji app-tiles that pop on hover and float when active.
-   Still emoji-forward per DESIGN.md (no icon fonts); pure CSS, no assets. */
-.topnav:not(.right) { gap: 4px; perspective: 700px; }
+/* Main menu: monochrome stroke icons that inherit the link colour
+   (muted → ink on hover → purple when active). Inline SVG, no icon set. */
+.topnav:not(.right) { gap: 2px; }
 .topnav:not(.right) a {
   display: flex; align-items: center; gap: 8px; position: relative;
-  padding: 6px 11px; border-radius: 10px; white-space: nowrap;
+  padding: 9px 12px; border-radius: 8px; white-space: nowrap;
   font-size: 14px; font-weight: 600; color: var(--muted);
-  transition: background .2s ease, color .2s ease;
+  transition: color .18s ease, background .18s ease;
 }
-.topnav:not(.right) a .nv-ic {
-  font-size: 15px; line-height: 1;
-  width: 30px; height: 30px; flex: 0 0 auto; border-radius: 9px;
-  display: grid; place-items: center;
-  background: linear-gradient(180deg, var(--surface), var(--surface-2));
-  background: var(--tile, linear-gradient(180deg, var(--surface), var(--surface-2)));
-  border: 1px solid var(--line);
-  /* 3D chip: inset top gloss + solid bottom edge + ambient drop */
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, .5), 0 2px 0 rgba(0, 0, 0, .06), 0 3px 6px rgba(0, 0, 0, .10);
-  transform-style: preserve-3d;
-  transition: transform .22s cubic-bezier(.34, 1.56, .64, 1), box-shadow .22s ease, border-color .2s ease;
+.topnav:not(.right) a .nv-ic { display: inline-flex; flex: 0 0 auto; }
+.topnav:not(.right) a .nv-ic svg {
+  width: 19px; height: 19px; display: block;
+  fill: none; stroke: currentColor; stroke-width: 1.75;
+  stroke-linecap: round; stroke-linejoin: round;
 }
-.topnav:not(.right) a:hover { color: var(--ink); }
-.topnav:not(.right) a:hover .nv-ic {
-  transform: translateY(-3px) rotateX(16deg) scale(1.08);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, .5), 0 7px 0 rgba(0, 0, 0, .07), 0 12px 18px rgba(0, 0, 0, .20);
-  border-color: var(--purple);
-  animation: nvPop .42s cubic-bezier(.34, 1.56, .64, 1);
-}
+.topnav:not(.right) a:hover { color: var(--ink); background: var(--surface-2); }
 .topnav:not(.right) a.active { color: var(--purple); }
-.topnav:not(.right) a.active .nv-ic {
-  background: linear-gradient(135deg, #7b2ff7, #a435f0);
-  border-color: transparent;
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, .35), 0 3px 0 #611cc9, 0 6px 14px rgba(123, 47, 247, .45);
-  animation: nvFloat 2.6s ease-in-out infinite;
-}
 .topnav:not(.right) a.active::after {
-  content: ""; position: absolute; left: 12px; right: 12px; bottom: -3px;
-  height: 3px; border-radius: 3px;
-  background: linear-gradient(90deg, #7b2ff7, #a435f0);
-}
-@keyframes nvPop {
-  0%   { transform: translateY(0) rotateX(0) scale(1); }
-  55%  { transform: translateY(-5px) rotateX(18deg) scale(1.14); }
-  100% { transform: translateY(-3px) rotateX(16deg) scale(1.08); }
-}
-@keyframes nvFloat {
-  0%, 100% { transform: translateY(0) rotateX(0); }
-  50%      { transform: translateY(-3px) rotateX(12deg); }
-}
-/* per-item accent tint — color-mix over --surface stays theme-aware, and
-   degrades to the plain tile on browsers without color-mix */
-#nav-courses   { --tile: linear-gradient(160deg, color-mix(in srgb, #4b8bff 17%, var(--surface)), var(--surface)); }
-#nav-gallery   { --tile: linear-gradient(160deg, color-mix(in srgb, #ff5fa2 17%, var(--surface)), var(--surface)); }
-#nav-showcase  { --tile: linear-gradient(160deg, color-mix(in srgb, #ff7a1a 18%, var(--surface)), var(--surface)); }
-#nav-roadmap   { --tile: linear-gradient(160deg, color-mix(in srgb, #22c58b 17%, var(--surface)), var(--surface)); }
-#nav-howto     { --tile: linear-gradient(160deg, color-mix(in srgb, #ffb020 18%, var(--surface)), var(--surface)); }
-#nav-tools     { --tile: linear-gradient(160deg, color-mix(in srgb, #8b5cf6 17%, var(--surface)), var(--surface)); }
-#nav-playground{ --tile: linear-gradient(160deg, color-mix(in srgb, #12b5c9 17%, var(--surface)), var(--surface)); }
-@media (prefers-reduced-motion: reduce) {
-  .topnav:not(.right) a:hover .nv-ic { transform: translateY(-1px); animation: none; }
-  .topnav:not(.right) a.active .nv-ic { animation: none; }
+  content: ""; position: absolute; left: 12px; right: 12px; bottom: -1px;
+  height: 2px; border-radius: 2px; background: var(--purple);
 }
 /* Messenger-style chat button in the header */
 .chat-nav-btn {
@@ -349,22 +308,16 @@ button { font-family: inherit; cursor: pointer; }
     flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px;
     padding: 8px 0 9px; text-decoration: none; color: var(--muted);
   }
-  .tabbar a .tb-ic {
-    font-size: 16px; line-height: 1; width: 32px; height: 32px; border-radius: 10px;
-    display: grid; place-items: center;
-    background: linear-gradient(180deg, var(--surface), var(--surface-2));
-    border: 1px solid var(--line);
-    box-shadow: inset 0 1px 1px rgba(255, 255, 255, .5), 0 2px 4px rgba(0, 0, 0, .08);
-    transition: transform .2s cubic-bezier(.34, 1.56, .64, 1), box-shadow .2s ease, background .2s ease;
+  .tabbar a .tb-ic { display: inline-flex; transition: transform .15s ease; }
+  .tabbar a .tb-ic svg {
+    width: 22px; height: 22px; display: block;
+    fill: none; stroke: currentColor; stroke-width: 1.75;
+    stroke-linecap: round; stroke-linejoin: round;
   }
   .tabbar a .tb-lbl { font-size: 10.5px; font-weight: 700; }
   .tabbar a.active { color: var(--purple); }
-  .tabbar a.active .tb-ic {
-    background: linear-gradient(135deg, #7b2ff7, #a435f0); border-color: transparent;
-    box-shadow: 0 3px 0 #611cc9, 0 6px 12px rgba(123, 47, 247, .4);
-    transform: translateY(-3px) scale(1.06);
-  }
-  .tabbar a:active .tb-ic { transform: translateY(-1px) scale(.97); }
+  .tabbar a.active .tb-ic { transform: translateY(-1px); }
+  .tabbar a:active .tb-ic { transform: scale(.94); }
   /* keep page content and the chat button clear of the bar */
   #app { padding-bottom: 76px; }
   #chat-widget { bottom: 84px; }

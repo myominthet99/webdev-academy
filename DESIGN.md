@@ -72,11 +72,14 @@ components:
 ## Overview
 
 WebDev Academy is a Udemy-inspired learning platform for Myanmar teenagers
-learning to code. The UI is friendly, dense-but-tidy, and emoji-forward:
-every feature leads with one emoji glyph (🧠 review, 🎯 daily challenge,
-⚔️ battle, 🫂 community) instead of icon fonts. It is a zero-dependency
-static site — all styling lives in `css/styles.css` as plain CSS with
-custom properties; there is no build step, no CSS framework.
+learning to code. The UI is friendly, dense-but-tidy, and emoji-forward **in
+content**: every feature leads with one emoji glyph (🧠 review, 🎯 daily
+challenge, ⚔️ battle, 🫂 community). The **chrome is deliberately not** — the
+top nav and mobile tab bar use monochrome inline stroke icons so the frame
+reads professional and the emoji keep their meaning where they matter (see
+[Icons](#icons)). It is a zero-dependency static site — all styling lives in
+`css/styles.css` as plain CSS with custom properties; there is no build step,
+no CSS framework.
 
 Two hard rules govern all new UI:
 
@@ -118,6 +121,24 @@ One system font stack everywhere, with Myanmar fallbacks (`Myanmar Text`,
 - Code samples use the monospace stack inside `.reader pre` blocks.
 - All user-facing strings go through `t("key")` with an entry in BOTH the
   `en` and `my` dictionaries in `js/i18n.js` — never hard-code copy.
+
+## Icons
+
+Two vocabularies, and they do not mix:
+
+- **Chrome (navigation) — monochrome stroke icons.** The top nav (`.nv-ic`)
+  and mobile tab bar (`.tb-ic`) use inline `<svg viewBox="0 0 24 24">` with
+  `fill: none; stroke: currentColor; stroke-width: 1.75` and round caps/joins,
+  sized 19px (nav) / 22px (tab). Because they stroke with `currentColor` they
+  inherit the link state for free: `muted` → `ink` on hover → `purple` when
+  active (plus a 2px purple underline). Same Feather-style vocabulary as
+  `ICON()` in [js/chat.js](js/chat.js).
+- **Content — one emoji glyph.** Features, cards, buttons, and copy keep the
+  friendly single-emoji lead (🧠 🎯 ⚔️ 🫂 🔥). Never put an emoji in the nav
+  chrome, and never put a stroke icon in a feature card.
+
+**Never add an icon font or external icon set** — paste the SVG path inline so
+the site stays self-contained and offline-friendly.
 
 ## Layout
 

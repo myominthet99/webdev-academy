@@ -6135,6 +6135,7 @@
           <h2 class="section-title">🚩 ${t("rep_title")}</h2>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <a class="btn btn-outline btn-sm" href="#/admin/dashboard">📊 ${t("dash_admin_title")}</a>
+            <a class="btn btn-outline btn-sm" href="#/admin/students">👥 ${t("stu_title")}</a>
             <a class="btn btn-outline btn-sm" href="#/admin/insights">📉 ${t("ins_title")}</a>
             <a class="btn btn-outline btn-sm" href="#/admin/payments">💳 ${t("admin_payments")}</a>
           </div>
@@ -6323,6 +6324,64 @@
           (v ? '<text x="' + (i * bw + bw / 2).toFixed(1) + '" y="' + (h - bh - 4) + '" class="val">' + v + "</text>" : "") +
           (i % 2 ? '<text x="' + (i * bw + bw / 2).toFixed(1) + '" y="' + (h + 14) + '" class="lab">' + lab + "</text>" : "");
       }).join("") + "</svg>";
+  }
+
+  /* 👥 Students — who is actually learning, and who has gone quiet.
+     Built from stats/leaderboard, which every signed-in student already
+     writes; no new tracking and no new rules needed. */
+  function renderAdminStudents() {
+    app.innerHTML = `
+      <div class="container" style="max-width:900px">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+          <h2 class="section-title">👥 ${t("stu_title")}</h2>
+          <a class="btn btn-outline btn-sm" href="#/admin/dashboard">📊 ${t("dash_admin_title")}</a>
+        </div>
+        <p class="section-sub">${t("stu_sub")}</p>
+        <div id="stu-body"><div class="empty"><h2>⏳</h2></div></div>
+      </div>`;
+    const body = document.getElementById("stu-body");
+    const base = statsBase();
+    if (!base) { body.innerHTML = `<div class="empty"><h2>👥</h2><p>${t("lb_offline")}</p></div>`; return; }
+    fetch(base + "/stats/leaderboard.json").then((r) => r.json()).then((val) => {
+      const rows = Object.entries(val || {}).map(([uid, d]) => Object.assign({ uid: uid }, d))
+        .sort((a, b) => (b.ts || 0) - (a.ts || 0));
+      if (!rows.length) { body.innerHTML = `<div class="empty"><h2>👥</h2><p>${t("stu_none")}</p></div>`; return; }
+      const DAY = 86400000;
+      const now = Date.now();
+      const daysAgo = (ts) => Math.floor((now - (ts || 0)) / DAY);
+      const quiet = rows.filter((r) => daysAgo(r.ts) >= 7).length;
+      const done = rows.filter((r) => (r.courses || 0) > 0).length;
+      const when = (ts) => {
+        const d = daysAgo(ts);
+        return d <= 0 ? t("stu_today") : d === 1 ? t("stu_yesterday") : t("stu_days").replace("{n}", d);
+      };
+      body.innerHTML = `
+        <div class="stu-cards">
+          <div class="panel stu-stat"><b>${rows.length}</b><span>${t("stu_total")}</span></div>
+          <div class="panel stu-stat ${done === 0 ? "bad" : ""}"><b>${done} / ${rows.length}</b><span>${t("stu_finished")}</span></div>
+          <div class="panel stu-stat ${quiet ? "warn" : ""}"><b>${quiet}</b><span>${t("stu_quiet")}</span></div>
+        </div>
+        ${done === 0 ? `<div class="ins-cliff">⚠️ ${t("stu_nobody")}</div>` : ""}
+        <div class="panel" style="padding:6px 0;overflow-x:auto">
+          <table class="stu-table">
+            <thead><tr>
+              <th>${t("stu_name")}</th><th>${t("stu_lessons")}</th><th>XP</th>
+              <th>${t("stu_courses")}</th><th>🔥</th><th>${t("stu_last")}</th>
+            </tr></thead>
+            <tbody>
+              ${rows.map((r) => `<tr class="${daysAgo(r.ts) >= 7 ? "quiet" : ""}">
+                <td><b>${escapeHtml(String(r.name || "?"))}</b></td>
+                <td>${r.lessons || 0}</td>
+                <td>${r.xp || 0}</td>
+                <td>${r.courses || 0}</td>
+                <td>${r.streak || 0}</td>
+                <td>${when(r.ts)}${daysAgo(r.ts) >= 7 ? " ⚠️" : ""}</td>
+              </tr>`).join("")}
+            </tbody>
+          </table>
+        </div>`;
+    }).catch(() => { body.innerHTML = `<div class="empty"><h2>👥</h2><p>${t("stu_none")}</p></div>`; });
+    window.scrollTo(0, 0);
   }
 
   /* 📉 Insights — where do students actually stop?
@@ -7261,6 +7320,7 @@
     if (editId === "payments") return renderAdminPayments();
     if (editId === "reports") return renderAdminReports();
     if (editId === "insights") return renderAdminInsights();
+    if (editId === "students") return renderAdminStudents();
     if (editId === "content") return renderContentCreator();
     const custom = loadCustomCourses();
     const editing = editId ? custom.find((c) => c.id === editId) : null;

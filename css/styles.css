@@ -354,9 +354,18 @@ button { font-family: inherit; cursor: pointer; }
   @media (prefers-reduced-motion: reduce) {
     .tabbar a .tb-ic, .tabbar a.active .tb-ic svg { transition: none; animation: none; }
   }
-  /* keep page content and the chat button clear of the bar */
+  /* keep page content clear of the bar. (The chat button is lifted further
+     down the file — it MUST come after the base #chat-widget rule, or it
+     loses on source order.) */
   #app { padding-bottom: 76px; }
-  #chat-widget { bottom: 84px; }
+  /* the tab bar already has a "Me" tab — the header link is a duplicate
+     that pushes the whole header onto an extra row */
+  #nav-mylearning { display: none; }
+  /* the icon row already scrolls horizontally, so let it share the logo's
+     row and take the remaining width — instead of wrapping onto a row of
+     its own and leaving the 34px logo alone on one. The flex-basis keeps
+     it wide enough to be usable; without it, it collapses to ~38px. */
+  .topnav:not(.right) { flex: 1 1 200px; min-width: 0; }
 }
 
 /* 🃏 SoloLearn-style Step Mode (bite-sized lesson cards) */
@@ -1221,6 +1230,13 @@ a.lesson-row:hover .ttl { color: var(--purple); }
 
 /* ---------- Community chat ---------- */
 #chat-widget { position: fixed; right: 20px; bottom: 20px; z-index: 300; }
+/* Lift the chat button above the mobile tab bar. This MUST live after the
+   rule above: same specificity (#chat-widget), so source order decides.
+   It used to sit ~800 lines earlier and silently lost — which left the
+   button sitting on top of the "Me" tab, making that tab untappable. */
+@media (max-width: 768px) {
+  #chat-widget { bottom: 84px; }
+}
 .chat-fab {
   position: relative; width: 56px; height: 56px; border-radius: 50%; border: 0; cursor: pointer;
   background: var(--purple); color: #fff; font-size: 24px; box-shadow: 0 6px 20px rgba(0, 0, 0, .25);
@@ -2245,6 +2261,20 @@ input[type="range"].tl-range { width: 100%; accent-color: var(--purple); }
   border-radius: 8px; font-size: 14px; line-height: 1.6;
 }
 .pf-item .tl-row { margin-top: 10px; }
+/* ---------- 👥 Students (admin) ---------- */
+.stu-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-bottom: 14px; }
+.stu-stat { padding: 14px 16px; text-align: center; }
+.stu-stat b { display: block; font-size: 24px; color: var(--purple); line-height: 1.2; }
+.stu-stat span { font-size: 12px; color: var(--muted); }
+.stu-stat.warn b { color: var(--warn); }
+.stu-stat.bad b { color: var(--danger); }
+.stu-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.stu-table th, .stu-table td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.stu-table th { font-size: 12px; color: var(--muted); font-weight: 700; }
+.stu-table tbody tr:last-child td { border-bottom: 0; }
+.stu-table tbody tr:hover { background: var(--surface-2); }
+.stu-table tr.quiet td { color: var(--muted); }
+
 /* ---------- 📉 Insights (admin drop-off) ---------- */
 .ins-course { padding: 16px; margin-bottom: 14px; }
 .ins-head { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }

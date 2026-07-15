@@ -1303,15 +1303,50 @@ a.lesson-row:hover .ttl { color: var(--purple); }
 .chat-del { border: 0; background: transparent; cursor: pointer; font-size: 12px; line-height: 1; opacity: .5; padding: 0; }
 .chat-del:hover { opacity: 1; }
 .chat-foot { border-top: 1px solid var(--line); padding: 10px; background: var(--surface); }
-.chat-form { display: flex; gap: 8px; align-items: flex-end; }
+/* Single-pill composer: + | text | mic | send. The extras live behind + so
+   the box stays calm on a phone instead of a row of five icons. */
+.chat-form { display: flex; flex-direction: column; gap: 8px; }
 .chat-form input { flex: 1; padding: 9px 12px; border: 1px solid var(--line); border-radius: 999px; font-size: 14px; }
 .chat-form input:focus { outline: none; border-color: var(--purple); }
-.chat-form textarea {
-  flex: 1; padding: 9px 12px; border: 1px solid var(--line); border-radius: 18px;
-  font-size: 14px; font-family: inherit; resize: none; overflow-y: auto;
-  background: var(--surface); color: var(--ink); max-height: 90px; line-height: 1.4;
+.chat-pill {
+  display: flex; align-items: flex-end; gap: 2px;
+  background: var(--surface-2); border: 1px solid var(--line);
+  border-radius: 24px; padding: 4px 5px 4px 4px;
+  transition: border-color .2s ease, box-shadow .2s ease;
 }
-.chat-form textarea:focus { outline: none; border-color: var(--purple); }
+.chat-pill:focus-within {
+  border-color: var(--purple);
+  box-shadow: 0 0 0 3px rgba(164, 53, 240, .14);
+}
+.chat-form textarea {
+  flex: 1; min-width: 0; align-self: center;
+  padding: 8px 6px; border: 0; border-radius: 0; background: transparent;
+  font-size: 14px; font-family: inherit; resize: none; overflow-y: auto;
+  color: var(--ink); max-height: 90px; line-height: 1.4;
+}
+.chat-form textarea:focus { outline: none; }
+.chat-plus {
+  flex: 0 0 auto; width: 32px; height: 32px; border-radius: 50%;
+  border: 0; background: transparent; color: var(--muted);
+  font-size: 23px; line-height: 1; cursor: pointer; align-self: center;
+  display: grid; place-items: center; padding: 0;
+  transition: transform .22s cubic-bezier(.34, 1.4, .64, 1), background .2s ease, color .2s ease;
+}
+.chat-plus:hover { background: var(--surface); color: var(--purple); }
+.chat-plus[aria-expanded="true"] { transform: rotate(45deg); color: var(--purple); }
+.chat-tray {
+  display: flex; align-items: center; gap: 4px;
+  padding: 4px 8px; background: var(--surface-2);
+  border: 1px solid var(--line); border-radius: 14px;
+  animation: trayIn .18s ease-out;
+}
+@keyframes trayIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+.chat-pill .chat-photo { align-self: center; padding: 6px; border-radius: 50%; border: 0; background: transparent; }
+.chat-pill .chat-photo:hover { background: var(--surface); }
+@media (prefers-reduced-motion: reduce) {
+  .chat-plus { transition: none; }
+  .chat-tray { animation: none; }
+}
 .chat-photo { cursor: pointer; font-size: 19px; padding: 6px 2px; align-self: center; }
 .chat-img { display: block; max-width: 210px; max-height: 210px; border-radius: 10px; margin: 4px 0; cursor: zoom-in; }
 .chat-code {
@@ -1365,7 +1400,11 @@ a.lesson-row:hover .ttl { color: var(--purple); }
 }
 .chat-panel.full .chat-form textarea { font-size: 15px; padding: 11px 16px; }
 .chat-panel.full .chat-send { width: 44px; height: 44px; font-size: 17px; }
-.chat-send { border: 0; background: var(--purple); color: #fff; width: 38px; border-radius: 50%; font-size: 15px; cursor: pointer; }
+.chat-send {
+  border: 0; background: var(--purple); color: #fff;
+  width: 36px; height: 36px; flex: 0 0 auto; align-self: center;
+  border-radius: 50%; font-size: 15px; cursor: pointer; padding: 0;
+}
 .chat-send:hover { filter: brightness(1.06); }
 .chat-search { flex: 1; min-width: 60px; max-width: 150px; padding: 6px 10px; border: 1px solid var(--line); font-size: 13px; background: var(--surface-2); color: var(--ink); border-radius: 6px; margin: 0 8px; }
 .chat-ver { font-size: 10px; opacity: .65; margin-left: 6px; white-space: nowrap; }

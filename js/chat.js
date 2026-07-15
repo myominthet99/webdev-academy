@@ -794,13 +794,19 @@
       '    <span id="case-thumbs" class="case-thumbs"></span>' +
       '    <button type="button" id="case-post" class="btn-mini primary">' + ICON("send") + " " + esc(t("case_post")) + "</button>" +
       "  </div></div>" +
+      /* One-pill composer: the extras hide behind + so the box stays calm */
       '<form class="chat-form" id="chat-form">' +
+      '<div class="chat-tray" id="chat-tray" hidden>' +
       '<button type="button" class="chat-casebtn" id="chat-case" title="' + esc(t("case_share")) + '">' + ICON("caseb") + "</button>" +
       '<label class="chat-photo" title="' + esc(t("chat_photo")) + '">' + ICON("camera") + '<input type="file" accept="image/*" hidden></label>' +
-      '<button type="button" class="chat-photo chat-mic" id="chat-mic" title="' + esc(t("chat_voice")) + '">' + ICON("mic") + "</button>" +
       '<button type="button" class="chat-photo chat-stick" id="chat-stick" title="Sticker">😊</button>' +
+      "</div>" +
+      '<div class="chat-pill">' +
+      '<button type="button" class="chat-plus" id="chat-plus" aria-expanded="false" aria-label="' + esc(t("chat_more")) + '" title="' + esc(t("chat_more")) + '">+</button>' +
       '<textarea rows="1" maxlength="500" placeholder="' + esc(t("chat_placeholder") + (window.AI && window.AI.ready() ? " · @ai 🤖" : "")) + '"></textarea>' +
-      '<button class="chat-send" type="submit" aria-label="Send">' + ICON("send") + "</button></form>";
+      '<button type="button" class="chat-photo chat-mic" id="chat-mic" title="' + esc(t("chat_voice")) + '">' + ICON("mic") + "</button>" +
+      '<button class="chat-send" type="submit" aria-label="Send">' + ICON("send") + "</button>" +
+      "</div></form>";
     const form = footEl.querySelector("#chat-form");
     const inp = form.querySelector("textarea");
     const file = form.querySelector('input[type="file"]');
@@ -815,6 +821,14 @@
       box.querySelectorAll("[data-rmimg]").forEach((b) =>
         b.addEventListener("click", () => { caseImgs.splice(Number(b.getAttribute("data-rmimg")), 1); paintThumbs(); }));
     };
+    /* + reveals the extras (case study, photo, sticker) and turns into an × */
+    const plusBtn = footEl.querySelector("#chat-plus");
+    const trayEl = footEl.querySelector("#chat-tray");
+    plusBtn.addEventListener("click", () => {
+      const open = trayEl.hidden;
+      trayEl.hidden = !open;
+      plusBtn.setAttribute("aria-expanded", open ? "true" : "false");
+    });
     footEl.querySelector("#chat-case").addEventListener("click", () => {
       caseForm.hidden = !caseForm.hidden;
       if (!caseForm.hidden) footEl.querySelector("#case-title").focus();

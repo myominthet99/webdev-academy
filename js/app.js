@@ -1371,6 +1371,25 @@
       .then((tk) => fetch(url + (tk ? (url.indexOf("?") >= 0 ? "&" : "?") + "auth=" + encodeURIComponent(tk) : ""), opts));
   const dateKey = (offset) => new Date(Date.now() - offset * 86400000).toISOString().slice(0, 10);
 
+  /* Anonymous search counter. Students tell us what they want every time
+     they use the search box and we used to throw it away. Two counters:
+     every search, and searches that found NOTHING — the second one is a
+     literal list of courses we don't have. No user id is sent. */
+  function trackSearch(query, hits) {
+    const base = statsBase();
+    if (!base) return;
+    /* Firebase keys can't contain . # $ [ ] / — and we don't want to store
+       anything long enough to be personal */
+    const key = String(query || "").toLowerCase().trim()
+      .replace(/[.#$\[\]\/]/g, " ").replace(/\s+/g, " ").trim().slice(0, 40);
+    if (key.length < 2) return;
+    const bump = (path) => fetch(base + "/stats/" + path + "/" + encodeURIComponent(key) + ".json", {
+      method: "PUT", body: JSON.stringify({ ".sv": { increment: 1 } }),
+    }).catch(() => {});
+    bump("search");
+    if (!hits) bump("searchZero"); /* found nothing = an unmet request */
+  }
+
   /* ---- Published (admin-built) courses ---------------------------------
      Read is public so students get them; writes are admin-only (rules). */
   function loadCloudCourses() {
@@ -3641,6 +3660,8 @@
     });
 
     const mark = (s) => highlightText(escapeHtml(s), q);
+    trackSearch(q, courseHits.length + lessonHits.length);
+
     const lessonRows = lessonHits.slice(0, MAXL).map(({ c, l, title, snippet }) => `
       <a class="search-hit" href="#/learn/${c.id}/${l.id}">
         <div class="sh-title">${lessonIcon(l.type)} ${mark(title)}</div>
@@ -6384,6 +6405,36 @@
     window.scrollTo(0, 0);
   }
 
+  /* 🔎 What students search for — and what they searched for and did NOT
+     find. The second list is the honest answer to "what course next?". */
+  function renderSearchDemand(mount) {
+    if (!mount) return;
+    const base = statsBase();
+    if (!base) return;
+    Promise.all([
+      fetch(base + "/stats/search.json").then((r) => r.json()).catch(() => null),
+      fetch(base + "/stats/searchZero.json").then((r) => r.json()).catch(() => null),
+    ]).then(([all, zero]) => {
+      const top = Object.entries(all || {}).map(([q, n]) => ({ q, n: Number(n) || 0 })).sort((a, b) => b.n - a.n).slice(0, 12);
+      const miss = Object.entries(zero || {}).map(([q, n]) => ({ q, n: Number(n) || 0 })).sort((a, b) => b.n - a.n).slice(0, 12);
+      if (!top.length && !miss.length) {
+        mount.innerHTML = `<div class="panel"><h3 style="margin-top:0">🔎 ${t("sd_title")}</h3><p class="muted">${t("sd_none")}</p></div>`;
+        return;
+      }
+      const chips = (list, cls) => list.map((x) =>
+        `<span class="sd-chip ${cls}">${escapeHtml(x.q)} <b>${x.n}</b></span>`).join("");
+      mount.innerHTML = `
+        <div class="panel">
+          <h3 style="margin-top:0">🔎 ${t("sd_title")}</h3>
+          ${top.length ? `<p class="muted" style="font-size:13px;margin:0 0 8px">${t("sd_top")}</p>
+            <div class="sd-wrap">${chips(top, "")}</div>` : ""}
+          ${miss.length ? `<p class="muted" style="font-size:13px;margin:14px 0 8px">⚠️ ${t("sd_zero")}</p>
+            <div class="sd-wrap">${chips(miss, "zero")}</div>
+            <p class="muted" style="font-size:12px;margin:10px 0 0">${t("sd_hint")}</p>` : ""}
+        </div>`;
+    }).catch(() => {});
+  }
+
   /* 📉 Insights — where do students actually stop?
      Reads the anonymous stats/funnel counters and turns them into a
      drop-off view per course. This is the question the app could never
@@ -6396,8 +6447,10 @@
           <a class="btn btn-outline btn-sm" href="#/admin/dashboard">📊 ${t("dash_admin_title")}</a>
         </div>
         <p class="section-sub">${t("ins_sub")}</p>
+        <div id="ins-search"></div>
         <div id="ins-body"><div class="empty"><h2>⏳</h2></div></div>
       </div>`;
+    renderSearchDemand(document.getElementById("ins-search"));
     const body = document.getElementById("ins-body");
     const base = statsBase();
     if (!base) { body.innerHTML = `<div class="empty"><h2>📉</h2><p>${t("lb_offline")}</p></div>`; return; }

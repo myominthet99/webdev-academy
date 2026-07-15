@@ -2261,6 +2261,17 @@ input[type="range"].tl-range { width: 100%; accent-color: var(--purple); }
   border-radius: 8px; font-size: 14px; line-height: 1.6;
 }
 .pf-item .tl-row { margin-top: 10px; }
+/* ---------- 🔎 Search demand (admin) ---------- */
+.sd-wrap { display: flex; flex-wrap: wrap; gap: 7px; }
+.sd-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--surface-2); border: 1px solid var(--line);
+  border-radius: 999px; padding: 5px 11px; font-size: 13px;
+}
+.sd-chip b { color: var(--purple); }
+.sd-chip.zero { background: var(--warn-bg); border-color: transparent; color: var(--warn); }
+.sd-chip.zero b { color: var(--warn); }
+
 /* ---------- 👥 Students (admin) ---------- */
 .stu-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-bottom: 14px; }
 .stu-stat { padding: 14px 16px; text-align: center; }

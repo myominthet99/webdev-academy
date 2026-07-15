@@ -284,6 +284,20 @@
             ".validate": "newData.isNumber() && newData.val() >= 0"
           }
         }
+      },
+      "search": {
+        ".read": true,
+        "$q": {
+          ".write": true,
+          ".validate": "newData.isNumber() && newData.val() >= 0"
+        }
+      },
+      "searchZero": {
+        ".read": true,
+        "$q": {
+          ".write": true,
+          ".validate": "newData.isNumber() && newData.val() >= 0"
+        }
       }
     },
     "payments": {

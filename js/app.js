@@ -3982,7 +3982,18 @@
         ${
           mine.length
             ? `<p class="section-sub">${mine.length} ${t("enrolled_word")} · ${t("keep_going")}</p><div class="mylist">${rows}</div>`
-            : `<div class="empty"><h2>${t("empty_title")}</h2><p>${t("empty_sub")}</p><a class="btn btn-primary" href="#/courses">${t("browse_courses")}</a></div>`
+            : `<div class="ml-empty">
+                <div class="ml-empty-art" aria-hidden="true"><span>📘</span><span>🎬</span><span>📝</span></div>
+                <h2>${t("ml_first_title")}</h2>
+                <p class="muted">${t("ml_first_sub")}</p>
+                <div class="ml-cats">
+                  ${CATEGORIES.filter((c) => c !== "All")
+                    .map((cat) => `<a class="ml-cat" href="#/courses" data-cat="${cat}"><span>${catName(cat)}</span>
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></a>`)
+                    .join("")}
+                </div>
+                <a class="btn btn-primary btn-block" href="#/courses">${t("browse_courses")}</a>
+              </div>`
         }
         ${bookmarksSection()}
         ${recommendedSection()}
@@ -3991,6 +4002,13 @@
       b.addEventListener("click", () => {
         jset(ns("wda_goal"), Number(b.getAttribute("data-goal")) || 0);
         renderMyLearning();
+      })
+    );
+    /* first-run category list — same filter the home chips use */
+    app.querySelectorAll(".ml-cat[data-cat]").forEach((a) =>
+      a.addEventListener("click", () => {
+        filter.category = a.dataset.cat;
+        filter.query = "";
       })
     );
   }

@@ -599,6 +599,8 @@ window.I18N = {
       start: "Start",
       review: "Review",
       empty_title: "You haven't enrolled in anything yet",
+      ml_first_title: "What will you learn first?",
+      ml_first_sub: "Your courses will go here.",
       empty_sub: "Pick a course and your progress will show up here.",
       browse_courses: "Browse courses",
 
@@ -1420,6 +1422,8 @@ window.I18N = {
       start: "စတင်ရန်",
       review: "ပြန်လည်သုံးသပ်ရန်",
       empty_title: "သင်ဘာမှ စာရင်းမသွင်းရသေးပါ",
+      ml_first_title: "ဘာကို အရင်လေ့လာမလဲ?",
+      ml_first_sub: "သင့်သင်တန်းများ ဤနေရာတွင် ပေါ်လာပါမည်။",
       empty_sub: "သင်တန်းတစ်ခုရွေးပါ၊ သင့်တိုးတက်မှု ဤနေရာတွင်ပေါ်လာပါမည်။",
       browse_courses: "သင်တန်းများကြည့်ရန်",
 

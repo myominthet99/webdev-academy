@@ -3829,7 +3829,7 @@ else {
     rating: 4.5,
     ratings: 18240,
     students: 96750,
-    hours: 8,
+    hours: 14,
     price: "Free",
     color: "linear-gradient(135deg,#654ea3,#eaafc8)",
     icon: "&#9733;",
@@ -3843,176 +3843,237 @@ else {
     ],
     sections: [
       {
-        title: "Get Job-Ready",
+        title: "1 · Get Job-Ready",
         lessons: [
-          article("dc-portfolio", "A Portfolio That Stands Out", "8 min", `
-<p>Recruiters spend seconds on a portfolio. Make them count.</p>
+          article("dc-skills", "What Employers Actually Want", "7 min", `
+<p>Junior job ads list 15 technologies. Ignore the list — it's a wish, written by someone who isn't on the team.</p>
+<h3>What they're really buying</h3>
 <ul>
-  <li>Lead with <strong>3–4 real projects</strong>, each with a live link and source code.</li>
-  <li>For every project: what it does, what you built, and the tech used.</li>
-  <li>Keep the design clean, fast, and responsive — it <em>is</em> a work sample.</li>
+  <li><strong>Can you build something and finish it?</strong> Most people can't.</li>
+  <li><strong>Can you get unstuck</strong> without needing a senior for two hours?</li>
+  <li><strong>Will you be pleasant to sit beside</strong> for a year?</li>
+  <li><strong>Can you learn fast?</strong> Whatever stack they use, you'll learn it there.</li>
 </ul>
-<div class="callout tip">One polished project beats ten half-finished ones. Depth signals professionalism.</div>`),
+<h3>The honest bar for a junior</h3>
+<ul>
+  <li>Solid <strong>HTML, CSS, JavaScript</strong> — genuinely solid, not "did a tutorial".</li>
+  <li><strong>Git</strong> — branch, commit, PR.</li>
+  <li><strong>One framework</strong> — React or Vue. One.</li>
+  <li>Know how the <strong>web works</strong> — request, response, why the site is slow.</li>
+  <li>2-3 <strong>finished, deployed</strong> projects.</li>
+</ul>
+<p>That's it. That's a hireable junior. Not 15 technologies.</p>
+<h3>Apply before you feel ready</h3>
+<p>"5 years experience" on a junior ad is a wish list, not a gate. If you match roughly 60%, apply. The people getting hired are not more ready than you — they applied.</p>
+<h3>Depth beats breadth</h3>
+<p>"I know a bit of React, Vue, Angular, Python, PHP" reads as "I finished five tutorials". One language you genuinely know is worth more than five you've touched.</p>
+<div class="callout tip">Nobody is hired for knowing everything. They're hired because someone believed they'd figure things out. Your portfolio is the evidence for that belief.</div>`),
+          article("dc-portfolio", "A Portfolio That Stands Out", "7 min", `
+<p>Your portfolio is the single highest-leverage thing you own. It's the difference between "here's my CV" and "here, look".</p>
+<h3>Three real projects beat twenty tutorials</h3>
+<p>A recruiter can spot a tutorial clone instantly — they've seen the same to-do app 400 times. Build something <em>slightly</em> yours instead:</p>
+<ul>
+  <li>A tool for a real problem you or a friend has.</li>
+  <li>Something for a family shop or a local group.</li>
+  <li>A tutorial project — then take it somewhere the tutorial didn't.</li>
+</ul>
+<h3>Every project must be</h3>
+<ul>
+  <li><strong>Deployed</strong> — a live link. Not a zip, not a screenshot. If they must clone it, they won't.</li>
+  <li><strong>Finished</strong> — no "coming soon", no broken buttons.</li>
+  <li><strong>Explained</strong> — a README saying what, why and how.</li>
+  <li><strong>Responsive</strong> — they will open it on a phone. Guaranteed.</li>
+</ul>
+<h3>The thing juniors always miss</h3>
+<p>Write <strong>what you learned and what was hard</strong>. "The list re-rendered on every keystroke, so I added a debounce" tells them more about you than any bullet list of skills. It shows you hit a real problem and reasoned it out.</p>
+<h3>Your portfolio site itself is a project</h3>
+<p>It's the first code they see. If it's broken on mobile or takes 8 seconds to load, that's your interview.</p>
+<div class="callout tip">One project you can talk about for 20 minutes beats ten you can't. Interviews go deep on ONE thing — make sure you have that one thing.</div>`),
           article("dc-github", "Using GitHub Professionally", "7 min", `
-<p>Your GitHub is a public résumé. Employers <em>will</em> look.</p>
+<p>For a junior, GitHub <em>is</em> the CV. They will look. Make it worth looking at.</p>
+<h3>Pin your best six</h3>
+<p>Pin the finished, deployed ones. Nobody scrolls 40 repos — they look at the top row and decide.</p>
+<h3>Every pinned repo needs a README</h3>
+<p>A repo with no README looks abandoned. Include:</p>
 <ul>
-  <li>Write clear <strong>README</strong> files with screenshots and setup steps.</li>
-  <li>Commit often with meaningful messages.</li>
-  <li>Pin your best repositories to your profile.</li>
+  <li><strong>One sentence</strong> — what it is.</li>
+  <li><strong>A screenshot or GIF</strong> — people scroll, they don't read.</li>
+  <li><strong>The live link</strong>, at the top.</li>
+  <li><strong>How to run it</strong> — exact commands.</li>
+  <li><strong>What you learned.</strong></li>
 </ul>
-<pre><code># A good commit message
-git commit -m "Add dark-mode toggle to portfolio header"</code></pre>
-<div class="callout">Green squares aren't the goal — a few well-documented projects beat a wall of noise.</div>`),
-          quiz("dc-quiz", "Quiz: Career", [
-            {
-              q: "What's the most important thing in a junior portfolio?",
-              options: [
-                "As many projects as possible",
-                "A few polished projects with live links",
-                "A fancy animated intro",
-                "Your GPA",
-              ],
-              answer: 1,
-            },
-            {
-              q: "A good commit message should be...",
-              options: [
-                "Left empty",
-                "\"update\"",
-                "Clear and describe what changed",
-                "The date only",
-              ],
-              answer: 2,
-            },
+<h3>Commits tell a story</h3>
+<p>A history of "update", "stuff", "asdf" says you don't work with people. "Add search filter", "Fix mobile nav overflow" says you do. They may not read your code — they will skim your commits.</p>
+<h3>The profile README</h3>
+<p>Make a repo named exactly your username, add a README.md, and it appears at the top of your profile. Who you are, what you're learning, your best links, how to reach you.</p>
+<h3>The green-squares myth</h3>
+<p>Nobody hires for a contribution graph. Daily commits to a private diary repo impress no one. One good, finished, documented project beats a year of green.</p>
+<div class="callout warn">Never commit .env files, API keys or passwords. A leaked key in a public repo is compromised within minutes — and a reviewer who spots one will not hire you.</div>`),
+          quiz("dc-quiz", "Quiz: Get Job-Ready", [
+            { q: "A junior job ad listing 15 technologies is…", options: ["A hard requirement", "A wish list — apply at roughly 60% match", "A test", "Illegal"], answer: 1 },
+            { q: "What do employers most want from a junior?", options: ["Knowing 15 frameworks", "Evidence you can finish things and get unstuck", "A degree", "A perfect CV"], answer: 1 },
+            { q: "Every portfolio project must be…", options: ["A zip file", "Deployed, with a live link", "Private", "In Angular"], answer: 1 },
+            { q: "What do juniors most often leave out of a README?", options: ["The title", "What they learned and what was hard", "The licence", "The language"], answer: 1 },
+            { q: "'I know a bit of React, Vue, Angular, Python, PHP' reads as…", options: ["Impressive range", "Five tutorials finished — depth beats breadth", "Senior level", "Full-stack"], answer: 1 },
+            { q: "The GitHub contribution graph is…", options: ["Critical for hiring", "Largely irrelevant — one finished project beats a year of green", "A requirement", "Checked first"], answer: 1 },
           ]),
         ],
       },
       {
-        title: "Get Noticed",
+        title: "2 · Get Noticed",
         lessons: [
-          article("dc-cv", "A Developer CV That Passes the Filter", "12 min", `
-<h3>🎯 A CV has one job: earn the interview</h3>
-<p>Recruiters scan for ~30 seconds. Structure for the scan:</p>
-<ol>
-  <li><strong>Top block</strong> — name, city, phone, email, GitHub link, portfolio link. The two LINKS matter most for self-taught devs.</li>
-  <li><strong>Projects (before experience!)</strong> — 3 projects, each: name + live link + one line of what it does + the tech used. "Order-form site for a Yangon tea shop — HTML/CSS/JS, deployed on GitHub Pages."</li>
-  <li><strong>Skills</strong> — honest columns: Comfortable (HTML, CSS, JS, Git) / Learning (Node, SQL). Honesty reads as maturity.</li>
-  <li><strong>Education & certificates</strong> — this academy's certificates belong here with verification links.</li>
-</ol>
-<h3>📝 The filter killers (avoid!)</h3>
+          article("dc-cv", "A Developer CV That Passes the Filter", "7 min", `
+<p>Your CV has one job: get you a conversation. It will be skimmed in roughly 10 seconds.</p>
+<h3>The shape</h3>
 <ul>
-  <li>❌ "Microsoft Word" as a tech skill · ❌ paragraphs nobody reads · ❌ skill bars ("JavaScript 70%"?) · ❌ no links</li>
-  <li>✅ One page. PDF. File named <code>MyoMinThet-WebDeveloper.pdf</code> — recruiters download dozens of "CV.pdf".</li>
+  <li><strong>One page.</strong> You're a junior. One page.</li>
+  <li><strong>Top:</strong> name, role you want, city, email, GitHub, portfolio link.</li>
+  <li><strong>Projects before education</strong> — if you have no experience, projects <em>are</em> your experience.</li>
+  <li><strong>Skills</strong> — the ones you'd survive a question on.</li>
+  <li><strong>Plain formatting.</strong> No photo, no skill bars, no "JavaScript ▓▓▓▓░ 80%" — 80% of what?</li>
 </ul>
-<h3>💡 No job experience? Reframe.</h3>
-<p>"Built and deployed 4 web projects in 6 months while completing a 38-course curriculum, including an app with live API data" — that's not "no experience", that's a self-starter with proof.</p>
-<div class="callout tip"><strong>Try it yourself:</strong> draft the Projects section right now for the 3 projects you built in this academy. It's the hardest section — and you just finished it first.</div>`),
-          article("dc-online", "LinkedIn & Building in Public", "10 min", `
-<h3>🎯 Be findable, be visible</h3>
-<p>Jobs come from two directions: you apply, or they find you. The second needs a public presence:</p>
-<h3>📝 LinkedIn in 5 moves</h3>
-<ol>
-  <li>Headline: "Junior Web Developer · HTML/CSS/JS · Building in public" — not "Student".</li>
-  <li>Photo + banner (your code editor makes a fine banner).</li>
-  <li>Featured section → pin your portfolio and best project.</li>
-  <li>About = your 4-sentence story: what you build, what you're learning, what you want.</li>
-  <li>Turn ON "open to work" for remote junior roles.</li>
-</ol>
-<h3>📝 Build in public (the accelerator)</h3>
-<p>Post once a week, tiny and honest: "Week 6: deployed my first API app. Hardest bug: fetch CORS. Next: SQL." In Burmese on Facebook, in English on LinkedIn. In 3 months you have 12 posts of visible growth — recruiters and clients quietly watch these.</p>
-<div class="flow">
-  <div class="flow-box">📚 Learn<br><small>lesson, project, bug</small></div>
-  <div class="flow-arrow" data-label="weekly"></div>
-  <div class="flow-box alt">📢 Post about it<br><small>MM on Facebook,<br>EN on LinkedIn</small></div>
-  <div class="flow-arrow" data-label="compounds into"></div>
-  <div class="flow-box warn">🧲 Inbound<br><small>clients &amp; recruiters<br>come to YOU</small></div>
-</div>
-<div class="callout tip"><strong>Try it yourself:</strong> write this week's build-in-public post now (3 sentences). Post it. That tiny discomfort is the sound of a network growing.</div>`),
-          article("dc-freelance", "Freelance Platforms: First Client Playbook", "12 min", `
-<h3>🎯 Reviews are the currency</h3>
-<p>On Upwork/Fiverr nobody hires a zero-review profile for big jobs — so don't ask them to:</p>
-<ol>
-  <li><strong>Start tiny</strong> — "fix my page's mobile layout", "add a contact form": $10–30 jobs you can OVER-deliver on. You're buying reviews with skill.</li>
-  <li><strong>Proposals that win</strong> — 4 sentences: proof you read THEIR post, one relevant link of yours, exactly what you'll deliver, when. Never paste generic text — clients smell it instantly.</li>
-  <li><strong>Deliver early + a bonus</strong> — asked for a form? Include validation too. 5-star reviews are earned in the extra 20 minutes.</li>
-  <li><strong>Raise prices every 3 jobs</strong> — cheap forever is a trap; reviews are your permission slip to charge more.</li>
-</ol>
-<h3>📝 Fiverr vs Upwork in one line each</h3>
+<h3>Write results, not duties</h3>
+<pre><code>✗ "Responsible for building web pages."
+✓ "Built a booking page for a local clinic; cut
+   phone bookings by half in the first month."</code></pre>
+<p>Numbers, however small. Real and modest beats vague and grand.</p>
+<h3>Beat the robot</h3>
+<p>Many CVs are filtered by software before a human sees them. Use the words from the ad (if it says React, write React). Send a <strong>PDF</strong>. Don't hide text in images, headers or tables — the parser can't read them.</p>
+<h3>Tailor the top three lines</h3>
+<p>You don't need a new CV per job — but the top of it should look like it was written for <em>this</em> one. That's ten minutes for a big lift in reply rate.</p>
+<div class="callout tip">Get one person to read it for 10 seconds, then ask what you do and what your best project is. If they can't say, it's not working yet.</div>`),
+          article("dc-online", "LinkedIn & Building in Public", "7 min", `
+<p>The best jobs are often filled before they're advertised. Being visible is how you end up in that conversation.</p>
+<h3>LinkedIn, done properly</h3>
 <ul>
-  <li><strong>Fiverr</strong> — you list fixed "gigs" ("I will build a one-page site — $50"); buyers come to you. Easier start.</li>
-  <li><strong>Upwork</strong> — you bid on client posts; more effort, bigger/longer projects. Move there once you have proof.</li>
+  <li><strong>Headline</strong> — "Front-End Developer · React & JavaScript", not "Aspiring student seeking opportunities".</li>
+  <li><strong>About</strong> — three lines: what you build, what you're learning, what you want.</li>
+  <li><strong>Featured</strong> — pin your portfolio and best project links.</li>
+  <li><strong>Open to work</strong> — turn it on. Recruiters filter on it.</li>
 </ul>
-<h3>💡 Payment reality for Myanmar</h3>
-<p>Check each platform's current payout options for your situation (Payoneer is the common bridge). Many Myanmar devs also take direct international clients via referrals once the first few reviews exist — Telegram/Discord communities matter here.</p>
-<div class="callout tip"><strong>Try it yourself:</strong> write your first Fiverr gig description for "one-page business site" using your portfolio pieces as the gallery. Don't publish until your 3 projects are live — proof first.</div>`),
+<h3>Build in public</h3>
+<p>Post what you're learning, weekly. Not "I'm learning React" — <em>show</em>:</p>
+<ul>
+  <li>A screenshot of what you built this week.</li>
+  <li>A bug that took 3 hours and what it turned out to be.</li>
+  <li>A short "here's what finally made closures click".</li>
+</ul>
+<p>It feels self-indulgent. It isn't. You're building a public record that you do the work — and people who post get offered things.</p>
+<h3>Teaching is the cheat code</h3>
+<p>Explaining a thing you learned last month is <em>more</em> useful to a beginner than a senior's explanation — you remember what was confusing. It also proves you understand it.</p>
+<h3>Be a person</h3>
+<p>Comment usefully on others' posts. Answer a beginner's question. Reputation is built by being helpful in public, consistently.</p>
+<div class="callout tip">Post one screenshot a week for six months and you'll have a portfolio, a network, and a habit — for maybe 15 minutes a week.</div>`),
+          article("dc-freelance", "Freelance: First Client Playbook", "8 min", `
+<p>No job yet? Get paid work anyway. One real client beats ten more tutorials.</p>
+<h3>Where the first client comes from</h3>
+<p>Almost never a job board. It's:</p>
+<ul>
+  <li><strong>People you know</strong> — a family shop, a friend's business, a teacher.</li>
+  <li><strong>Local businesses with no site</strong> — or a broken one. Walk in.</li>
+  <li><strong>The unasked audit</strong> — find a slow/broken local site, write three specific fixes, send it. That's a proposal with proof of work attached.</li>
+</ul>
+<h3>Platforms (Upwork, Fiverr)</h3>
+<p>Brutal at the start — no reviews, competing on price. If you use them: pick one narrow thing ("I fix broken WordPress layouts"), price low for the first 3 reviews only, then raise.</p>
+<h3>The rules that save you</h3>
+<ul>
+  <li><strong>Fixed price, not hourly</strong>, when you're slow. Don't punish yourself for learning.</li>
+  <li><strong>Deposit up front</strong> — 30-50%. No deposit, no start.</li>
+  <li><strong>Write the scope down.</strong> "A 5-page site, 2 rounds of revisions." Anything else is a new quote.</li>
+  <li><strong>Never hand over the final files before final payment.</strong></li>
+</ul>
+<h3>Scope creep</h3>
+<p>"Could you just add a booking system?" is not a small favour — it's a second project. Say: "Yes — that's a separate piece, here's the price." Politely, every time. This is the #1 thing that makes beginners hate freelancing.</p>
+<h3>Charge properly</h3>
+<p>Too cheap attracts the worst clients and signals you're not serious. Your first project can be cheap for the case study — say so explicitly, so they know the real price is higher.</p>
+<div class="callout warn">Get it in writing — even a WhatsApp message stating scope, price and deadline. "We agreed" without a record is how people work for free.</div>`),
           quiz("dc-quiz2", "Quiz: Getting Noticed", [
-            { q: "For a self-taught dev, the CV's most important items are…", options: ["Hobbies", "Working LINKS: GitHub + live portfolio projects", "Fonts", "A long objective paragraph"], answer: 1 },
-            { q: "The Projects section belongs…", options: ["Hidden at the bottom", "Above experience — it IS your experience", "In a separate file", "Nowhere"], answer: 1 },
-            { q: "Winning freelance proposals are…", options: ["Generic paste, sent 100×", "Short, specific to the post, with one relevant work link", "Demands for money upfront", "In all caps"], answer: 1 },
-            { q: "The first freelance goal is…", options: ["A $5000 contract", "Small jobs over-delivered → 5-star reviews", "Arguing with clients", "Building your own platform first"], answer: 1 },
-            { q: "Build in public means…", options: ["Sharing passwords", "Posting weekly, honest progress that compounds into inbound work", "Coding outdoors", "Streaming 8h/day"], answer: 1 },
+            { q: "A junior CV should be…", options: ["Three pages", "One page, projects before education", "Two pages with a photo", "A website only"], answer: 1 },
+            { q: "Which CV line is stronger?", options: ["'Responsible for building web pages'", "'Built a booking page for a clinic; cut phone bookings by half'", "'Hard worker'", "'JavaScript 80%'"], answer: 1 },
+            { q: "CV filtering software struggles to read…", options: ["Plain text", "Text inside images, tables and headers", "PDFs", "Bullet points"], answer: 1 },
+            { q: "A good LinkedIn headline is…", options: ["'Aspiring student seeking opportunities'", "'Front-End Developer · React & JavaScript'", "'Hire me!'", "Blank"], answer: 1 },
+            { q: "'Building in public' means…", options: ["Coding outdoors", "Showing your work weekly — screenshots, bugs, lessons", "Open sourcing everything", "Live streaming only"], answer: 1 },
+            { q: "The best source of a first freelance client is…", options: ["Job boards", "People you know and local businesses", "Cold email at scale", "Ads"], answer: 1 },
+            { q: "You should take a deposit of…", options: ["0%", "30-50% up front", "100% after", "Whatever they offer"], answer: 1 },
+            { q: "'Could you just add a booking system?' should be answered…", options: ["'Sure, free'", "'Yes — that's separate, here's the price'", "Ignore it", "'No' and leave"], answer: 1 },
           ]),
         ],
       },
       {
-        title: "Get Hired",
+        title: "3 · Get Hired",
         lessons: [
-          article("dc-jobsearch", "Job Hunting Like a System", "10 min", `
-<h3>🎯 Applications are a funnel, not a lottery</h3>
-<div class="flow">
-  <div class="flow-box">🎯 10 targeted<br>applications / week<br><small>tracked in a sheet</small></div>
-  <div class="flow-arrow" data-label="expect"></div>
-  <div class="flow-box alt">📞 1–2 responses<br><small>silence is normal,<br>not a verdict</small></div>
-  <div class="flow-arrow" data-label="convert"></div>
-  <div class="flow-box warn">💼 Interviews<br><small>every one = practice,<br>even the failed ones</small></div>
-</div>
-<h3>📝 The system</h3>
+          article("dc-jobsearch", "Job Hunting Like a System", "7 min", `
+<p>Job hunting feels like shouting into a void. Treat it as a process and it stops being personal.</p>
+<h3>Quality over spray</h3>
+<p>100 identical applications gets ~0 replies. 10 tailored ones — where you name the company and why — gets several. Same hours, different result.</p>
+<h3>Track it</h3>
+<p>A simple sheet: company, role, date, link, status, contact, notes. Without it you'll lose track by week two and forget to follow up — where a lot of replies actually come from.</p>
+<h3>The maths is brutal, and normal</h3>
+<p>50 applications → 10 replies → 4 interviews → 1 offer is a <em>normal</em> ratio. Junior roles get hundreds of applicants. Rejection is arithmetic, not a verdict on you.</p>
+<h3>Skip the queue</h3>
 <ul>
-  <li><strong>Track everything</strong> — sheet: company, role, date, status, contact. What's measured improves.</li>
-  <li><strong>Tailor 20%</strong> — same CV core, but swap the top project + 2 keywords per job. 10 tailored beats 50 sprayed.</li>
-  <li><strong>Hunt in the right ponds</strong> — local job boards + LinkedIn "junior developer remote" + companies whose products you use + your build-in-public inbound.</li>
-  <li><strong>The follow-up</strong> — one polite message after 1 week. Half of hiring is just being the person who followed up.</li>
+  <li><strong>Referrals</strong> — a nudge from someone inside beats 200 cold CVs. This is the single biggest lever.</li>
+  <li><strong>Smaller companies</strong> — a startup reads every application; a giant's ATS may not.</li>
+  <li><strong>Message a human</strong> — the team lead, not the careers inbox.</li>
+  <li><strong>Meetups</strong> — local dev events are full of people who are hiring.</li>
 </ul>
-<h3>💡 While hunting: keep shipping</h3>
-<p>One new small project per month during the search. It fills the activity graph, gives fresh interview stories, and protects your mood — momentum is armor.</p>
-<div class="callout tip"><strong>Try it yourself:</strong> create the tracking sheet now (5 columns). Empty sheets get filled; vague intentions don't.</div>`),
-          article("dc-interview", "Interviews: Technical & Human", "12 min", `
-<h3>🎯 Junior interviews test learning ability, not perfection</h3>
-<h3>📝 The technical part — what actually comes up</h3>
-<ul>
-  <li><strong>Walk me through your project</strong> — THE most common. Practice a 2-minute tour of each portfolio piece: what, why, hardest bug, what you'd improve.</li>
-  <li><strong>Fundamentals</strong> — this academy's quizzes are literally interview prep: box model, flexbox centering, const vs let, what an API is, GET vs POST.</li>
-  <li><strong>Small live task</strong> — fizzbuzz-level loops/conditions. Think OUT LOUD: "first I'll loop… now I check…". The thinking is what's graded.</li>
-  <li><strong>"I don't know"</strong> — say it, then add "here's how I'd find out". That answer gets hired; bluffing gets caught.</li>
-</ul>
-<h3>📝 The human part — prepare 4 stories</h3>
-<p>A bug you fought and beat · something you learned fast · feedback you received and used · why THIS company (read their site!). Each 60 seconds, practiced aloud.</p>
-<h3>💡 You interview them too</h3>
-<p>Ask: "How do juniors get mentored here?" and "What does a normal week look like?" Good companies love these questions; bad ones reveal themselves.</p>
-<div class="callout tip"><strong>Try it yourself:</strong> record yourself (phone voice memo) doing the 2-minute tour of your best project. Listen once, cringe once, improve twice. Repeat ×3 — interview-ready.</div>`),
-          article("dc-offer", "Offers, Salary & Your First 90 Days", "10 min", `
-<h3>🎯 The offer conversation</h3>
-<ul>
-  <li><strong>Research the range first</strong> — ask peers/communities what junior roles pay in your market (local vs remote differ hugely). Never guess blind.</li>
-  <li><strong>Don't name a number first</strong> if avoidable: "What range did you budget for this role?" If forced, give YOUR range's top-anchored version.</li>
-  <li><strong>Negotiate once, politely</strong> — "Given my portfolio and the projects I ship, could we do X?" Worst case: no. It's expected, not rude — and remote/foreign employers assume you will.</li>
-  <li><strong>Beyond salary</strong> — remote days, learning budget, review after 6 months. Sometimes easier wins than cash.</li>
-</ul>
-<h3>📝 Your first 90 days (keep the job, grow fast)</h3>
+<h3>Follow up once</h3>
+<p>A polite note after a week is normal and works. It's not pestering.</p>
+<div class="callout tip">Keep building while you apply. A month of applications with nothing new to show is a month wasted; a month with a new deployed project gives you something to talk about.</div>`),
+          article("dc-interview", "Interviews: Technical & Human", "8 min", `
+<p>They already believe you might be able to do it — that's why you're here. Now they're asking: can you think, and can we work with you?</p>
+<h3>The usual stages</h3>
 <ol>
-  <li><strong>Weeks 1–2:</strong> ask everything, write everything down. Nobody expects output yet — they expect curiosity.</li>
-  <li><strong>Weeks 3–6:</strong> small wins: tickets closed, docs improved. Reliability beats brilliance.</li>
-  <li><strong>Weeks 7–12:</strong> own one small area completely. Ask your lead: "what does 'great' look like at 6 months?" — then aim at THAT.</li>
+  <li><strong>Screening call</strong> — a human check. Be enthusiastic and clear.</li>
+  <li><strong>Technical</strong> — a task, live coding, or questions.</li>
+  <li><strong>Team chat</strong> — would we enjoy this person?</li>
 </ol>
-<h3>💡 And keep the flywheel</h3>
-<p>Streak, projects, build-in-public — the habits that got you hired are the habits that get you promoted. The Zero to Hero mindset doesn't retire; it compounds. 🦸</p>
-<div class="callout tip"><strong>Graduation task:</strong> pass the final quiz, take the certificate 🎓, then send ONE application or freelance proposal today. The course ends; the career starts now.</div>`),
+<h3>Think out loud</h3>
+<p>In a live task, <strong>silence is the failure</strong>. They cannot read your mind, and they're evaluating your reasoning more than your answer. Say: "I'll start with the simple version, then optimise." Wrong-but-explained beats right-but-silent.</p>
+<h3>"I don't know" is a good answer</h3>
+<p>Say: <em>"I don't know — I'd check the MDN docs, and I'd guess it's related to X."</em> That's honesty plus a method. Bluffing is transparent and fatal; every senior has said "I don't know" this week.</p>
+<h3>Know your own projects cold</h3>
+<p>You <em>will</em> be asked "walk me through this project". Be ready for: why that choice? what was hardest? what would you do differently? Not knowing your own code is the worst possible look.</p>
+<h3>Questions they always ask</h3>
+<ul>
+  <li>Tell me about yourself — 60 seconds, not your life story.</li>
+  <li>Why this company? — have an actual reason.</li>
+  <li>A hard bug and how you fixed it — have one ready.</li>
+</ul>
+<h3>Always ask questions</h3>
+<p>"No questions" reads as "I don't care". Ask: What does a normal week look like? How do juniors get support? What's the hardest thing about this team?</p>
+<div class="callout tip">Ask what success looks like at 3 months. It's a great question, and their answer tells you whether they've actually thought about supporting a junior.</div>`),
+          article("dc-offer", "Offers, Salary & Your First 90 Days", "8 min", `
+<p>You got it. Two things left: don't undersell yourself, and don't blow the start.</p>
+<h3>Don't say a number first</h3>
+<p>"What are your salary expectations?" → "I'd rather hear the range for the role — what have you budgeted?" Most have a range. The first number spoken usually anchors everything.</p>
+<p>Forced to answer? Give a <em>researched range</em>: "For a junior in this city, I've seen X to Y."</p>
+<h3>It's fine to negotiate</h3>
+<p>Politely asking for more will not lose you the offer. Nobody rescinds over one respectful question. Even a small rise compounds for years — and your next salary is often based on this one.</p>
+<p>Not just money: learning budget, equipment, remote days, a mentor, start date.</p>
+<h3>Get it in writing</h3>
+<p>Never resign from anything on a verbal promise. Signed contract first.</p>
+<h3>Your first 90 days</h3>
+<ul>
+  <li><strong>Ask questions early.</strong> A question in week one is normal; the same one in month three is worrying.</li>
+  <li><strong>But try first</strong> — 20 minutes yourself, then ask with what you've tried. That's the balance seniors love.</li>
+  <li><strong>Write things down.</strong> Never ask the same thing twice.</li>
+  <li><strong>Take the boring tickets.</strong> Fixing a small bug well builds more trust than opinions about architecture.</li>
+  <li><strong>Read the codebase</strong> — and its git history. It explains why things are odd.</li>
+  <li><strong>Don't say "this code is bad"</strong> in week one. There's usually a reason, and it might have been an emergency at 2am.</li>
+</ul>
+<h3>Impostor syndrome is universal</h3>
+<p>Everyone feels it. You weren't hired to already know — you were hired to learn. The seniors around you are googling the same things.</p>
+<div class="callout tip">Keep a "wins" file — every bug fixed, every thing shipped. On the days you feel useless, read it. You'll also need it at your first review.</div>`),
           quiz("dc-final", "Final Quiz: Land the Job", [
-            { q: "Job hunting works best as…", options: ["A lottery of 100 identical CVs", "A tracked system: 10 tailored applications weekly + follow-ups", "Waiting to be discovered", "One perfect application"], answer: 1 },
-            { q: "The most common junior interview question is…", options: ["Quantum physics", "Walk me through your project", "Your favorite color", "Company trivia"], answer: 1 },
-            { q: "When you don't know an answer…", options: ["Bluff confidently", "Say so + explain how you'd find out", "Change topic", "Leave"], answer: 1 },
-            { q: "On salary, you should…", options: ["Accept instantly, always", "Know the market range and negotiate once, politely", "Demand triple", "Refuse to discuss it"], answer: 1 },
-            { q: "Weeks 1–2 of a new job are for…", options: ["Rewriting everything", "Questions, notes and learning the system", "Vacation", "Silence"], answer: 1 },
+            { q: "A realistic junior ratio is roughly…", options: ["5 applications → 1 offer", "50 → 10 replies → 4 interviews → 1 offer", "1 → 1", "200 → 0"], answer: 1 },
+            { q: "The biggest lever to skip the queue is…", options: ["A nicer font", "A referral from someone inside", "Applying at midnight", "A longer CV"], answer: 1 },
+            { q: "In a live coding task, the worst thing you can do is…", options: ["Be wrong", "Go silent — they're judging your reasoning", "Ask a question", "Start simple"], answer: 1 },
+            { q: "'I don't know' is…", options: ["Fatal", "Good — if you add how you'd find out", "Never acceptable", "A trick"], answer: 1 },
+            { q: "When asked your salary expectations, best first move is…", options: ["Give a low number", "Ask for their budgeted range first", "Refuse to speak", "Say 'anything'"], answer: 1 },
+            { q: "Negotiating an offer politely will…", options: ["Lose you the job", "Almost never lose it — and compounds for years", "Insult them", "Delay it a year"], answer: 1 },
+            { q: "In your first 90 days you should…", options: ["Rewrite the codebase", "Try for 20 minutes, then ask with what you've tried", "Never ask anything", "Only take big tickets"], answer: 1 },
+            { q: "Saying 'this code is bad' in week one is…", options: ["Expected", "A bad look — there's usually a reason", "Required", "Brave"], answer: 1 },
           ]),
         ],
       },
@@ -9699,7 +9760,7 @@ of the web's fixes</small></div>
     rating: 4.8,
     ratings: 38200,
     students: 289000,
-    hours: 11,
+    hours: 20,
     price: "Free",
     free: true,
     color: "linear-gradient(135deg,#00618a,#5aa8c9)",
@@ -9716,192 +9777,377 @@ of the web's fixes</small></div>
     ],
     sections: [
       {
-        title: "Query Foundations",
+        title: "1 · Query Foundations",
         lessons: [
-          article("sql-select", "SELECT: Asking Questions", "11 min", `
-<h3>🎯 Intro</h3>
-<p>A query describes <em>what</em> you want; the database figures out how to get it.</p>
-<h3>📝 Summary</h3>
+          article("sql-what", "What a Database Actually Is", "6 min", `
+<p>A <strong>database</strong> is where the data lives when the app is closed. Every app you use — the bank, the shop, this academy — is a pretty face over a database.</p>
+<h3>Why not just files?</h3>
+<p>You could store everything in a giant text file. Then: two people write at once and corrupt it; finding one customer means reading all 10 million lines; and nothing stops you saving an order for a customer who doesn't exist. A database solves all three.</p>
+<h3>Tables, rows, columns</h3>
+<pre><code>students
++----+---------+-------+
+| id | name    | score |
++----+---------+-------+
+|  1 | Su      |    90 |
+|  2 | Aung    |    72 |
++----+---------+-------+</code></pre>
 <ul>
-  <li><code>SELECT columns FROM table</code> — <code>*</code> means all columns</li>
-  <li><code>WHERE</code> filters rows, <code>ORDER BY ... DESC</code> sorts</li>
-  <li><code>LIMIT</code> caps how many rows come back</li>
-  <li><code>AS</code> renames columns in the result</li>
+  <li><strong>Table</strong> — one kind of thing (students).</li>
+  <li><strong>Row</strong> — one actual thing (one student).</li>
+  <li><strong>Column</strong> — one fact about it, with a fixed type.</li>
 </ul>
-<h3>💻 Example</h3>
-<pre><code>SELECT name, score
-FROM students
-WHERE score &gt;= 60
+<p>It's a spreadsheet with rules — and the rules are the point.</p>
+<h3>SQL is a question language</h3>
+<p><strong>SQL</strong> (Structured Query Language) is how you talk to it. It's <em>declarative</em>: you say <em>what</em> you want, not how to find it. The database works out the fastest route.</p>
+<h3>Which SQL?</h3>
+<p>PostgreSQL, MySQL, SQLite, SQL Server — they share ~90% of the language. Learn it once; the differences are details.</p>
+<div class="callout tip">Start with SQLite: one file, no server to install, real SQL. Perfect for learning and plenty of production apps.</div>`),
+          article("sql-select", "SELECT: Asking Questions", "7 min", `
+<p><strong>SELECT</strong> reads data. It's the command you'll write most in your life.</p>
+<pre><code>SELECT * FROM students;
+
+SELECT name, score FROM students;</code></pre>
+<ul>
+  <li><strong>SELECT</strong> — which columns.</li>
+  <li><strong>FROM</strong> — which table.</li>
+  <li><strong>*</strong> — every column.</li>
+</ul>
+<p>Use <strong>*</strong> while exploring; name your columns in real code — it's faster and won't break when someone adds a column.</p>
+<h3>Sorting and limiting</h3>
+<pre><code>SELECT name, score FROM students
 ORDER BY score DESC
-LIMIT 5;
-
--- top 5 passing students, best first
-
-SELECT name, score * 1.0 / 100 AS ratio
+LIMIT 5;</code></pre>
+<p><strong>ORDER BY</strong> sorts (ASC default, DESC for high→low). <strong>LIMIT</strong> caps the rows — always use it when poking at a big table.</p>
+<h3>Renaming and calculating</h3>
+<pre><code>SELECT name AS student,
+       score,
+       score * 1.1 AS boosted
 FROM students;</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> write a query for the 3 cheapest products under 10000 from a products(name, price) table.</div>`),
-          article("sql-where", "Filtering Like a Pro", "12 min", `
-<h3>🎯 Intro</h3>
-<p>Real questions are rarely "score = 60". They're ranges, patterns, lists — and the tricky business of missing data.</p>
-<h3>📝 Summary</h3>
+<h3>Unique values</h3>
+<pre><code>SELECT DISTINCT city FROM students;</code></pre>
+<h3>Rows have no order</h3>
+<p>Without <strong>ORDER BY</strong>, the database may return rows in <em>any</em> order — and it can change. If order matters, say so explicitly. This bites people in production.</p>
+<div class="callout tip">SQL keywords aren't case-sensitive, but the convention is UPPERCASE for keywords and lowercase for your tables and columns. It makes queries scannable.</div>`),
+          article("sql-where", "Filtering Like a Pro", "7 min", `
+<p><strong>WHERE</strong> keeps only the rows you want.</p>
+<pre><code>SELECT * FROM students WHERE score &gt;= 50;
+
+SELECT * FROM students
+WHERE score &gt;= 50 AND city = 'Yangon';</code></pre>
+<h3>The operators</h3>
 <ul>
-  <li><code>BETWEEN 60 AND 80</code>, <code>IN ("Yangon", "Mandalay")</code></li>
-  <li><code>LIKE 'A%'</code> starts with A; <code>'%web%'</code> contains web</li>
-  <li>NULL is special: use <code>IS NULL / IS NOT NULL</code>, never <code>= NULL</code></li>
-  <li>Combine: <code>AND</code>, <code>OR</code>, parentheses for clarity</li>
+  <li><strong>= != &lt; &gt; &lt;= &gt;=</strong></li>
+  <li><strong>AND OR NOT</strong></li>
+  <li><strong>BETWEEN 50 AND 80</strong></li>
+  <li><strong>IN ('Yangon', 'Mandalay')</strong> — tidier than a chain of ORs</li>
+  <li><strong>LIKE 'S%'</strong> — pattern match (% = anything, _ = one character)</li>
 </ul>
-<h3>💻 Example</h3>
-<pre><code>SELECT name, city, score
-FROM students
-WHERE score BETWEEN 60 AND 89
-  AND city IN ('Yangon', 'Mandalay')
-  AND name LIKE 'A%';
+<h3>NULL is not a value</h3>
+<pre><code>WHERE score = NULL     -- ✗ never matches, ever
+WHERE score IS NULL    -- ✓
+WHERE score IS NOT NULL</code></pre>
+<p><strong>NULL</strong> means "unknown". Unknown = unknown is not true — it's unknown. So <strong>= NULL</strong> silently returns nothing. This is the classic SQL trap.</p>
+<h3>Brackets matter</h3>
+<pre><code>WHERE a = 1 OR a = 2 AND b = 3      -- AND binds first!
+WHERE (a = 1 OR a = 2) AND b = 3    -- probably what you meant</code></pre>
+<div class="callout warn">Before you UPDATE or DELETE, run the same WHERE as a SELECT first. See the exact rows you're about to change. This habit will save you one day.</div>`),
+          article("sql-crud", "INSERT, UPDATE, DELETE", "7 min", `
+<p>Reading is safe. These three change things — treat them with respect.</p>
+<h3>INSERT</h3>
+<pre><code>INSERT INTO students (name, score, city)
+VALUES ('Su', 90, 'Yangon');
 
--- students who never took the exam:
-SELECT name FROM students WHERE score IS NULL;</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> find products whose name contains "phone", priced 100–500, from brands ('Apple','Samsung') — then all products with no description (NULL).</div>`),
-          article("sql-crud", "INSERT, UPDATE, DELETE", "10 min", `
-<h3>🎯 Intro</h3>
-<p>Changing data is easy — dangerously easy. The WHERE clause is your seatbelt.</p>
-<h3>💻 Example</h3>
-<pre><code>INSERT INTO students (name, score) VALUES ("Hla", 72);
-
-UPDATE students SET score = 80 WHERE name = "Hla";
-
-DELETE FROM students WHERE score &lt; 20;
-
--- ⚠ UPDATE/DELETE without WHERE touches EVERY row!</code></pre>
-<div class="callout tip">Pro habit: before an UPDATE or DELETE, run a SELECT with the same WHERE first — see exactly which rows you're about to change.</div>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> insert three students, raise one score by 10, then delete one by name — running the safety SELECT before each change.</div>`),
+INSERT INTO students (name, score) VALUES
+  ('Aung', 72),
+  ('Mya', 85);</code></pre>
+<p>Always name the columns. <strong>INSERT INTO students VALUES (...)</strong> depends on column order and breaks the day someone adds one.</p>
+<h3>UPDATE</h3>
+<pre><code>UPDATE students
+SET score = 95
+WHERE id = 1;</code></pre>
+<h3>DELETE</h3>
+<pre><code>DELETE FROM students WHERE id = 2;</code></pre>
+<h3>The mistake everyone makes once</h3>
+<pre><code>UPDATE students SET score = 0;   -- 💀 no WHERE = EVERY row
+DELETE FROM students;            -- 💀 the whole table</code></pre>
+<p>There's no undo button. There's no "are you sure". It just does it, instantly, to all 400,000 rows.</p>
+<h3>The safe habit</h3>
+<ol>
+  <li>Write <strong>SELECT * FROM students WHERE id = 1;</strong></li>
+  <li>Check the rows are exactly what you expect.</li>
+  <li><em>Then</em> swap SELECT * for UPDATE/DELETE, keeping the same WHERE.</li>
+</ol>
+<div class="callout warn">Type the WHERE clause BEFORE you type the SET. Many people write "UPDATE ... SET x = 1" then get distracted — and hit enter without the WHERE.</div>`),
           quiz("sql-quiz", "Quiz: Query Foundations", [
-            { q: "Which clause filters rows?", options: ["FILTER", "WHERE", "HAVING only", "LIMIT"], answer: 1 },
-            { q: "DELETE FROM users; (no WHERE) does what?", options: ["Deletes one row", "Errors", "Deletes ALL rows", "Nothing"], answer: 2 },
-            { q: "How do you find rows where email is missing?", options: ["email = NULL", "email == NULL", "email IS NULL", "email EMPTY"], answer: 2 },
-            { q: "name LIKE 'M%' matches...", options: ["Names containing M", "Names starting with M", "Names ending with M", "Exactly 'M%'"], answer: 1 },
+            { q: "SQL is best described as…", options: ["A programming language for apps", "A declarative language for asking a database questions", "A spreadsheet", "A file format"], answer: 1 },
+            { q: "Which finds rows where score is unknown?", options: ["WHERE score = NULL", "WHERE score IS NULL", "WHERE score = 0", "WHERE score = ''"], answer: 1 },
+            { q: "Without ORDER BY, row order is…", options: ["Always by id", "Not guaranteed — it can change", "Alphabetical", "Random but stable"], answer: 1 },
+            { q: "UPDATE students SET score = 0; (no WHERE) does what?", options: ["Nothing", "Updates EVERY row", "Errors", "Updates the first row"], answer: 1 },
+            { q: "Which is tidier than many ORs?", options: ["LIKE", "IN ('a','b','c')", "BETWEEN", "DISTINCT"], answer: 1 },
+            { q: "The safe habit before UPDATE/DELETE is…", options: ["Back up nothing", "Run the same WHERE as a SELECT first", "Use * ", "Skip the WHERE"], answer: 1 },
+            { q: "In INSERT you should…", options: ["Rely on column order", "Always name the columns explicitly", "Use SELECT", "Use LIMIT"], answer: 1 },
           ]),
         ],
       },
       {
-        title: "Aggregation & Joining Tables",
+        title: "2 · Aggregation & Joining Tables",
         lessons: [
-          article("sql-agg", "COUNT, SUM & GROUP BY", "13 min", `
-<h3>🎯 Intro</h3>
-<p>Aggregates turn thousands of rows into one answer: totals, averages, counts — per group.</p>
-<h3>📝 Summary</h3>
-<ul>
-  <li><code>COUNT(*) SUM(x) AVG(x) MIN(x) MAX(x)</code></li>
-  <li><code>GROUP BY city</code> — one result row per city</li>
-  <li><code>HAVING</code> filters <em>groups</em> (WHERE filters rows, before grouping)</li>
-</ul>
-<h3>💻 Example</h3>
-<pre><code>-- sales summary per city
-SELECT city,
-       COUNT(*)      AS orders,
-       SUM(amount)   AS total,
-       AVG(amount)   AS avg_order
-FROM orders
+          article("sql-agg", "COUNT, SUM & GROUP BY", "7 min", `
+<p>Aggregates turn many rows into one answer.</p>
+<pre><code>SELECT COUNT(*) FROM students;
+SELECT AVG(score) FROM students;
+SELECT MIN(score), MAX(score), SUM(score) FROM students;</code></pre>
+<h3>GROUP BY — one answer per group</h3>
+<pre><code>SELECT city, COUNT(*) AS total, AVG(score) AS avg_score
+FROM students
+GROUP BY city;</code></pre>
+<p>"For each city, how many students and what's their average?" Squash the rows into buckets, then aggregate each bucket.</p>
+<h3>The rule</h3>
+<p>Every column in SELECT must either be <em>in</em> the GROUP BY or wrapped in an aggregate. Otherwise: which of the 40 names in that city should it show?</p>
+<h3>HAVING vs WHERE</h3>
+<pre><code>SELECT city, COUNT(*) AS total
+FROM students
+WHERE score &gt;= 50        -- filters ROWS, before grouping
 GROUP BY city
-HAVING SUM(amount) &gt; 100000
-ORDER BY total DESC;</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> from enrollments(course_id, student, paid), count students and sum payments per course — only courses with 10+ students.</div>`),
-          article("sql-join", "INNER JOIN", "14 min", `
-<h3>🎯 Intro</h3>
-<p>JOIN combines tables; GROUP BY summarizes. Together they answer real business questions.</p>
-<h3>📝 Summary</h3>
+HAVING COUNT(*) &gt; 10;    -- filters GROUPS, after</code></pre>
+<p><strong>WHERE</strong> runs before grouping; <strong>HAVING</strong> after. You cannot use an aggregate in WHERE — that's what HAVING is for.</p>
+<h3>COUNT(*) vs COUNT(col)</h3>
+<p><strong>COUNT(*)</strong> counts rows. <strong>COUNT(score)</strong> counts rows where score <em>isn't NULL</em>. That difference is a real bug source.</p>
+<div class="callout tip">Read a query in execution order: FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY. That's why you can't filter on an alias in WHERE.</div>`),
+          article("sql-join", "INNER JOIN", "7 min", `
+<p>Real data lives in several tables. <strong>JOIN</strong> puts them back together.</p>
+<h3>Why split at all?</h3>
+<p>Storing the course name on every enrolment row means repeating it 5,000 times — and renaming the course means updating 5,000 rows (and missing some). So: each fact lives in one place, joined on demand.</p>
+<pre><code>students          enrolments
++----+------+     +------------+-----------+
+| id | name |     | student_id | course    |
++----+------+     +------------+-----------+
+|  1 | Su   |     |          1 | SQL       |
+|  2 | Aung |     |          1 | Python    |
++----+------+     +------------+-----------+</code></pre>
+<h3>INNER JOIN</h3>
+<pre><code>SELECT s.name, e.course
+FROM students s
+INNER JOIN enrolments e ON e.student_id = s.id;</code></pre>
 <ul>
-  <li><code>JOIN table2 ON table2.fk = table1.id</code> — match rows across tables</li>
-  <li>Table aliases (<code>courses c</code>) keep queries readable</li>
-  <li>INNER JOIN keeps only rows that match on BOTH sides</li>
+  <li><strong>ON</strong> — how the tables connect.</li>
+  <li><strong>s</strong> / <strong>e</strong> — aliases; they keep it readable.</li>
 </ul>
-<h3>💻 Example</h3>
-<pre><code>-- how many students per course?
-SELECT c.title, COUNT(e.student_id) AS students
-FROM courses c
-JOIN enrollments e ON e.course_id = c.id
-GROUP BY c.title
-ORDER BY students DESC;</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> write a query for total sales per city from orders joined to customers(city).</div>`),
-          article("sql-left", "LEFT JOIN & Missing Matches", "12 min", `
-<h3>🎯 Intro</h3>
-<p>INNER JOIN silently drops rows without a match. LEFT JOIN keeps them — essential for questions about what's <em>missing</em>.</p>
-<h3>📝 Summary</h3>
+<h3>INNER means "must match both sides"</h3>
+<p>A student with no enrolments <em>disappears</em>. An enrolment pointing at a deleted student disappears. Only matched pairs survive.</p>
+<h3>Keys</h3>
 <ul>
-  <li><code>LEFT JOIN</code> keeps every left-table row; unmatched right columns become NULL</li>
-  <li>"Which courses have NO students?" → LEFT JOIN + <code>IS NULL</code></li>
-  <li>COUNT(column) skips NULLs — perfect with LEFT JOIN</li>
+  <li><strong>Primary key</strong> — uniquely identifies a row (students.id).</li>
+  <li><strong>Foreign key</strong> — points at another table's primary key (enrolments.student_id).</li>
 </ul>
-<h3>💻 Example</h3>
-<pre><code>-- every course, including empty ones
-SELECT c.title, COUNT(e.id) AS students
-FROM courses c
-LEFT JOIN enrollments e ON e.course_id = c.id
-GROUP BY c.title;
+<div class="callout warn">Forget the ON and some databases give you a CROSS JOIN — every row against every row. 1,000 x 1,000 = a million rows and a very confused afternoon.</div>`),
+          article("sql-left", "LEFT JOIN & Missing Matches", "7 min", `
+<p><strong>LEFT JOIN</strong> keeps every row from the left table, matched or not.</p>
+<pre><code>SELECT s.name, e.course
+FROM students s
+LEFT JOIN enrolments e ON e.student_id = s.id;</code></pre>
+<p>Now a student with no enrolments still appears — with <strong>NULL</strong> in the course column.</p>
+<h3>The difference in one line</h3>
+<ul>
+  <li><strong>INNER JOIN</strong> — only matches. "Students who <em>have</em> enrolled."</li>
+  <li><strong>LEFT JOIN</strong> — all of the left. "All students, <em>and</em> their enrolments if any."</li>
+</ul>
+<h3>Finding what's missing</h3>
+<pre><code>SELECT s.name
+FROM students s
+LEFT JOIN enrolments e ON e.student_id = s.id
+WHERE e.student_id IS NULL;</code></pre>
+<p>"Students who have enrolled in nothing." This LEFT JOIN + IS NULL pattern is genuinely useful — orphans, unsold products, users who never logged in.</p>
+<h3>The trap</h3>
+<pre><code>-- ✗ this silently becomes an INNER JOIN
+LEFT JOIN enrolments e ON e.student_id = s.id
+WHERE e.course = 'SQL'
 
--- ONLY the courses nobody enrolled in
-SELECT c.title
-FROM courses c
-LEFT JOIN enrollments e ON e.course_id = c.id
-WHERE e.id IS NULL;</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> list customers who have never placed an order (customers LEFT JOIN orders + IS NULL).</div>`),
+-- ✓ put the condition in the ON
+LEFT JOIN enrolments e
+  ON e.student_id = s.id AND e.course = 'SQL'</code></pre>
+<p>Filtering the right table in WHERE throws away the NULL rows — undoing your LEFT JOIN.</p>
+<div class="callout tip">Counting with a LEFT JOIN? COUNT(*) counts the NULL row as 1. Use COUNT(e.student_id) to get a true zero.</div>`),
+          article("sql-subquery", "Subqueries & Combining", "6 min", `
+<p>A query inside a query. Useful, and easy to overuse.</p>
+<h3>In WHERE</h3>
+<pre><code>SELECT name, score FROM students
+WHERE score &gt; (SELECT AVG(score) FROM students);</code></pre>
+<p>"Everyone above average." You can't do that in one flat query — the average must be computed first.</p>
+<h3>With IN</h3>
+<pre><code>SELECT name FROM students
+WHERE id IN (SELECT student_id FROM enrolments WHERE course = 'SQL');</code></pre>
+<h3>CASE — if/else in SQL</h3>
+<pre><code>SELECT name,
+  CASE
+    WHEN score &gt;= 80 THEN 'Excellent'
+    WHEN score &gt;= 50 THEN 'Pass'
+    ELSE 'Fail'
+  END AS grade
+FROM students;</code></pre>
+<h3>CTEs make it readable</h3>
+<pre><code>WITH top AS (
+  SELECT * FROM students WHERE score &gt;= 80
+)
+SELECT city, COUNT(*) FROM top GROUP BY city;</code></pre>
+<p><strong>WITH</strong> names a step. Three nested subqueries become three readable stages — a huge win on real queries.</p>
+<div class="callout tip">If a subquery is getting hard to read, it's usually a JOIN or a CTE waiting to happen. Clear beats clever — you'll read this again in six months.</div>`),
           quiz("sql-quiz-2", "Quiz: Aggregation & Joins", [
-            { q: "JOIN is used to...", options: ["Merge databases", "Combine rows from related tables", "Create indexes", "Backup data"], answer: 1 },
-            { q: "HAVING differs from WHERE because it filters...", options: ["Columns", "Groups after aggregation", "Tables", "Nothing — identical"], answer: 1 },
-            { q: "To include courses with zero enrollments you need...", options: ["INNER JOIN", "LEFT JOIN", "DOUBLE JOIN", "GROUP BY"], answer: 1 },
-            { q: "AVG(amount) computes...", options: ["The total", "The row count", "The mean value", "The median"], answer: 2 },
+            { q: "WHERE filters rows…", options: ["After grouping", "Before grouping — HAVING filters after", "Never", "Only with JOIN"], answer: 1 },
+            { q: "COUNT(score) differs from COUNT(*) because it…", options: ["Is faster", "Skips NULLs", "Counts columns", "Needs GROUP BY"], answer: 1 },
+            { q: "INNER JOIN drops…", options: ["Nothing", "Rows with no match on either side", "Duplicates", "NULLs only"], answer: 1 },
+            { q: "To list students who enrolled in NOTHING you use…", options: ["INNER JOIN", "LEFT JOIN + WHERE ... IS NULL", "GROUP BY", "DISTINCT"], answer: 1 },
+            { q: "Putting a right-table condition in WHERE after a LEFT JOIN…", options: ["Is fine", "Silently turns it into an INNER JOIN", "Errors", "Is faster"], answer: 1 },
+            { q: "Which names a query step for readability?", options: ["WITH (a CTE)", "LIMIT", "DISTINCT", "HAVING"], answer: 0 },
+            { q: "Every SELECT column with GROUP BY must be…", options: ["Anything", "In the GROUP BY or inside an aggregate", "Aliased", "Sorted"], answer: 1 },
+            { q: "Forgetting ON in a JOIN can produce…", options: ["An empty result", "A CROSS JOIN — every row against every row", "NULLs", "A syntax error always"], answer: 1 },
           ]),
         ],
       },
       {
-        title: "Project: The School Database",
+        title: "3 · Design, Speed & Safety",
         lessons: [
-          article("sql-project", "Final Project: Answer Real Questions", "22 min", `
-<h3>🎯 Intro</h3>
-<p>Here's a realistic mini-schema. Your job: answer the questions a school manager would actually ask.</p>
-<h3>📝 The schema</h3>
-<pre><code>students(id, name, city)
-courses(id, title, fee)
-enrollments(id, student_id, course_id, score)</code></pre>
-<h3>💻 The questions — with solutions to check yourself</h3>
-<pre><code>-- 1. Top 3 students by average score
-SELECT s.name, AVG(e.score) AS avg_score
+          article("sql-design", "Designing Tables That Don't Hurt", "7 min", `
+<p>Bad schema design causes bugs that no amount of clever querying can fix.</p>
+<h3>One fact, one place</h3>
+<p>If a customer's phone number is stored on every order, then it's stored 400 times — and when they change it, you have 400 chances to get it wrong. Store it once, in <strong>customers</strong>, and reference it.</p>
+<h3>Choose real types</h3>
+<ul>
+  <li><strong>INTEGER</strong>, <strong>TEXT</strong>, <strong>DATE</strong>, <strong>BOOLEAN</strong>, <strong>DECIMAL</strong>.</li>
+  <li><strong>Never store money as a float</strong> — 0.1 + 0.2 isn't 0.3. Use DECIMAL, or integer cents.</li>
+  <li>Store dates as DATE, not text. "01/02/2026" is January or February depending on where you live.</li>
+</ul>
+<h3>Constraints are free bug prevention</h3>
+<pre><code>CREATE TABLE students (
+  id      INTEGER PRIMARY KEY,
+  name    TEXT NOT NULL,
+  email   TEXT UNIQUE,
+  score   INTEGER CHECK (score BETWEEN 0 AND 100),
+  city_id INTEGER REFERENCES cities(id)
+);</code></pre>
+<ul>
+  <li><strong>PRIMARY KEY</strong> — unique identity.</li>
+  <li><strong>NOT NULL</strong> — must be filled.</li>
+  <li><strong>UNIQUE</strong> — no duplicate emails.</li>
+  <li><strong>CHECK</strong> — no score of 900.</li>
+  <li><strong>REFERENCES</strong> — can't point at a city that doesn't exist.</li>
+</ul>
+<h3>Let the database say no</h3>
+<p>Application code forgets. The database never does. A constraint protects your data from every bug you'll ever write — including next year's.</p>
+<div class="callout tip">Constraints feel annoying while building and priceless at 2am. The database rejecting bad data is far better than discovering it six months later.</div>`),
+          article("sql-index", "Indexes & Why Queries Get Slow", "6 min", `
+<p>Your query worked on 100 rows and takes 30 seconds on 2 million. Here's why.</p>
+<h3>The book analogy</h3>
+<p>Finding "Su" with no index = reading every page of the book (a <strong>full table scan</strong>). An <strong>index</strong> is the index at the back: sorted, so the database jumps straight there.</p>
+<pre><code>CREATE INDEX idx_students_city ON students(city);</code></pre>
+<h3>What to index</h3>
+<ul>
+  <li>Columns you <strong>WHERE</strong> on often.</li>
+  <li>Columns you <strong>JOIN</strong> on (foreign keys).</li>
+  <li>Columns you <strong>ORDER BY</strong> often.</li>
+</ul>
+<p>Primary keys are indexed automatically. Foreign keys often are <em>not</em> — that's a very common cause of slow joins.</p>
+<h3>Indexes aren't free</h3>
+<p>Every index must be updated on every INSERT/UPDATE/DELETE, and takes disk. Indexing every column makes writes slow. Index what you actually search.</p>
+<h3>Ask the database</h3>
+<pre><code>EXPLAIN SELECT * FROM students WHERE city = 'Yangon';</code></pre>
+<p><strong>EXPLAIN</strong> shows the plan — whether it used your index or scanned everything. Stop guessing; look.</p>
+<h3>The index killer</h3>
+<pre><code>WHERE UPPER(name) = 'SU'     -- ✗ can't use the index
+WHERE name = 'Su'            -- ✓
+WHERE name LIKE '%su%'       -- ✗ leading % = scan</code></pre>
+<div class="callout tip">Slow query? Add an index on the WHERE/JOIN column and re-run EXPLAIN. That single move fixes the large majority of real performance problems.</div>`),
+          article("sql-safety", "Injection, Transactions & Backups", "7 min", `
+<p>Three things that separate a hobbyist from someone you'd trust with real data.</p>
+<h3>1. SQL injection</h3>
+<pre><code>// ✗ catastrophic
+db.query("SELECT * FROM users WHERE name = '" + name + "'");</code></pre>
+<p>If someone types <strong>' OR '1'='1</strong>, the query becomes true for every row. Worse inputs drop your tables.</p>
+<pre><code>// ✓ parameterised — the ? is never treated as code
+db.query("SELECT * FROM users WHERE name = ?", [name]);</code></pre>
+<p>The database keeps the query and the data <em>separate</em>. That's the entire defence, and it's one character.</p>
+<h3>2. Transactions</h3>
+<pre><code>BEGIN;
+UPDATE accounts SET balance = balance - 100 WHERE id = 1;
+UPDATE accounts SET balance = balance + 100 WHERE id = 2;
+COMMIT;   -- or ROLLBACK</code></pre>
+<p>All of it happens, or none of it. Without this, a crash between the two lines destroys 100 of someone's money. Any multi-step change that must not half-happen needs a transaction.</p>
+<h3>3. Backups</h3>
+<p>An untested backup is not a backup — it's a hope. Restore it somewhere and check. People discover their broken backups on the worst day.</p>
+<h3>Least privilege</h3>
+<p>The account your app logs in with shouldn't be able to DROP TABLE. If it can't, an exploit can't either.</p>
+<div class="callout warn">SQL injection is decades old, trivially preventable, and still in the OWASP top ten every year — because people keep gluing strings. Use parameters. Always. No exceptions.</div>`),
+          quiz("sql-quiz-3", "Quiz: Design, Speed & Safety", [
+            { q: "Money should be stored as…", options: ["FLOAT", "DECIMAL (or integer cents)", "TEXT", "REAL"], answer: 1 },
+            { q: "A CHECK constraint does what?", options: ["Speeds queries", "Rejects values outside a rule (e.g. score 0-100)", "Creates an index", "Joins tables"], answer: 1 },
+            { q: "Without an index, finding a row means…", options: ["An instant lookup", "A full table scan — reading every row", "An error", "A JOIN"], answer: 1 },
+            { q: "Indexes are not free because…", options: ["They cost money", "Every write must update them, and they use disk", "They break joins", "They need CTEs"], answer: 1 },
+            { q: "WHERE UPPER(name) = 'SU' is slow because…", options: ["UPPER is broken", "Wrapping the column in a function prevents index use", "It needs LIMIT", "Of NULLs"], answer: 1 },
+            { q: "The defence against SQL injection is…", options: ["Escaping quotes yourself", "Parameterised queries (?) — data never becomes code", "Hiding the query", "A firewall"], answer: 1 },
+            { q: "A transaction guarantees…", options: ["Speed", "All the steps happen, or none of them", "An index", "A backup"], answer: 1 },
+            { q: "An untested backup is…", options: ["Fine", "Just a hope — restore it to be sure", "Faster", "A transaction"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "4 · Project: The School Database",
+        lessons: [
+          article("sql-project", "Final Project: Answer Real Questions", "12 min", `
+<p>You've got the tools. Now answer questions a real school would actually ask.</p>
+<h3>The schema</h3>
+<pre><code>students(id, name, city, joined_at)
+courses(id, title, hours)
+enrolments(id, student_id, course_id, score, finished_at)</code></pre>
+<h3>The questions — try each before reading on</h3>
+<ol>
+  <li>How many students are there?</li>
+  <li>The top 5 scores, highest first.</li>
+  <li>How many students per city?</li>
+  <li>Every student and the courses they take (including those taking none).</li>
+  <li>Which students have enrolled in nothing?</li>
+  <li>Average score per course, busiest first.</li>
+  <li>Courses where the average is below 50.</li>
+  <li>Students scoring above the overall average.</li>
+</ol>
+<h3>Some answers</h3>
+<pre><code>-- 4. everyone, matched or not
+SELECT s.name, c.title
 FROM students s
-JOIN enrollments e ON e.student_id = s.id
-GROUP BY s.name
-ORDER BY avg_score DESC
-LIMIT 3;
+LEFT JOIN enrolments e ON e.student_id = s.id
+LEFT JOIN courses c    ON c.id = e.course_id;
 
--- 2. Revenue per course (enrollment count × fee)
-SELECT c.title, COUNT(e.id) * c.fee AS revenue
-FROM courses c
-LEFT JOIN enrollments e ON e.course_id = c.id
-GROUP BY c.title, c.fee
-ORDER BY revenue DESC;
-
--- 3. Pass rate per course (score >= 60)
-SELECT c.title,
-       ROUND(100.0 * SUM(CASE WHEN e.score &gt;= 60 THEN 1 ELSE 0 END)
-             / COUNT(e.id), 1) AS pass_pct
-FROM courses c
-JOIN enrollments e ON e.course_id = c.id
-GROUP BY c.title;
-
--- 4. Students from Yangon not enrolled in anything
+-- 5. the orphans
 SELECT s.name
 FROM students s
-LEFT JOIN enrollments e ON e.student_id = s.id
-WHERE s.city = 'Yangon' AND e.id IS NULL;</code></pre>
-<h3>🏋️ Level up</h3>
-<div class="callout tip"><strong>Extend it yourself:</strong> write queries for (a) each city's average score, (b) the most popular course per city, (c) students enrolled in 2+ courses. Practice free at sqliteonline.com.</div>`),
-          quiz("sql-quiz-3", "Final Quiz: SQL", [
-            { q: "CASE WHEN score >= 60 THEN 1 ELSE 0 END inside SUM() computes...", options: ["The max score", "A conditional count", "An error", "The average"], answer: 1 },
-            { q: "Why does query 2 use LEFT JOIN?", options: ["Speed", "So courses with zero enrollments still appear with 0 revenue", "Style", "INNER JOIN is deprecated"], answer: 1 },
-            { q: "GROUP BY c.title, c.fee — the second column is there because...", options: ["It sorts results", "Selected non-aggregated columns must be grouped", "Fees repeat", "It's optional decoration"], answer: 1 },
+LEFT JOIN enrolments e ON e.student_id = s.id
+WHERE e.student_id IS NULL;
+
+-- 7. groups, filtered after aggregating
+SELECT c.title, AVG(e.score) AS avg_score
+FROM courses c
+JOIN enrolments e ON e.course_id = c.id
+GROUP BY c.title
+HAVING AVG(e.score) &lt; 50;
+
+-- 8. subquery for the overall average
+SELECT name FROM students s
+JOIN enrolments e ON e.student_id = s.id
+WHERE e.score &gt; (SELECT AVG(score) FROM enrolments);</code></pre>
+<h3>Then stretch</h3>
+<ul>
+  <li>Add a CHECK so score must be 0-100.</li>
+  <li>Index the foreign keys and EXPLAIN a join before/after.</li>
+  <li>Use CASE to label grades.</li>
+  <li>Use a CTE to find each city's best student.</li>
+</ul>
+<div class="callout tip">Practise on real data — SQLite plus any public CSV. Answering questions you actually care about is what makes SQL stick.</div>`),
+          quiz("sql-final", "Final Quiz: SQL", [
+            { q: "Execution order is roughly…", options: ["SELECT → FROM → WHERE", "FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY", "WHERE → SELECT → FROM", "Random"], answer: 1 },
+            { q: "To include students with no enrolments you need…", options: ["INNER JOIN", "LEFT JOIN", "CROSS JOIN", "GROUP BY"], answer: 1 },
+            { q: "To filter on an aggregate you use…", options: ["WHERE", "HAVING", "ORDER BY", "LIMIT"], answer: 1 },
+            { q: "A foreign key…", options: ["Speeds up SELECT", "Points at another table's primary key", "Is always indexed", "Prevents NULLs"], answer: 1 },
+            { q: "The most common cause of a slow JOIN is…", options: ["Too many columns", "A missing index on the foreign key", "Using aliases", "ORDER BY"], answer: 1 },
+            { q: "DELETE FROM students; does what?", options: ["Deletes one row", "Deletes every row in the table", "Errors", "Nothing without COMMIT"], answer: 1 },
           ]),
         ],
       },

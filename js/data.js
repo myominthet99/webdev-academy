@@ -36,7 +36,7 @@ const COURSES = [
     rating: 4.8,
     ratings: 128450,
     students: 812340,
-    hours: 21.5,
+    hours: 34,
     price: "Free",
     free: false,
     color: "linear-gradient(135deg,#7b2ff7,#f107a3)",
@@ -53,472 +53,760 @@ const COURSES = [
     ],
     sections: [
       {
-        title: "Getting Started",
+        title: "1 · Getting Started",
         lessons: [
           article("intro-what", "What is Web Development?", "6 min", `
 <p>Welcome! <strong>Web development</strong> is the craft of building things people use in a browser — from a simple personal page to apps like the one you're reading right now.</p>
 <h3>The three core languages</h3>
+<p>Every website on earth is built from the same three. They are not competitors — they're a team:</p>
 <ul>
-  <li><strong>HTML</strong> — the <em>structure</em> and content (headings, text, images, buttons).</li>
-  <li><strong>CSS</strong> — the <em>presentation</em> (colors, spacing, layout, fonts).</li>
-  <li><strong>JavaScript</strong> — the <em>behavior</em> (clicks, forms, animation, logic).</li>
+  <li><strong>HTML</strong> — the <em>structure</em>. Headings, paragraphs, buttons, images. The skeleton.</li>
+  <li><strong>CSS</strong> — the <em>style</em>. Colour, spacing, layout, fonts. The clothes.</li>
+  <li><strong>JavaScript</strong> — the <em>behaviour</em>. Clicks, changes, data. The muscles.</li>
 </ul>
 <div class="flow">
-  <div class="flow-box">🧱 HTML<br><small>structure</small></div>
-  <div class="flow-arrow" data-label="styled by"></div>
-  <div class="flow-box alt">🎨 CSS<br><small>looks</small></div>
-  <div class="flow-arrow" data-label="powered by"></div>
-  <div class="flow-box warn">⚡ JavaScript<br><small>behavior</small></div>
+  <div class="flow-box">🦴 HTML</div>
+  <div class="flow-arrow" data-label="style"></div>
+  <div class="flow-box alt">🎨 CSS</div>
+  <div class="flow-arrow" data-label="behave"></div>
+  <div class="flow-box">⚡ JavaScript</div>
 </div>
-<p>A helpful analogy: if a web page were a house, HTML is the framing and rooms, CSS is the paint and furniture, and JavaScript is the electricity that makes things <em>do</em> something.</p>
-<div class="callout tip"><strong>Front-end vs back-end:</strong> Front-end is what runs in the user's browser (the three languages above). Back-end is the server, database, and logic behind the scenes. This course focuses on the front-end — the best place to start.</div>
-<p>By the end of this course you'll be able to read, write, and confidently build real web pages. Let's go!</p>`),
-          article("intro-web", "How the Web Works", "8 min", `
-<p>Every time you visit a site, a quick conversation happens between your <strong>browser</strong> (the client) and a <strong>server</strong>.</p>
-<h3>The request/response cycle</h3>
+<h3>Front-end vs back-end</h3>
+<ul>
+  <li><strong>Front-end</strong> — everything you see and touch. Runs in <em>your</em> browser.</li>
+  <li><strong>Back-end</strong> — the server, database, and logic behind it. Runs somewhere else.</li>
+  <li><strong>Full-stack</strong> — someone comfortable with both.</li>
+</ul>
+<p>This bootcamp makes you a capable front-end developer, and shows you exactly where the back-end begins.</p>
+<h3>Why it's a great skill</h3>
+<p>You need no permission and no expensive equipment. The browser you already have is a complete development environment. You can build something real today, and anyone in the world can open it.</p>
+<div class="callout tip">You don't need to be good at maths. Web development is mostly about breaking a problem into small, clear steps — and being stubborn enough to fix the last bug.</div>`),
+          article("intro-web", "How the Web Actually Works", "7 min", `
+<p>Before you write code, understand what happens when you type an address and hit enter. This one mental model will save you hours later.</p>
+<h3>The journey of a page</h3>
 <ol>
-  <li>You type a URL like <code>https://example.com</code> and hit Enter.</li>
-  <li>DNS translates the domain name into an <strong>IP address</strong> (like a phone number for the server).</li>
-  <li>Your browser sends an <strong>HTTP request</strong> to that server.</li>
-  <li>The server responds with files: HTML, CSS, JavaScript, images.</li>
-  <li>The browser <em>renders</em> those files into the page you see.</li>
+  <li>You type <strong>example.com</strong>.</li>
+  <li><strong>DNS</strong> — the internet's phone book — turns that name into an IP address like 93.184.216.34.</li>
+  <li>Your browser (the <strong>client</strong>) sends an <strong>HTTP request</strong> to that address.</li>
+  <li>The <strong>server</strong> answers with a <strong>response</strong>: some HTML.</li>
+  <li>Your browser <em>renders</em> it — then fetches the CSS, JS and images it mentions.</li>
 </ol>
 <div class="flow">
-  <div class="flow-box">🧑 Browser<br><small>client</small></div>
-  <div class="flow-arrow" data-label="HTTP request"></div>
-  <div class="flow-box alt">🖥️ Server<br><small>responds</small></div>
-  <div class="flow-arrow" data-label="HTML/CSS/JS"></div>
-  <div class="flow-box">🖼️ Rendered page<br><small>you see it</small></div>
+  <div class="flow-box">💻 Client</div>
+  <div class="flow-arrow" data-label="request"></div>
+  <div class="flow-box alt">🌐 Server</div>
+  <div class="flow-arrow" data-label="response"></div>
+  <div class="flow-box">📄 Page</div>
 </div>
-<h3>Key vocabulary</h3>
+<h3>Status codes you'll meet</h3>
 <ul>
-  <li><strong>HTTP/HTTPS</strong> — the protocol browsers and servers speak. HTTPS is the encrypted, secure version.</li>
-  <li><strong>URL</strong> — the address of a resource on the web.</li>
-  <li><strong>Client</strong> — the browser making requests. <strong>Server</strong> — the machine answering them.</li>
+  <li><strong>200</strong> — OK, here it is.</li>
+  <li><strong>301 / 302</strong> — moved; go here instead.</li>
+  <li><strong>404</strong> — I don't have that.</li>
+  <li><strong>500</strong> — the server broke.</li>
 </ul>
-<div class="callout">The whole cycle usually takes a fraction of a second — but understanding it makes debugging <em>much</em> easier later.</div>`),
-          article("intro-setup", "Setting Up Your Tools", "7 min", `
-<p>You only need two free things to start building.</p>
-<h3>1. A code editor</h3>
-<p><strong>Visual Studio Code</strong> is the most popular choice. It's free, fast, and has great extensions. Install the "Live Server" extension so your page auto-refreshes as you save.</p>
-<h3>2. A modern browser</h3>
-<p>Chrome, Edge, or Firefox all work. Get comfortable with the <strong>DevTools</strong> — right-click any page and choose <em>Inspect</em>.</p>
+<h3>HTTP vs HTTPS</h3>
+<p>The <strong>S</strong> is encryption. Without it, anyone on the same wifi can read what you send. Browsers now shame sites without it — always use HTTPS.</p>
+<div class="callout">A website is just files a server hands out. That's genuinely all it is. Once that clicks, everything else is detail.</div>`),
+          article("intro-setup", "Setting Up Your Tools", "5 min", `
+<p>You need almost nothing to start — and that's not a beginner's compromise, it's how professionals work too.</p>
+<h3>The whole kit</h3>
+<ul>
+  <li><strong>A browser</strong> — Chrome, Edge or Firefox. You already have one.</li>
+  <li><strong>A text editor</strong> — VS Code is free and the industry standard.</li>
+  <li><strong>Nothing else.</strong> No paid software, no powerful computer.</li>
+</ul>
+<h3>Meet DevTools — your most important tool</h3>
+<p>Press <strong>F12</strong> (or right-click → Inspect). This is the window into any website on earth:</p>
+<ul>
+  <li><strong>Elements</strong> — see and edit the live HTML/CSS.</li>
+  <li><strong>Console</strong> — see JavaScript errors and run code.</li>
+  <li><strong>Network</strong> — watch every file the page loads.</li>
+</ul>
 <h3>Your first file</h3>
-<p>Create a file called <code>index.html</code> and paste this in:</p>
+<p>Create a file called <strong>index.html</strong>, type some HTML, and open it in your browser. That's it — you're developing. No build step, no server needed.</p>
+<div class="callout tip">Open DevTools on your favourite website and change a headline. Nothing breaks — it's only your copy. This is the single best way to learn.</div>`),
+          article("intro-mindset", "How to Actually Learn to Code", "6 min", `
+<p>Most people who quit coding don't quit because it's too hard. They quit because they expected it to feel different.</p>
+<h3>Being stuck is the job</h3>
+<p>Professional developers are confused most of the day. The difference is they've learned that confusion is normal, not a sign they're failing.</p>
+<h3>Read the error message</h3>
+<p>Beginners see red text and panic. The error usually tells you the file, the line, and the problem. It is a <em>help message wearing a scary costume</em>. Read it slowly.</p>
+<h3>How to be unstuck</h3>
+<ol>
+  <li><strong>Read the error</strong> — actually read it.</li>
+  <li><strong>Check the obvious</strong> — typo? missing bracket? file saved?</li>
+  <li><strong>Make it smaller</strong> — delete code until it works, then add back.</li>
+  <li><strong>Explain it out loud</strong> — to a friend, a wall, a duck. You'll often solve it mid-sentence.</li>
+  <li><strong>Search the exact error text</strong> — someone has hit it before.</li>
+</ol>
+<h3>Type it, don't copy it</h3>
+<p>Copy-pasting code teaches your clipboard, not your brain. Type every example, break it deliberately, and see what the error says.</p>
+<div class="callout tip">Build tiny things you actually want. A page about your favourite football team will teach you more than 10 tutorials you never finish.</div>`),
+          quiz("bc-quiz-start", "Quiz: Getting Started", [
+            { q: "Which language provides the STRUCTURE of a page?", options: ["CSS", "HTML", "JavaScript", "DNS"], answer: 1 },
+            { q: "DNS is best described as…", options: ["A styling language", "The internet's phone book — names to IP addresses", "A browser", "A database"], answer: 1 },
+            { q: "A 404 status code means…", options: ["OK", "The server broke", "Not found", "Moved permanently"], answer: 2 },
+            { q: "The 'S' in HTTPS adds…", options: ["Speed", "Encryption", "Storage", "Styling"], answer: 1 },
+            { q: "Which tool lets you inspect any live website?", options: ["DevTools (F12)", "Word", "Paint", "The address bar"], answer: 0 },
+            { q: "When you hit a red error message you should…", options: ["Panic and delete everything", "Read it — it usually names the file, line and problem", "Ignore it", "Restart the computer"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "2 · HTML Fundamentals",
+        lessons: [
+          article("html-structure", "HTML Document Structure", "6 min", `
+<p><strong>HTML</strong> = HyperText Markup Language. You don't "program" in HTML — you <em>describe</em> what things are.</p>
+<h3>The skeleton every page has</h3>
 <pre><code>&lt;!DOCTYPE html&gt;
 &lt;html&gt;
   &lt;head&gt;
-    &lt;title&gt;My First Page&lt;/title&gt;
+    &lt;title&gt;My Page&lt;/title&gt;
   &lt;/head&gt;
   &lt;body&gt;
-    &lt;h1&gt;Hello, world!&lt;/h1&gt;
+    &lt;h1&gt;Hello!&lt;/h1&gt;
   &lt;/body&gt;
 &lt;/html&gt;</code></pre>
-<p>Open it in your browser — you just built a web page. 🎉</p>
-<div class="callout tip"><strong>Tip:</strong> <code>index.html</code> is the conventional name for a site's home page. Servers load it automatically.</div>`),
-        ],
-      },
-      {
-        title: "HTML Fundamentals",
-        lessons: [
-          video("html-structure", "HTML Document Structure", "10 min", `
-<p>Every HTML page shares the same skeleton. Learn it once and you'll recognize it everywhere.</p>
-<pre><code>&lt;!DOCTYPE html&gt;
-&lt;html lang="en"&gt;
-  &lt;head&gt;
-    &lt;meta charset="UTF-8"&gt;
-    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
-    &lt;title&gt;Page Title&lt;/title&gt;
-  &lt;/head&gt;
-  &lt;body&gt;
-    &lt;!-- Everything the user sees goes here --&gt;
-    &lt;h1&gt;Welcome&lt;/h1&gt;
-    &lt;p&gt;This is a paragraph.&lt;/p&gt;
-  &lt;/body&gt;
-&lt;/html&gt;</code></pre>
-<h3>What each part means</h3>
 <ul>
-  <li><code>&lt;!DOCTYPE html&gt;</code> — tells the browser to use modern HTML5.</li>
-  <li><code>&lt;head&gt;</code> — metadata: title, character set, links to CSS. Not shown on the page.</li>
-  <li><code>&lt;body&gt;</code> — the visible content.</li>
+  <li><strong>&lt;!DOCTYPE html&gt;</strong> — "this is modern HTML".</li>
+  <li><strong>&lt;head&gt;</strong> — information <em>about</em> the page. Not visible.</li>
+  <li><strong>&lt;body&gt;</strong> — everything people actually see.</li>
 </ul>
 <h3>Anatomy of an element</h3>
-<p>An element usually has an <strong>opening tag</strong>, some <strong>content</strong>, and a <strong>closing tag</strong>:</p>
-<pre><code>&lt;p&gt;This is the content&lt;/p&gt;
-   ^opening         ^closing</code></pre>
-<div class="callout tip">Indent nested elements. It costs nothing and makes your HTML readable at a glance.</div>`),
-          video("html-text", "Text, Links & Images", "11 min", `
-<h3>Headings and paragraphs</h3>
-<p>Headings run from <code>&lt;h1&gt;</code> (most important) to <code>&lt;h6&gt;</code>. Use one <code>&lt;h1&gt;</code> per page.</p>
-<pre><code>&lt;h1&gt;Main title&lt;/h1&gt;
-&lt;h2&gt;A section&lt;/h2&gt;
-&lt;p&gt;Regular body text goes in a paragraph.&lt;/p&gt;
-&lt;strong&gt;Bold&lt;/strong&gt; and &lt;em&gt;italic&lt;/em&gt; add emphasis.</code></pre>
-<h3>Links</h3>
-<p>The anchor tag <code>&lt;a&gt;</code> uses an <code>href</code> attribute for its destination:</p>
-<pre><code>&lt;a href="https://example.com"&gt;Visit Example&lt;/a&gt;
-&lt;a href="about.html"&gt;About page&lt;/a&gt;
-&lt;a href="#contact"&gt;Jump to a section&lt;/a&gt;</code></pre>
+<p>An element is usually an opening tag, content, and a closing tag: <strong>&lt;p&gt;</strong>Hello<strong>&lt;/p&gt;</strong>. Some are self-closing, like <strong>&lt;img&gt;</strong> and <strong>&lt;br&gt;</strong>, because they have no content.</p>
+<h3>Attributes</h3>
+<p>Attributes add information: <strong>&lt;a href="https://google.com"&gt;</strong>. Here <em>href</em> is the attribute name and the URL is its value.</p>
+<h3>Nesting</h3>
+<p>Elements live inside elements — like boxes in boxes. Close them in the right order: <strong>&lt;p&gt;&lt;strong&gt;hi&lt;/strong&gt;&lt;/p&gt;</strong>, never crossed over.</p>
+<div class="callout tip">Indent your nesting. Two spaces per level costs nothing and turns unreadable soup into something you can scan in a second.</div>`),
+          article("html-text", "Text, Links & Images", "6 min", `
+<p>Most of the web is text, links and pictures. Master these three and you can build most pages.</p>
+<h3>Headings carry meaning</h3>
+<p><strong>&lt;h1&gt;</strong> to <strong>&lt;h6&gt;</strong> are an outline, not font sizes. Use <strong>one h1</strong> (the page's title), then h2 for sections, h3 for sub-sections. Screen readers and Google navigate by this outline — skipping levels breaks it.</p>
+<h3>Text elements</h3>
+<ul>
+  <li><strong>&lt;p&gt;</strong> — a paragraph.</li>
+  <li><strong>&lt;strong&gt;</strong> — important (bold + meaning).</li>
+  <li><strong>&lt;em&gt;</strong> — emphasis (italic + meaning).</li>
+  <li><strong>&lt;br&gt;</strong> — a line break. Use sparingly.</li>
+</ul>
+<h3>Links — the "hyper" in hypertext</h3>
+<pre><code>&lt;a href="https://example.com"&gt;Visit&lt;/a&gt;
+&lt;a href="about.html"&gt;About us&lt;/a&gt;
+&lt;a href="#contact"&gt;Jump to contact&lt;/a&gt;</code></pre>
+<p>Add <strong>target="_blank"</strong> to open in a new tab — and <strong>rel="noopener"</strong> with it, for security.</p>
 <h3>Images</h3>
-<p>Images are <em>self-closing</em> — no closing tag. Always include <code>alt</code> text for accessibility:</p>
-<pre><code>&lt;img src="cat.jpg" alt="A sleeping orange cat" width="400"&gt;</code></pre>
-<div class="callout"><strong>Attributes</strong> are extra info inside the opening tag, written as <code>name="value"</code>. <code>src</code>, <code>href</code>, and <code>alt</code> are all attributes.</div>`),
-          video("html-lists", "Lists, Tables & Structure", "9 min", `
-<h3>Lists</h3>
-<pre><code>&lt;ul&gt;                    &lt;!-- unordered (bullets) --&gt;
-  &lt;li&gt;HTML&lt;/li&gt;
-  &lt;li&gt;CSS&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;ol&gt;                    &lt;!-- ordered (numbers) --&gt;
-  &lt;li&gt;Wake up&lt;/li&gt;
-  &lt;li&gt;Write code&lt;/li&gt;
-&lt;/ol&gt;</code></pre>
-<h3>Tables</h3>
+<pre><code>&lt;img src="cat.jpg" alt="A ginger cat asleep"&gt;</code></pre>
+<p><strong>alt</strong> is not optional. It's what blind users hear and what shows if the image fails. Describe the image's <em>purpose</em>, not "image123.jpg".</p>
+<div class="callout warn">Link text must make sense alone. "Click here" tells a screen-reader user nothing — "Read the pricing guide" tells them everything.</div>`),
+          article("html-lists", "Lists, Tables & Structure", "6 min", `
+<p>The web runs on lists — navigation, menus, search results, feeds. They're all lists underneath.</p>
+<h3>Two kinds of list</h3>
+<pre><code>&lt;ul&gt;                  &lt;ol&gt;
+  &lt;li&gt;Milk&lt;/li&gt;         &lt;li&gt;Wake up&lt;/li&gt;
+  &lt;li&gt;Bread&lt;/li&gt;        &lt;li&gt;Code&lt;/li&gt;
+&lt;/ul&gt;                 &lt;/ol&gt;</code></pre>
+<ul>
+  <li><strong>&lt;ul&gt;</strong> — unordered. Order doesn't matter.</li>
+  <li><strong>&lt;ol&gt;</strong> — ordered. Steps, rankings.</li>
+  <li><strong>&lt;li&gt;</strong> — one item. Always inside ul or ol.</li>
+</ul>
+<h3>Tables — for data, never layout</h3>
 <pre><code>&lt;table&gt;
-  &lt;tr&gt;&lt;th&gt;Name&lt;/th&gt;&lt;th&gt;Role&lt;/th&gt;&lt;/tr&gt;
-  &lt;tr&gt;&lt;td&gt;Sara&lt;/td&gt;&lt;td&gt;Instructor&lt;/td&gt;&lt;/tr&gt;
+  &lt;tr&gt;&lt;th&gt;Name&lt;/th&gt;&lt;th&gt;Age&lt;/th&gt;&lt;/tr&gt;
+  &lt;tr&gt;&lt;td&gt;Su&lt;/td&gt;&lt;td&gt;19&lt;/td&gt;&lt;/tr&gt;
 &lt;/table&gt;</code></pre>
-<h3>Semantic structure</h3>
-<p>Modern HTML gives meaning to layout with tags like these:</p>
-<pre><code>&lt;header&gt;...&lt;/header&gt;
-&lt;nav&gt;...&lt;/nav&gt;
-&lt;main&gt;
-  &lt;section&gt;...&lt;/section&gt;
-  &lt;article&gt;...&lt;/article&gt;
-&lt;/main&gt;
-&lt;footer&gt;...&lt;/footer&gt;</code></pre>
-<div class="callout tip">Semantic tags help screen readers, SEO, and other developers understand your page. Prefer them over generic <code>&lt;div&gt;</code>s when a meaningful tag exists.</div>`),
-          video("html-forms", "Forms & Inputs", "12 min", `
-<p>Forms collect input from users. The basics:</p>
+<p><strong>&lt;th&gt;</strong> is a header cell, <strong>&lt;td&gt;</strong> a data cell, <strong>&lt;tr&gt;</strong> a row. Tables are for tabular data — prices, scores, schedules. In the 1990s people built layouts with them; that's a bug, not a style.</p>
+<h3>div and span</h3>
+<p><strong>&lt;div&gt;</strong> (block) and <strong>&lt;span&gt;</strong> (inline) are meaningless containers — grouping tools for styling. Reach for a meaningful tag first.</p>
+<div class="callout tip">Your navigation is a list of links. Writing it as &lt;nav&gt;&lt;ul&gt;&lt;li&gt;&lt;a&gt; is how the whole industry does it — because it <em>is</em> a list.</div>`),
+          article("html-semantic", "Semantic HTML & Accessibility", "7 min", `
+<p>You can build a whole site out of &lt;div&gt;. You shouldn't. <strong>Semantic HTML</strong> means using tags that say what a thing <em>is</em>.</p>
+<h3>Div soup vs semantic</h3>
+<pre><code>&lt;div class="header"&gt;      →  &lt;header&gt;
+&lt;div class="nav"&gt;         →  &lt;nav&gt;
+&lt;div class="main"&gt;        →  &lt;main&gt;
+&lt;div class="article"&gt;     →  &lt;article&gt;
+&lt;div class="footer"&gt;      →  &lt;footer&gt;</code></pre>
+<p>They look identical on screen. They are <em>not</em> identical to a screen reader, to Google, or to the developer reading it next year.</p>
+<h3>Why it matters</h3>
+<ul>
+  <li><strong>Accessibility</strong> — blind users jump by landmark: "go to main".</li>
+  <li><strong>SEO</strong> — Google understands your structure.</li>
+  <li><strong>Clarity</strong> — &lt;/footer&gt; tells you what closed; &lt;/div&gt; tells you nothing.</li>
+</ul>
+<h3>Accessibility basics you must know</h3>
+<ul>
+  <li><strong>alt text</strong> on meaningful images.</li>
+  <li><strong>Labels</strong> on every form input.</li>
+  <li><strong>Keyboard</strong> — everything clickable must be reachable with Tab.</li>
+  <li><strong>Contrast</strong> — light grey on white is unreadable for many people.</li>
+  <li><strong>Use real buttons</strong> — a &lt;div&gt; with onclick can't be focused or pressed with Enter.</li>
+</ul>
+<div class="callout">Accessibility isn't a favour to a minority. Captions help in loud rooms, contrast helps in sunlight, keyboard nav helps power users. Everyone benefits.</div>`),
+          article("html-forms", "Forms & Inputs", "7 min", `
+<p>Forms are how the web collects everything — logins, searches, orders, comments.</p>
+<h3>The basic shape</h3>
 <pre><code>&lt;form&gt;
   &lt;label for="email"&gt;Email&lt;/label&gt;
-  &lt;input type="email" id="email" name="email" placeholder="you@site.com"&gt;
-
-  &lt;label for="msg"&gt;Message&lt;/label&gt;
-  &lt;textarea id="msg" name="message"&gt;&lt;/textarea&gt;
-
-  &lt;button type="submit"&gt;Send&lt;/button&gt;
+  &lt;input type="email" id="email" required&gt;
+  &lt;button&gt;Sign up&lt;/button&gt;
 &lt;/form&gt;</code></pre>
-<h3>Common input types</h3>
+<h3>Input types do real work</h3>
 <ul>
-  <li><code>text</code>, <code>email</code>, <code>password</code>, <code>number</code></li>
-  <li><code>checkbox</code>, <code>radio</code>, <code>date</code>, <code>range</code></li>
+  <li><strong>text</strong> — anything.</li>
+  <li><strong>email</strong> — validates the format, shows an @ keyboard on phones.</li>
+  <li><strong>password</strong> — hides characters.</li>
+  <li><strong>number</strong>, <strong>date</strong>, <strong>checkbox</strong>, <strong>radio</strong>, <strong>file</strong>.</li>
 </ul>
-<div class="callout tip">Always pair an <code>&lt;input&gt;</code> with a <code>&lt;label&gt;</code> using matching <code>for</code>/<code>id</code>. Clicking the label focuses the field — and screen readers announce it correctly.</div>`),
+<p>Choosing the right type gives you free validation and a better mobile keyboard. That's a lot of value for one word.</p>
+<h3>Labels are mandatory</h3>
+<p><strong>&lt;label for="email"&gt;</strong> must match <strong>id="email"</strong>. Now clicking the label focuses the input, and screen readers announce it. Placeholder text is <em>not</em> a label — it vanishes when you type.</p>
+<h3>Free validation</h3>
+<p><strong>required</strong>, <strong>minlength</strong>, <strong>max</strong>, <strong>pattern</strong> — the browser checks before submitting, with no JavaScript.</p>
+<div class="callout warn">Browser validation is for <em>helpfulness</em>, never security. Anyone can bypass it. The server must always re-check everything.</div>`),
           quiz("html-quiz", "Quiz: HTML Fundamentals", [
-            {
-              q: "Which tag holds the visible content of a page?",
-              options: ["&lt;head&gt;", "&lt;body&gt;", "&lt;title&gt;", "&lt;meta&gt;"],
-              answer: 1,
-            },
-            {
-              q: "What attribute sets a link's destination?",
-              options: ["src", "link", "href", "to"],
-              answer: 2,
-            },
-            {
-              q: "Which element creates a numbered list?",
-              options: ["&lt;ul&gt;", "&lt;li&gt;", "&lt;ol&gt;", "&lt;list&gt;"],
-              answer: 2,
-            },
-            {
-              q: "Why is the alt attribute on images important?",
-              options: [
-                "It makes images load faster",
-                "It provides text for screen readers and when images fail",
-                "It's required or the page won't load",
-                "It changes the image size",
-              ],
-              answer: 1,
-            },
+            { q: "What does HTML stand for?", options: ["Hyper Text Markup Language", "Home Tool Markup Language", "Hyperlinks and Text Markup Language", "How To Make Lunch"], answer: 0 },
+            { q: "How many &lt;h1&gt; elements should a page normally have?", options: ["As many as you like", "One", "At least six", "Zero"], answer: 1 },
+            { q: "The alt attribute on an image is for…", options: ["Making it load faster", "Describing it for screen readers and when it fails", "Styling it", "Nothing"], answer: 1 },
+            { q: "Which element makes an ORDERED list?", options: ["&lt;ul&gt;", "&lt;ol&gt;", "&lt;li&gt;", "&lt;dl&gt;"], answer: 1 },
+            { q: "Tables should be used for…", options: ["Page layout", "Tabular data like prices and scores", "Navigation", "Images"], answer: 1 },
+            { q: "Using &lt;header&gt; instead of &lt;div class='header'&gt; helps because…", options: ["It looks different", "Screen readers and Google understand the structure", "It's shorter to type only", "It loads faster"], answer: 1 },
+            { q: "A &lt;label for='email'&gt; must match the input's…", options: ["class", "id", "name only", "type"], answer: 1 },
+            { q: "Browser form validation (required, pattern) is…", options: ["Enough security on its own", "Helpful UX, but the server must re-check everything", "Only for mobile", "Deprecated"], answer: 1 },
           ]),
         ],
       },
       {
-        title: "Styling with CSS",
+        title: "3 · Styling with CSS",
         lessons: [
-          video("css-selectors", "Selectors & the Box Model", "12 min", `
-<h3>Three ways to add CSS</h3>
-<p>The best way is an external stylesheet linked in the <code>&lt;head&gt;</code>:</p>
-<pre><code>&lt;link rel="stylesheet" href="styles.css"&gt;</code></pre>
-<h3>Selectors</h3>
-<pre><code>h1        { color: navy; }      /* by tag    */
-.intro    { font-size: 18px; }  /* by class  */
-#hero     { padding: 40px; }    /* by id     */
-a:hover   { color: purple; }    /* on hover  */</code></pre>
-<h3>The Box Model</h3>
-<p>Every element is a box made of four layers, from inside out:</p>
-<ul>
-  <li><strong>content</strong> — the text or image</li>
-  <li><strong>padding</strong> — space inside the box, around the content</li>
-  <li><strong>border</strong> — the edge</li>
-  <li><strong>margin</strong> — space <em>outside</em> the box, between it and neighbors</li>
-</ul>
-<pre><code>.card {
-  padding: 16px;
-  border: 1px solid #ddd;
-  margin: 12px;
+          article("css-selectors", "Selectors & How CSS Works", "7 min", `
+<p><strong>CSS</strong> = Cascading Style Sheets. You select elements, then declare how they look.</p>
+<h3>The shape of a rule</h3>
+<pre><code>h1 {              /* selector */
+  color: purple;  /* property: value */
+  font-size: 32px;
 }</code></pre>
-<div class="callout tip">Add <code>* { box-sizing: border-box; }</code> at the top of your CSS. It makes width include padding &amp; border — far more intuitive.</div>`),
-          video("css-colors", "Colors, Fonts & Text", "10 min", `
-<h3>Colors</h3>
-<pre><code>color: red;                 /* named        */
-color: #a435f0;             /* hex          */
-color: rgb(164, 53, 240);   /* rgb          */
-background: rgba(0,0,0,.5);  /* with alpha   */</code></pre>
-<h3>Typography</h3>
-<pre><code>body {
-  font-family: "Segoe UI", Arial, sans-serif;
-  font-size: 16px;
-  line-height: 1.5;
-  color: #1c1d1f;
-}
-h1 { font-weight: 700; letter-spacing: -0.5px; }</code></pre>
-<div class="callout">Always provide fallback fonts. If the first font isn't available, the browser tries the next. Ending with <code>sans-serif</code> or <code>serif</code> guarantees something readable.</div>`),
-          video("css-flexbox", "Flexbox Layout", "14 min", `
-<p><strong>Flexbox</strong> lays items out in a row or column and distributes space between them — perfect for navbars, cards, and centering.</p>
-<pre><code>.navbar {
+<h3>The selectors you'll use daily</h3>
+<ul>
+  <li><strong>h1</strong> — every h1 (element selector).</li>
+  <li><strong>.card</strong> — every element with class="card". <em>Your main tool.</em></li>
+  <li><strong>#hero</strong> — the one element with id="hero".</li>
+  <li><strong>.card p</strong> — every p <em>inside</em> a .card.</li>
+  <li><strong>a:hover</strong> — a link being hovered.</li>
+</ul>
+<h3>What "cascading" means</h3>
+<p>When rules conflict, CSS decides by <strong>specificity</strong>: id (strongest) &gt; class &gt; element. If two rules tie, the one written <em>last</em> wins.</p>
+<pre><code>p { color: black; }
+p { color: red; }     /* red wins — it's last */</code></pre>
+<h3>Three ways to add CSS</h3>
+<p>Inline (on the tag), in a &lt;style&gt; block, or an external <strong>.css</strong> file. Use the external file — one change restyles the whole site.</p>
+<div class="callout warn">If a style "isn't working", it's usually specificity — something more specific is overriding you. Right-click → Inspect and look: overridden rules show with a line through them.</div>`),
+          article("css-boxmodel", "The Box Model", "6 min", `
+<p>Every element is a rectangle. Understanding its layers is the moment CSS stops feeling random.</p>
+<h3>The four layers</h3>
+<div class="flow">
+  <div class="flow-box">📦 Content</div>
+  <div class="flow-arrow" data-label="inside"></div>
+  <div class="flow-box alt">🛏️ Padding</div>
+  <div class="flow-arrow" data-label="edge"></div>
+  <div class="flow-box">🖼️ Border</div>
+  <div class="flow-arrow" data-label="outside"></div>
+  <div class="flow-box warn">↔️ Margin</div>
+</div>
+<ul>
+  <li><strong>Content</strong> — the text or image.</li>
+  <li><strong>Padding</strong> — space <em>inside</em>, between content and border.</li>
+  <li><strong>Border</strong> — the line around it.</li>
+  <li><strong>Margin</strong> — space <em>outside</em>, pushing others away.</li>
+</ul>
+<h3>The classic confusion</h3>
+<p>You set width: 200px, add 20px padding, and it's now 240px wide. Because by default width means the <em>content</em> only.</p>
+<h3>The one-line fix everyone uses</h3>
+<pre><code>* { box-sizing: border-box; }</code></pre>
+<p>Now width: 200px means the whole box is 200px — padding and border included. This is on virtually every professional site.</p>
+<div class="callout tip">Padding = space inside your shirt. Margin = space between you and the next person. That's the whole difference.</div>`),
+          article("css-colors", "Colours, Fonts & Text", "6 min", `
+<p>Typography and colour are 80% of whether a site looks professional.</p>
+<h3>Ways to write a colour</h3>
+<ul>
+  <li><strong>Named</strong> — red, tomato. Fine for tests.</li>
+  <li><strong>Hex</strong> — #a435f0. The everyday standard.</li>
+  <li><strong>rgb / rgba</strong> — rgba(0,0,0,.5) gives transparency.</li>
+  <li><strong>hsl</strong> — hue, saturation, lightness. Easiest to make a matching palette.</li>
+</ul>
+<h3>Text properties that matter</h3>
+<ul>
+  <li><strong>font-family</strong> — always end with a fallback: sans-serif.</li>
+  <li><strong>font-size</strong> — 16px minimum for body text.</li>
+  <li><strong>line-height</strong> — 1.5 for body. The cheapest readability win there is.</li>
+  <li><strong>font-weight</strong> — 400 normal, 700 bold.</li>
+</ul>
+<h3>Use CSS variables</h3>
+<pre><code>:root { --brand: #a435f0; }
+.btn { background: var(--brand); }</code></pre>
+<p>Change one line, restyle everything. This is how themes (including dark mode) are built.</p>
+<div class="callout tip">Beginner sites look amateur mostly from cramped text. Add line-height: 1.5 and generous spacing and everything instantly looks better.</div>`),
+          article("css-position", "Display & Positioning", "7 min", `
+<p>Why won't this div sit next to that one? Because of <strong>display</strong>.</p>
+<h3>Block vs inline</h3>
+<ul>
+  <li><strong>block</strong> — full width, stacks vertically. (div, p, h1)</li>
+  <li><strong>inline</strong> — only as wide as content, sits in a line; width/height ignored. (span, a)</li>
+  <li><strong>inline-block</strong> — flows inline but accepts width/height.</li>
+  <li><strong>none</strong> — removed entirely.</li>
+</ul>
+<h3>Position</h3>
+<ul>
+  <li><strong>static</strong> — the default; normal flow.</li>
+  <li><strong>relative</strong> — nudge from its normal spot; keeps its space.</li>
+  <li><strong>absolute</strong> — positioned against the nearest positioned ancestor; leaves the flow.</li>
+  <li><strong>fixed</strong> — pinned to the viewport; stays on scroll.</li>
+  <li><strong>sticky</strong> — normal until it hits an edge, then sticks.</li>
+</ul>
+<h3>The absolute/relative pairing</h3>
+<p>The classic badge-on-a-card: give the card <strong>position: relative</strong>, the badge <strong>position: absolute; top: 8px; right: 8px</strong>. The child anchors to the parent. Forget relative on the parent and it flies to the page corner — that's the #1 positioning bug.</p>
+<div class="callout tip">Reach for Flexbox or Grid first. Absolute positioning is for overlays and badges — not for building layouts.</div>`),
+          article("css-flexbox", "Flexbox Layout", "7 min", `
+<p><strong>Flexbox</strong> lays things out in <em>one</em> direction — a row or a column. It ended a decade of layout pain.</p>
+<h3>Turn it on</h3>
+<pre><code>.container {
   display: flex;
-  justify-content: space-between; /* horizontal spacing */
-  align-items: center;            /* vertical alignment */
   gap: 16px;
 }</code></pre>
-<h3>The two axes</h3>
+<p>Children instantly line up in a row. <strong>gap</strong> spaces them — no more margin hacks.</p>
+<h3>The properties that matter</h3>
 <ul>
-  <li><code>justify-content</code> controls the <strong>main axis</strong> (row = horizontal).</li>
-  <li><code>align-items</code> controls the <strong>cross axis</strong> (row = vertical).</li>
+  <li><strong>flex-direction</strong> — row (default) or column.</li>
+  <li><strong>justify-content</strong> — along the main axis: flex-start, center, space-between.</li>
+  <li><strong>align-items</strong> — across it: center, stretch.</li>
+  <li><strong>flex-wrap: wrap</strong> — let items drop to the next line.</li>
+  <li><strong>flex: 1</strong> — on a child: "take the free space".</li>
 </ul>
-<h3>Perfect centering</h3>
-<pre><code>.center-box {
+<h3>Perfect centering — finally</h3>
+<pre><code>.box {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 300px;
 }</code></pre>
-<div class="callout tip">The classic "center a div" problem is three lines of Flexbox. This is one of the most useful skills in all of CSS.</div>`),
-          video("css-grid", "CSS Grid", "13 min", `
-<p>Where Flexbox is one-dimensional, <strong>Grid</strong> handles two dimensions — rows <em>and</em> columns — making it ideal for full page layouts.</p>
-<pre><code>.gallery {
+<p>Horizontally and vertically centred. This used to be a genuine industry joke.</p>
+<div class="callout tip">Main axis follows flex-direction. Switch to column and justify-content suddenly controls <em>vertical</em>. That trips up everyone once.</div>`),
+          article("css-grid", "CSS Grid", "7 min", `
+<p><strong>Grid</strong> lays out <em>two</em> dimensions at once — rows and columns together. Flexbox is a line; Grid is a table.</p>
+<h3>The basics</h3>
+<pre><code>.grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 equal columns */
-  gap: 20px;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
 }</code></pre>
-<h3>Responsive grid with one line</h3>
-<pre><code>.gallery {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 20px;
-}</code></pre>
-<p>This automatically fits as many 240px-minimum columns as will fit, then wraps — no media queries needed.</p>
-<div class="callout">Reach for <strong>Flexbox</strong> for components (a row of buttons) and <strong>Grid</strong> for page-level layout (sidebar + content).</div>`),
-          video("css-responsive", "Responsive Design & Media Queries", "11 min", `
-<p>Responsive design means your site looks great on phones, tablets, and desktops. The key tool is the <strong>media query</strong>.</p>
-<pre><code>/* Default = mobile styles */
-.container { grid-template-columns: 1fr; }
-
-/* Tablet and up */
-@media (min-width: 768px) {
-  .container { grid-template-columns: 1fr 1fr; }
-}
-
-/* Desktop and up */
-@media (min-width: 1024px) {
-  .container { grid-template-columns: 1fr 1fr 1fr; }
-}</code></pre>
-<h3>Mobile-first</h3>
-<p>Write your base styles for small screens, then <em>add</em> complexity for larger ones with <code>min-width</code> queries. It keeps CSS simpler.</p>
-<div class="callout tip">Don't forget this tag in your <code>&lt;head&gt;</code>, or mobile browsers will lie about their width:<br><code>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</code></div>`),
-          quiz("css-quiz", "Quiz: CSS", [
-            {
-              q: "In the box model, which layer is OUTSIDE the border?",
-              options: ["padding", "content", "margin", "outline"],
-              answer: 2,
-            },
-            {
-              q: "Which display value is best for a one-dimensional row of items?",
-              options: ["grid", "flex", "block", "inline"],
-              answer: 1,
-            },
-            {
-              q: "How do you select all elements with class \"intro\"?",
-              options: ["#intro", ".intro", "intro", "*intro"],
-              answer: 1,
-            },
-            {
-              q: "What does a media query let you do?",
-              options: [
-                "Play videos",
-                "Apply styles based on screen size or device features",
-                "Load fonts faster",
-                "Add JavaScript",
-              ],
-              answer: 1,
-            },
-          ]),
-        ],
-      },
-      {
-        title: "JavaScript Programming",
-        lessons: [
-          video("js-vars", "Variables & Data Types", "11 min", `
-<p>JavaScript makes pages interactive. Start with <strong>variables</strong> — named containers for values.</p>
-<pre><code>let score = 10;        // can be reassigned
-const name = "Sara";   // cannot be reassigned
-let isReady = true;    // boolean</code></pre>
-<p>Prefer <code>const</code> by default; use <code>let</code> only when the value will change. Avoid the old <code>var</code>.</p>
-<h3>Core data types</h3>
+<p><strong>fr</strong> means "one share of the free space". Three 1fr columns = three equal columns that flex with the screen.</p>
+<h3>Mixed sizes</h3>
+<pre><code>grid-template-columns: 250px 1fr;   /* sidebar + content */</code></pre>
+<h3>The magic responsive line</h3>
+<pre><code>grid-template-columns:
+  repeat(auto-fill, minmax(200px, 1fr));</code></pre>
+<p>"Fit as many columns as you can, each at least 200px." A card grid that reflows on every screen — with <em>no media queries at all</em>.</p>
+<h3>Grid or Flexbox?</h3>
 <ul>
-  <li><strong>String</strong> — text: <code>"hello"</code></li>
-  <li><strong>Number</strong> — <code>42</code>, <code>3.14</code></li>
-  <li><strong>Boolean</strong> — <code>true</code> / <code>false</code></li>
-  <li><strong>Array</strong> — a list: <code>[1, 2, 3]</code></li>
-  <li><strong>Object</strong> — key/value pairs: <code>{ name: "Sara" }</code></li>
+  <li><strong>Flexbox</strong> — a row of buttons, a navbar, one direction.</li>
+  <li><strong>Grid</strong> — a page layout, a card gallery, two directions.</li>
+  <li>They work together — a Grid cell can contain a Flex row.</li>
 </ul>
-<pre><code>console.log("Hello, " + name); // Hello, Sara</code></pre>
-<div class="callout tip"><code>console.log()</code> prints to the browser's DevTools console — your best friend for debugging.</div>`),
-          video("js-functions", "Functions & Logic", "12 min", `
-<h3>Functions</h3>
-<p>A function packages reusable logic:</p>
-<pre><code>function greet(name) {
-  return "Hi, " + name + "!";
-}
-greet("Sara"); // "Hi, Sara!"</code></pre>
-<p>The modern <strong>arrow function</strong> syntax is more concise:</p>
-<pre><code>const add = (a, b) =&gt; a + b;
-add(2, 3); // 5</code></pre>
-<h3>Making decisions</h3>
-<pre><code>const hour = 14;
-if (hour &lt; 12) {
-  console.log("Good morning");
-} else if (hour &lt; 18) {
-  console.log("Good afternoon");
-} else {
-  console.log("Good evening");
+<div class="callout tip">Learn that auto-fill/minmax line by heart. It solves the most common layout job on the entire web in one declaration.</div>`),
+          article("css-responsive", "Responsive Design", "7 min", `
+<p>More than half your visitors are on a phone. <strong>Responsive</strong> means one site that fits every screen.</p>
+<h3>The tag you must not forget</h3>
+<pre><code>&lt;meta name="viewport"
+      content="width=device-width, initial-scale=1"&gt;</code></pre>
+<p>Without this, phones pretend to be a desktop and shrink your site to unreadable. It goes in &lt;head&gt; on every page.</p>
+<h3>Media queries</h3>
+<pre><code>.grid { grid-template-columns: 1fr 1fr 1fr; }
+
+@media (max-width: 600px) {
+  .grid { grid-template-columns: 1fr; }
 }</code></pre>
-<div class="callout">Functions are the building blocks of every program. If you write the same code twice, wrap it in a function.</div>`),
-          video("js-arrays", "Arrays & Objects", "12 min", `
-<h3>Arrays</h3>
-<pre><code>const skills = ["HTML", "CSS", "JS"];
-skills.length;        // 3
-skills[0];            // "HTML"
-skills.push("React"); // add to end</code></pre>
-<h3>Looping</h3>
-<pre><code>skills.forEach(skill =&gt; {
-  console.log(skill);
-});</code></pre>
-<h3>Objects</h3>
-<pre><code>const course = {
-  title: "Web Dev Bootcamp",
-  hours: 21.5,
-  free: true
-};
-course.title;      // "Web Dev Bootcamp"
-course["hours"];   // 21.5</code></pre>
-<div class="callout tip">Arrays are ordered lists; objects are labeled bags of properties. Together they model almost any data you'll encounter.</div>`),
-          video("js-dom", "DOM Manipulation", "13 min", `
-<p>The <strong>DOM</strong> (Document Object Model) is JavaScript's live representation of your HTML. You can read and change it on the fly.</p>
-<pre><code>// Find an element
-const title = document.querySelector("h1");
-
-// Change its text and style
-title.textContent = "Updated with JavaScript!";
-title.style.color = "purple";
-
-// Create and add a new element
-const p = document.createElement("p");
-p.textContent = "I was added dynamically.";
-document.body.appendChild(p);</code></pre>
-<div class="callout"><code>querySelector</code> uses the same syntax as CSS selectors: <code>"#id"</code>, <code>".class"</code>, <code>"tag"</code>. Learn CSS selectors once, use them everywhere.</div>`),
-          video("js-events", "Events & Interactivity", "12 min", `
-<p>Events let your code react to the user — clicks, typing, submitting a form.</p>
-<pre><code>const button = document.querySelector("#myBtn");
-
-button.addEventListener("click", () =&gt; {
-  alert("You clicked me!");
-});</code></pre>
-<h3>A tiny counter</h3>
-<pre><code>let count = 0;
-const display = document.querySelector("#count");
-
-document.querySelector("#plus").addEventListener("click", () =&gt; {
-  count++;
-  display.textContent = count;
-});</code></pre>
-<p>That's the essence of interactivity: <em>listen for an event → update the page</em>. Everything from to-do apps to games builds on this loop.</p>
-<div class="callout tip">Common events: <code>click</code>, <code>input</code>, <code>submit</code>, <code>keydown</code>, <code>mouseover</code>.</div>`),
-          quiz("js-quiz", "Quiz: JavaScript", [
-            {
-              q: "Which keyword declares a value that should not be reassigned?",
-              options: ["let", "var", "const", "def"],
-              answer: 2,
-            },
-            {
-              q: "What does document.querySelector(\".btn\") select?",
-              options: [
-                "The element with id \"btn\"",
-                "The first element with class \"btn\"",
-                "All &lt;btn&gt; tags",
-                "Nothing — it's invalid",
-              ],
-              answer: 1,
-            },
-            {
-              q: "How do you add an item to the end of an array?",
-              options: ["array.add()", "array.push()", "array.append()", "array.end()"],
-              answer: 1,
-            },
-            {
-              q: "Which method runs code in response to a user action?",
-              options: ["addEventListener", "console.log", "querySelector", "createElement"],
-              answer: 0,
-            },
+<p>"On screens up to 600px wide, use one column instead."</p>
+<h3>Mobile-first</h3>
+<p>Write the phone layout as your base, then use <strong>min-width</strong> queries to add complexity for bigger screens. It's easier to add than to unpick.</p>
+<h3>Use flexible units</h3>
+<p>Prefer %, fr, rem, and max-width over fixed px widths. A width: 900px div will always break a 400px phone.</p>
+<div class="callout warn">Test by dragging your browser narrow — and on a real phone. DevTools device mode is close, but a real thumb on a real screen finds real problems.</div>`),
+          quiz("css-quiz", "Quiz: CSS", [
+            { q: "What does CSS stand for?", options: ["Computer Style Sheets", "Cascading Style Sheets", "Creative Style System", "Colorful Style Sheets"], answer: 1 },
+            { q: "Which selector targets class='card'?", options: ["#card", ".card", "card", "*card"], answer: 1 },
+            { q: "In specificity, which is strongest?", options: ["Element (p)", "Class (.card)", "ID (#hero)", "They're equal"], answer: 2 },
+            { q: "Padding is…", options: ["Space outside the border", "Space inside, between content and border", "The border itself", "The text"], answer: 1 },
+            { q: "box-sizing: border-box makes width include…", options: ["Only content", "Padding and border too", "Margin too", "Nothing"], answer: 1 },
+            { q: "To centre a box horizontally AND vertically with Flexbox you use…", options: ["text-align only", "justify-content: center + align-items: center", "margin: 0", "position: fixed"], answer: 1 },
+            { q: "'1fr' in CSS Grid means…", options: ["1 pixel", "One share of the free space", "1 percent", "1 rem"], answer: 1 },
+            { q: "Which is best for a responsive card gallery with no media queries?", options: ["repeat(auto-fill, minmax(200px, 1fr))", "width: 900px", "position: absolute", "display: inline"], answer: 0 },
+            { q: "Without the viewport meta tag, phones will…", options: ["Work perfectly", "Pretend to be desktop and shrink the site", "Refuse to load", "Show only text"], answer: 1 },
           ]),
         ],
       },
       {
-        title: "Final Project",
+        title: "4 · JavaScript Programming",
         lessons: [
-          article("project-portfolio", "Project: Build Your Portfolio Site", "20 min", `
-<p>Time to combine everything into a real, single-page <strong>portfolio</strong> you can show employers.</p>
-<h3>The plan</h3>
-<ol>
-  <li><strong>Structure (HTML):</strong> a header with your name and nav, an "About" section, a "Projects" grid, and a contact footer.</li>
-  <li><strong>Style (CSS):</strong> a color theme, Flexbox navbar, and a responsive Grid for projects.</li>
-  <li><strong>Interactivity (JS):</strong> a dark-mode toggle and a "back to top" button.</li>
-</ol>
-<h3>Starter skeleton</h3>
-<pre><code>&lt;header&gt;
-  &lt;h1&gt;Your Name&lt;/h1&gt;
-  &lt;nav&gt;
-    &lt;a href="#about"&gt;About&lt;/a&gt;
-    &lt;a href="#projects"&gt;Projects&lt;/a&gt;
-  &lt;/nav&gt;
-&lt;/header&gt;
+          article("js-vars", "Variables & Data Types", "6 min", `
+<p><strong>JavaScript</strong> is what makes a page <em>do</em> things. It's a real programming language — and it runs in every browser on earth.</p>
+<h3>Storing values</h3>
+<pre><code>let score = 0;        // can change
+const name = "Su";    // cannot be reassigned
+</code></pre>
+<p>Use <strong>const</strong> by default. Switch to <strong>let</strong> only when the value genuinely changes. Avoid <strong>var</strong> — it's the old way with confusing scope rules.</p>
+<h3>The types you'll use</h3>
+<ul>
+  <li><strong>string</strong> — "hello"</li>
+  <li><strong>number</strong> — 42, 3.14 (no separate integer type)</li>
+  <li><strong>boolean</strong> — true / false</li>
+  <li><strong>null</strong> — deliberately empty</li>
+  <li><strong>undefined</strong> — not set yet</li>
+  <li><strong>array</strong> and <strong>object</strong> — collections</li>
+</ul>
+<h3>Template literals</h3>
+<p>Instead of "Hi " + name + "!", use backtick strings with placeholders — far easier to read, and they can span lines.</p>
+<h3>Console is your friend</h3>
+<pre><code>console.log(score);</code></pre>
+<p>Print anything, any time, and read it in DevTools. This is genuinely how professionals debug.</p>
+<div class="callout tip">Name variables like sentences. userAge beats x. Your future self, reading this at midnight, will thank you.</div>`),
+          article("js-operators", "Operators & Comparison", "6 min", `
+<p>Operators are how you calculate and compare.</p>
+<h3>Maths</h3>
+<p><strong>+ - * /</strong> as expected. <strong>%</strong> is remainder — brilliant for "is this even?" (n % 2 === 0).</p>
+<h3>The === trap</h3>
+<ul>
+  <li><strong>==</strong> — loose. Converts types first. "5" == 5 is <em>true</em>.</li>
+  <li><strong>===</strong> — strict. Compares value <em>and</em> type. "5" === 5 is <em>false</em>.</li>
+</ul>
+<p>Always use <strong>===</strong>. The loose one causes bugs that take hours to find.</p>
+<h3>Logic</h3>
+<ul>
+  <li><strong>&amp;&amp;</strong> — AND, both must be true.</li>
+  <li><strong>||</strong> — OR, either.</li>
+  <li><strong>!</strong> — NOT, flips it.</li>
+</ul>
+<h3>Truthy and falsy</h3>
+<p>Everything in JS is true-ish or false-ish. <strong>Falsy</strong>: false, 0, "" (empty string), null, undefined, NaN. Everything else is truthy — including "0" and an empty array, which surprises everyone.</p>
+<div class="callout warn">Comparing a string "5" from an input to a number 5 with == "works" — until it doesn't. Use === and convert deliberately with Number().</div>`),
+          article("js-conditionals", "Making Decisions", "6 min", `
+<p>Code that always does the same thing isn't very useful. <strong>Conditionals</strong> let it choose.</p>
+<h3>if / else</h3>
+<pre><code>if (score &gt; 50) {
+  console.log("Pass");
+} else if (score === 50) {
+  console.log("Exactly half");
+} else {
+  console.log("Try again");
+}</code></pre>
+<h3>The ternary — a compact if</h3>
+<pre><code>const result = score &gt; 50 ? "Pass" : "Fail";</code></pre>
+<p>Perfect for picking between two values. Don't nest them — that's how you write code nobody can read.</p>
+<h3>switch</h3>
+<p>When you're comparing one value against many options, switch is tidier than a wall of else-if. Remember <strong>break</strong> in each case, or it falls through to the next.</p>
+<h3>Guard clauses</h3>
+<p>Instead of wrapping everything in a giant if, exit early: if the data is missing, <strong>return</strong> immediately. Your code stays flat and readable instead of a pyramid of nesting.</p>
+<div class="callout tip">If you're 4 levels of if deep, stop. Flip a condition and return early — the code usually collapses into something obvious.</div>`),
+          article("js-loops", "Loops: Doing It Again", "6 min", `
+<p>Computers are brilliant at repetition. <strong>Loops</strong> are how you ask.</p>
+<h3>The classic for loop</h3>
+<pre><code>for (let i = 0; i &lt; 5; i++) {
+  console.log(i);   // 0 1 2 3 4
+}</code></pre>
+<p>Three parts: start, keep-going-while, do-each-time. Note it starts at <strong>0</strong> — programming counts from zero.</p>
+<h3>Looping an array (the modern way)</h3>
+<pre><code>const fruits = ["apple", "banana"];
 
-&lt;main&gt;
-  &lt;section id="about"&gt;
-    &lt;h2&gt;About me&lt;/h2&gt;
-    &lt;p&gt;A short bio...&lt;/p&gt;
-  &lt;/section&gt;
+for (const f of fruits) { console.log(f); }
 
-  &lt;section id="projects"&gt;
-    &lt;h2&gt;Projects&lt;/h2&gt;
-    &lt;div class="grid"&gt;&lt;!-- project cards --&gt;&lt;/div&gt;
-  &lt;/section&gt;
-&lt;/main&gt;</code></pre>
-<h3>Dark-mode toggle in JS</h3>
-<pre><code>const toggle = document.querySelector("#theme");
-toggle.addEventListener("click", () =&gt; {
-  document.body.classList.toggle("dark");
+fruits.forEach(f =&gt; console.log(f));</code></pre>
+<h3>while</h3>
+<p>Use <strong>while</strong> when you don't know how many times — "keep going until the user guesses right".</p>
+<h3>break and continue</h3>
+<ul>
+  <li><strong>break</strong> — leave the loop now.</li>
+  <li><strong>continue</strong> — skip to the next round.</li>
+</ul>
+<div class="callout warn">An infinite loop freezes the tab. If your while condition never becomes false, the browser hangs — always make sure something changes inside.</div>`),
+          article("js-functions", "Functions", "7 min", `
+<p>A <strong>function</strong> is a named, reusable block of code. Write once, call anywhere.</p>
+<h3>Declaring and calling</h3>
+<pre><code>function greet(name) {
+  return "Hello, " + name;
+}
+
+greet("Su");   // "Hello, Su"</code></pre>
+<ul>
+  <li><strong>Parameters</strong> — the inputs (name).</li>
+  <li><strong>return</strong> — hands a value back. Without it you get undefined.</li>
+</ul>
+<h3>Arrow functions</h3>
+<pre><code>const greet = (name) =&gt; "Hello, " + name;</code></pre>
+<p>Shorter, and everywhere in modern code. A one-line arrow returns automatically — no return needed.</p>
+<h3>Scope</h3>
+<p>Variables made inside a function only exist inside it. That's a feature: it stops distant parts of your program breaking each other.</p>
+<h3>Do one thing</h3>
+<p>A good function has one job and a name that says it. If you need "and" to describe it — <em>validateAndSaveAndEmail</em> — it should be three functions.</p>
+<div class="callout tip">Functions are how you beat complexity. Any code you've written twice should probably be a function.</div>`),
+          article("js-arrays", "Arrays & Objects", "7 min", `
+<p>Real programs handle <em>collections</em> — many users, many products, many messages.</p>
+<h3>Arrays — an ordered list</h3>
+<pre><code>const scores = [10, 25, 8];
+scores[0];        // 10  (counts from zero!)
+scores.length;    // 3
+scores.push(30);  // add to the end</code></pre>
+<h3>The three methods that matter</h3>
+<ul>
+  <li><strong>map</strong> — transform every item into a new array.</li>
+  <li><strong>filter</strong> — keep the items that pass a test.</li>
+  <li><strong>find</strong> — get the first match.</li>
+</ul>
+<pre><code>const big = scores.filter(n =&gt; n &gt; 9);   // [10, 25, 30]</code></pre>
+<p>These replace most for-loops you'd otherwise write, and read like English.</p>
+<h3>Objects — labelled data</h3>
+<pre><code>const user = {
+  name: "Su",
+  age: 19,
+  isStudent: true
+};
+
+user.name;   // "Su"</code></pre>
+<p>Arrays use numbers; objects use names. An array <em>of</em> objects — a list of users — is the shape of almost all real data.</p>
+<div class="callout tip">map and filter return a NEW array; they don't change the original. That predictability is exactly why professionals prefer them.</div>`),
+          article("js-dom", "DOM Manipulation", "7 min", `
+<p>The <strong>DOM</strong> (Document Object Model) is your HTML, as objects JavaScript can touch. This is where JS starts changing what people see.</p>
+<h3>Finding elements</h3>
+<pre><code>document.getElementById("title");
+document.querySelector(".card");      // first match
+document.querySelectorAll(".card");   // all matches</code></pre>
+<p><strong>querySelector</strong> takes any CSS selector — if you know CSS, you already know how to find elements.</p>
+<h3>Changing them</h3>
+<pre><code>const t = document.querySelector("#title");
+t.textContent = "New heading";
+t.classList.add("highlight");
+t.style.color = "purple";</code></pre>
+<h3>Prefer classes over inline styles</h3>
+<p>Use <strong>classList.add/remove/toggle</strong> and keep the look in CSS. Setting .style everywhere scatters your design across two languages.</p>
+<h3>Creating elements</h3>
+<pre><code>const li = document.createElement("li");
+li.textContent = "New item";
+list.appendChild(li);</code></pre>
+<div class="callout warn">If querySelector returns null, your script probably ran before the HTML existed. Put your script at the end of &lt;body&gt;, or use defer.</div>`),
+          article("js-events", "Events & Interactivity", "7 min", `
+<p><strong>Events</strong> are things that happen — a click, a key, a submit. Your code listens and responds. This is interactivity.</p>
+<h3>Listening</h3>
+<pre><code>const btn = document.querySelector("#go");
+
+btn.addEventListener("click", () =&gt; {
+  alert("Clicked!");
 });</code></pre>
-<div class="callout tip"><strong>Challenge:</strong> once it works locally, publish it free with GitHub Pages or Netlify and put the link on your résumé. You're now a web developer. 🚀</div>
+<p>"When this element does this, run this function."</p>
+<h3>Events you'll use</h3>
+<ul>
+  <li><strong>click</strong> — the classic.</li>
+  <li><strong>input</strong> — fires on every keystroke.</li>
+  <li><strong>submit</strong> — on a form.</li>
+  <li><strong>keydown</strong> — a key went down.</li>
+</ul>
+<h3>The event object</h3>
+<pre><code>form.addEventListener("submit", (e) =&gt; {
+  e.preventDefault();   // stop the page reloading
+  console.log("handled");
+});</code></pre>
+<p><strong>e.preventDefault()</strong> stops the browser's default behaviour — essential for forms.</p>
+<h3>Event delegation</h3>
+<p>Adding a listener to 100 items is wasteful. Listen on the <em>parent</em> instead and check e.target. It even works for elements added later.</p>
+<div class="callout tip">HTML + CSS + DOM + events = a real app. Everything after this is just more practice with the same four ideas.</div>`),
+          quiz("js-quiz", "Quiz: JavaScript", [
+            { q: "Which keyword declares a value that cannot be reassigned?", options: ["let", "var", "const", "static"], answer: 2 },
+            { q: "What does === check that == does not?", options: ["Nothing", "The type as well as the value", "Only the type", "The variable name"], answer: 1 },
+            { q: "Which of these is FALSY?", options: ["'0'", "[]", "0", "'false'"], answer: 2 },
+            { q: "Array indexes start at…", options: ["1", "0", "-1", "Any number"], answer: 1 },
+            { q: "Which method keeps only items that pass a test?", options: ["map", "filter", "push", "forEach"], answer: 1 },
+            { q: "querySelector('.card') returns…", options: ["All matching elements", "The first matching element", "A string", "An array"], answer: 1 },
+            { q: "To stop a form reloading the page you call…", options: ["e.stop()", "e.preventDefault()", "return true", "e.cancel()"], answer: 1 },
+            { q: "If querySelector returns null, the likely cause is…", options: ["The browser is broken", "The script ran before the HTML existed", "CSS is missing", "The element is styled"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "5 · Going Further",
+        lessons: [
+          article("js-fetch", "Loading Real Data with Fetch", "7 min", `
+<p>So far your data has been typed by hand. Real apps <em>fetch</em> it from a server.</p>
+<h3>What an API is</h3>
+<p>An <strong>API</strong> is a URL that returns data instead of a web page — usually <strong>JSON</strong>, which looks exactly like a JavaScript object.</p>
+<h3>Fetching</h3>
+<pre><code>fetch("https://api.example.com/users")
+  .then(r =&gt; r.json())
+  .then(users =&gt; {
+    console.log(users);
+  })
+  .catch(err =&gt; console.error(err));</code></pre>
+<h3>Why the .then chain?</h3>
+<p>The network takes time. JavaScript doesn't freeze waiting — it carries on and runs your function <em>later</em>, when the data arrives. That's <strong>asynchronous</strong>.</p>
+<h3>JSON</h3>
+<p><strong>JSON.parse()</strong> turns text into an object; <strong>JSON.stringify()</strong> turns an object into text to send. r.json() does the parse for you.</p>
+<div class="callout warn">Always add .catch. Networks fail, phones lose signal, servers 500. An app that shows a blank screen on error feels broken — one that says "couldn't load, retry?" feels professional.</div>`),
+          article("js-async", "async / await", "6 min", `
+<p><strong>async/await</strong> is the modern way to write asynchronous code that reads top-to-bottom, like normal code.</p>
+<h3>The same fetch, rewritten</h3>
+<pre><code>async function loadUsers() {
+  try {
+    const r = await fetch("/api/users");
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const users = await r.json();
+    console.log(users);
+  } catch (err) {
+    console.error("Failed:", err);
+  }
+}</code></pre>
+<h3>The rules</h3>
+<ul>
+  <li><strong>await</strong> pauses until the promise resolves.</li>
+  <li>You can only <strong>await</strong> inside an <strong>async</strong> function.</li>
+  <li>An async function always returns a promise.</li>
+  <li>Wrap it in <strong>try/catch</strong> to handle errors.</li>
+</ul>
+<h3>fetch doesn't throw on 404</h3>
+<p>A 404 or 500 still "succeeds" as a network request. You must check <strong>r.ok</strong> yourself — this surprises nearly everyone once.</p>
+<div class="callout tip">Show a loading state before the await and hide it after. Users forgive slow; they don't forgive a screen that looks frozen.</div>`),
+          article("dev-debug", "Debugging Like a Professional", "6 min", `
+<p>You will spend more time reading and fixing code than writing it. This is a core skill, not a sign of failure.</p>
+<h3>Console first</h3>
+<p><strong>console.log()</strong> anything, anywhere. Log a variable before and after a change — the bug is usually in between.</p>
+<h3>Breakpoints beat logging</h3>
+<p>In DevTools → Sources, click a line number. The code <em>pauses</em> there and you can inspect every variable at that instant, then step line by line.</p>
+<h3>Read the stack trace</h3>
+<p>An error names the file and line. The top of the trace is where it broke; below is how it got there. It's a map, not noise.</p>
+<h3>Bisect the problem</h3>
+<p>Half your code, test. Still broken? The bug is in the half you kept. Repeat. You'll find any bug in a few rounds — this is genuinely how experts do it.</p>
+<h3>The classics</h3>
+<ul>
+  <li><strong>undefined is not a function</strong> — typo in a method name.</li>
+  <li><strong>Cannot read property of null</strong> — your selector found nothing.</li>
+  <li><strong>Nothing happens</strong> — check the file is actually linked.</li>
+</ul>
+<div class="callout tip">Before you debug for an hour: hard-refresh (Ctrl+Shift+R). A shocking number of "impossible" bugs are just a cached old file.</div>`),
+          article("dev-git", "Git & Version Control", "6 min", `
+<p><strong>Git</strong> is a time machine for your code. Every professional uses it, every day. Learn the basics now.</p>
+<h3>Why</h3>
+<ul>
+  <li><strong>Undo</strong> — go back to any earlier working version.</li>
+  <li><strong>History</strong> — see what changed, when, and why.</li>
+  <li><strong>Collaborate</strong> — many people, one codebase, no overwriting.</li>
+  <li><strong>Backup</strong> — pushed to GitHub, your work survives a dead laptop.</li>
+</ul>
+<h3>The everyday commands</h3>
+<pre><code>git init                 # start tracking
+git status               # what changed?
+git add .                # stage changes
+git commit -m "Add nav"  # save a snapshot
+git push                 # send to GitHub
+git log                  # see history</code></pre>
+<h3>The mental model</h3>
+<div class="flow">
+  <div class="flow-box">✏️ Working</div>
+  <div class="flow-arrow" data-label="git add"></div>
+  <div class="flow-box alt">📋 Staged</div>
+  <div class="flow-arrow" data-label="git commit"></div>
+  <div class="flow-box">📦 History</div>
+</div>
+<h3>Good commit messages</h3>
+<p>"Fix login redirect on mobile" tells the story. "stuff", "asdf", "fix" tell nobody anything — including you, in six months.</p>
+<div class="callout warn">Never commit passwords or API keys. Git history is forever — deleting the file later does not remove it from history.</div>`),
+          article("dev-deploy", "Putting Your Site Online", "6 min", `
+<p>A site on your laptop isn't a site. Shipping it is the last — and most satisfying — step.</p>
+<h3>What you actually need</h3>
+<ul>
+  <li><strong>Hosting</strong> — a computer that serves your files.</li>
+  <li><strong>A domain</strong> — optional at first; free subdomains work fine.</li>
+</ul>
+<h3>Free hosting that's genuinely good</h3>
+<ul>
+  <li><strong>GitHub Pages</strong> — push your repo, it's live. Perfect for static sites.</li>
+  <li><strong>Netlify</strong> / <strong>Vercel</strong> — drag a folder or connect a repo; instant HTTPS.</li>
+</ul>
+<p>All free, all give you HTTPS automatically. There is no reason for your work to sit unseen.</p>
+<h3>Before you ship</h3>
+<ul>
+  <li>Test on a real phone.</li>
+  <li>Compress your images — they're almost always the slow part.</li>
+  <li>Check every link.</li>
+  <li>Add a favicon and a page &lt;title&gt;.</li>
+</ul>
+<div class="callout tip">Ship it early and ugly, then improve. A live imperfect site you can send to someone beats a perfect one on your hard drive forever.</div>`),
+          article("dev-a11y", "Accessibility & Performance", "6 min", `
+<p>Two things that separate a hobby site from a professional one — and both are mostly free.</p>
+<h3>Accessibility checklist</h3>
+<ul>
+  <li><strong>Keyboard</strong> — Tab through your whole site. Can you reach and use everything?</li>
+  <li><strong>Contrast</strong> — at least 4.5:1 for body text.</li>
+  <li><strong>alt text</strong> — on every meaningful image.</li>
+  <li><strong>Labels</strong> — on every input.</li>
+  <li><strong>Focus visible</strong> — never remove the focus outline without replacing it.</li>
+  <li><strong>Semantic tags</strong> — real buttons, real headings.</li>
+</ul>
+<h3>Performance wins, in order</h3>
+<ol>
+  <li><strong>Images</strong> — resize and compress. This is 90% of most problems.</li>
+  <li><strong>Lazy-load</strong> below-the-fold images: loading="lazy".</li>
+  <li><strong>Fewer requests</strong> — every file is a round trip.</li>
+  <li><strong>Minify</strong> CSS/JS for production.</li>
+</ol>
+<h3>Measure, don't guess</h3>
+<p>Run <strong>Lighthouse</strong> in DevTools. It scores performance, accessibility, SEO and best practices, and tells you exactly what to fix.</p>
+<div class="callout">Run Lighthouse on your portfolio before you send it to an employer. A 95+ accessibility score is a genuine talking point in an interview.</div>`),
+          quiz("bc-quiz-pro", "Quiz: Going Further", [
+            { q: "An API usually returns…", options: ["A full web page", "JSON data", "An image", "CSS"], answer: 1 },
+            { q: "fetch() on a URL that 404s will…", options: ["Throw an error automatically", "Still resolve — you must check r.ok yourself", "Return null", "Crash the tab"], answer: 1 },
+            { q: "You can only use 'await' inside…", options: ["A loop", "An async function", "A class", "Anywhere"], answer: 1 },
+            { q: "Which git command saves a snapshot?", options: ["git add", "git commit", "git status", "git log"], answer: 1 },
+            { q: "You should NEVER commit…", options: ["HTML files", "Passwords or API keys", "Comments", "Images"], answer: 1 },
+            { q: "The biggest performance win on most sites is…", options: ["Minifying CSS", "Compressing and resizing images", "Changing fonts", "Removing comments"], answer: 1 },
+            { q: "Which DevTools tool scores accessibility and performance?", options: ["Lighthouse", "Console", "Network", "Elements"], answer: 0 },
+            { q: "A good test of keyboard accessibility is…", options: ["Clicking everything", "Tabbing through the whole site", "Zooming in", "Reading the CSS"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "6 · Final Project",
+        lessons: [
+          article("project-portfolio", "Project: Build Your Portfolio Site", "12 min", `
+<p>Time to put it together. Your <strong>portfolio site</strong> is the single most useful thing you can build — it's how you get your first job.</p>
+<h3>What to build</h3>
+<ul>
+  <li><strong>Hero</strong> — your name, what you do, one line about you.</li>
+  <li><strong>About</strong> — a short paragraph and a photo.</li>
+  <li><strong>Projects</strong> — a responsive grid of cards (Grid + minmax).</li>
+  <li><strong>Contact</strong> — a form with proper labels.</li>
+  <li><strong>Footer</strong> — links to your GitHub.</li>
+</ul>
+<h3>The checklist — use everything you learned</h3>
+<ul>
+  <li>Semantic tags: header, nav, main, section, footer.</li>
+  <li>The viewport meta tag.</li>
+  <li>Flexbox for the nav, Grid for the project cards.</li>
+  <li>One media query for phones.</li>
+  <li>CSS variables for your colours.</li>
+  <li>JavaScript: a mobile menu toggle, and form validation with preventDefault.</li>
+  <li>alt text on every image, a label on every input.</li>
+</ul>
+<h3>Then ship it</h3>
+<ol>
+  <li>Put it on GitHub (git init, commit, push).</li>
+  <li>Turn on GitHub Pages — now it's live and public.</li>
+  <li>Run Lighthouse and fix what it flags.</li>
+  <li>Send the link to someone.</li>
+</ol>
 <h3>Where to go next</h3>
 <ul>
-  <li>Learn <strong>Git &amp; GitHub</strong> for version control.</li>
-  <li>Pick a framework like <strong>React</strong> to build larger apps.</li>
-  <li>Explore the <strong>Fetch API</strong> to load real data.</li>
+  <li>Rebuild it with a framework — <strong>React</strong> or <strong>Vue</strong>.</li>
+  <li>Learn a back-end — <strong>Node</strong> — and add a real contact form.</li>
+  <li>Fetch real data from a public API.</li>
+  <li>Then head to the 🏋️ Practice Zone below and prove every skill.</li>
 </ul>
+<div class="callout tip">Don't wait until you feel "ready". Ship version one this week, then improve it forever. Every developer's portfolio is permanently unfinished.</div>
 <p>Congratulations on finishing the bootcamp — mark this lesson complete to hit 100%! 🎓</p>`),
         ],
       },
@@ -762,7 +1050,7 @@ else {
     rating: 4.9,
     ratings: 64210,
     students: 402180,
-    hours: 7,
+    hours: 16,
     price: "Free",
     color: "linear-gradient(135deg,#ff6a00,#ee0979)",
     icon: "&#127760;",
@@ -778,470 +1066,613 @@ else {
     ],
     sections: [
       {
-        title: "Welcome & How the Web Works",
+        title: "1 · Welcome & How the Web Works",
         lessons: [
-          article("wb-welcome", "Welcome to Web Basics", "4 min", `
-<p>Welcome! 👋 If you've never written a line of code, you're in exactly the right place.</p>
-<p>By the end of this short course you will have built a <strong>real web page</strong> — with a heading, styled text, an image, a list, and a button that actually does something when you click it.</p>
-<h3>How to take this course</h3>
+          article("wb-welcome", "Welcome to Web Basics", "5 min", `
+<p>Welcome. By the end of this course you'll have built a real website — and put it online where anyone in the world can open it.</p>
+<h3>You need almost nothing</h3>
 <ul>
-  <li>Go in order. Each lesson builds on the last.</li>
-  <li>Type the examples yourself — don't just read them. Muscle memory matters.</li>
-  <li>Take the quizzes to check your understanding.</li>
-  <li>Mark lessons complete as you go to track your progress.</li>
+  <li>A computer with a browser (you have one).</li>
+  <li>A free text editor.</li>
+  <li>No maths, no degree, no expensive laptop, no permission.</li>
 </ul>
-<div class="callout tip">There's no such thing as a "dumb question" when you're learning to code. Everyone started exactly where you are now.</div>`),
+<h3>What you'll learn, in order</h3>
+<div class="flow">
+  <div class="flow-box">🦴 HTML</div>
+  <div class="flow-arrow" data-label="structure"></div>
+  <div class="flow-box alt">🎨 CSS</div>
+  <div class="flow-arrow" data-label="style"></div>
+  <div class="flow-box">⚡ JavaScript</div>
+</div>
+<p>Three languages, one team. HTML is the skeleton, CSS the clothes, JavaScript the muscles.</p>
+<h3>How to actually get through this</h3>
+<ul>
+  <li><strong>Type every example.</strong> Copy-paste teaches your clipboard, not your brain.</li>
+  <li><strong>Break things on purpose</strong> — delete a tag and see what happens.</li>
+  <li><strong>Being stuck is normal.</strong> Professionals are confused most of the day; they've just stopped panicking about it.</li>
+  <li><strong>Build something you care about.</strong> A page about your favourite team beats ten tutorials you never finish.</li>
+</ul>
+<div class="callout tip">Little and often beats one long weekend. Thirty minutes a day for a month will take you further than one heroic all-nighter.</div>`),
           article("wb-how", "How Websites Work", "7 min", `
-<p>Before we build anything, let's demystify what actually happens when you open a website.</p>
-<h3>A quick conversation</h3>
+<p>Understand this once and everything else makes sense.</p>
+<h3>The journey of a page</h3>
 <ol>
-  <li>You type an address like <code>example.com</code> into your <strong>browser</strong> (Chrome, Edge, Safari…).</li>
-  <li>The browser asks a <strong>server</strong> (a computer somewhere on the internet) for that page.</li>
-  <li>The server sends back some files — mostly <strong>HTML</strong>, <strong>CSS</strong>, and <strong>JavaScript</strong>.</li>
-  <li>Your browser reads those files and <em>draws</em> the page you see.</li>
+  <li>You type <strong>example.com</strong>.</li>
+  <li><strong>DNS</strong> — the internet's phone book — turns that name into a number (an IP address) like 93.184.216.34.</li>
+  <li>Your browser (the <strong>client</strong>) sends a <strong>request</strong> to that address.</li>
+  <li>A <strong>server</strong> — a computer that never sleeps — sends back a <strong>response</strong>: some HTML.</li>
+  <li>Your browser reads it and draws the page, then fetches the CSS, images and JS it mentions.</li>
 </ol>
 <div class="flow">
-  <div class="flow-box">🧑 You + Browser<br><small>the client</small></div>
-  <div class="flow-arrow" data-label="1. asks for page"></div>
-  <div class="flow-box alt">🖥️ Server<br><small>a computer online</small></div>
-  <div class="flow-arrow" data-label="2. sends files"></div>
-  <div class="flow-box">🖼️ Page appears<br><small>HTML · CSS · JS</small></div>
+  <div class="flow-box">💻 Client</div>
+  <div class="flow-arrow" data-label="request"></div>
+  <div class="flow-box alt">🌐 Server</div>
+  <div class="flow-arrow" data-label="response"></div>
+  <div class="flow-box">📄 Page</div>
 </div>
-<h3>The key idea</h3>
-<p>A website is really just a bundle of text files that your browser knows how to display. That's it! When you build a site, you're writing those text files.</p>
-<div class="callout"><strong>Client &amp; server:</strong> the "client" is your browser asking for things. The "server" is the computer answering. This back-and-forth happens in a fraction of a second.</div>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> open Chrome, press <code>F12</code> → the <strong>Network</strong> tab → reload this page. Every row you see is one file your browser downloaded from the server. Count how many there are!</div>`),
-          article("wb-frontback", "Front-End vs Back-End", "5 min", `
-<p>You'll hear these two terms a lot. Here's the simple version.</p>
-<div class="flow">
-  <div class="flow-box">🎨 Front-end<br><small>what you SEE<br>HTML · CSS · JS</small></div>
-  <div class="flow-arrow" data-label="talks to"></div>
-  <div class="flow-box alt">⚙️ Back-end<br><small>behind the scenes<br>server · database</small></div>
-</div>
-<h3>Front-end — what you can see</h3>
-<p>Everything that appears in the browser: text, buttons, colors, layout, animations. It's built with the three languages we'll learn:</p>
+<h3>Codes you'll recognise</h3>
 <ul>
-  <li><strong>HTML</strong> — structure &amp; content</li>
-  <li><strong>CSS</strong> — appearance &amp; layout</li>
-  <li><strong>JavaScript</strong> — interactivity</li>
+  <li><strong>200</strong> — OK, here it is.</li>
+  <li><strong>404</strong> — I don't have that page.</li>
+  <li><strong>500</strong> — the server broke.</li>
 </ul>
-<h3>Back-end — the behind-the-scenes</h3>
-<p>The server, databases, and logic you <em>don't</em> see — things like saving your account or processing a payment.</p>
-<div class="callout tip">This course is 100% <strong>front-end</strong>. It's the friendliest place to start, and you get to see your results instantly.</div>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> think of an app you love (Facebook, TikTok…). Name <strong>two things</strong> that are front-end (things you can see and tap) and <strong>one thing</strong> that's back-end (something saved or processed behind the scenes, like your login).</div>`),
-          article("wb-tools", "The Tools You Need", "6 min", `
-<p>Good news: getting set up is free and takes five minutes.</p>
-<h3>1. A code editor</h3>
-<p>This is where you write code. <strong>Visual Studio Code</strong> is the most popular, free choice. Install it and add the <em>Live Server</em> extension so your page refreshes automatically when you save.</p>
-<h3>2. A web browser</h3>
-<p>You already have one! Chrome, Edge, or Firefox all work great.</p>
-<h3>3. Create your first file</h3>
-<p>Make a folder for your project, and inside it create a file named <code>index.html</code>. That's the conventional name for a website's home page.</p>
-<pre><code>my-website/
-  index.html   &larr; your page
-  style.css    &larr; your styles (later)
-  script.js    &larr; your JavaScript (later)</code></pre>
-<div class="callout">To preview a page, just double-click <code>index.html</code> — it opens in your browser. Or use Live Server for auto-refresh.</div>`),
+<h3>The padlock</h3>
+<p><strong>HTTPS</strong> is HTTP with encryption. Without it, anyone on the same wifi can read what you send. That's why browsers warn you.</p>
+<div class="callout">A website is just files a server hands out. That's genuinely all it is. Once that lands, the rest is detail.</div>`),
+          article("wb-frontback", "Front-End vs Back-End", "6 min", `
+<p>Two halves of every website. You'll learn the front-end here.</p>
+<h3>Front-end — what you see</h3>
+<p>Everything in your browser: text, buttons, colours, animations. Written in <strong>HTML, CSS and JavaScript</strong>. It runs on <em>your</em> device.</p>
+<h3>Back-end — what you don't</h3>
+<p>The server, the database, the logic. It checks your password, saves your order, keeps everyone's data separate. Written in Python, PHP, Node, Java and others.</p>
+<h3>A restaurant</h3>
+<div class="flow">
+  <div class="flow-box">🍽️ Dining room</div>
+  <div class="flow-arrow" data-label="order"></div>
+  <div class="flow-box alt">👨‍🍳 Kitchen</div>
+  <div class="flow-arrow" data-label="food"></div>
+  <div class="flow-box">🍛 Result</div>
+</div>
+<p>The dining room is the front-end — what guests see. The kitchen is the back-end — hidden, but where the real work happens. <strong>Full-stack</strong> is someone comfortable in both.</p>
+<h3>Why start with front-end?</h3>
+<p>You see results instantly. Change a colour, hit refresh, it's there. That feedback loop is the fastest way to learn — and it's exactly what makes coding addictive.</p>
+<div class="callout tip">You don't need a back-end to have a real website. Everything in this course works as plain files — and you can publish them free.</div>`),
+          article("wb-tools", "The Tools You Need", "5 min", `
+<p>The whole professional toolkit, and it's free.</p>
+<h3>1. A browser</h3>
+<p>Chrome, Edge or Firefox. Already installed.</p>
+<h3>2. A text editor</h3>
+<p><strong>VS Code</strong> — free, and what most professionals actually use. Install the "Live Server" extension: it refreshes your page automatically as you type.</p>
+<h3>3. DevTools — the important one</h3>
+<p>Press <strong>F12</strong> (or right-click → Inspect):</p>
+<ul>
+  <li><strong>Elements</strong> — see and edit any page's HTML/CSS live.</li>
+  <li><strong>Console</strong> — errors appear here. Always look here first.</li>
+  <li><strong>Device toolbar</strong> — preview your site as a phone.</li>
+</ul>
+<h3>Your first file</h3>
+<p>Make a folder. Inside it create <strong>index.html</strong>. Double-click it — it opens in your browser. That's the whole workflow. No build step, no server, no account.</p>
+<p><strong>index.html</strong> is special: it's the default page a server hands out for a folder.</p>
+<div class="callout tip">Open DevTools on any famous website and change its headline to your name. Nothing breaks — it's only your copy. It's the best five minutes a beginner can spend.</div>`),
+          quiz("wb-intro-quiz", "Quiz: How the Web Works", [
+            { q: "DNS turns a domain name into…", options: ["HTML", "An IP address", "CSS", "A password"], answer: 1 },
+            { q: "A 404 means…", options: ["OK", "Server broke", "Page not found", "Redirect"], answer: 2 },
+            { q: "Which runs on YOUR device?", options: ["The back-end", "The front-end", "The database", "DNS"], answer: 1 },
+            { q: "The 'S' in HTTPS means…", options: ["Speed", "The connection is encrypted", "Server", "Simple"], answer: 1 },
+            { q: "Which file name does a server serve by default for a folder?", options: ["main.html", "index.html", "home.html", "start.html"], answer: 1 },
+            { q: "Which key opens DevTools?", options: ["F1", "F12", "Esc", "Tab"], answer: 1 },
+          ]),
         ],
       },
       {
-        title: "HTML Basics — Structure & Content",
+        title: "2 · HTML — Structure & Content",
         lessons: [
-          video("wb-first-page", "Your First HTML Page", "9 min", `
-<p>HTML (HyperText Markup Language) describes the <strong>structure</strong> of a page. Let's write a complete one.</p>
+          article("wb-first-page", "Your First HTML Page", "7 min", `
+<p>Type this into <strong>index.html</strong> and open it. It's a real website.</p>
 <pre><code>&lt;!DOCTYPE html&gt;
 &lt;html lang="en"&gt;
   &lt;head&gt;
-    &lt;meta charset="UTF-8"&gt;
-    &lt;title&gt;My First Website&lt;/title&gt;
+    &lt;meta charset="utf-8"&gt;
+    &lt;title&gt;My Page&lt;/title&gt;
   &lt;/head&gt;
   &lt;body&gt;
     &lt;h1&gt;Hello, world!&lt;/h1&gt;
-    &lt;p&gt;This is my very first web page.&lt;/p&gt;
+    &lt;p&gt;My first page.&lt;/p&gt;
   &lt;/body&gt;
 &lt;/html&gt;</code></pre>
-<h3>What each piece does</h3>
+<h3>What each line does</h3>
 <ul>
-  <li><code>&lt;!DOCTYPE html&gt;</code> — says "this is a modern HTML page."</li>
-  <li><code>&lt;head&gt;</code> — hidden info like the page title (shown in the browser tab).</li>
-  <li><code>&lt;body&gt;</code> — the visible content.</li>
+  <li><strong>&lt;!DOCTYPE html&gt;</strong> — "this is modern HTML".</li>
+  <li><strong>lang="en"</strong> — the language (use "my" for Burmese). Screen readers need this.</li>
+  <li><strong>charset="utf-8"</strong> — makes non-English characters work. Skip it and Burmese turns to garbage.</li>
+  <li><strong>&lt;head&gt;</strong> — info <em>about</em> the page. Invisible.</li>
+  <li><strong>&lt;title&gt;</strong> — the browser tab.</li>
+  <li><strong>&lt;body&gt;</strong> — everything people see.</li>
 </ul>
 <h3>Tags come in pairs</h3>
-<pre><code>&lt;p&gt;This is content&lt;/p&gt;
- ^opening tag    ^closing tag (note the /)</code></pre>
-<div class="callout tip">Save this as <code>index.html</code> and open it — you just built a web page from scratch! 🎉</div>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> in the 🧪 Playground, type out the full HTML page above. Then change the <code>&lt;h1&gt;</code> to your own name, and add a second <code>&lt;p&gt;</code> about your favorite hobby.</div>`,
-          ), // add a real video later, e.g. "videos/wb-first-page.webm" — no placeholder demos
-          video("wb-text", "Headings, Paragraphs & Text", "8 min", `
-<h3>Headings</h3>
-<p>Headings range from <code>&lt;h1&gt;</code> (biggest / most important) down to <code>&lt;h6&gt;</code>. Use one <code>&lt;h1&gt;</code> per page for the main title.</p>
-<pre><code>&lt;h1&gt;My Blog&lt;/h1&gt;
-&lt;h2&gt;My First Post&lt;/h2&gt;
-&lt;h3&gt;A subsection&lt;/h3&gt;</code></pre>
+<p>An opening <strong>&lt;p&gt;</strong>, content, a closing <strong>&lt;/p&gt;</strong>. The slash means "closing". A few tags — like <strong>&lt;img&gt;</strong> and <strong>&lt;br&gt;</strong> — have no content, so they don't close.</p>
+<h3>Nesting</h3>
+<p>Tags go inside tags, like boxes in boxes. Close them in reverse order and indent two spaces per level — future-you will be grateful.</p>
+<div class="callout tip">Change "Hello, world!" to your name and hit refresh. You just edited a website. That loop — change, refresh, see — is the entire job.</div>`),
+          article("wb-text", "Headings, Paragraphs & Text", "6 min", `
+<p>Most of the web is text. HTML describes what that text <em>means</em>.</p>
+<h3>Headings are an outline</h3>
+<pre><code>&lt;h1&gt;My Site&lt;/h1&gt;        &lt;!-- one per page --&gt;
+  &lt;h2&gt;About me&lt;/h2&gt;
+    &lt;h3&gt;My hobbies&lt;/h3&gt;
+  &lt;h2&gt;Contact&lt;/h2&gt;</code></pre>
+<p>h1 to h6. Use <strong>one h1</strong> — the page's real title — then h2 for sections. They're an <em>outline</em>, not font sizes. Blind users jump heading to heading; Google reads it the same way.</p>
 <h3>Paragraphs and emphasis</h3>
-<pre><code>&lt;p&gt;This is a paragraph of text.&lt;/p&gt;
-&lt;p&gt;You can make words &lt;strong&gt;bold&lt;/strong&gt;
-   or &lt;em&gt;italic&lt;/em&gt; for emphasis.&lt;/p&gt;</code></pre>
-<div class="callout">Headings aren't just "big text" — they give your page an outline that search engines and screen readers rely on. Use them in order.</div>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> in the 🧪 Playground, build a mini blog: an <code>&lt;h1&gt;</code> title, an <code>&lt;h2&gt;</code> post heading, and a paragraph with one <strong>bold</strong> word and one <em>italic</em> word.</div>`),
-          video("wb-links", "Links & Navigation", "8 min", `
-<p>Links are what make the web a <em>web</em>. They use the anchor tag <code>&lt;a&gt;</code> with an <code>href</code> ("hypertext reference") attribute.</p>
-<pre><code>&lt;a href="https://wikipedia.org"&gt;Visit Wikipedia&lt;/a&gt;
-
-&lt;!-- link to another page in your site --&gt;
-&lt;a href="about.html"&gt;About Me&lt;/a&gt;
-
-&lt;!-- open in a new tab --&gt;
-&lt;a href="https://google.com" target="_blank"&gt;Google&lt;/a&gt;</code></pre>
-<h3>What is an attribute?</h3>
-<p>An <strong>attribute</strong> is extra information inside the opening tag, written as <code>name="value"</code>. Here <code>href</code> and <code>target</code> are attributes.</p>
-<div class="callout tip">A link's text should describe where it goes. "Click here" is unhelpful; "Read the docs" is clear.</div>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> in the 🧪 Playground, create a link to your favorite website that opens in a new tab (<code>target="_blank"</code>) — and give it clear text that says where it goes.</div>`),
-          video("wb-images", "Images & Media", "7 min", `
-<p>Add pictures with the <code>&lt;img&gt;</code> tag. It's <strong>self-closing</strong> — there's no <code>&lt;/img&gt;</code>.</p>
-<pre><code>&lt;img src="photo.jpg" alt="A golden retriever puppy" width="400"&gt;</code></pre>
-<h3>The three things to know</h3>
+<pre><code>&lt;p&gt;A normal paragraph.&lt;/p&gt;
+&lt;p&gt;This is &lt;strong&gt;important&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;This is &lt;em&gt;emphasised&lt;/em&gt;.&lt;/p&gt;</code></pre>
+<p><strong>&lt;strong&gt;</strong> means important (and looks bold). <strong>&lt;em&gt;</strong> means emphasis (and looks italic). Choose them for meaning — CSS handles looks.</p>
+<h3>Don't use headings for size</h3>
+<p>Want big text? That's CSS's job. Picking &lt;h4&gt; because "it's the right size" breaks the page for everyone using a screen reader.</p>
+<h3>Comments</h3>
+<pre><code>&lt;!-- notes for yourself; not shown --&gt;</code></pre>
+<div class="callout warn">Never skip heading levels (h1 → h4) just to get a size. Keep the outline honest and let CSS decide how big things look.</div>`),
+          article("wb-links", "Links & Navigation", "6 min", `
+<p>Links are what make the web a <em>web</em>.</p>
+<pre><code>&lt;a href="https://google.com"&gt;Google&lt;/a&gt;
+&lt;a href="about.html"&gt;About&lt;/a&gt;
+&lt;a href="#contact"&gt;Jump to contact&lt;/a&gt;
+&lt;a href="mailto:me@x.com"&gt;Email me&lt;/a&gt;</code></pre>
 <ul>
-  <li><code>src</code> — the image file's location (a filename or a full URL).</li>
-  <li><code>alt</code> — a text description, read aloud by screen readers and shown if the image fails to load.</li>
-  <li><code>width</code> / <code>height</code> — optional size in pixels.</li>
+  <li><strong>href</strong> — where it goes.</li>
+  <li>Full URL for other sites; a file name for your own pages.</li>
+  <li><strong>#id</strong> jumps to a spot on the same page.</li>
 </ul>
-<div class="callout"><strong>Always write good <code>alt</code> text.</strong> It makes your site usable for people who can't see the image — and it's good for SEO.</div>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> in the 🧪 Playground, add an image using a full URL (any image link you know), give it good <code>alt</code> text describing the picture, and set <code>width="300"</code>.</div>`),
-          video("wb-lists", "Lists", "6 min", `
-<p>Two everyday list types:</p>
-<pre><code>&lt;!-- bulleted list --&gt;
-&lt;ul&gt;
-  &lt;li&gt;Milk&lt;/li&gt;
-  &lt;li&gt;Eggs&lt;/li&gt;
-  &lt;li&gt;Bread&lt;/li&gt;
-&lt;/ul&gt;
+<h3>New tab, safely</h3>
+<pre><code>&lt;a href="https://x.com" target="_blank" rel="noopener"&gt;Open&lt;/a&gt;</code></pre>
+<p><strong>rel="noopener"</strong> stops the new page getting access back to yours. Always pair them.</p>
+<h3>Navigation is a list of links</h3>
+<pre><code>&lt;nav&gt;
+  &lt;ul&gt;
+    &lt;li&gt;&lt;a href="index.html"&gt;Home&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="about.html"&gt;About&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;</code></pre>
+<p>That's how every real site does it — because it genuinely <em>is</em> a list.</p>
+<h3>Write link text that stands alone</h3>
+<p>Screen readers can list every link with no surrounding text. "Click here" ×10 is useless; "Read the 2026 price list" is perfect.</p>
+<div class="callout tip">Keep file names lowercase with no spaces — about-me.html, not About Me.html. Servers are fussy about spaces and capitals; your laptop isn't.</div>`),
+          article("wb-images", "Images & Media", "6 min", `
+<p>Pictures make a page feel alive — and are usually what makes it slow.</p>
+<pre><code>&lt;img src="cat.jpg" alt="A ginger cat asleep on a laptop"&gt;</code></pre>
+<ul>
+  <li><strong>src</strong> — the file.</li>
+  <li><strong>alt</strong> — a description. <em>Not optional.</em></li>
+</ul>
+<h3>alt text matters</h3>
+<p>It's what a blind user hears, what shows if the image fails, and what Google reads. Describe the <em>purpose</em>: "A ginger cat asleep on a laptop", not "IMG_2931.jpg". For purely decorative images, use <strong>alt=""</strong> so it's skipped.</p>
+<h3>Paths</h3>
+<pre><code>&lt;img src="cat.jpg"&gt;           same folder
+&lt;img src="images/cat.jpg"&gt;    a subfolder
+&lt;img src="../cat.jpg"&gt;        one folder up</code></pre>
+<p>Image not showing? It's the path, or the capitals. <strong>Cat.JPG</strong> and <strong>cat.jpg</strong> are different files on a real server.</p>
+<h3>Keep them small and stable</h3>
+<pre><code>&lt;img src="cat.jpg" alt="..." width="800" height="600" loading="lazy"&gt;</code></pre>
+<p><strong>width/height</strong> stop the page jumping as it loads. <strong>loading="lazy"</strong> delays off-screen images. And resize before uploading — a 4MB phone photo has no business on a web page.</p>
+<div class="callout warn">Resizing and compressing images is the single biggest speed improvement most sites can make. Bigger than any code change.</div>`),
+          article("wb-lists", "Lists", "5 min", `
+<p>The web runs on lists: menus, search results, feeds, steps.</p>
+<h3>Two kinds</h3>
+<pre><code>&lt;ul&gt;                    &lt;ol&gt;
+  &lt;li&gt;Milk&lt;/li&gt;           &lt;li&gt;Wake up&lt;/li&gt;
+  &lt;li&gt;Bread&lt;/li&gt;          &lt;li&gt;Code&lt;/li&gt;
+&lt;/ul&gt;                   &lt;/ol&gt;</code></pre>
+<ul>
+  <li><strong>&lt;ul&gt;</strong> — unordered (bullets). Order doesn't matter.</li>
+  <li><strong>&lt;ol&gt;</strong> — ordered (numbers). Steps, rankings.</li>
+  <li><strong>&lt;li&gt;</strong> — one item. Always inside ul or ol.</li>
+</ul>
+<h3>Nesting</h3>
+<pre><code>&lt;ul&gt;
+  &lt;li&gt;Fruit
+    &lt;ul&gt;
+      &lt;li&gt;Mango&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+<p>The inner list goes <em>inside</em> the &lt;li&gt;, not between them.</p>
+<h3>Why real lists matter</h3>
+<p>A screen reader announces "list, 3 items" and lets users skip it. Type bullets by hand with &lt;br&gt; and all that context is gone.</p>
+<div class="callout tip">Bullets ugly? Don't fake the list — style it. list-style: none in CSS removes the dots while keeping the meaning intact.</div>`),
+          article("wb-forms", "Forms: Asking for Input", "6 min", `
+<p>Forms are how a site asks the user for something.</p>
+<pre><code>&lt;form&gt;
+  &lt;label for="name"&gt;Your name&lt;/label&gt;
+  &lt;input type="text" id="name" required&gt;
 
-&lt;!-- numbered list --&gt;
-&lt;ol&gt;
-  &lt;li&gt;Preheat the oven&lt;/li&gt;
-  &lt;li&gt;Mix the batter&lt;/li&gt;
-  &lt;li&gt;Bake for 20 minutes&lt;/li&gt;
-&lt;/ol&gt;</code></pre>
-<p><code>&lt;ul&gt;</code> = <em>unordered</em> (bullets), <code>&lt;ol&gt;</code> = <em>ordered</em> (numbers). Each item goes in an <code>&lt;li&gt;</code> ("list item").</p>
-<div class="callout tip">Navigation menus are usually built as a <code>&lt;ul&gt;</code> of links — lists are everywhere once you notice them.</div>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> in the 🧪 Playground, make a bulleted <code>&lt;ul&gt;</code> shopping list (3 items) and a numbered <code>&lt;ol&gt;</code> of steps to make tea.</div>`),
+  &lt;label for="email"&gt;Email&lt;/label&gt;
+  &lt;input type="email" id="email" required&gt;
+
+  &lt;button type="submit"&gt;Send&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+<h3>Types do work for you</h3>
+<ul>
+  <li><strong>text</strong> — anything.</li>
+  <li><strong>email</strong> — checks for an @, shows an email keyboard on phones.</li>
+  <li><strong>tel</strong> — brings up the number pad.</li>
+  <li><strong>password</strong> — hides the characters.</li>
+  <li><strong>checkbox</strong>, <strong>radio</strong>, <strong>date</strong>, <strong>number</strong>.</li>
+</ul>
+<p>One word gives you free checking <em>and</em> a better mobile keyboard.</p>
+<h3>Labels are required</h3>
+<p><strong>&lt;label for="name"&gt;</strong> must match <strong>id="name"</strong>. Then tapping the label focuses the box and screen readers announce it. Placeholder text is <em>not</em> a label — it vanishes the moment you type.</p>
+<h3>Free validation</h3>
+<p><strong>required</strong> alone stops an empty submit, with no JavaScript at all.</p>
+<div class="callout">A plain HTML form can't email you by itself — that needs a back-end or a free form service. For now, building it correctly is the win.</div>`),
           quiz("wb-html-quiz", "Quiz: HTML Basics", [
-            {
-              q: "Which tag holds the content you actually see on the page?",
-              options: ["&lt;head&gt;", "&lt;title&gt;", "&lt;body&gt;", "&lt;meta&gt;"],
-              answer: 2,
-            },
-            {
-              q: "Which attribute tells a link where to go?",
-              options: ["src", "href", "link", "goto"],
-              answer: 1,
-            },
-            {
-              q: "Which tag creates a bulleted list?",
-              options: ["&lt;ol&gt;", "&lt;li&gt;", "&lt;ul&gt;", "&lt;list&gt;"],
-              answer: 2,
-            },
-            {
-              q: "What is the alt attribute on an image for?",
-              options: [
-                "Making the image bigger",
-                "A text description for accessibility and when the image fails",
-                "Adding a caption below the image",
-                "It's not needed",
-              ],
-              answer: 1,
-            },
+            { q: "How many &lt;h1&gt; should a page normally have?", options: ["As many as you like", "One", "Six", "Zero"], answer: 1 },
+            { q: "The alt attribute is for…", options: ["Making images load faster", "Describing the image for screen readers and when it fails", "Styling", "Nothing"], answer: 1 },
+            { q: "Which makes a NUMBERED list?", options: ["&lt;ul&gt;", "&lt;ol&gt;", "&lt;li&gt;", "&lt;dl&gt;"], answer: 1 },
+            { q: "What goes in the href attribute?", options: ["The link text", "Where the link goes", "The colour", "The size"], answer: 1 },
+            { q: "A &lt;label for='x'&gt; must match the input's…", options: ["class", "id", "type", "name"], answer: 1 },
+            { q: "Why is charset='utf-8' important?", options: ["Speed", "Non-English text (like Burmese) displays correctly", "SEO", "Security"], answer: 1 },
+            { q: "target='_blank' should always be paired with…", options: ["rel='noopener'", "alt", "id", "class"], answer: 0 },
           ]),
         ],
       },
       {
-        title: "CSS Basics — Making It Look Good",
+        title: "3 · CSS — Making It Look Good",
         lessons: [
-          video("wb-css-add", "Adding CSS to Your Page", "8 min", `
-<p>CSS (Cascading Style Sheets) controls how your page <strong>looks</strong> — colors, fonts, spacing, layout.</p>
-<h3>The recommended way: a separate file</h3>
-<p>Create <code>style.css</code>, then link it inside your HTML <code>&lt;head&gt;</code>:</p>
-<pre><code>&lt;head&gt;
-  &lt;link rel="stylesheet" href="style.css"&gt;
-&lt;/head&gt;</code></pre>
-<h3>How a CSS rule reads</h3>
-<pre><code>h1 {
-  color: navy;
-  font-size: 40px;
-}
-/*  ^selector   ^property: value; */</code></pre>
-<p>This says: "find every <code>&lt;h1&gt;</code>, make it navy and 40px."</p>
-<div class="flow">
-  <div class="flow-box">h1<br><small>selector<br>WHAT to style</small></div>
-  <div class="flow-arrow" data-label="set its"></div>
-  <div class="flow-box alt">color<br><small>property<br>WHAT to change</small></div>
-  <div class="flow-arrow" data-label="to"></div>
-  <div class="flow-box warn">navy<br><small>value<br>the new look</small></div>
-</div>
-<div class="callout"><strong>Selectors</strong> pick <em>what</em> to style. Common ones: <code>h1</code> (by tag), <code>.intro</code> (by class), <code>#header</code> (by id).</p></div>
-<h3>💻 Example</h3>
-<pre><code>&lt;h1&gt;My Shop&lt;/h1&gt;
-&lt;p class="intro"&gt;Welcome!&lt;/p&gt;
+          article("wb-css-add", "Adding CSS to Your Page", "6 min", `
+<p><strong>CSS</strong> decides how things look. HTML says "this is a heading"; CSS says "make it purple".</p>
+<h3>The shape of a rule</h3>
+<pre><code>h1 {                /* selector */
+  color: purple;    /* property: value; */
+  font-size: 32px;
+}</code></pre>
+<p>Don't forget the semicolon after every line, or the rest of the block quietly stops working.</p>
+<h3>Three ways to add it — use the third</h3>
+<pre><code>&lt;h1 style="color:red"&gt;          &lt;!-- inline: avoid --&gt;
 
-&lt;style&gt;
-  h1     { color: purple; }
-  .intro { color: gray; font-size: 20px; }
-&lt;/style&gt;</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> in the 🧪 Playground, add an <code>&lt;h1&gt;</code> and write a style rule that makes it your favorite color and <code>50px</code> big. Then add a paragraph and give it a different color.</div>`),
-          video("wb-css-color", "Colors & Backgrounds", "7 min", `
+&lt;style&gt; h1 { color: red; } &lt;/style&gt;   &lt;!-- in the head --&gt;
+
+&lt;link rel="stylesheet" href="style.css"&gt;  &lt;!-- ✓ best --&gt;</code></pre>
+<p>An external <strong>style.css</strong> means one change restyles every page. That's the whole point.</p>
+<h3>Selecting things</h3>
+<pre><code>p        { }   /* every paragraph */
+.card    { }   /* class="card"  — your main tool */
+#hero    { }   /* id="hero"     — one only */
+.card p  { }   /* p inside .card */</code></pre>
+<p>Use <strong>classes</strong> for nearly everything — you can reuse them as often as you like.</p>
+<h3>When rules fight</h3>
+<p>The more specific one wins: <strong>id &gt; class &gt; element</strong>. On a tie, the one written last wins.</p>
+<div class="callout tip">Style not applying? Inspect the element (F12). Overridden rules show with a line through them — you'll see instantly what beat you.</div>`),
+          article("wb-css-color", "Colours & Backgrounds", "5 min", `
+<p>Colour is the fastest way to make a page yours.</p>
+<h3>Four ways to write a colour</h3>
+<pre><code>color: red;                    /* name */
+color: #a435f0;                /* hex — the standard */
+color: rgb(164, 53, 240);
+color: rgba(0, 0, 0, 0.5);     /* 50% transparent */</code></pre>
+<p>Hex is what you'll see everywhere: <strong>#RRGGBB</strong>, two digits each for red, green, blue.</p>
+<h3>Backgrounds</h3>
 <pre><code>body {
-  background-color: #f4f4f4;   /* light gray page */
-  color: #222;                  /* dark text */
+  background: #f7f9fa;
 }
-.button {
-  background-color: #a435f0;    /* purple */
+.hero {
+  background: linear-gradient(135deg, #7b2ff7, #f107a3);
   color: white;
 }</code></pre>
-<h3>Ways to write a color</h3>
-<ul>
-  <li><strong>Name:</strong> <code>red</code>, <code>navy</code>, <code>tomato</code></li>
-  <li><strong>Hex:</strong> <code>#a435f0</code> (used most in practice)</li>
-  <li><strong>RGB:</strong> <code>rgb(164, 53, 240)</code></li>
-</ul>
-<div class="callout tip">Try free palette tools like coolors.co to pick colors that look good together.</div>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> in the 🧪 Playground, give your page a soft <code>background</code> color, make the <code>&lt;h1&gt;</code> a bold color, and give a <code>&lt;button&gt;</code> a colored background with white text.</div>`),
-          video("wb-css-text", "Text & Fonts", "7 min", `
+<p>Gradients are drawn by the browser — no image to download, and they scale perfectly.</p>
+<h3>Contrast is not optional</h3>
+<p>Light grey on white looks stylish on your bright laptop and is invisible in sunlight or to older eyes. Aim for strong contrast on body text — it's an accessibility requirement, not a taste question.</p>
+<div class="callout tip">Pick 2-3 colours and reuse them. Beginner pages look chaotic mostly because they use twelve. One brand colour + a grey + white goes a long way.</div>`),
+          article("wb-css-text", "Text & Fonts", "6 min", `
+<p>Typography is most of what "looks professional" actually means.</p>
+<h3>The properties</h3>
 <pre><code>body {
-  font-family: "Segoe UI", Arial, sans-serif;
+  font-family: system-ui, "Segoe UI", Roboto, sans-serif;
   font-size: 16px;
-  line-height: 1.6;      /* space between lines */
+  line-height: 1.5;
+  color: #1c1d1f;
 }
-h1 {
-  font-weight: bold;
-  text-align: center;
-}</code></pre>
+h1 { font-weight: 700; }
+.center { text-align: center; }</code></pre>
 <h3>Font stacks</h3>
-<p>List several fonts as fallbacks. The browser uses the first one it has, ending with a generic family like <code>sans-serif</code>.</p>
-<div class="callout">Comfortable body text is around <code>16px</code> with a <code>line-height</code> of <code>1.5</code>–<code>1.6</code>. Cramped text is hard to read.</div>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> in the 🧪 Playground, add a paragraph of text, then change its <code>font-family</code>, set <code>font-size: 18px</code>, and <code>line-height: 1.6</code>. Notice how much easier it is to read.</div>`),
-          video("wb-css-box", "Spacing & the Box Model", "9 min", `
-<p>Every element is a rectangular <strong>box</strong>. Understanding its layers is the key to controlling spacing.</p>
+<p>List several, ending with a generic (<strong>sans-serif</strong>). The browser uses the first one available. <strong>system-ui</strong> uses the device's own font — instant, free, and it looks native.</p>
+<h3>The two numbers that matter most</h3>
 <ul>
-  <li><strong>content</strong> — the text or image itself</li>
-  <li><strong>padding</strong> — space <em>inside</em> the box, around the content</li>
-  <li><strong>border</strong> — the edge line</li>
-  <li><strong>margin</strong> — space <em>outside</em> the box, pushing other elements away</li>
+  <li><strong>font-size: 16px</strong> minimum for body. Smaller isn't sleek, it's unreadable.</li>
+  <li><strong>line-height: 1.5</strong> — cramped lines are the #1 reason a page looks amateur.</li>
 </ul>
+<h3>Burmese text needs room</h3>
+<p>Myanmar script is taller than Latin. Give it more line-height — around <strong>1.7</strong> — or the lines collide.</p>
+<h3>Line length</h3>
+<p><strong>max-width: 65ch</strong> keeps lines readable. Text stretched across a wide monitor is genuinely hard to follow.</p>
+<div class="callout tip">line-height: 1.6 and max-width: 65ch on your body text. Two lines that fix most "my site looks off" problems instantly.</div>`),
+          article("wb-css-box", "Spacing & the Box Model", "7 min", `
+<p>Every element is a rectangle with four layers. This is the idea that makes CSS click.</p>
 <div class="flow">
-  <div class="flow-box">content</div>
-  <div class="flow-arrow" data-label="wrapped in"></div>
-  <div class="flow-box alt">padding</div>
-  <div class="flow-arrow" data-label="then"></div>
-  <div class="flow-box warn">border</div>
-  <div class="flow-arrow" data-label="then"></div>
-  <div class="flow-box">margin</div>
+  <div class="flow-box">📦 Content</div>
+  <div class="flow-arrow" data-label="inside"></div>
+  <div class="flow-box alt">🛏️ Padding</div>
+  <div class="flow-arrow" data-label="edge"></div>
+  <div class="flow-box">🖼️ Border</div>
+  <div class="flow-arrow" data-label="outside"></div>
+  <div class="flow-box warn">↔️ Margin</div>
 </div>
+<h3>Padding vs margin</h3>
+<p><strong>Padding</strong> = space inside your shirt. <strong>Margin</strong> = space between you and the next person. That's the whole difference.</p>
 <pre><code>.card {
-  padding: 20px;                 /* breathing room inside */
-  border: 1px solid #ddd;        /* thin gray edge */
-  margin: 16px;                  /* gap around the card */
-  border-radius: 8px;            /* rounded corners */
+  padding: 20px;              /* all sides */
+  margin: 0 auto;             /* top/bottom 0, left/right auto */
+  border: 1px solid #ddd;
+  border-radius: 10px;
 }</code></pre>
-<div class="callout tip">Add this near the top of your CSS to make sizes behave intuitively:<br><code>* { box-sizing: border-box; }</code></div>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> in the 🧪 Playground, make a <code>&lt;div class="card"&gt;</code> with some text, then give <code>.card</code> a background color, <code>padding: 24px</code>, a <code>2px</code> border, and <code>margin: 20px</code>. Change each number and watch the spacing move!</div>`),
-          video("wb-css-flex", "Simple Layouts with Flexbox", "10 min", `
-<p>To place items side by side (like a navigation bar), use <strong>Flexbox</strong>.</p>
-<pre><code>.navbar {
+<p><strong>margin: 0 auto</strong> with a width centres a block horizontally — a classic you'll use constantly.</p>
+<h3>The fix everyone uses</h3>
+<pre><code>* {
+  box-sizing: border-box;
+}</code></pre>
+<p>By default, width means the <em>content only</em> — so width:200px plus 20px padding renders 240px wide. This one line makes width mean the whole box. Put it at the top of every stylesheet.</p>
+<h3>Spacing is design</h3>
+<p>Generous, consistent spacing is most of what separates a professional page from a cramped one. When something looks wrong, it's usually spacing.</p>
+<div class="callout tip">Add outline: 1px solid red to an element to see its real box. Instantly reveals where your space is actually going.</div>`),
+          article("wb-css-flex", "Simple Layouts with Flexbox", "7 min", `
+<p><strong>Flexbox</strong> arranges things in a row or a column. It ended a decade of layout misery.</p>
+<h3>Turn it on</h3>
+<pre><code>.row {
   display: flex;
-  justify-content: space-between; /* push items apart */
-  align-items: center;            /* line them up vertically */
-  gap: 16px;                      /* space between items */
+  gap: 16px;
 }</code></pre>
-<h3>Centering anything</h3>
+<p>The children line up in a row. <strong>gap</strong> spaces them evenly — no margins needed.</p>
+<h3>The four you need</h3>
+<ul>
+  <li><strong>flex-direction</strong> — row (default) or column.</li>
+  <li><strong>justify-content</strong> — spreads along the row: center, space-between.</li>
+  <li><strong>align-items</strong> — lines up across it: center.</li>
+  <li><strong>flex-wrap: wrap</strong> — lets items drop to a new line on small screens.</li>
+</ul>
+<h3>The navbar</h3>
+<pre><code>nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}</code></pre>
+<p>Logo left, links right, vertically centred. Two lines.</p>
+<h3>Perfect centring — finally</h3>
 <pre><code>.hero {
   display: flex;
-  justify-content: center;  /* horizontal center */
-  align-items: center;      /* vertical center */
+  justify-content: center;
+  align-items: center;
   height: 300px;
 }</code></pre>
-<div class="callout">Flexbox is one of the most useful things in all of CSS. Just three lines can center content that used to take real effort.</div>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> in the 🧪 Playground, put three <code>&lt;div&gt;</code> boxes inside a parent, then give the parent <code>display: flex; gap: 12px; justify-content: center;</code> — watch them line up in a neat row.</div>`),
-          quiz("wb-css-quiz", "Quiz: CSS Basics", [
-            {
-              q: "How do you link an external stylesheet?",
-              options: [
-                "&lt;style src=\"style.css\"&gt;",
-                "&lt;link rel=\"stylesheet\" href=\"style.css\"&gt;",
-                "&lt;css href=\"style.css\"&gt;",
-                "&lt;script src=\"style.css\"&gt;",
-              ],
-              answer: 1,
-            },
-            {
-              q: "In the box model, which layer adds space OUTSIDE the border?",
-              options: ["padding", "margin", "content", "outline"],
-              answer: 1,
-            },
-            {
-              q: "Which property lays items out in a row and lets you space them?",
-              options: ["display: block", "display: flex", "text-align", "float"],
-              answer: 1,
-            },
-            {
-              q: "Which is a hex color?",
-              options: ["rgb(0,0,0)", "navy", "#a435f0", "color: blue"],
-              answer: 2,
-            },
-          ]),
-        ],
-      },
-      {
-        title: "JavaScript Basics — Adding Interactivity",
-        lessons: [
-          video("wb-js-add", "Adding JavaScript", "7 min", `
-<p>JavaScript makes a page <strong>do things</strong> — respond to clicks, change content, react to the user.</p>
-<p>Add it just before the closing <code>&lt;/body&gt;</code> tag:</p>
-<pre><code>  &lt;script src="script.js"&gt;&lt;/script&gt;
-&lt;/body&gt;</code></pre>
-<p>In <code>script.js</code>, try:</p>
-<pre><code>console.log("Hello from JavaScript!");
-alert("The page is alive!");</code></pre>
-<div class="callout tip">Press <strong>F12</strong> in your browser and open the <em>Console</em> tab to see <code>console.log</code> output — it's how developers check what their code is doing.</div>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> in the 🧪 Playground, use <code>console.log</code> to print your name, then print the result of <code>7 * 8</code>. Check the Console panel below the result.</div>`),
-          video("wb-js-vars", "Variables & Values", "8 min", `
-<p>A <strong>variable</strong> is a named box that stores a value.</p>
-<pre><code>const name = "Sara";     // text (a "string")
-let age = 25;            // a number
-let isLearning = true;   // true / false (a "boolean")</code></pre>
-<ul>
-  <li>Use <code>const</code> when the value won't change.</li>
-  <li>Use <code>let</code> when it will.</li>
-</ul>
-<h3>Using them</h3>
-<pre><code>console.log("Hi, " + name);   // Hi, Sara
-age = age + 1;                // now 26</code></pre>
-<div class="callout">Think of variables as labels on jars. The label (name) stays the same; you can change what's inside a <code>let</code> jar, but not a <code>const</code> one.</div>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> in the 🧪 Playground, make a <code>let</code> variable for your age and a <code>const</code> for your name, then <code>console.log</code> a sentence like "My name is ... and I am ... years old."</div>`),
-          video("wb-js-click", "Responding to Clicks", "10 min", `
-<p>This is where it gets fun — making a button actually do something.</p>
-<h3>The HTML</h3>
-<pre><code>&lt;button id="myBtn"&gt;Click me&lt;/button&gt;
-&lt;p id="output"&gt;Nothing yet.&lt;/p&gt;</code></pre>
-<h3>The JavaScript</h3>
-<pre><code>const button = document.querySelector("#myBtn");
-const output = document.querySelector("#output");
+<p>Horizontally <em>and</em> vertically centred. This used to be a running joke among developers.</p>
+<div class="callout tip">Add flex-wrap: wrap to any row of cards. On a phone they'll stack by themselves — responsive design, free.</div>`),
+          article("wb-css-responsive", "Making It Work on Phones", "6 min", `
+<p>Most of your visitors are on a phone. A site that breaks there is broken.</p>
+<h3>The tag you must not forget</h3>
+<pre><code>&lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;</code></pre>
+<p>It goes in the &lt;head&gt;. Without it, phones pretend to be a wide desktop and shrink everything to unreadable. This is the #1 "why does my site look tiny on mobile" cause.</p>
+<h3>Media queries</h3>
+<pre><code>.row { display: flex; }
 
-button.addEventListener("click", () =&gt; {
-  output.textContent = "You clicked the button!";
-});</code></pre>
-<p>The pattern is always: <strong>find an element → listen for an event → change something.</strong> Every interactive site is built on this idea.</p>
-<div class="flow">
-  <div class="flow-box">👆 Click<br><small>an event</small></div>
-  <div class="flow-arrow" data-label="runs"></div>
-  <div class="flow-box alt">🧠 Your function<br><small>JavaScript</small></div>
-  <div class="flow-arrow" data-label="changes"></div>
-  <div class="flow-box">📄 The page<br><small>textContent</small></div>
-</div>
-<div class="callout tip"><code>querySelector</code> uses CSS-style selectors: <code>"#id"</code>, <code>".class"</code>, <code>"tag"</code>. Learn selectors once, use them in both CSS and JavaScript.</div>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> in the 🧪 Playground, build a button that shows "Hello!" in a paragraph when clicked. <strong>Bonus:</strong> make a counter that goes up by 1 every time you click.</div>`),
-          quiz("wb-js-quiz", "Quiz: JavaScript Basics", [
-            {
-              q: "Which keyword declares a value that should NOT change?",
-              options: ["let", "const", "var", "value"],
-              answer: 1,
-            },
-            {
-              q: "Where should the <script> tag usually go?",
-              options: [
-                "In the &lt;title&gt;",
-                "Just before the closing &lt;/body&gt; tag",
-                "Inside every paragraph",
-                "It doesn't matter at all",
-              ],
-              answer: 1,
-            },
-            {
-              q: "Which method runs code when a user clicks something?",
-              options: ["querySelector", "addEventListener", "console.log", "textContent"],
-              answer: 1,
-            },
-          ]),
-        ],
-      },
-      {
-        title: "Build Your First Website",
-        lessons: [
-          article("wb-project", "Project: Your First Web Page", "15 min", `
-<p>Let's combine everything into one small, complete page: a personal "intro card."</p>
-<h3>1. The HTML (index.html)</h3>
-<pre><code>&lt;!DOCTYPE html&gt;
-&lt;html lang="en"&gt;
-  &lt;head&gt;
-    &lt;meta charset="UTF-8"&gt;
-    &lt;title&gt;About Me&lt;/title&gt;
-    &lt;link rel="stylesheet" href="style.css"&gt;
-  &lt;/head&gt;
-  &lt;body&gt;
-    &lt;div class="card"&gt;
-      &lt;h1&gt;Hi, I'm Alex 👋&lt;/h1&gt;
-      &lt;p&gt;I'm learning web development.&lt;/p&gt;
-      &lt;ul&gt;
-        &lt;li&gt;☕ Coffee lover&lt;/li&gt;
-        &lt;li&gt;🎸 Guitar player&lt;/li&gt;
-      &lt;/ul&gt;
-      &lt;button id="btn"&gt;Say hello&lt;/button&gt;
-      &lt;p id="msg"&gt;&lt;/p&gt;
-    &lt;/div&gt;
-    &lt;script src="script.js"&gt;&lt;/script&gt;
-  &lt;/body&gt;
-&lt;/html&gt;</code></pre>
-<h3>2. The CSS (style.css)</h3>
-<pre><code>* { box-sizing: border-box; }
-
-body {
-  font-family: "Segoe UI", Arial, sans-serif;
-  background: #f4f4f4;
-  display: flex;
-  justify-content: center;
-  padding: 40px;
-}
-.card {
-  background: white;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,.1);
-  text-align: center;
-  max-width: 360px;
-}
-button {
-  background: #a435f0;
-  color: white;
-  border: none;
-  padding: 10px 18px;
-  border-radius: 8px;
-  cursor: pointer;
+@media (max-width: 600px) {
+  .row { flex-direction: column; }
 }</code></pre>
-<h3>3. The JavaScript (script.js)</h3>
-<pre><code>const btn = document.querySelector("#btn");
-const msg = document.querySelector("#msg");
+<p>"On screens up to 600px, stack instead of row."</p>
+<h3>Avoid fixed widths</h3>
+<pre><code>.box { width: 900px; }      /* ✗ breaks a 400px phone */
+.box { max-width: 900px; }  /* ✓ shrinks when it must */</code></pre>
+<p><strong>max-width</strong> means "no wider than this" — it happily gets smaller. Also add <strong>img { max-width: 100%; }</strong> so images never overflow.</p>
+<h3>Test honestly</h3>
+<p>Drag your browser narrow and watch where it breaks — that's your breakpoint. Then check on a real phone, on mobile data.</p>
+<div class="callout warn">A horizontal scrollbar on a phone means something has a fixed width that's too big. That's almost always the bug.</div>`),
+          quiz("wb-css-quiz", "Quiz: CSS Basics", [
+            { q: "The best way to add CSS to a multi-page site is…", options: ["Inline style attributes", "An external .css file with &lt;link&gt;", "A &lt;style&gt; block on every page", "JavaScript"], answer: 1 },
+            { q: "Which selector targets class='card'?", options: ["#card", ".card", "card", "*card"], answer: 1 },
+            { q: "Padding is…", options: ["Space outside the border", "Space inside, between content and border", "The border", "The text"], answer: 1 },
+            { q: "box-sizing: border-box makes width include…", options: ["Only content", "Padding and border too", "Margin", "Nothing"], answer: 1 },
+            { q: "To centre a block horizontally you often use…", options: ["margin: 0 auto", "padding: auto", "text-align: middle", "float: center"], answer: 0 },
+            { q: "Which centres both horizontally AND vertically?", options: ["text-align: center", "display:flex + justify-content:center + align-items:center", "margin: 0", "position: fixed"], answer: 1 },
+            { q: "Without the viewport meta tag, phones will…", options: ["Work fine", "Pretend to be desktop and shrink the page", "Show an error", "Load faster"], answer: 1 },
+            { q: "Instead of width: 900px you should prefer…", options: ["max-width: 900px", "min-width: 900px", "height: 900px", "flex: 900"], answer: 0 },
+          ]),
+        ],
+      },
+      {
+        title: "4 · JavaScript — Adding Interactivity",
+        lessons: [
+          article("wb-js-add", "Adding JavaScript", "5 min", `
+<p><strong>JavaScript</strong> makes a page <em>do</em> things — respond, change, react.</p>
+<h3>Where it goes</h3>
+<pre><code>&lt;script&gt;
+  console.log("Hello from JS!");
+&lt;/script&gt;
 
-btn.addEventListener("click", () =&gt; {
-  msg.textContent = "Thanks for visiting! 🎉";
+&lt;script src="app.js"&gt;&lt;/script&gt;</code></pre>
+<p>Put the tag just before <strong>&lt;/body&gt;</strong>. Why? Your code often looks for elements — and they must exist first. Script at the top = "cannot read property of null".</p>
+<h3>The Console</h3>
+<pre><code>console.log("It works");</code></pre>
+<p>Press F12 → Console to see it. This is where errors appear too. When something doesn't work, look here <em>first</em> — the answer is usually written there.</p>
+<h3>Statements and comments</h3>
+<pre><code>let x = 5;      // one instruction
+/* a longer
+   comment */</code></pre>
+<h3>JavaScript ≠ Java</h3>
+<p>Completely different languages. The name was a 1995 marketing decision, and it has confused people ever since.</p>
+<div class="callout tip">Blank page and nothing happening? Open the Console. A red error naming your file and line number is waiting for you.</div>`),
+          article("wb-js-vars", "Variables & Values", "6 min", `
+<p>A <strong>variable</strong> is a labelled box for a value.</p>
+<pre><code>const name = "Su";     // won't be reassigned
+let score = 0;         // will change
+score = 10;            // fine</code></pre>
+<p>Use <strong>const</strong> by default; switch to <strong>let</strong> only when it genuinely changes. (You'll see <strong>var</strong> in old tutorials — avoid it.)</p>
+<h3>The types you'll use</h3>
+<ul>
+  <li><strong>string</strong> — "hello" (text, in quotes)</li>
+  <li><strong>number</strong> — 42 or 3.14 (no quotes)</li>
+  <li><strong>boolean</strong> — true / false</li>
+  <li><strong>array</strong> — [1, 2, 3] (a list)</li>
+  <li><strong>object</strong> — { name: "Su" } (labelled data)</li>
+</ul>
+<h3>Text vs number</h3>
+<pre><code>"5" + 5      // "55"  ← glued as text!
+5 + 5        // 10
+Number("5") + 5   // 10</code></pre>
+<p>Anything typed into an input box arrives as <em>text</em>. Convert it with <strong>Number()</strong> before doing maths — this catches every beginner once.</p>
+<h3>Show a value</h3>
+<pre><code>const name = "Su";
+console.log("Hello " + name);
+console.log(\`Hello \${name}\`);   // backticks: easier</code></pre>
+<div class="callout tip">Name variables like sentences. userScore beats x. You'll read your code far more often than you write it.</div>`),
+          article("wb-js-click", "Responding to Clicks", "7 min", `
+<p>This is the moment your page becomes an app.</p>
+<h3>Three steps, always</h3>
+<pre><code>&lt;button id="go"&gt;Click me&lt;/button&gt;
+&lt;p id="out"&gt;&lt;/p&gt;
+
+&lt;script&gt;
+  const btn = document.querySelector("#go");   // 1. find it
+
+  btn.addEventListener("click", () =&gt; {        // 2. listen
+    document.querySelector("#out")             // 3. change it
+      .textContent = "You clicked!";
+  });
+&lt;/script&gt;</code></pre>
+<h3>Find, listen, change</h3>
+<ul>
+  <li><strong>querySelector</strong> takes any CSS selector — "#go", ".card", "button". Your CSS knowledge transfers directly.</li>
+  <li><strong>addEventListener</strong> — "when this happens, run this".</li>
+  <li><strong>textContent</strong> — read or set the text inside.</li>
+</ul>
+<h3>Other events</h3>
+<p><strong>input</strong> (every keystroke), <strong>submit</strong> (a form), <strong>keydown</strong> (a key). Same pattern for all of them.</p>
+<h3>Toggling a class is the pro move</h3>
+<pre><code>btn.addEventListener("click", () =&gt; {
+  document.body.classList.toggle("dark");
 });</code></pre>
-<div class="callout tip"><strong>Try it, then make it yours:</strong> change the name, colors, and list items. Add a photo with <code>&lt;img&gt;</code>. This is your page now!</div>
-<h3>🎓 You did it</h3>
-<p>You just built a real, interactive web page using all three core languages. Mark this lesson complete to reach 100%. Next up, dive into the <strong>Complete Web Development Bootcamp</strong> to go deeper!</p>`),
+<p>Keep the look in CSS, and let JS just flip a class. That's how dark mode works on real sites — including this one.</p>
+<div class="callout tip">Find it, listen for it, change it. That's genuinely every interactive website ever built. Everything else is more practice with these three steps.</div>`),
+          article("wb-js-change", "Changing the Page", "6 min", `
+<p>Now go further than text: change styles, build elements, read input.</p>
+<h3>Reading what someone typed</h3>
+<pre><code>&lt;input id="name"&gt;
+&lt;button id="go"&gt;Greet&lt;/button&gt;
+&lt;p id="out"&gt;&lt;/p&gt;
+
+&lt;script&gt;
+  document.querySelector("#go")
+    .addEventListener("click", () =&gt; {
+      const name = document.querySelector("#name").value;
+      document.querySelector("#out").textContent = "Hello " + name;
+    });
+&lt;/script&gt;</code></pre>
+<p><strong>.value</strong> reads an input; <strong>.textContent</strong> reads/sets text elsewhere.</p>
+<h3>Changing classes and styles</h3>
+<pre><code>el.classList.add("active");
+el.classList.remove("active");
+el.classList.toggle("active");
+el.style.color = "purple";        // works, but prefer classes</code></pre>
+<h3>Building new elements</h3>
+<pre><code>const li = document.createElement("li");
+li.textContent = "New item";
+document.querySelector("#list").appendChild(li);</code></pre>
+<p>Create it, fill it, attach it. That's how a to-do list adds a task.</p>
+<h3>Showing and hiding</h3>
+<pre><code>box.style.display = "none";    // hide
+box.style.display = "block";   // show</code></pre>
+<div class="callout warn">Use textContent, not innerHTML, for anything a user typed. innerHTML runs HTML — and that's how sites get hacked.</div>`),
+          quiz("wb-js-quiz", "Quiz: JavaScript Basics", [
+            { q: "Where should the &lt;script&gt; tag usually go?", options: ["In the &lt;head&gt;", "Just before &lt;/body&gt;", "Anywhere", "In the CSS"], answer: 1 },
+            { q: "What is '5' + 5 in JavaScript?", options: ["10", "'55'", "Error", "0"], answer: 1 },
+            { q: "Which finds an element by CSS selector?", options: ["document.find()", "document.querySelector()", "getElement()", "select()"], answer: 1 },
+            { q: "To react to a click you use…", options: ["onClick()", "addEventListener('click', ...)", "click()", "listen()"], answer: 1 },
+            { q: "To read what a user typed in an input you use…", options: [".text", ".value", ".content", ".input"], answer: 1 },
+            { q: "For user-typed text you should use…", options: ["innerHTML", "textContent — safer", "eval", "document.write"], answer: 1 },
+            { q: "Which should you use by default for variables?", options: ["var", "let", "const", "global"], answer: 2 },
+          ]),
+        ],
+      },
+      {
+        title: "5 · Build & Publish",
+        lessons: [
+          article("wb-project", "Project: Your First Web Page", "12 min", `
+<p>Time to build the whole thing yourself. This is your first portfolio piece.</p>
+<h3>What to build</h3>
+<ul>
+  <li>A <strong>nav</strong> bar with your name and 2-3 links.</li>
+  <li>A <strong>hero</strong> — big heading, one line about you, a coloured background.</li>
+  <li>An <strong>about</strong> section — a photo and a paragraph.</li>
+  <li>A <strong>list</strong> of 3 things you're learning.</li>
+  <li>A <strong>button</strong> that changes something when clicked.</li>
+  <li>A <strong>footer</strong> with a link to your GitHub.</li>
+</ul>
+<h3>The file structure</h3>
+<pre><code>my-site/
+  index.html
+  style.css
+  app.js
+  images/
+    me.jpg</code></pre>
+<h3>The checklist</h3>
+<ul>
+  <li>DOCTYPE, lang, charset, title, viewport meta.</li>
+  <li>One h1; headings in order.</li>
+  <li>alt text on every image.</li>
+  <li>External style.css linked.</li>
+  <li>box-sizing: border-box at the top.</li>
+  <li>line-height 1.5+ and max-width on text.</li>
+  <li>Flexbox for the nav.</li>
+  <li>One media query so it works on a phone.</li>
+  <li>A click handler in app.js.</li>
+</ul>
+<h3>Do it in this order</h3>
+<ol>
+  <li>All the HTML first — ugly but complete.</li>
+  <li>Then CSS — colours, spacing, layout.</li>
+  <li>Then one small piece of JavaScript.</li>
+</ol>
+<p>Content, then looks, then behaviour. Trying to do all three at once is how beginners get overwhelmed.</p>
+<div class="callout tip">Don't aim for perfect. Aim for finished. A live, imperfect page beats a beautiful one that only exists in your head.</div>`),
+          article("wb-publish", "Put It Online — Free", "6 min", `
+<p>A site on your laptop isn't a site yet. Publishing takes minutes and costs nothing.</p>
+<h3>The easiest options</h3>
+<ul>
+  <li><strong>Netlify Drop</strong> — literally drag your folder onto the page. It's live in seconds with a real URL.</li>
+  <li><strong>GitHub Pages</strong> — push your files to a repo, turn on Pages. Free, and it doubles as your portfolio/CV.</li>
+  <li><strong>Vercel</strong> — connect a repo, done.</li>
+</ul>
+<p>All free. All give you <strong>HTTPS</strong> automatically.</p>
+<h3>Before you publish</h3>
+<ul>
+  <li>Is the main file called <strong>index.html</strong>?</li>
+  <li>Do all links and image paths work? (Check the capitals — servers care.)</li>
+  <li>Does it look right on a phone?</li>
+  <li>Does it have a &lt;title&gt;?</li>
+</ul>
+<h3>Then share it</h3>
+<p>Send the link to a friend, put it in your CV, post it. A real URL you built is worth more than any certificate at this stage.</p>
+<div class="callout warn">Works locally but broken online? It's almost always a path or a capital letter. Your laptop ignores Cat.jpg vs cat.jpg — a real server does not.</div>`),
+          article("wb-next", "Where to Go Next", "5 min", `
+<p>You can now build and publish a real website. Genuinely — that's the hard part done.</p>
+<h3>What you learned</h3>
+<div class="flow">
+  <div class="flow-box">🦴 HTML</div>
+  <div class="flow-arrow" data-label="structure"></div>
+  <div class="flow-box alt">🎨 CSS</div>
+  <div class="flow-arrow" data-label="style"></div>
+  <div class="flow-box">⚡ JS</div>
+  <div class="flow-arrow" data-label="live"></div>
+  <div class="flow-box warn">🌍 Online</div>
+</div>
+<h3>Your next steps, in order</h3>
+<ol>
+  <li><strong>Build 2-3 more small sites.</strong> A recipe page, a fan page, a shop for a family business. Repetition is what makes it stick.</li>
+  <li><strong>Go deeper</strong> — the HTML Deep Dive and CSS Mastery courses here.</li>
+  <li><strong>Learn JavaScript properly</strong> — JavaScript Essentials.</li>
+  <li><strong>Then the full Bootcamp</strong>, and a framework like React.</li>
+</ol>
+<h3>The honest advice</h3>
+<p>Don't collect tutorials. Build things, get stuck, search the error, fix it. That loop <em>is</em> learning to code — everything else is watching someone else do it.</p>
+<h3>Practice now</h3>
+<p>Head to the 🏋️ Practice Zone below and prove what you've learned. Then take your project into the Build &amp; Showcase area and share it.</p>
+<div class="callout tip">You are past the hardest part — the beginning. Most people never publish anything. You did.</div>`),
         ],
       },
       {
@@ -1346,7 +1777,7 @@ else __exDone(true, "");`),
     rating: 4.7,
     ratings: 42310,
     students: 210500,
-    hours: 14,
+    hours: 22,
     price: "Free",
     free: false,
     color: "linear-gradient(135deg,#2193b0,#6dd5ed)",
@@ -1363,274 +1794,466 @@ else __exDone(true, "");`),
     ],
     sections: [
       {
-        title: "CSS Foundations",
+        title: "1 · CSS Foundations",
         lessons: [
-          article("cm-selectors", "Selectors & Specificity", "12 min", `
-<h3>🎯 Intro</h3>
-<p>When two rules fight over one element, <strong>specificity</strong> decides the winner. Understand it once and CSS stops feeling random.</p>
-<h3>📝 Summary</h3>
+          article("cm-selectors", "Selectors & Specificity", "7 min", `
+<p><strong>CSS</strong> works in two moves: <em>select</em> something, then <em>declare</em> how it looks.</p>
+<h3>The rule</h3>
+<pre><code>.card {            /* selector */
+  color: purple;   /* property: value */
+}</code></pre>
+<h3>The selectors you need</h3>
 <ul>
-  <li>Selectors: <code>p</code> (element) &lt; <code>.card</code> (class) &lt; <code>#header</code> (id)</li>
-  <li>Combinators: <code>.card p</code> (descendant), <code>.card &gt; p</code> (direct child)</li>
-  <li>States: <code>:hover :focus :first-child :not()</code></li>
-  <li>Tie? The <em>later</em> rule in the file wins</li>
+  <li><strong>p</strong> — every p (element)</li>
+  <li><strong>.card</strong> — class. <em>Your main tool.</em></li>
+  <li><strong>#hero</strong> — id (one per page)</li>
+  <li><strong>.card p</strong> — descendant: any p inside .card</li>
+  <li><strong>.card &gt; p</strong> — direct child only</li>
+  <li><strong>a:hover</strong>, <strong>input:focus</strong> — states</li>
+  <li><strong>li:nth-child(2)</strong> — structural</li>
+  <li><strong>:not(.active)</strong> — everything except</li>
 </ul>
-<h3>💻 Example</h3>
-<pre><code>p            { color: gray; }        /* 0-0-1 */
-.note        { color: blue; }        /* 0-1-0 wins over p  */
-#special     { color: purple; }      /* 1-0-0 wins over all */
-
-.card:hover  { border-color: purple; }
-li:first-child { font-weight: 700; }
-button:not(.primary) { opacity: .8; }</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> style three paragraphs so element, class and id rules conflict — predict each winner before checking in the playground.</div>`),
-          article("cm-boxmodel", "The Box Model & Units", "12 min", `
-<h3>🎯 Intro</h3>
-<p>Every element is a box: content + padding + border + margin. Master the box, master layout.</p>
-<h3>📝 Summary</h3>
+<h3>Specificity — the scoring system</h3>
+<p>When rules conflict, CSS scores them: <strong>inline (1000) &gt; id (100) &gt; class (10) &gt; element (1)</strong>. Highest wins. On a tie, the one written <em>last</em> wins.</p>
+<pre><code>#hero p   { color: red; }    /* 101 — wins */
+.box p    { color: blue; }   /* 11 */</code></pre>
+<h3>Don't reach for !important</h3>
+<p>It nukes the cascade and creates a war you'll lose later. If you need it, your selectors are already too specific — fix those instead.</p>
+<div class="callout tip">When a style "won't apply", it's specificity 9 times out of 10. Inspect the element: overridden rules appear with a line through them.</div>`),
+          article("cm-boxmodel", "The Box Model & Units", "7 min", `
+<p>Every element is a rectangle with four layers. This is the concept that makes CSS click.</p>
+<div class="flow">
+  <div class="flow-box">📦 Content</div>
+  <div class="flow-arrow" data-label="inside"></div>
+  <div class="flow-box alt">🛏️ Padding</div>
+  <div class="flow-arrow" data-label="edge"></div>
+  <div class="flow-box">🖼️ Border</div>
+  <div class="flow-arrow" data-label="outside"></div>
+  <div class="flow-box warn">↔️ Margin</div>
+</div>
+<h3>Padding vs margin</h3>
+<p><strong>Padding</strong> = space inside your shirt. <strong>Margin</strong> = space between you and the next person. That's genuinely the whole difference.</p>
+<h3>The fix everyone applies</h3>
+<pre><code>* { box-sizing: border-box; }</code></pre>
+<p>By default width means <em>content only</em> — so width:200px + 20px padding renders 240px wide. border-box makes width mean the whole box. Put this at the top of every stylesheet.</p>
+<h3>Units</h3>
 <ul>
-  <li><code>box-sizing: border-box</code> — width includes padding+border (use always!)</li>
-  <li>Padding = inside space; margin = outside space</li>
-  <li>Units: <code>rem</code> for sizes/text, <code>%</code> for fluid widths, <code>vh/vw</code> for viewport, <code>px</code> for borders</li>
+  <li><strong>px</strong> — fixed. Borders, small details.</li>
+  <li><strong>rem</strong> — relative to the root font size. <em>Best for text and spacing</em> — respects user zoom.</li>
+  <li><strong>em</strong> — relative to the parent. Compounds; careful.</li>
+  <li><strong>%</strong> — of the parent.</li>
+  <li><strong>vw / vh</strong> — of the viewport. height:100vh = full screen.</li>
+  <li><strong>fr</strong> — a share of free space (Grid only).</li>
 </ul>
-<h3>💻 Example</h3>
-<pre><code>* { box-sizing: border-box; }
-
-.card {
-  width: 100%;
-  max-width: 20rem;       /* caps at 320px */
-  padding: 1rem 1.5rem;   /* vertical | horizontal */
-  margin: 0 auto;         /* the classic centering trick */
-  border: 1px solid #ddd;
-  border-radius: 10px;
-}
-
-.hero { min-height: 60vh; }  /* 60% of the screen height */</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> build a centered card with comfortable padding — then remove border-box and watch the width break.</div>`),
-          video("cm-vars", "CSS Custom Properties (Variables)", "9 min", `
-<h3>🎯 Intro</h3>
-<p>Custom properties let you define reusable values — perfect for theming.</p>
-<h3>💻 Example</h3>
+<h3>Margin collapse</h3>
+<p>Two stacked vertical margins <em>merge</em> into the larger one — 20px above + 30px below = 30px, not 50. It surprises everyone once.</p>
+<div class="callout tip">Use rem for anything a user might want to scale. A px-only site breaks for people who zoom for readability.</div>`),
+          article("cm-vars", "CSS Custom Properties (Variables)", "6 min", `
+<p><strong>Custom properties</strong> are real variables — in plain CSS, no build step.</p>
+<h3>Define and use</h3>
 <pre><code>:root {
   --brand: #a435f0;
   --gap: 16px;
+  --radius: 10px;
 }
-.button { background: var(--brand); padding: var(--gap); }</code></pre>
-<div class="callout tip">Change one variable in <code>:root</code> and it updates everywhere — the foundation of dark mode and design systems.</div>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> define --brand and --radius variables, use them on two buttons, then change the theme by editing only :root.</div>`),
+
+.btn {
+  background: var(--brand);
+  padding: var(--gap);
+  border-radius: var(--radius);
+}</code></pre>
+<p><strong>:root</strong> is the whole document, so anything defined there is available everywhere.</p>
+<h3>Fallbacks</h3>
+<pre><code>color: var(--accent, #333);   /* #333 if --accent is unset */</code></pre>
+<h3>They cascade — that's the superpower</h3>
+<p>Unlike Sass variables (compiled away), these are <em>live</em>. Redefine one on a container and everything inside changes.</p>
+<h3>Dark mode in eight lines</h3>
+<pre><code>:root            { --bg: #fff; --ink: #111; }
+[data-theme=dark]{ --bg: #111; --ink: #eee; }
+
+body { background: var(--bg); color: var(--ink); }</code></pre>
+<p>Flip one attribute and the whole site re-themes. This is exactly how professional theming works — and how this academy does it.</p>
+<div class="callout tip">Never type the same hex twice. Put your palette in :root and use var() everywhere — a rebrand becomes a five-line change.</div>`),
           quiz("cm-quiz", "Quiz: CSS Foundations", [
-            { q: "Where are global CSS variables usually declared?", options: [":root", "body", "@media", "*"], answer: 0 },
-            { q: "Which selector is the most specific?", options: ["p", ".note", "#special", "*"], answer: 2 },
-            { q: "box-sizing: border-box makes width include...", options: ["Only content", "Content + padding + border", "Margin too", "Nothing new"], answer: 1 },
+            { q: "Which selector has the HIGHEST specificity?", options: ["p", ".card", "#hero", "*"], answer: 2 },
+            { q: "If two rules have equal specificity, which wins?", options: ["The first written", "The last written", "Neither", "Both"], answer: 1 },
+            { q: "Padding is…", options: ["Space outside the border", "Space inside, between content and border", "The border", "The margin"], answer: 1 },
+            { q: "box-sizing: border-box makes width include…", options: ["Only content", "Padding and border", "Margin too", "Nothing"], answer: 1 },
+            { q: "Which unit is best for text so it respects user zoom?", options: ["px", "rem", "vw", "pt"], answer: 1 },
+            { q: "CSS custom properties are defined globally on…", options: [":root", "body only", "@media", ".container"], answer: 0 },
+            { q: "Using !important usually means…", options: ["Good practice", "Your selectors are already too specific", "The file is fast", "Nothing"], answer: 1 },
           ]),
         ],
       },
       {
-        title: "Layout: Flexbox, Grid & Position",
+        title: "2 · Layout: Flexbox, Grid & Position",
         lessons: [
-          article("cm-flexbox", "Flexbox", "14 min", `
-<h3>🎯 Intro</h3>
-<p>Flexbox lays things out in a row or column and solves the two classic nightmares: vertical centering and equal-height columns.</p>
-<h3>📝 Summary</h3>
+          article("cm-display", "Display: Block, Inline & Flow", "6 min", `
+<p>Before Flexbox or Grid, understand why boxes sit where they do.</p>
+<h3>The display values</h3>
 <ul>
-  <li>Parent: <code>display: flex</code>; direction with <code>flex-direction</code></li>
-  <li><code>justify-content</code> = main axis; <code>align-items</code> = cross axis</li>
-  <li><code>gap</code> spaces children; <code>flex: 1</code> makes a child stretch</li>
-  <li><code>flex-wrap: wrap</code> lets items flow to the next line</li>
+  <li><strong>block</strong> — full width, stacks. (div, p, h1)</li>
+  <li><strong>inline</strong> — only as wide as content, sits in text; <em>width and height are ignored</em>. (span, a)</li>
+  <li><strong>inline-block</strong> — flows inline, but accepts width/height.</li>
+  <li><strong>none</strong> — removed from the page entirely.</li>
+  <li><strong>flex</strong> / <strong>grid</strong> — becomes a layout container.</li>
 </ul>
-<h3>💻 Example</h3>
-<pre><code>/* perfect centering — the interview classic */
-.hero {
+<h3>The classic confusion</h3>
+<p>"Why won't my &lt;span&gt; take a height?" Because it's inline. Give it <strong>inline-block</strong> (or make the parent flex) and it obeys.</p>
+<h3>none vs hidden</h3>
+<ul>
+  <li><strong>display: none</strong> — gone; takes no space.</li>
+  <li><strong>visibility: hidden</strong> — invisible but its space remains.</li>
+  <li><strong>opacity: 0</strong> — invisible, still there, <em>still clickable</em>.</li>
+</ul>
+<h3>Normal flow</h3>
+<p>By default the page stacks block elements top to bottom and text left to right. Layout is mostly the art of politely bending that flow — not fighting it.</p>
+<div class="callout tip">Setting display: flex on a parent makes its children behave, regardless of whether they were block or inline. That's why Flexbox felt like magic in 2015.</div>`),
+          article("cm-flexbox", "Flexbox", "8 min", `
+<p><strong>Flexbox</strong> lays out along <em>one</em> axis — a row or a column.</p>
+<h3>Switch it on</h3>
+<pre><code>.row {
+  display: flex;
+  gap: 16px;
+}</code></pre>
+<p>Children become a row instantly. <strong>gap</strong> spaces them — no margin hacks.</p>
+<h3>Parent properties</h3>
+<ul>
+  <li><strong>flex-direction</strong> — row | column</li>
+  <li><strong>justify-content</strong> — <em>main</em> axis: flex-start, center, space-between, space-around</li>
+  <li><strong>align-items</strong> — <em>cross</em> axis: center, stretch, flex-start</li>
+  <li><strong>flex-wrap: wrap</strong> — allow a second line</li>
+</ul>
+<h3>Child properties</h3>
+<ul>
+  <li><strong>flex: 1</strong> — take the free space (equal columns)</li>
+  <li><strong>flex-shrink: 0</strong> — never squash me</li>
+  <li><strong>align-self</strong> — override align-items for one child</li>
+  <li><strong>order</strong> — reorder visually</li>
+</ul>
+<h3>Perfect centring</h3>
+<pre><code>.center {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 40vh;
-}
-
-/* nav bar: logo left, links right */
-.topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-}
-
-/* equal cards that wrap on small screens */
-.cards { display: flex; flex-wrap: wrap; gap: 16px; }
-.cards .card { flex: 1 1 240px; }</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> build a header with a logo, centered menu, and a right-aligned button using one flex container.</div>`),
-          article("cm-grid", "CSS Grid", "14 min", `
-<h3>🎯 Intro</h3>
-<p>Grid is two-dimensional: rows AND columns at once. Page layouts that took hacks now take three lines.</p>
-<h3>📝 Summary</h3>
-<ul>
-  <li><code>display: grid</code> + <code>grid-template-columns</code></li>
-  <li><code>fr</code> = share of free space; <code>repeat(3, 1fr)</code> = 3 equal columns</li>
-  <li>Auto-fit + minmax = responsive card grid with ZERO media queries</li>
-  <li>Span areas: <code>grid-column: 1 / -1</code> (full width)</li>
-</ul>
-<h3>💻 Example</h3>
-<pre><code>/* the magic responsive gallery */
-.gallery {
+}</code></pre>
+<h3>The axis trap</h3>
+<p>Main axis follows <strong>flex-direction</strong>. Switch to column and justify-content now controls <em>vertical</em>, align-items <em>horizontal</em>. They swap. This confuses everyone exactly once.</p>
+<div class="callout tip">The classic navbar: display:flex + justify-content:space-between puts the logo left and links right, in two lines of CSS.</div>`),
+          article("cm-grid", "CSS Grid", "8 min", `
+<p><strong>Grid</strong> handles <em>two</em> dimensions at once. Flexbox is a line; Grid is a table.</p>
+<h3>Columns and rows</h3>
+<pre><code>.grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 16px;
-}
-
-/* classic page: sidebar + content */
-.layout {
-  display: grid;
-  grid-template-columns: 240px 1fr;
-  gap: 24px;
-}
-.layout .full { grid-column: 1 / -1; }</code></pre>
-<div class="callout tip">Rule of thumb: <strong>Flexbox</strong> for one direction (menus, toolbars), <strong>Grid</strong> for two (pages, galleries).</div>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> build the auto-fit gallery with 6 colored divs, then resize the result pane and watch columns adapt.</div>`),
-          article("cm-position", "Positioning & z-index", "11 min", `
-<h3>🎯 Intro</h3>
-<p>Sometimes elements must escape normal flow: sticky headers, badges, overlays. That's positioning.</p>
-<h3>📝 Summary</h3>
+}</code></pre>
+<p><strong>fr</strong> = a share of the free space. Three 1fr = three equal, fluid columns.</p>
+<h3>Mixed and repeated</h3>
+<pre><code>grid-template-columns: 250px 1fr;        /* sidebar + main */
+grid-template-columns: repeat(4, 1fr);   /* four equal */</code></pre>
+<h3>The one line to memorise</h3>
+<pre><code>grid-template-columns:
+  repeat(auto-fill, minmax(220px, 1fr));</code></pre>
+<p>"Fit as many columns as possible, each at least 220px." A fully responsive card gallery — <em>with zero media queries</em>. This solves the most common layout job on the web.</p>
+<h3>Spanning</h3>
+<pre><code>.hero { grid-column: span 2; }   /* take two columns */</code></pre>
+<h3>Named areas</h3>
+<p>grid-template-areas lets you literally draw the layout in your CSS with names like "header header" / "sidebar main" — unusually readable.</p>
+<h3>Which one?</h3>
 <ul>
-  <li><code>relative</code> — stays in flow, becomes an anchor for children</li>
-  <li><code>absolute</code> — pinned to the nearest positioned ancestor</li>
-  <li><code>fixed</code> — pinned to the screen; <code>sticky</code> — sticks while scrolling</li>
-  <li><code>z-index</code> stacks positioned elements</li>
+  <li><strong>Flexbox</strong> — one direction: navbar, button row.</li>
+  <li><strong>Grid</strong> — two directions: page layout, galleries.</li>
+  <li>Nest them — a Grid cell can hold a Flex row.</li>
 </ul>
-<h3>💻 Example</h3>
-<pre><code>/* notification badge on a bell icon */
-.bell { position: relative; }
-.badge {
-  position: absolute;
-  top: -6px; right: -6px;
-  background: red; color: #fff;
-  border-radius: 999px; padding: 2px 6px; font-size: 11px;
-}
-
-/* header that sticks while you scroll */
-.topbar { position: sticky; top: 0; z-index: 50; }</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> put a "NEW" badge on a card's corner, and make a footer button that stays fixed bottom-right like this site's chat bubble.</div>`),
+<div class="callout tip">auto-fill leaves empty tracks; auto-fit collapses them. For a centred gallery that doesn't leave gaps, auto-fit is usually what you want.</div>`),
+          article("cm-position", "Positioning & z-index", "7 min", `
+<p><strong>position</strong> is for the exceptions — overlays, badges, sticky bars. Not for whole layouts.</p>
+<h3>The five values</h3>
+<ul>
+  <li><strong>static</strong> — default, normal flow.</li>
+  <li><strong>relative</strong> — nudge from its own spot; <em>keeps its space</em>.</li>
+  <li><strong>absolute</strong> — positioned against the nearest <em>positioned</em> ancestor; leaves the flow.</li>
+  <li><strong>fixed</strong> — pinned to the viewport; survives scrolling.</li>
+  <li><strong>sticky</strong> — normal until it hits an offset, then sticks.</li>
+</ul>
+<h3>The relative/absolute pairing</h3>
+<pre><code>.card  { position: relative; }
+.badge { position: absolute; top: 8px; right: 8px; }</code></pre>
+<p>The badge anchors to the card. <strong>Forget position:relative on the parent and the badge flies to the page corner</strong> — the single most common positioning bug.</p>
+<h3>z-index</h3>
+<p>Controls stacking. It only works on <em>positioned</em> elements (not static). Higher = in front.</p>
+<h3>Stacking contexts</h3>
+<p>z-index:9999 not working? A parent probably created a new <strong>stacking context</strong> (via transform, opacity &lt; 1, or its own z-index). Your child can never escape its parent's layer — no number is big enough.</p>
+<div class="callout warn">A z-index arms race (999, 9999, 99999) is a smell. Find the stacking context creating the problem instead of adding zeros.</div>`),
           quiz("cm-quiz-2", "Quiz: Layout", [
-            { q: "Perfect centering with Flexbox uses...", options: ["text-align + margin", "justify-content + align-items", "float + clear", "position: center"], answer: 1 },
-            { q: "repeat(auto-fit, minmax(220px, 1fr)) gives you...", options: ["Fixed 220px columns", "A responsive grid without media queries", "One giant column", "An error"], answer: 1 },
-            { q: "A child with position:absolute is placed relative to...", options: ["The screen always", "The nearest positioned ancestor", "The body always", "Its siblings"], answer: 1 },
-            { q: "Flexbox vs Grid: Grid is best for...", options: ["Single rows", "Two-dimensional layouts", "Text styling", "Animations"], answer: 1 },
+            { q: "Why can't an inline element take a height?", options: ["A bug", "Inline elements ignore width/height by design", "Missing CSS", "It needs an id"], answer: 1 },
+            { q: "In Flexbox, justify-content aligns along the…", options: ["Cross axis", "Main axis", "Z axis", "Both"], answer: 1 },
+            { q: "With flex-direction: column, align-items now controls…", options: ["Vertical", "Horizontal", "Nothing", "Order"], answer: 1 },
+            { q: "'1fr' means…", options: ["1 pixel", "One share of the free space", "1 percent", "1 rem"], answer: 1 },
+            { q: "Which builds a responsive gallery with NO media queries?", options: ["repeat(auto-fill, minmax(220px, 1fr))", "width: 900px", "float: left", "position: absolute"], answer: 0 },
+            { q: "An absolutely positioned badge flies to the page corner because…", options: ["z-index is low", "The parent is missing position: relative", "Grid is off", "The badge is inline"], answer: 1 },
+            { q: "z-index only works on elements that are…", options: ["Static", "Positioned (relative/absolute/fixed/sticky)", "Flex children", "Inline"], answer: 1 },
+            { q: "z-index: 9999 fails to lift an element usually because…", options: ["The number is too small", "A parent created a stacking context it can't escape", "CSS is broken", "It needs !important"], answer: 1 },
           ]),
         ],
       },
       {
-        title: "Polish: Motion, Responsive & Project",
+        title: "3 · Polish: Motion, Responsive & Project",
         lessons: [
-          video("cm-transitions", "Transitions & Animations", "12 min", `
-<h3>🎯 Intro</h3>
-<p>Subtle motion makes interfaces feel alive and guides the eye.</p>
-<h3>💻 Example — Transitions</h3>
-<pre><code>.card {
-  transition: transform .2s ease, box-shadow .2s ease;
+          article("cm-transitions", "Transitions & Animations", "7 min", `
+<p>Motion is the difference between a page and a product — when it's subtle.</p>
+<h3>Transitions: A to B</h3>
+<pre><code>.btn {
+  background: #a435f0;
+  transition: background .2s ease, transform .2s ease;
 }
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(0,0,0,.15);
+.btn:hover {
+  background: #7b2ff7;
+  transform: translateY(-2px);
 }</code></pre>
-<h3>💻 Example — Keyframe animations</h3>
-<pre><code>@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50%      { opacity: .4; }
+<p>Declare <em>what</em> to animate, <em>how long</em>, and the <em>easing</em>. The browser fills in the frames.</p>
+<h3>Keyframes: multi-step</h3>
+<pre><code>@keyframes pop {
+  0%   { transform: scale(.8); opacity: 0; }
+  100% { transform: scale(1);  opacity: 1; }
 }
-.badge { animation: pulse 1.5s infinite; }</code></pre>
-<div class="callout">Subtle motion guides attention. Keep durations short (150–300ms) for UI feedback.</div>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> make a button that lifts and grows slightly on hover, and a dot that pulses forever.</div>`),
-          article("cm-responsive", "Responsive Design & Media Queries", "13 min", `
-<h3>🎯 Intro</h3>
-<p>Most of your students browse on phones. Responsive design isn't optional — it's the default.</p>
-<h3>📝 Summary</h3>
+.card { animation: pop .3s ease-out; }</code></pre>
+<h3>Animate only transform and opacity</h3>
+<p>These two run on the GPU and stay at 60fps. Animating <strong>width</strong>, <strong>height</strong>, <strong>top</strong> or <strong>margin</strong> forces the browser to re-layout the page every frame — that's where jank comes from.</p>
+<h3>Easing</h3>
+<p><strong>ease-out</strong> for things entering, <strong>ease-in</strong> for leaving. Nothing in the real world starts and stops at a constant speed — <strong>linear</strong> looks robotic.</p>
+<h3>Respect people</h3>
+<pre><code>@media (prefers-reduced-motion: reduce) {
+  * { animation: none; transition: none; }
+}</code></pre>
+<p>Motion causes real nausea for some. Honour the setting.</p>
+<div class="callout tip">Keep UI motion at 150–300ms. Under 100ms isn't seen; over 400ms feels slow. If an animation is noticeable, it's too long.</div>`),
+          article("cm-responsive", "Responsive Design & Media Queries", "7 min", `
+<p>One site, every screen. More than half your visitors are on a phone.</p>
+<h3>The tag you cannot forget</h3>
+<pre><code>&lt;meta name="viewport"
+      content="width=device-width, initial-scale=1"&gt;</code></pre>
+<p>Without it phones pretend to be 980px wide and shrink everything unreadably.</p>
+<h3>Media queries</h3>
+<pre><code>.grid { grid-template-columns: repeat(3, 1fr); }
+
+@media (max-width: 700px) {
+  .grid { grid-template-columns: 1fr; }
+}</code></pre>
+<h3>Mobile-first</h3>
+<p>Write the simple phone layout as the base, then add complexity upward with <strong>min-width</strong>. Adding is easier than unpicking.</p>
+<pre><code>.grid { grid-template-columns: 1fr; }
+
+@media (min-width: 700px) {
+  .grid { grid-template-columns: repeat(3, 1fr); }
+}</code></pre>
+<h3>Often you need no query at all</h3>
+<p><strong>minmax + auto-fit</strong>, <strong>flex-wrap</strong>, <strong>max-width: 100%</strong> and <strong>clamp()</strong> adapt on their own. <strong>clamp(1rem, 2.5vw, 2rem)</strong> gives fluid type between a floor and a ceiling.</p>
+<h3>Break at content, not devices</h3>
+<p>Don't chase iPhone sizes — there are hundreds. Widen your browser until the layout looks bad; <em>that's</em> your breakpoint.</p>
+<div class="callout warn">Never set a fixed px width on a container. width: 900px guarantees a horizontal scrollbar on a 400px phone. Use max-width: 900px instead.</div>`),
+          article("cm-project", "Final Project: Pricing Page", "12 min", `
+<p>Everything together: variables, Grid, Flexbox, positioning, transitions and responsive.</p>
+<h3>Build this</h3>
 <ul>
-  <li>Always: <code>&lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;</code></li>
-  <li>Mobile-first: base styles for phones, <code>@media (min-width: 768px)</code> adds desktop</li>
-  <li>Fluid media: <code>img { max-width: 100%; height: auto; }</code></li>
-  <li>Modern helpers: <code>clamp()</code> for fluid font sizes</li>
+  <li>A heading and a subtitle, centred.</li>
+  <li><strong>Three pricing cards</strong> in a Grid.</li>
+  <li>The middle one highlighted, with a "POPULAR" badge (absolute + relative).</li>
+  <li>Each card: plan name, price, a Flexbox feature list, a button.</li>
+  <li>Cards lift on hover (transform + transition).</li>
+  <li>One column on phones.</li>
 </ul>
-<h3>💻 Example</h3>
-<pre><code>/* mobile first: one column */
-.features { display: grid; gap: 16px; }
+<h3>The skeleton</h3>
+<pre><code>:root { --brand: #a435f0; --radius: 12px; }
 
-/* tablets and up: three columns */
-@media (min-width: 768px) {
-  .features { grid-template-columns: repeat(3, 1fr); }
-}
-
-/* fluid heading: never too small, never too big */
-h1 { font-size: clamp(1.6rem, 4vw, 3rem); }
-
-img { max-width: 100%; height: auto; }</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> build a 1-column feature list that becomes 3 columns above 768px — test by resizing the playground result pane.</div>`),
-          article("cm-project", "Final Project: Pricing Page", "20 min", `
-<h3>🎯 Intro</h3>
-<p>Everything combined: variables, Flexbox/Grid, box model, hover motion and responsiveness — a real pricing section you could ship.</p>
-<h3>💻 Complete solution — study it, then build yours</h3>
-<pre><code>&lt;style&gt;
-:root { --brand: #a435f0; --ink: #1c1d1f; --line: #e4e8eb; }
-* { box-sizing: border-box; margin: 0; }
-body { font-family: sans-serif; color: var(--ink); padding: 24px; }
-
-.plans {
+.pricing {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px; max-width: 900px; margin: 0 auto;
+  grid-template-columns:
+    repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
 }
-.plan {
-  border: 1px solid var(--line); border-radius: 14px;
-  padding: 24px; text-align: center;
+
+.card {
+  position: relative;
+  border-radius: var(--radius);
+  padding: 28px;
   transition: transform .2s ease, box-shadow .2s ease;
 }
-.plan:hover { transform: translateY(-6px); box-shadow: 0 12px 28px rgba(0,0,0,.12); }
-.plan.featured { border: 2px solid var(--brand); position: relative; }
-.plan.featured::before {
-  content: "POPULAR"; position: absolute; top: -12px; left: 50%;
-  transform: translateX(-50%);
-  background: var(--brand); color: #fff; font-size: 11px;
-  padding: 3px 12px; border-radius: 999px;
-}
-.price { font-size: 2.2rem; font-weight: 800; margin: 12px 0; }
-.plan ul { list-style: none; padding: 0; margin: 0 0 18px; line-height: 2; }
-.btn {
-  display: inline-block; width: 100%; padding: 12px;
-  border-radius: 8px; border: 0; font-weight: 700; cursor: pointer;
-  background: var(--brand); color: #fff;
-}
-&lt;/style&gt;
+.card:hover { transform: translateY(-6px); }
 
-&lt;div class="plans"&gt;
-  &lt;div class="plan"&gt;
-    &lt;h3&gt;Starter&lt;/h3&gt;&lt;div class="price"&gt;Free&lt;/div&gt;
-    &lt;ul&gt;&lt;li&gt;5 courses&lt;/li&gt;&lt;li&gt;Community chat&lt;/li&gt;&lt;/ul&gt;
-    &lt;button class="btn"&gt;Start&lt;/button&gt;
-  &lt;/div&gt;
-  &lt;div class="plan featured"&gt;
-    &lt;h3&gt;Pro&lt;/h3&gt;&lt;div class="price"&gt;$9&lt;/div&gt;
-    &lt;ul&gt;&lt;li&gt;All courses&lt;/li&gt;&lt;li&gt;Certificates&lt;/li&gt;&lt;/ul&gt;
-    &lt;button class="btn"&gt;Go Pro&lt;/button&gt;
-  &lt;/div&gt;
-  &lt;div class="plan"&gt;
-    &lt;h3&gt;Team&lt;/h3&gt;&lt;div class="price"&gt;$29&lt;/div&gt;
-    &lt;ul&gt;&lt;li&gt;10 seats&lt;/li&gt;&lt;li&gt;Progress reports&lt;/li&gt;&lt;/ul&gt;
-    &lt;button class="btn"&gt;Contact&lt;/button&gt;
-  &lt;/div&gt;
-&lt;/div&gt;</code></pre>
-<h3>🏋️ Level up</h3>
-<div class="callout tip"><strong>Extend it yourself:</strong> add a dark theme by swapping :root variables, and a monthly/yearly toggle styled with :checked.</div>`),
+.card.popular .badge {
+  position: absolute;
+  top: -12px; right: 16px;
+}</code></pre>
+<h3>The checklist</h3>
+<ul>
+  <li>box-sizing: border-box at the top.</li>
+  <li>Palette in :root — no repeated hex.</li>
+  <li>Grid for the cards, Flexbox inside each.</li>
+  <li>Only transform/opacity animated.</li>
+  <li>prefers-reduced-motion honoured.</li>
+  <li>Readable at 360px wide.</li>
+</ul>
+<div class="callout tip">Build it mobile-first: get one card perfect on a narrow screen, then let auto-fit do the rest. You may not need a single media query.</div>`),
           quiz("cm-quiz-3", "Final Quiz: CSS Mastery", [
-            { q: "Which property animates changes smoothly on hover?", options: ["animation", "transition", "transform", "keyframes"], answer: 1 },
-            { q: "Mobile-first means...", options: ["Designing desktop then shrinking", "Base styles for phones, media queries add larger layouts", "Only supporting phones", "Using apps"], answer: 1 },
-            { q: "clamp(1.6rem, 4vw, 3rem) sets a font size that...", options: ["Is always 4vw", "Scales but never below 1.6rem or above 3rem", "Randomizes", "Only works on desktop"], answer: 1 },
-            { q: "The POPULAR ribbon used which technique?", options: ["A second image", "position:absolute on a ::before pseudo-element", "float", "Grid rows"], answer: 1 },
+            { q: "Which properties are cheapest to animate?", options: ["width and height", "transform and opacity", "margin and top", "font-size"], answer: 1 },
+            { q: "Animating width/top causes jank because…", options: ["It's GPU accelerated", "It forces the browser to re-layout each frame", "It's deprecated", "It needs JS"], answer: 1 },
+            { q: "A good duration for UI motion is…", options: ["10ms", "150-300ms", "1s", "3s"], answer: 1 },
+            { q: "prefers-reduced-motion exists because…", options: ["Animations are slow", "Motion causes real nausea for some people", "It saves data", "It's required"], answer: 1 },
+            { q: "Mobile-first means writing the base styles for…", options: ["Desktop, then shrinking", "Phone, then adding with min-width", "Tablets only", "Print"], answer: 1 },
+            { q: "Instead of width: 900px you should use…", options: ["max-width: 900px", "min-width: 900px", "height: 900px", "position: fixed"], answer: 0 },
+            { q: "clamp(1rem, 2.5vw, 2rem) gives you…", options: ["A fixed size", "Fluid sizing between a floor and a ceiling", "An animation", "A grid"], answer: 1 },
+            { q: "Your breakpoints should be decided by…", options: ["Popular phone models", "Where YOUR content starts to look bad", "Round numbers", "The framework"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "4 · Beyond the Basics",
+        lessons: [
+          article("cm-typography", "Typography That Looks Professional", "7 min", `
+<p>Type is most of what a website <em>is</em>. Get it right and even a plain page looks designed.</p>
+<h3>The font stack</h3>
+<pre><code>font-family: system-ui, -apple-system,
+             "Segoe UI", Roboto, sans-serif;</code></pre>
+<p>System fonts load instantly (they're already on the device), look native, and cost zero bytes. Always end with a generic fallback.</p>
+<h3>The numbers that matter</h3>
+<ul>
+  <li><strong>font-size</strong> — 16px minimum for body. Smaller is not "sleek", it's unreadable.</li>
+  <li><strong>line-height</strong> — 1.5–1.7 for body text. The single cheapest improvement available.</li>
+  <li><strong>Line length</strong> — 45–75 characters. Use <strong>max-width: 65ch</strong>.</li>
+  <li><strong>font-weight</strong> — 400 body, 600–700 headings.</li>
+</ul>
+<h3>Hierarchy</h3>
+<p>Readers scan. A clear jump between h1, h2 and body tells them the structure instantly. If everything is the same size, nothing is important.</p>
+<h3>Fluid type</h3>
+<pre><code>h1 { font-size: clamp(1.75rem, 5vw, 3rem); }</code></pre>
+<p>Scales with the screen but never gets absurd. No media queries needed.</p>
+<h3>Web fonts cost</h3>
+<p>Every custom font is a download that can block rendering. Use one, two weights, and <strong>font-display: swap</strong> so text shows immediately.</p>
+<div class="callout tip">Set max-width: 65ch and line-height: 1.6 on your body text. Those two lines fix most "my site looks amateur" problems.</div>`),
+          article("cm-backgrounds", "Backgrounds, Gradients & Shadows", "7 min", `
+<p>Depth and colour — where a flat page starts feeling built.</p>
+<h3>Gradients</h3>
+<pre><code>background: linear-gradient(135deg, #7b2ff7, #f107a3);
+background: radial-gradient(circle, #fff, #ddd);</code></pre>
+<p>Gradients are generated by the browser — infinitely scalable, zero download.</p>
+<h3>Shadows create hierarchy</h3>
+<pre><code>box-shadow: 0 1px 3px rgba(0,0,0,.08);    /* resting */
+box-shadow: 0 8px 24px rgba(0,0,0,.16);   /* lifted */</code></pre>
+<p>Shadow says "this is above that". Bigger and softer = higher. Keep them subtle and consistent — a shared light source, always from the same direction.</p>
+<h3>Inset shadows</h3>
+<pre><code>box-shadow: inset 0 1px 1px rgba(255,255,255,.5);</code></pre>
+<p>A thin light line along the top edge reads as a raised, glossy surface.</p>
+<h3>Background sizing</h3>
+<ul>
+  <li><strong>cover</strong> — fill the box, crop the overflow. Usually what you want.</li>
+  <li><strong>contain</strong> — fit entirely, may leave gaps.</li>
+  <li><strong>background-position: center</strong> — nearly always pair it with cover.</li>
+</ul>
+<div class="callout warn">Harsh black shadows look cheap. Use rgba black at low opacity (.08–.2) and blur generously — real shadows are soft.</div>`),
+          article("cm-pseudo", "Pseudo-elements & Pseudo-classes", "7 min", `
+<p>Style things that aren't in your HTML at all.</p>
+<h3>::before and ::after</h3>
+<pre><code>.badge::after {
+  content: "NEW";
+  position: absolute;
+  top: -8px; right: -8px;
+}</code></pre>
+<p><strong>content</strong> is mandatory — even if it's empty, <strong>content: ""</strong>. Without it, nothing renders. That's the #1 gotcha.</p>
+<p>They're perfect for decoration: icons, quotes, badges, tooltips, custom bullets — <em>without</em> polluting your markup.</p>
+<h3>Pseudo-classes: state</h3>
+<ul>
+  <li><strong>:hover</strong> — mouse over. (Doesn't exist on touch!)</li>
+  <li><strong>:focus-visible</strong> — focused via keyboard. Use this, not :focus.</li>
+  <li><strong>:active</strong> — being pressed.</li>
+  <li><strong>:disabled</strong>, <strong>:checked</strong> — form states.</li>
+  <li><strong>:first-child</strong>, <strong>:last-child</strong>, <strong>:nth-child(odd)</strong>.</li>
+  <li><strong>:not(.active)</strong> — everything except.</li>
+</ul>
+<h3>Never remove focus outlines</h3>
+<pre><code>:focus { outline: none; }   /* ✗ breaks keyboard users */</code></pre>
+<p>If you dislike the default, <em>replace</em> it with something visible on <strong>:focus-visible</strong>. Removing it strands keyboard users with no idea where they are.</p>
+<div class="callout tip">One element can have ::before AND ::after — two free extra boxes with no extra HTML. Most CSS decoration you admire is built from these.</div>`),
+          article("cm-transforms", "Transforms & Filters", "6 min", `
+<p><strong>transform</strong> moves, scales and rotates — cheaply, on the GPU.</p>
+<h3>The functions</h3>
+<pre><code>transform: translateY(-4px);
+transform: scale(1.05);
+transform: rotate(-8deg);
+transform: translateY(-4px) scale(1.05);   /* combine */</code></pre>
+<p>Order matters — they apply right to left.</p>
+<h3>transform-origin</h3>
+<p>By default things rotate/scale around their centre. <strong>transform-origin: top left</strong> changes the pivot — essential for scaled previews and flip effects.</p>
+<h3>Why it's fast</h3>
+<p>transform and opacity don't trigger layout or paint — the compositor just moves an existing layer. That's why they hold 60fps while animating <strong>top</strong> or <strong>width</strong> stutters.</p>
+<h3>3D</h3>
+<pre><code>.parent { perspective: 700px; }
+.child  { transform: rotateX(15deg); }</code></pre>
+<p><strong>perspective</strong> on the parent is what makes rotateX/Y look three-dimensional rather than squashed.</p>
+<h3>Filters</h3>
+<pre><code>filter: blur(4px);
+filter: grayscale(1);
+filter: drop-shadow(0 0 6px currentColor);
+backdrop-filter: blur(20px);   /* frosted glass */</code></pre>
+<p><strong>drop-shadow</strong> follows an element's actual shape (including transparency) — box-shadow only ever draws a rectangle.</p>
+<div class="callout tip">Hover lift = transform: translateY(-4px) + a bigger shadow + a 200ms transition. Three lines, and it instantly feels like a real product.</div>`),
+          article("cm-modern", "Modern CSS You Should Know", "7 min", `
+<p>CSS moved fast. These solve problems that used to need JavaScript.</p>
+<h3>clamp() — fluid without queries</h3>
+<pre><code>font-size: clamp(1rem, 2.5vw, 2rem);
+width:     clamp(300px, 90%, 1100px);</code></pre>
+<p>min, preferred, max. Scales smoothly, never breaks.</p>
+<h3>:has() — the parent selector</h3>
+<pre><code>.card:has(img)     { padding: 0; }
+label:has(:checked){ font-weight: 700; }</code></pre>
+<p>Style a parent based on its children — genuinely impossible before, and a common reason people reached for JS.</p>
+<h3>Container queries</h3>
+<pre><code>.card-wrap { container-type: inline-size; }
+
+@container (min-width: 400px) {
+  .card { display: flex; }
+}</code></pre>
+<p>Media queries ask about the <em>screen</em>. Container queries ask about the <em>component's own box</em> — so a card in a narrow sidebar can lay out differently from the same card in a wide main area. This is what truly reusable components needed.</p>
+<h3>aspect-ratio</h3>
+<pre><code>.thumb { aspect-ratio: 16 / 10; }</code></pre>
+<p>No more padding-top: 56.25% hacks.</p>
+<h3>gap works in flex too</h3>
+<p><strong>gap</strong> isn't Grid-only any more. Stop using margins to space flex children.</p>
+<div class="callout tip">Check support before shipping something new — but clamp, aspect-ratio, gap and :has are all safe in modern browsers now.</div>`),
+          article("cm-architecture", "Organising CSS That Scales", "6 min", `
+<p>Anyone can write 50 lines of CSS. The skill is 5,000 lines that stay understandable.</p>
+<h3>The problem</h3>
+<p>Unmanaged CSS rots: nobody dares delete anything, specificity climbs, !important spreads. Eventually people add rather than change — and the file only grows.</p>
+<h3>Name by component (BEM)</h3>
+<pre><code>.card { }
+.card__title { }        /* element */
+.card--featured { }     /* modifier */</code></pre>
+<p>Ugly, and it works. Every class is flat (specificity 10), self-documenting, and you always know where it belongs.</p>
+<h3>Keep specificity flat</h3>
+<p>Prefer a single class. Avoid <strong>#id .a .b span</strong> chains — the moment you need to override that, you're in an arms race.</p>
+<h3>A sane file order</h3>
+<ol>
+  <li>Variables (:root)</li>
+  <li>Reset / base (box-sizing, body)</li>
+  <li>Layout (containers, grids)</li>
+  <li>Components (buttons, cards)</li>
+  <li>Utilities (.muted, .hidden)</li>
+  <li>Media queries near what they modify</li>
+</ol>
+<h3>Delete fearlessly</h3>
+<p>Dead CSS is a tax on everyone who reads it. If a class isn't used, remove it — git remembers.</p>
+<div class="callout tip">Your future self is the main user of your CSS. Name things for what they ARE (.card__title), not what they look like (.big-red) — red things get redesigned.</div>`),
+          quiz("cm-quiz-4", "Quiz: Beyond the Basics", [
+            { q: "A good line-height for body text is…", options: ["1.0", "1.5-1.7", "3.0", "0.8"], answer: 1 },
+            { q: "max-width: 65ch is used to control…", options: ["Colour", "Line length for readability", "Height", "Font weight"], answer: 1 },
+            { q: "::before renders nothing unless you set…", options: ["display", "content", "position", "z-index"], answer: 1 },
+            { q: "Instead of outline: none you should…", options: ["Leave keyboard users stranded", "Replace it with a visible :focus-visible style", "Use !important", "Hide the element"], answer: 1 },
+            { q: "transform and opacity are fast because they…", options: ["Are simpler to type", "Skip layout/paint — the compositor moves a layer", "Use less memory", "Are cached"], answer: 1 },
+            { q: "drop-shadow differs from box-shadow because it…", options: ["Is faster", "Follows the element's actual shape, not a rectangle", "Only works on text", "Needs JS"], answer: 1 },
+            { q: ":has() lets you style…", options: ["Only children", "A parent based on its children", "Nothing new", "Only links"], answer: 1 },
+            { q: "Container queries respond to…", options: ["The screen size", "The component's own box size", "The font", "The scroll"], answer: 1 },
+            { q: "In BEM, .card--featured is a…", options: ["Element", "Modifier", "Block", "Utility"], answer: 1 },
           ]),
         ],
       },
@@ -1846,7 +2469,7 @@ else {
     rating: 4.6,
     ratings: 18240,
     students: 96400,
-    hours: 4.5,
+    hours: 12,
     price: "Free",
     free: true,
     color: "linear-gradient(135deg,#e44d26,#f16529)",
@@ -1862,188 +2485,303 @@ else {
     ],
     sections: [
       {
-        title: "Semantic HTML",
+        title: "1 · HTML Foundations",
         lessons: [
-          article("hd-semantic", "Semantic Elements: Beyond div", "9 min", `
-<h3>🎯 Intro</h3>
-<p>A page built only with <code>&lt;div&gt;</code> works — but it tells the browser <em>nothing</em> about what each part means. Semantic elements give your page structure that browsers, search engines, and screen readers understand.</p>
-<h3>📝 Summary</h3>
+          article("hd-anatomy", "Document Anatomy & Elements", "6 min", `
+<p>Before semantics, be precise about what HTML <em>is</em>: a description of meaning, not appearance.</p>
+<h3>The skeleton</h3>
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+  &lt;head&gt;
+    &lt;meta charset="utf-8"&gt;
+    &lt;title&gt;My Page&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;h1&gt;Hello&lt;/h1&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
 <ul>
-  <li><code>&lt;header&gt;</code> / <code>&lt;footer&gt;</code> — top and bottom of a page or section</li>
-  <li><code>&lt;nav&gt;</code> — groups of navigation links</li>
-  <li><code>&lt;main&gt;</code> — the unique main content (one per page)</li>
-  <li><code>&lt;article&gt;</code> — self-contained content (a post, a card)</li>
-  <li><code>&lt;section&gt;</code> — a themed group of content with a heading</li>
-  <li><code>&lt;aside&gt;</code> — side content (related links, ads)</li>
+  <li><strong>lang="en"</strong> — tells screen readers which language to pronounce. Set it. Use <strong>lang="my"</strong> for Burmese.</li>
+  <li><strong>charset="utf-8"</strong> — without it, non-English text turns to mojibake.</li>
 </ul>
-<div style="border:2px solid #654ea3;border-radius:10px;overflow:hidden;max-width:340px;margin:16px auto;font-size:13px;font-weight:700;text-align:center">
-  <div style="background:#654ea3;color:#fff;padding:8px">&lt;header&gt; + &lt;nav&gt;</div>
-  <div style="display:flex">
-    <div style="flex:2;background:#eadff8;color:#333;padding:22px 8px;border-right:1px solid #d9cff2">&lt;main&gt;<br>&lt;article&gt;</div>
-    <div style="flex:1;background:#f4eefb;color:#555;padding:22px 8px">&lt;aside&gt;</div>
-  </div>
-  <div style="background:#3bb78f;color:#fff;padding:8px">&lt;footer&gt;</div>
-</div>
-<h3>💻 Example</h3>
-<pre><code>&lt;body&gt;
-  &lt;header&gt;
-    &lt;h1&gt;My Blog&lt;/h1&gt;
-    &lt;nav&gt;
-      &lt;a href="/"&gt;Home&lt;/a&gt; &lt;a href="/about"&gt;About&lt;/a&gt;
-    &lt;/nav&gt;
-  &lt;/header&gt;
-  &lt;main&gt;
-    &lt;article&gt;
-      &lt;h2&gt;My first post&lt;/h2&gt;
-      &lt;p&gt;Hello world!&lt;/p&gt;
-    &lt;/article&gt;
-  &lt;/main&gt;
-  &lt;footer&gt;© 2026&lt;/footer&gt;
-&lt;/body&gt;</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> take any page you built with only divs and replace them with header, nav, main, article, and footer. The page should look identical — but now it has meaning.</div>`),
-          article("hd-a11y", "Why Semantics Matter: Accessibility & SEO", "8 min", `
-<h3>🎯 Intro</h3>
-<p>Semantic HTML isn't just tidiness — it's how <strong>blind users</strong> navigate your site and how <strong>Google</strong> understands your content.</p>
-<h3>📝 Summary</h3>
+<h3>Anatomy of an element</h3>
+<p>Opening tag + content + closing tag. <strong>Void elements</strong> (img, br, input, meta, hr) have no content and no closing tag.</p>
+<h3>Attributes</h3>
+<pre><code>&lt;a href="/about" class="link" data-id="5"&gt;</code></pre>
+<p>Boolean attributes just exist: <strong>required</strong>, <strong>disabled</strong>, <strong>checked</strong>. You never write required="true".</p>
+<h3>Block vs inline</h3>
+<p><strong>Block</strong> (div, p, h1) starts a new line and fills the width. <strong>Inline</strong> (span, a, strong) sits within text. This is a default, not a rule — CSS can change it.</p>
+<h3>Nesting must not cross</h3>
+<pre><code>&lt;p&gt;&lt;strong&gt;hi&lt;/strong&gt;&lt;/p&gt;   ✓
+&lt;p&gt;&lt;strong&gt;hi&lt;/p&gt;&lt;/strong&gt;   ✗</code></pre>
+<div class="callout tip">Run your page through validator.w3.org. It catches unclosed tags and invalid nesting in seconds — errors that cause bizarre layout bugs later.</div>`),
+          article("hd-text", "Text, Links & Lists", "7 min", `
+<p>Choose tags for <em>meaning</em>. The browser's default styling is a coincidence you'll override anyway.</p>
+<h3>Headings are an outline</h3>
+<p>One <strong>h1</strong>, then h2 for sections, h3 beneath. Screen-reader users literally jump heading to heading — skipping from h1 to h4 breaks that map. Never pick a heading for its size.</p>
+<h3>Meaning, not looks</h3>
 <ul>
-  <li>Screen readers announce landmarks: "navigation", "main", "banner" — users jump straight to what they need</li>
-  <li>Search engines rank well-structured pages higher</li>
-  <li>Headings (<code>&lt;h1&gt;</code>–<code>&lt;h6&gt;</code>) must form an outline — never skip levels for styling</li>
-  <li>Every <code>&lt;img&gt;</code> needs an <code>alt</code> describing what it shows</li>
+  <li><strong>&lt;strong&gt;</strong> — importance. <strong>&lt;b&gt;</strong> — just bold, no meaning.</li>
+  <li><strong>&lt;em&gt;</strong> — emphasis. <strong>&lt;i&gt;</strong> — just italic.</li>
+  <li><strong>&lt;blockquote&gt;</strong> / <strong>&lt;cite&gt;</strong> — quotes and sources.</li>
+  <li><strong>&lt;code&gt;</strong>, <strong>&lt;pre&gt;</strong> — code.</li>
+  <li><strong>&lt;time datetime="2026-07-15"&gt;</strong> — machine-readable dates.</li>
+  <li><strong>&lt;abbr title="..."&gt;</strong> — abbreviations.</li>
 </ul>
-<h3>💻 Example</h3>
-<pre><code>&lt;!-- Bad: meaningless and silent for screen readers --&gt;
-&lt;div class="btn" onclick="save()"&gt;Save&lt;/div&gt;
-
-&lt;!-- Good: keyboard-focusable, announced as a button --&gt;
-&lt;button onclick="save()"&gt;Save&lt;/button&gt;
-
-&lt;img src="cat.jpg" alt="An orange cat sleeping on a laptop keyboard"&gt;</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> open your page, press <kbd>Tab</kbd> repeatedly. Can you reach every interactive element with the keyboard alone? If not, replace those divs with real buttons and links.</div>`),
+<h3>Links</h3>
+<pre><code>&lt;a href="/about"&gt;About&lt;/a&gt;
+&lt;a href="#top"&gt;Back to top&lt;/a&gt;
+&lt;a href="mailto:a@b.com"&gt;Email&lt;/a&gt;
+&lt;a href="tel:+95912345"&gt;Call&lt;/a&gt;
+&lt;a href="https://x.com" target="_blank" rel="noopener"&gt;Open&lt;/a&gt;</code></pre>
+<p><strong>rel="noopener"</strong> with target="_blank" stops the new page getting scripting access back to yours — a real security fix, not a formality.</p>
+<h3>Link text must stand alone</h3>
+<p>Screen readers can list every link out of context. "Click here" × 12 is useless; "Download the 2026 price list" is perfect.</p>
+<h3>Lists</h3>
+<p><strong>ul</strong> unordered, <strong>ol</strong> ordered, <strong>dl/dt/dd</strong> for term–definition pairs. Navigation is a list of links — mark it up as one.</p>
+<div class="callout warn">Never fake a list with &lt;br&gt; and bullets typed by hand. Assistive tech announces "list, 5 items" — that context vanishes if you fake it.</div>`),
+          article("hd-semantic", "Semantic Elements: Beyond div", "7 min", `
+<p>You can build any layout from &lt;div&gt;. <strong>Semantic HTML</strong> means choosing tags that say what a thing <em>is</em>.</p>
+<h3>The landmarks</h3>
+<pre><code>&lt;header&gt;   site or section header
+&lt;nav&gt;      navigation links
+&lt;main&gt;     the main content — ONE per page
+&lt;article&gt;  self-contained (a post, a card)
+&lt;section&gt;  a thematic group, usually with a heading
+&lt;aside&gt;    tangential (sidebar, related)
+&lt;footer&gt;   footer info</code></pre>
+<h3>article vs section</h3>
+<ul>
+  <li><strong>article</strong> — would it make sense on its own, in an RSS feed? Then it's an article.</li>
+  <li><strong>section</strong> — a themed chunk of something bigger. It should have a heading.</li>
+  <li><strong>div</strong> — no meaning; purely a styling hook. Still fine when nothing else fits.</li>
+</ul>
+<h3>More you should know</h3>
+<ul>
+  <li><strong>&lt;figure&gt;</strong> + <strong>&lt;figcaption&gt;</strong> — an image with a caption, bound together.</li>
+  <li><strong>&lt;details&gt;</strong> + <strong>&lt;summary&gt;</strong> — a native accordion, <em>no JavaScript</em>.</li>
+  <li><strong>&lt;dialog&gt;</strong> — a native modal.</li>
+  <li><strong>&lt;mark&gt;</strong> — highlighted text.</li>
+</ul>
+<h3>The test</h3>
+<p>Strip all CSS. Does the page still make sense top to bottom? That's what a screen reader and Google get.</p>
+<div class="callout tip">&lt;details&gt;&lt;summary&gt;FAQ question&lt;/summary&gt;Answer here&lt;/details&gt; is a fully working, accessible accordion in one line. People still ship 40 lines of JS for this.</div>`),
+          article("hd-a11y", "Why Semantics Matter: Accessibility & SEO", "7 min", `
+<p>Semantics aren't tidiness. They're the difference between usable and unusable for millions of people.</p>
+<h3>What a screen reader does</h3>
+<p>It doesn't see your layout — it reads the <strong>tree</strong>. Users navigate by jumping: "next heading", "next landmark", "list all links". With &lt;div&gt; soup, none of that exists and they must hear every word in order.</p>
+<h3>The rules that matter most</h3>
+<ul>
+  <li><strong>Real buttons.</strong> &lt;button&gt; is focusable, works with Enter and Space, and announces itself. A &lt;div onclick&gt; does none of that.</li>
+  <li><strong>Heading order</strong> — don't skip levels.</li>
+  <li><strong>alt text</strong> on meaningful images; <strong>alt=""</strong> on decorative ones so it's skipped.</li>
+  <li><strong>Labels</strong> on every input.</li>
+  <li><strong>Keyboard</strong> — Tab must reach everything, and focus must be visible.</li>
+  <li><strong>Contrast</strong> — 4.5:1 minimum for body text.</li>
+</ul>
+<h3>SEO comes free</h3>
+<p>Google parses the same structure. Good headings, semantic landmarks, real link text and alt attributes are the foundation of technical SEO — you get it as a side effect of doing the right thing.</p>
+<h3>It's the law in many places</h3>
+<p>Accessibility is a legal requirement for public and commercial sites in much of the world. Retrofitting is far more expensive than building it right.</p>
+<div class="callout">Unplug your mouse and use your site with Tab only. It takes two minutes and it's the fastest accessibility audit that exists.</div>`),
           quiz("hd-quiz-1", "Quiz: Semantic HTML", [
-            {
-              q: "Which element should contain a page's unique main content?",
-              options: ["<content>", "<main>", "<section>", "<body>"],
-              answer: 1,
-            },
-            {
-              q: "What does a screen reader use to let users jump around a page?",
-              options: ["CSS classes", "Landmark elements like <nav> and <main>", "JavaScript events", "Font sizes"],
-              answer: 1,
-            },
-            {
-              q: "Which is the correct way to make a clickable 'Save' control?",
-              options: ['<div onclick="save()">Save</div>', '<span class="btn">Save</span>', "<button>Save</button>", "<a>Save</a> with no href"],
-              answer: 2,
-            },
+            { q: "How many &lt;main&gt; elements should a page have?", options: ["As many as needed", "One", "One per section", "Zero"], answer: 1 },
+            { q: "The difference between &lt;strong&gt; and &lt;b&gt; is…", options: ["Colour", "&lt;strong&gt; carries meaning (importance); &lt;b&gt; is only bold", "Size", "Nothing"], answer: 1 },
+            { q: "A decorative image should have…", options: ["No alt attribute", "alt=\"\" so it's skipped", "alt=\"image\"", "A caption"], answer: 1 },
+            { q: "Why use &lt;button&gt; instead of &lt;div onclick&gt;?", options: ["It's shorter", "It's focusable, works with Enter/Space and announces itself", "It's faster", "It's styled"], answer: 1 },
+            { q: "rel=\"noopener\" with target=\"_blank\" prevents…", options: ["Slow loading", "The new page getting scripting access back to yours", "SEO loss", "Caching"], answer: 1 },
+            { q: "&lt;details&gt; + &lt;summary&gt; gives you…", options: ["A table", "A native accordion with no JavaScript", "A form", "A modal"], answer: 1 },
+            { q: "A page is 'semantic' if, with CSS removed…", options: ["It still looks the same", "It still makes sense read top to bottom", "It's blank", "It loads fast"], answer: 1 },
           ]),
         ],
       },
       {
-        title: "Forms & Tables",
+        title: "2 · Forms & Data",
         lessons: [
-          article("hd-forms", "Forms: Inputs, Labels & Validation", "12 min", `
-<h3>🎯 Intro</h3>
-<p>Forms are how users talk to your site — sign-ups, searches, checkouts. HTML gives you rich input types and validation <em>before you write any JavaScript</em>.</p>
-<h3>📝 Summary</h3>
-<ul>
-  <li>Every input needs a <code>&lt;label&gt;</code> — click the label, focus the input</li>
-  <li>Use the right <code>type</code>: <code>email</code>, <code>number</code>, <code>date</code>, <code>password</code> — mobile keyboards adapt automatically</li>
-  <li><code>required</code>, <code>min</code>, <code>max</code>, <code>pattern</code> give you free validation</li>
-</ul>
-<div class="flow">
-  <div class="flow-box">✍️ User fills form</div>
-  <div class="flow-arrow" data-label="clicks submit"></div>
-  <div class="flow-box warn">✅ Browser checks<br><small>required, type…</small></div>
-  <div class="flow-arrow" data-label="if valid"></div>
-  <div class="flow-box alt">📨 Data is sent</div>
-</div>
-<h3>💻 Example</h3>
-<pre><code>&lt;form&gt;
+          article("hd-forms", "Forms: Inputs, Labels & Validation", "8 min", `
+<p>Forms are where users actually give you something. They're also the most-broken part of most sites.</p>
+<h3>The shape</h3>
+<pre><code>&lt;form action="/signup" method="post"&gt;
   &lt;label for="email"&gt;Email&lt;/label&gt;
-  &lt;input id="email" type="email" required&gt;
-
-  &lt;label for="age"&gt;Age&lt;/label&gt;
-  &lt;input id="age" type="number" min="13" max="120"&gt;
-
-  &lt;label for="plan"&gt;Plan&lt;/label&gt;
-  &lt;select id="plan"&gt;
-    &lt;option&gt;Free&lt;/option&gt;
-    &lt;option&gt;Pro&lt;/option&gt;
-  &lt;/select&gt;
-
+  &lt;input type="email" id="email" name="email" required&gt;
   &lt;button type="submit"&gt;Sign up&lt;/button&gt;
 &lt;/form&gt;</code></pre>
-<div class="callout">Try submitting with an empty email — the browser blocks it and shows a message. Zero JavaScript needed.</div>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> build a contact form with name (required), email (type email, required), a topic dropdown, and a message textarea. Test that validation fires on submit.</div>`),
-          article("hd-tables", "Tables Done Right", "9 min", `
-<h3>🎯 Intro</h3>
-<p>Tables are for <strong>data</strong> — schedules, prices, results. Built correctly, they're readable for everyone including screen reader users.</p>
-<h3>📝 Summary</h3>
 <ul>
-  <li><code>&lt;thead&gt;</code>, <code>&lt;tbody&gt;</code> — separate headings from data</li>
-  <li><code>&lt;th&gt;</code> for header cells, <code>&lt;td&gt;</code> for data cells</li>
-  <li><code>&lt;caption&gt;</code> — a title that describes the table</li>
-  <li>Never use tables for page layout — that's CSS's job</li>
+  <li><strong>name</strong> — the key sent to the server. No name, no data.</li>
+  <li><strong>id</strong> — what the label points at.</li>
 </ul>
-<h3>💻 Example</h3>
+<h3>Input types do real work</h3>
+<p><strong>email</strong>, <strong>tel</strong>, <strong>url</strong>, <strong>number</strong>, <strong>date</strong>, <strong>password</strong>, <strong>search</strong>, <strong>file</strong>, <strong>range</strong>, <strong>color</strong>, <strong>checkbox</strong>, <strong>radio</strong>.</p>
+<p>The right type gives free validation <em>and</em> the right mobile keyboard. type="tel" shows a number pad — a genuine usability win for one word.</p>
+<h3>Labels are non-negotiable</h3>
+<pre><code>&lt;label for="email"&gt;Email&lt;/label&gt;
+&lt;input id="email"&gt;
+
+&lt;label&gt;Email &lt;input&gt;&lt;/label&gt;   &lt;!-- wrapping also works --&gt;</code></pre>
+<p>A label makes the tap target bigger and lets screen readers announce the field. <strong>A placeholder is not a label</strong> — it disappears the moment someone types, and it fails contrast.</p>
+<h3>Grouping</h3>
+<pre><code>&lt;fieldset&gt;
+  &lt;legend&gt;Delivery&lt;/legend&gt;
+  &lt;label&gt;&lt;input type="radio" name="ship"&gt; Standard&lt;/label&gt;
+  &lt;label&gt;&lt;input type="radio" name="ship"&gt; Express&lt;/label&gt;
+&lt;/fieldset&gt;</code></pre>
+<p>Radios sharing a <strong>name</strong> become one choice. fieldset/legend tells screen readers what the group is <em>for</em>.</p>
+<div class="callout tip">autocomplete="email" / "tel" / "name" lets browsers fill fields instantly. It's one attribute and it measurably increases completions.</div>`),
+          article("hd-validation", "Validation & Form UX", "7 min", `
+<p>The browser validates for free — before a single line of JavaScript.</p>
+<h3>Built-in validation</h3>
+<pre><code>&lt;input type="email" required&gt;
+&lt;input type="text" minlength="3" maxlength="20"&gt;
+&lt;input type="number" min="1" max="10" step="1"&gt;
+&lt;input type="text" pattern="[0-9]{4}" title="4 digits"&gt;</code></pre>
+<p>The browser blocks submission and shows a native message. <strong>title</strong> explains what pattern wants — without it, users see a useless error.</p>
+<h3>Style the states</h3>
+<pre><code>input:invalid  { border-color: red; }
+input:valid    { border-color: green; }
+input:user-invalid { }   /* only AFTER they interact */</code></pre>
+<p><strong>:user-invalid</strong> is the kind one — it doesn't scream red at an empty form the user hasn't touched yet.</p>
+<h3>Good form UX</h3>
+<ul>
+  <li><strong>Ask for less.</strong> Every field loses people. Do you truly need their fax?</li>
+  <li><strong>Errors next to the field</strong>, not in a list at the top.</li>
+  <li><strong>Say how to fix it</strong> — "Password needs 8+ characters", not "Invalid".</li>
+  <li><strong>Never clear the form</strong> on error. Nothing is more infuriating.</li>
+  <li><strong>Label required fields</strong>, don't make people guess.</li>
+</ul>
+<div class="callout warn">Browser validation is UX, NEVER security. Anyone can disable it in DevTools or post directly to your endpoint. The server must re-validate everything, always.</div>`),
+          article("hd-tables", "Tables Done Right", "7 min", `
+<p>Tables are for <strong>data</strong> — things with rows and columns. Never for layout.</p>
+<h3>The full structure</h3>
 <pre><code>&lt;table&gt;
-  &lt;caption&gt;Course schedule&lt;/caption&gt;
+  &lt;caption&gt;Q1 sales by region&lt;/caption&gt;
   &lt;thead&gt;
-    &lt;tr&gt;&lt;th&gt;Day&lt;/th&gt;&lt;th&gt;Topic&lt;/th&gt;&lt;th&gt;Time&lt;/th&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;th scope="col"&gt;Region&lt;/th&gt;&lt;th scope="col"&gt;Sales&lt;/th&gt;&lt;/tr&gt;
   &lt;/thead&gt;
   &lt;tbody&gt;
-    &lt;tr&gt;&lt;td&gt;Mon&lt;/td&gt;&lt;td&gt;HTML&lt;/td&gt;&lt;td&gt;7 PM&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td&gt;Wed&lt;/td&gt;&lt;td&gt;CSS&lt;/td&gt;&lt;td&gt;7 PM&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;th scope="row"&gt;North&lt;/th&gt;&lt;td&gt;120&lt;/td&gt;&lt;/tr&gt;
   &lt;/tbody&gt;
+  &lt;tfoot&gt;
+    &lt;tr&gt;&lt;th scope="row"&gt;Total&lt;/th&gt;&lt;td&gt;120&lt;/td&gt;&lt;/tr&gt;
+  &lt;/tfoot&gt;
 &lt;/table&gt;</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> make a weekly study timetable table with a caption, a header row, and at least three body rows.</div>`),
-          article("hd-media", "Images, Audio & Video", "8 min", `
-<h3>🎯 Intro</h3>
-<p>Media makes pages come alive — but done wrong it's slow and inaccessible. Here's the professional way.</p>
-<h3>📝 Summary</h3>
+<h3>The parts that matter for accessibility</h3>
 <ul>
-  <li><code>&lt;img&gt;</code> always with <code>alt</code>; add <code>loading="lazy"</code> for images below the fold</li>
-  <li><code>&lt;video controls&gt;</code> / <code>&lt;audio controls&gt;</code> for local media files</li>
-  <li><code>&lt;figure&gt;</code> + <code>&lt;figcaption&gt;</code> pair media with a caption</li>
+  <li><strong>&lt;caption&gt;</strong> — the table's title. First child. Announced first.</li>
+  <li><strong>&lt;th&gt;</strong> — a header cell, not just bold text.</li>
+  <li><strong>scope="col" / "row"</strong> — tells a screen reader which header describes which cell. Without it, a data cell is announced as a naked number with no context.</li>
+  <li><strong>thead/tbody/tfoot</strong> — structure; also lets long tables scroll under a fixed header.</li>
 </ul>
-<h3>💻 Example</h3>
-<pre><code>&lt;figure&gt;
-  &lt;img src="sunset.jpg" alt="Sunset over Inle Lake" loading="lazy"&gt;
-  &lt;figcaption&gt;Inle Lake at dusk, Myanmar&lt;/figcaption&gt;
-&lt;/figure&gt;
-
-&lt;video controls width="640"&gt;
-  &lt;source src="lesson.mp4" type="video/mp4"&gt;
-  Sorry, your browser doesn't support video.
+<h3>Spanning</h3>
+<pre><code>&lt;td colspan="2"&gt;  &lt;td rowspan="3"&gt;</code></pre>
+<h3>Responsive tables</h3>
+<p>Tables don't shrink. Wrap them: <strong>&lt;div style="overflow-x:auto"&gt;</strong> so they scroll <em>inside</em> their own box instead of breaking the whole page on a phone.</p>
+<div class="callout warn">A table without scope on its headers is nearly unusable with a screen reader. It's one attribute per header — always add it.</div>`),
+          quiz("hd-quiz-2", "Quiz: Forms & Tables", [
+            { q: "Data is sent to the server using an input's…", options: ["id", "name", "class", "type"], answer: 1 },
+            { q: "A placeholder is not a label because…", options: ["It's grey", "It disappears when the user types", "It's too long", "It's slow"], answer: 1 },
+            { q: "type=\"tel\" on mobile gives you…", options: ["Nothing", "A number pad keyboard", "A date picker", "A file browser"], answer: 1 },
+            { q: "Browser validation (required, pattern) is…", options: ["Enough security", "UX only — the server must re-validate", "Deprecated", "For mobile only"], answer: 1 },
+            { q: "Which pseudo-class avoids showing red on an untouched form?", options: [":invalid", ":user-invalid", ":required", ":focus"], answer: 1 },
+            { q: "scope=\"col\" on a &lt;th&gt; tells screen readers…", options: ["The colour", "Which cells that header describes", "The width", "Nothing"], answer: 1 },
+            { q: "Radio buttons become one choice when they share a…", options: ["class", "name", "id", "value"], answer: 1 },
+            { q: "To stop a wide table breaking a phone layout you…", options: ["Delete columns", "Wrap it in a container with overflow-x: auto", "Use position: fixed", "Shrink the font to 6px"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "3 · Media, the Head & Professional HTML",
+        lessons: [
+          article("hd-media", "Images, Audio & Video", "7 min", `
+<p>Media is almost always the heaviest thing on a page — and the biggest performance win.</p>
+<h3>Images</h3>
+<pre><code>&lt;img src="cat.jpg" alt="A ginger cat asleep"
+     width="800" height="600" loading="lazy"&gt;</code></pre>
+<ul>
+  <li><strong>width/height</strong> — reserve the space so the page doesn't jump as images load (that jump is called layout shift, and it's infuriating).</li>
+  <li><strong>loading="lazy"</strong> — don't download until it's nearly on screen.</li>
+</ul>
+<h3>Responsive images</h3>
+<pre><code>&lt;img srcset="small.jpg 400w, big.jpg 1200w"
+     sizes="(max-width: 600px) 400px, 1200px"
+     src="big.jpg" alt="..."&gt;</code></pre>
+<p>The browser picks the right file for the screen — don't send a 2MB desktop image to a phone on mobile data.</p>
+<h3>Modern formats</h3>
+<pre><code>&lt;picture&gt;
+  &lt;source srcset="photo.webp" type="image/webp"&gt;
+  &lt;img src="photo.jpg" alt="..."&gt;
+&lt;/picture&gt;</code></pre>
+<p><strong>WebP</strong>/<strong>AVIF</strong> are far smaller than JPEG at the same quality, with a graceful fallback.</p>
+<h3>Video & audio</h3>
+<pre><code>&lt;video controls poster="thumb.jpg" width="640"&gt;
+  &lt;source src="clip.mp4" type="video/mp4"&gt;
+  &lt;track kind="captions" src="c.vtt" srclang="en" default&gt;
 &lt;/video&gt;</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> add a figure with caption and a lazy-loaded image to your practice page, then check the Network tab to see it load only when scrolled into view.</div>`),
-          quiz("hd-quiz-2", "Quiz: Forms, Tables & Media", [
-            {
-              q: "How do you connect a label to its input?",
-              options: ["Put them on the same line", 'label\'s "for" matches the input\'s "id"', "Give both the same class", "Wrap the input in a div"],
-              answer: 1,
-            },
-            {
-              q: "Which attribute makes a field mandatory with no JavaScript?",
-              options: ["validate", "mandatory", "required", "must"],
-              answer: 2,
-            },
-            {
-              q: "Header cells in a table use which element?",
-              options: ["<td>", "<header>", "<th>", "<thead-cell>"],
-              answer: 2,
-            },
-            {
-              q: "What should every <img> include for accessibility?",
-              options: ["title attribute", "alt attribute", "name attribute", "label attribute"],
-              answer: 1,
-            },
+<ul>
+  <li><strong>controls</strong> — always. Never trap users.</li>
+  <li><strong>poster</strong> — the still shown before play.</li>
+  <li><strong>&lt;track&gt;</strong> — captions. Required for deaf users, and used by everyone on mute.</li>
+  <li><strong>autoplay</strong> only works muted — and you should not use it.</li>
+</ul>
+<div class="callout tip">Resizing and compressing images is the single biggest speed win on most sites — bigger than any code change you'll make.</div>`),
+          article("hd-head", "The &lt;head&gt;: Meta, SEO & Social", "7 min", `
+<p>Invisible to users, decisive for search engines and shares.</p>
+<h3>The essentials</h3>
+<pre><code>&lt;meta charset="utf-8"&gt;
+&lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+&lt;title&gt;Page name — Site&lt;/title&gt;
+&lt;meta name="description" content="A clear 150-char summary."&gt;
+&lt;link rel="icon" href="/favicon.ico"&gt;
+&lt;link rel="canonical" href="https://site.com/page"&gt;</code></pre>
+<ul>
+  <li><strong>title</strong> — the biggest on-page SEO signal, and the browser tab. ~60 chars.</li>
+  <li><strong>description</strong> — doesn't rank you, but wins the click.</li>
+  <li><strong>canonical</strong> — "this is the real URL" when duplicates exist.</li>
+</ul>
+<h3>Open Graph — how links look when shared</h3>
+<pre><code>&lt;meta property="og:title" content="My Page"&gt;
+&lt;meta property="og:description" content="..."&gt;
+&lt;meta property="og:image" content="https://site.com/card.jpg"&gt;
+&lt;meta property="og:url" content="https://site.com/page"&gt;
+&lt;meta name="twitter:card" content="summary_large_image"&gt;</code></pre>
+<p>Without these, your link posted to Facebook or Viber is a grey box with no picture. With them, it's a proper card. This alone changes click-through dramatically.</p>
+<h3>Structured data</h3>
+<p>JSON-LD (schema.org) tells Google "this is a recipe / product / course" — that's how rich results with stars and prices appear.</p>
+<div class="callout tip">og:image must be an absolute URL and roughly 1200×630. Relative paths silently fail — and you won't notice until someone shares it.</div>`),
+          article("hd-best", "Professional HTML: ARIA & Common Mistakes", "7 min", `
+<p>Last mile: the things that separate correct HTML from professional HTML.</p>
+<h3>The first rule of ARIA</h3>
+<div class="callout"><strong>Don't use ARIA.</strong> Use the right HTML element. A &lt;button&gt; beats &lt;div role="button" tabindex="0" aria-pressed="false"&gt; every single time.</div>
+<p>Bad ARIA is <em>worse</em> than none — it lies to assistive tech.</p>
+<h3>When ARIA genuinely helps</h3>
+<ul>
+  <li><strong>aria-label</strong> — name an icon-only button: &lt;button aria-label="Close"&gt;✕&lt;/button&gt;</li>
+  <li><strong>aria-live="polite"</strong> — announce content that appears later (a toast, a search count).</li>
+  <li><strong>aria-expanded</strong> — on a menu toggle.</li>
+  <li><strong>aria-hidden="true"</strong> — hide decoration from screen readers.</li>
+</ul>
+<h3>The mistakes nearly everyone makes</h3>
+<ul>
+  <li>Div soup instead of landmarks.</li>
+  <li>Missing or lazy <strong>alt</strong> ("image1.jpg").</li>
+  <li>Placeholder used as a label.</li>
+  <li>Skipped heading levels for sizing.</li>
+  <li><strong>outline: none</strong> with no replacement.</li>
+  <li>Missing <strong>lang</strong> on &lt;html&gt;.</li>
+  <li>Tables for layout; &lt;br&gt; for spacing.</li>
+  <li>Clickable divs.</li>
+</ul>
+<h3>Check your work</h3>
+<p><strong>validator.w3.org</strong> for markup, <strong>Lighthouse</strong> (DevTools) for an accessibility score, and Tab-only navigation for the truth.</p>
+<div class="callout tip">If you find yourself adding tabindex and role to make something behave like a button — stop. It already exists. It's called &lt;button&gt;.</div>`),
+          quiz("hd-quiz-3", "Quiz: Media, Head & Best Practice", [
+            { q: "width/height on an img prevent…", options: ["Lazy loading", "Layout shift as the image loads", "Caching", "Compression"], answer: 1 },
+            { q: "srcset lets the browser…", options: ["Compress images", "Pick the right image file for the screen", "Lazy load", "Add captions"], answer: 1 },
+            { q: "The &lt;track&gt; element on a video provides…", options: ["A poster", "Captions", "Autoplay", "A source"], answer: 1 },
+            { q: "Which tag most affects on-page SEO and the browser tab?", options: ["&lt;meta description&gt;", "&lt;title&gt;", "&lt;h2&gt;", "&lt;link&gt;"], answer: 1 },
+            { q: "Without og: tags, a shared link appears as…", options: ["A rich card", "A plain grey box with no image", "Nothing", "An error"], answer: 1 },
+            { q: "og:image must be…", options: ["A relative path", "An absolute URL (~1200x630)", "An SVG", "Under 10KB"], answer: 1 },
+            { q: "The first rule of ARIA is…", options: ["Use it everywhere", "Don't use it — use the right HTML element", "Only use aria-label", "Add role to every div"], answer: 1 },
+            { q: "An icon-only button needs…", options: ["Nothing", "aria-label to name it", "A title only", "role='icon'"], answer: 1 },
           ]),
         ],
       },
@@ -2178,7 +2916,7 @@ else { __exDone(true, ""); }`),
     rating: 4.6,
     ratings: 58720,
     students: 331200,
-    hours: 12,
+    hours: 20,
     price: "Free",
     color: "linear-gradient(135deg,#f7971e,#ffd200)",
     icon: "JS",
@@ -2192,337 +2930,507 @@ else { __exDone(true, ""); }`),
     ],
     sections: [
       {
-        title: "First Steps",
+        title: "1 · First Steps",
         lessons: [
-          video("je-hello", "Your First Script", "8 min", `
-<h3>🎯 Intro</h3>
-<p>JavaScript is the only language browsers run natively — one script tag and your page comes alive.</p>
-<h3>📝 Summary</h3>
-<ul>
-  <li>Load scripts just before <code>&lt;/body&gt;</code> so the HTML exists first</li>
-  <li><code>console.log()</code> is your best friend for seeing what's happening</li>
-  <li>DevTools (F12) → Console shows logs and errors</li>
-</ul>
-<h3>💻 Example</h3>
-<pre><code>&lt;script src="app.js"&gt;&lt;/script&gt;</code></pre>
-<p>In <code>app.js</code>:</p>
-<pre><code>console.log("Hello from JavaScript!");
-alert("The page is alive!");</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> log your name, the current year, and 7 * 6 to the console — then find all three in DevTools.</div>`),
-          article("je-variables", "Variables & Types", "11 min", `
-<h3>🎯 Intro</h3>
-<p>Variables are named boxes for values. Modern JavaScript gives you two: <code>const</code> and <code>let</code>.</p>
-<h3>📝 Summary</h3>
-<ul>
-  <li><code>const</code> — can't be reassigned (use it by default)</li>
-  <li><code>let</code> — can change (counters, accumulating values)</li>
-  <li>Core types: string, number, boolean, undefined, null</li>
-  <li>Template literals: <code>\`Hello \${name}\`</code> embed values in text</li>
-</ul>
-<h3>💻 Example</h3>
-<pre><code>const name = "Aye";
-let lessonsDone = 3;
-lessonsDone = lessonsDone + 1;
+          article("je-hello", "Your First Script", "6 min", `
+<p><strong>JavaScript</strong> is the programming language of the web. HTML is the skeleton, CSS the clothes — JavaScript is the muscles that make things move.</p>
+<h3>Where JS lives</h3>
+<pre><code>&lt;script&gt;
+  console.log("Hello!");
+&lt;/script&gt;
 
-const isEnrolled = true;
-const price = 0;
+&lt;script src="app.js"&gt;&lt;/script&gt;</code></pre>
+<p>Inline for quick tests; an external <strong>.js</strong> file for real work. Put the tag at the end of &lt;body&gt; (or add <strong>defer</strong>) so the HTML exists before your code runs.</p>
+<h3>console.log is your best friend</h3>
+<p>Press <strong>F12</strong> → Console. This is where your output appears and where errors show up. Professionals live in this panel — it is not a beginner crutch.</p>
+<h3>Statements and semicolons</h3>
+<p>One instruction per line. Semicolons are mostly optional (JS inserts them), but being consistent avoids a small class of weird bugs.</p>
+<h3>Comments</h3>
+<pre><code>// a single line
 
-console.log(\`\${name} finished \${lessonsDone} lessons\`);
-console.log(typeof name, typeof price, typeof isEnrolled);
-// string number boolean</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> create const course and let progress (0–100), increase progress twice, and log a template-literal sentence with both.</div>`),
-          article("je-conditions", "Comparisons & if/else", "11 min", `
-<h3>🎯 Intro</h3>
-<p>Programs choose. Comparisons produce true/false, and <code>if</code> acts on them.</p>
-<h3>📝 Summary</h3>
+/* several
+   lines */</code></pre>
+<h3>Say it out loud</h3>
+<p>Code is read far more than written. <strong>console.log("Hello!")</strong> reads as: "console, please log this text."</p>
+<div class="callout tip">Open the Console on any website right now and type 2 + 2. You're running JavaScript. There's nothing to install — the tool is already in your hands.</div>`),
+          article("je-variables", "Variables & Types", "7 min", `
+<p>A <strong>variable</strong> is a labelled box you put a value in.</p>
+<h3>const, let — and never var</h3>
+<pre><code>const name = "Su";   // cannot be reassigned
+let score = 0;       // can change
+score = 10;          // fine
+</code></pre>
+<p><strong>Default to const.</strong> Reach for <strong>let</strong> only when the value genuinely changes. Avoid <strong>var</strong> — its scope rules cause real bugs.</p>
+<h3>The types</h3>
 <ul>
-  <li>ALWAYS use <code>===</code> and <code>!==</code> (strict — no type surprises)</li>
-  <li>Combine with <code>&amp;&amp;</code> (and), <code>||</code> (or), <code>!</code> (not)</li>
-  <li>Ternary for tiny choices: <code>cond ? a : b</code></li>
+  <li><strong>string</strong> — "hello" (text)</li>
+  <li><strong>number</strong> — 42, 3.14 (one type for all numbers)</li>
+  <li><strong>boolean</strong> — true / false</li>
+  <li><strong>null</strong> — deliberately empty</li>
+  <li><strong>undefined</strong> — never given a value</li>
+  <li><strong>object</strong> / <strong>array</strong> — collections</li>
 </ul>
-<div class="flow">
-  <div class="flow-box warn">❓ if (condition)</div>
-  <div class="flow-arrow" data-label="true → run"></div>
-  <div class="flow-box alt">if block</div>
-  <div class="flow-arrow" data-label="false → run"></div>
-  <div class="flow-box">else block</div>
-</div>
-<h3>💻 Example</h3>
-<pre><code>const score = 72;
-
-if (score &gt;= 80) {
-  console.log("Grade A 🏆");
-} else if (score &gt;= 60) {
-  console.log("Grade B — pass!");
+<h3>Template literals</h3>
+<p>Backtick strings let you drop values straight in, and span multiple lines — far nicer than gluing strings with +.</p>
+<h3>Types are dynamic</h3>
+<p>A variable can hold a string now and a number later. Flexible — and a common source of bugs. Know what's in your box.</p>
+<div class="callout tip">Name things properly. userAge tells the story; x, data, thing2 tell you nothing at 2am when it's broken.</div>`),
+          article("je-operators", "Operators & Truthiness", "6 min", `
+<p>Operators calculate and compare. Two of them cause most beginner bugs.</p>
+<h3>Maths</h3>
+<p><strong>+ - * /</strong> as expected. <strong>%</strong> is the remainder — the standard way to test even/odd: n % 2 === 0.</p>
+<h3>The === rule</h3>
+<ul>
+  <li><strong>==</strong> — loose. Converts types first. "5" == 5 is <em>true</em>.</li>
+  <li><strong>===</strong> — strict. Value <em>and</em> type. "5" === 5 is <em>false</em>.</li>
+</ul>
+<p><strong>Always use ===.</strong> The loose one produces bugs that take hours to find.</p>
+<h3>+ is overloaded</h3>
+<pre><code>1 + 1      // 2
+"1" + 1    // "11"  ← string glue!</code></pre>
+<p>An input field always gives you a <em>string</em>. Convert deliberately with <strong>Number()</strong> before doing maths.</p>
+<h3>Truthy and falsy</h3>
+<p><strong>Falsy</strong>: false, 0, "" , null, undefined, NaN. Everything else is truthy — including "0", "false", and an empty array. That last one surprises everyone.</p>
+<h3>Logic</h3>
+<p><strong>&amp;&amp;</strong> both, <strong>||</strong> either, <strong>!</strong> flip.</p>
+<div class="callout warn">Adding two numbers from input boxes and getting "510" instead of 15? That's + gluing strings. Wrap them in Number().</div>`),
+          article("je-conditions", "Comparisons & if/else", "7 min", `
+<p><strong>Conditionals</strong> let your code choose. This is where scripts become programs.</p>
+<h3>if / else if / else</h3>
+<pre><code>if (score &gt;= 80) {
+  console.log("Excellent");
+} else if (score &gt;= 50) {
+  console.log("Pass");
 } else {
-  console.log("Keep practicing");
-}
-
-const label = score &gt;= 60 ? "PASS" : "RETRY";
-console.log(\`Result: \${label}\`);
-
-// why === matters:
-console.log(5 == "5");    // true  (loose — avoid!)
-console.log(5 === "5");   // false (strict — correct)</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> write age checks that print "child" / "teen" / "adult", then convert one of them into a ternary.</div>`),
-          quiz("je-quiz", "Quiz: JS Basics", [
-            { q: "What prints text to the developer console?", options: ["print()", "console.log()", "echo()", "log.console()"], answer: 1 },
-            { q: "Which declares a variable that can't be reassigned?", options: ["let", "var", "const", "static"], answer: 2 },
-            { q: "5 === \"5\" evaluates to...", options: ["true", "false", "\"5\"", "an error"], answer: 1 },
-          ]),
-        ],
-      },
-      {
-        title: "Loops, Arrays & Functions",
-        lessons: [
-          video("je-loops", "Loops", "10 min", `
-<h3>🎯 Intro</h3>
-<p>Loops repeat work without copy-paste.</p>
-<h3>📝 Summary</h3>
-<ul>
-  <li><code>for (let i = 0; i &lt; n; i++)</code> — counting loop</li>
-  <li><code>for (const item of array)</code> — walk arrays cleanly</li>
-  <li><code>while (condition)</code> — repeat until something changes</li>
-</ul>
-<div class="flow">
-  <div class="flow-box">start<br><small>i = 1</small></div>
-  <div class="flow-arrow" data-label="i ≤ 5 ?"></div>
-  <div class="flow-box alt">run the body</div>
-  <div class="flow-arrow" data-label="then i++ ↺"></div>
-  <div class="flow-box warn">check again</div>
-</div>
-<h3>💻 Example</h3>
-<pre><code>for (let i = 1; i &lt;= 5; i++) {
-  console.log("Line " + i);
-}
-
-const fruits = ["apple", "pear", "kiwi"];
-for (const fruit of fruits) {
-  console.log(fruit);
+  console.log("Try again");
 }</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> print the 7-times table from 7×1 to 7×10 with a counting loop.</div>`),
-          article("je-arrays", "Arrays & Their Methods", "13 min", `
-<h3>🎯 Intro</h3>
-<p>Arrays hold ordered lists — and their built-in methods do in one line what loops do in five.</p>
-<h3>📝 Summary</h3>
-<ul>
-  <li><code>.push() .pop()</code> add/remove at the end; <code>.length</code>, <code>[0]</code>, <code>.includes()</code></li>
-  <li><code>.map()</code> transforms every item into a new array</li>
-  <li><code>.filter()</code> keeps items that pass a test</li>
-  <li><code>.reduce()</code> boils a list down to one value</li>
-</ul>
-<div class="flow">
-  <div class="flow-box">[1,2,3,4]<br><small>array</small></div>
-  <div class="flow-arrow" data-label=".map(×2)"></div>
-  <div class="flow-box alt">[2,4,6,8]</div>
-  <div class="flow-arrow" data-label=".filter(&gt;4)"></div>
-  <div class="flow-box warn">[6,8]</div>
-</div>
-<h3>💻 Example</h3>
-<pre><code>const scores = [75, 92, 58, 88];
-
-const doubled = scores.map(s =&gt; s * 2);
-const passing = scores.filter(s =&gt; s &gt;= 60);
-const total   = scores.reduce((sum, s) =&gt; sum + s, 0);
-
-console.log(doubled);              // [150, 184, 116, 176]
-console.log(passing);              // [75, 92, 88]
-console.log(total / scores.length); // 78.25</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> from an array of prices, make a new array with 10% discount applied, then filter to only items under 5000, and sum them.</div>`),
-          article("je-functions", "Functions & Arrow Syntax", "13 min", `
-<h3>🎯 Intro</h3>
-<p>Functions are reusable machines: input → work → output. Modern JS writes them two ways.</p>
-<h3>📝 Summary</h3>
-<ul>
-  <li>Classic: <code>function add(a, b) { return a + b; }</code></li>
-  <li>Arrow: <code>const add = (a, b) =&gt; a + b;</code></li>
-  <li>Default parameters: <code>(name = "friend")</code></li>
-  <li>Small, single-purpose functions = readable programs</li>
-</ul>
-<div class="flow">
-  <div class="flow-box">📥 inputs<br><small>a, b</small></div>
-  <div class="flow-arrow" data-label="do work"></div>
-  <div class="flow-box alt">⚙️ function<br><small>add(a, b)</small></div>
-  <div class="flow-arrow" data-label="return"></div>
-  <div class="flow-box">📤 output<br><small>a + b</small></div>
-</div>
-<h3>💻 Example</h3>
-<pre><code>function grade(score) {
-  if (score &gt;= 80) return "A";
-  if (score &gt;= 60) return "B";
-  return "C";
-}
-
-const greet = (name = "friend") =&gt; \`Hello, \${name}!\`;
-const kyatToUsd = (amount, rate = 4400) =&gt; (amount / rate).toFixed(2);
-
-console.log(grade(85));            // A
-console.log(greet());              // Hello, friend!
-console.log(kyatToUsd(100000));    // 22.73</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> write isEven(n), an arrow function celsiusToF(c), and a describe(name, age) using both in a template literal.</div>`),
-          article("je-objects", "Objects", "12 min", `
-<h3>🎯 Intro</h3>
-<p>Objects group related data under names — the shape of every API response you'll ever meet.</p>
-<h3>📝 Summary</h3>
-<ul>
-  <li>Create: <code>{ title: "JS", hours: 12 }</code>; read: <code>c.title</code> or <code>c["title"]</code></li>
-  <li>Destructure: <code>const { title, hours } = course</code></li>
-  <li>Arrays of objects = your data model</li>
-</ul>
-<h3>💻 Example</h3>
-<pre><code>const course = { title: "JS Essentials", hours: 12, free: true };
-const { title, hours } = course;
-console.log(\`\${title} — \${hours}h\`);
-
-const students = [
-  { name: "Aye", score: 85 },
-  { name: "Ko",  score: 55 },
-];
-const names = students.map(s =&gt; s.name);
-const best = students.reduce((a, b) =&gt; a.score &gt; b.score ? a : b);
-console.log(names, best.name);   // ["Aye","Ko"] "Aye"</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> model 3 phones as objects (name, price, inStock); print only in-stock names with filter + map.</div>`),
-          quiz("je-quiz-2", "Quiz: Data & Functions", [
-            { q: "Which method keeps only items passing a test?", options: [".map()", ".filter()", ".push()", ".join()"], answer: 1 },
-            { q: "const f = (x) => x * 2 is...", options: ["A syntax error", "An arrow function", "An object", "A loop"], answer: 1 },
-            { q: "const { name } = user does what?", options: ["Renames user", "Extracts user.name into a variable", "Deletes name", "Creates an object"], answer: 1 },
-            { q: "A for loop is used to...", options: ["Style elements", "Repeat a block of code", "Define a variable", "Load a page"], answer: 1 },
+<p>Checked top to bottom; the first true block wins and the rest are skipped. Order matters — put the tightest condition first.</p>
+<h3>The ternary</h3>
+<pre><code>const msg = age &gt;= 18 ? "Adult" : "Minor";</code></pre>
+<p>Ideal for picking between two values. Never nest them.</p>
+<h3>switch</h3>
+<p>Comparing one value to many options? switch is tidier than a wall of else-if. Don't forget <strong>break</strong> — without it, execution falls through.</p>
+<h3>Guard clauses beat nesting</h3>
+<pre><code>function pay(user) {
+  if (!user) return;          // leave early
+  if (!user.card) return;
+  charge(user);               // stays flat
+}</code></pre>
+<div class="callout tip">Four levels of nested if means it's time to flip a condition and return early. The code usually collapses into something obvious.</div>`),
+          quiz("je-quiz", "Quiz: JS Basics", [
+            { q: "Which keyword should you reach for by DEFAULT?", options: ["var", "let", "const", "static"], answer: 2 },
+            { q: "What does '5' === 5 evaluate to?", options: ["true", "false", "Error", "undefined"], answer: 1 },
+            { q: "What is '1' + 1?", options: ["2", "'11'", "Error", "NaN"], answer: 1 },
+            { q: "Which of these is FALSY?", options: ["'0'", "[]", "0", "'false'"], answer: 2 },
+            { q: "console.log() prints to…", options: ["The page", "The DevTools Console", "A file", "The printer"], answer: 1 },
+            { q: "A guard clause helps you…", options: ["Nest deeper", "Return early and keep code flat", "Skip errors", "Loop faster"], answer: 1 },
           ]),
         ],
       },
       {
-        title: "The DOM: Making Pages Interactive",
+        title: "2 · Loops, Arrays & Functions",
         lessons: [
-          article("je-dom", "Selecting & Changing the Page", "13 min", `
-<h3>🎯 Intro</h3>
-<p>The DOM is your HTML as live objects. Select an element, change it, and the page updates instantly.</p>
-<h3>📝 Summary</h3>
+          article("je-loops", "Loops", "7 min", `
+<p>Computers never get bored. <strong>Loops</strong> are how you ask for repetition.</p>
+<h3>The for loop</h3>
+<pre><code>for (let i = 0; i &lt; 5; i++) {
+  console.log(i);   // 0 1 2 3 4
+}</code></pre>
+<p>Three parts: <strong>start</strong>, <strong>keep going while</strong>, <strong>do each time</strong>. It counts from <strong>0</strong> — programming almost always does.</p>
+<h3>Looping a collection</h3>
+<pre><code>const fruits = ["apple", "banana"];
+
+for (const f of fruits) console.log(f);
+
+fruits.forEach(f =&gt; console.log(f));</code></pre>
+<p><strong>for...of</strong> gives you the values. <strong>for...in</strong> gives you the <em>keys</em> — a classic mix-up.</p>
+<h3>while</h3>
+<p>Use it when you don't know how many rounds you need — "keep asking until they get it right".</p>
+<h3>break and continue</h3>
 <ul>
-  <li><code>document.querySelector("css selector")</code> — first match</li>
-  <li><code>querySelectorAll</code> — all matches (loop with for...of)</li>
-  <li><code>.textContent</code> for text, <code>.classList.add/remove/toggle</code> for styling</li>
+  <li><strong>break</strong> — leave the loop immediately.</li>
+  <li><strong>continue</strong> — skip to the next round.</li>
 </ul>
-<h3>💻 Example</h3>
-<pre><code>&lt;h1 id="title"&gt;Loading…&lt;/h1&gt;
-&lt;p class="note"&gt;First note&lt;/p&gt;
-&lt;p class="note"&gt;Second note&lt;/p&gt;
+<div class="callout warn">If a while condition never turns false, the tab freezes. Make sure something inside the loop actually changes it.</div>`),
+          article("je-arrays", "Arrays & Their Methods", "7 min", `
+<p>An <strong>array</strong> is an ordered list — the workhorse of real code.</p>
+<h3>Basics</h3>
+<pre><code>const scores = [10, 25, 8];
+scores[0];          // 10  (from zero!)
+scores.length;      // 3
+scores.push(30);    // add to end
+scores.pop();       // remove from end</code></pre>
+<h3>The big three</h3>
+<pre><code>const nums = [5, 20, 8, 15];
 
-&lt;script&gt;
-const title = document.querySelector("#title");
-title.textContent = "Welcome to WebDev Academy!";
-title.style.color = "purple";
-
-for (const note of document.querySelectorAll(".note")) {
-  note.classList.add("highlight");
+nums.map(n =&gt; n * 2);       // [10,40,16,30]
+nums.filter(n =&gt; n &gt; 10);   // [20,15]
+nums.find(n =&gt; n &gt; 10);     // 20 (first match)</code></pre>
+<ul>
+  <li><strong>map</strong> — transform every item → new array of the same length.</li>
+  <li><strong>filter</strong> — keep what passes the test → shorter array.</li>
+  <li><strong>find</strong> — the first match → one item.</li>
+</ul>
+<h3>Also worth knowing</h3>
+<p><strong>includes</strong> (is it there?), <strong>indexOf</strong>, <strong>join</strong> (array → string), <strong>reduce</strong> (boil down to one value, e.g. a total).</p>
+<h3>They don't mutate</h3>
+<p>map/filter return a <em>new</em> array and leave the original alone. That predictability is exactly why professionals prefer them to for-loops.</p>
+<div class="callout tip">If you're writing a for-loop to build another array — that's map. To keep some items — that's filter. Reach for them first.</div>`),
+          article("je-functions", "Functions & Arrow Syntax", "7 min", `
+<p>A <strong>function</strong> is a named, reusable machine: inputs in, value out.</p>
+<h3>Declare and call</h3>
+<pre><code>function add(a, b) {
+  return a + b;
 }
-&lt;/script&gt;</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> build a page with 3 paragraphs; use JS to number them "1.", "2.", "3." automatically.</div>`),
-          article("je-events", "Events: Reacting to the User", "13 min", `
-<h3>🎯 Intro</h3>
-<p>Events are the moments users create — clicks, typing, submitting. <code>addEventListener</code> lets you respond.</p>
-<h3>📝 Summary</h3>
+add(2, 3);   // 5</code></pre>
 <ul>
-  <li><code>el.addEventListener("click", fn)</code></li>
-  <li>Input events: read <code>e.target.value</code> live</li>
-  <li>Forms: listen to "submit" + <code>e.preventDefault()</code></li>
+  <li><strong>Parameters</strong> — a, b (the placeholders).</li>
+  <li><strong>Arguments</strong> — 2, 3 (the real values).</li>
+  <li><strong>return</strong> — hands a value back. Forget it and you get undefined.</li>
 </ul>
-<div class="flow">
-  <div class="flow-box">👆 User acts<br><small>click / type</small></div>
-  <div class="flow-arrow" data-label="fires event"></div>
-  <div class="flow-box alt">🧠 Your listener<br><small>function</small></div>
-  <div class="flow-arrow" data-label="updates"></div>
-  <div class="flow-box">📄 The page</div>
-</div>
-<h3>💻 Example</h3>
-<pre><code>&lt;input id="name" placeholder="Type your name"&gt;
-&lt;button id="btn"&gt;Greet&lt;/button&gt;
-&lt;p id="out"&gt;&lt;/p&gt;
+<h3>Arrow functions</h3>
+<pre><code>const add = (a, b) =&gt; a + b;      // implicit return
+const sq  = n =&gt; n * n;           // one param, no parens needed</code></pre>
+<p>A one-line arrow returns automatically. Add braces and you must write <strong>return</strong> yourself — a very common beginner trap.</p>
+<h3>Default parameters</h3>
+<pre><code>function greet(name = "friend") {
+  return "Hi " + name;
+}</code></pre>
+<h3>Scope</h3>
+<p>Variables declared inside a function exist only inside it. That isolation is a feature — it stops distant code breaking each other.</p>
+<h3>One job each</h3>
+<p>If you need "and" to describe a function, split it. Small functions with honest names are the whole game.</p>
+<div class="callout tip">Written the same code twice? Make it a function. Fix a bug once instead of hunting every copy.</div>`),
+          article("je-objects", "Objects", "7 min", `
+<p>Arrays are numbered. <strong>Objects</strong> are labelled — the shape of nearly all real data.</p>
+<h3>Basics</h3>
+<pre><code>const user = {
+  name: "Su",
+  age: 19,
+  isStudent: true
+};
 
-&lt;script&gt;
-const out = document.querySelector("#out");
+user.name;       // "Su"    dot notation
+user["age"];     // 19      bracket notation
+user.city = "Yangon";        // add
+delete user.age;             // remove</code></pre>
+<p>Use <strong>dot</strong> normally; use <strong>brackets</strong> when the key is in a variable.</p>
+<h3>Methods</h3>
+<p>A function stored on an object is a <strong>method</strong>. Inside it, <strong>this</strong> refers to the object itself.</p>
+<h3>Nesting and the real shape of data</h3>
+<pre><code>const users = [
+  { name: "Su", age: 19 },
+  { name: "Aung", age: 22 }
+];
 
-document.querySelector("#btn").addEventListener("click", () =&gt; {
-  const name = document.querySelector("#name").value || "friend";
-  out.textContent = \`Hello, \${name}! 👋\`;
-});
+users.filter(u =&gt; u.age &gt; 20);</code></pre>
+<p>An <strong>array of objects</strong> is what every API returns. Combine it with map/filter and you can handle real data today.</p>
+<h3>Optional chaining</h3>
+<p><strong>user?.address?.city</strong> returns undefined instead of throwing when something's missing. It saves you from "cannot read property of undefined".</p>
+<div class="callout tip">Array = a numbered list. Object = a labelled thing. Array of objects = a list of things. That's most of programming.</div>`),
+          quiz("je-quiz-2", "Quiz: Data & Functions", [
+            { q: "Array indexes start at…", options: ["1", "0", "-1", "Any number"], answer: 1 },
+            { q: "Which method transforms EVERY item into a new array?", options: ["filter", "map", "find", "push"], answer: 1 },
+            { q: "Which method keeps only items that pass a test?", options: ["map", "filter", "join", "pop"], answer: 1 },
+            { q: "Do map and filter change the original array?", options: ["Yes", "No — they return a new array", "Sometimes", "Only with numbers"], answer: 1 },
+            { q: "A function without a return statement gives back…", options: ["null", "0", "undefined", "An error"], answer: 2 },
+            { q: "In an object, you use bracket notation when…", options: ["Always", "The key is stored in a variable", "Never", "The value is a number"], answer: 1 },
+            { q: "for...of loops over an array's…", options: ["Keys", "Values", "Length", "Methods"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "3 · The DOM: Making Pages Interactive",
+        lessons: [
+          article("je-dom", "Selecting & Changing the Page", "7 min", `
+<p>The <strong>DOM</strong> is your HTML represented as objects JavaScript can read and change. This is where JS becomes visible.</p>
+<h3>Selecting</h3>
+<pre><code>document.getElementById("title");
+document.querySelector(".card");      // first match
+document.querySelectorAll(".card");   // all matches</code></pre>
+<p><strong>querySelector</strong> accepts any CSS selector — your CSS knowledge transfers directly.</p>
+<h3>Changing</h3>
+<pre><code>const t = document.querySelector("#title");
+t.textContent = "New heading";
+t.classList.add("active");
+t.classList.toggle("dark");
+t.setAttribute("href", "/new");</code></pre>
+<h3>textContent vs innerHTML</h3>
+<p><strong>textContent</strong> sets plain text — safe. <strong>innerHTML</strong> parses HTML — powerful, but never put user input in it or you've created an <strong>XSS</strong> security hole.</p>
+<h3>Building elements</h3>
+<pre><code>const li = document.createElement("li");
+li.textContent = "New item";
+list.appendChild(li);</code></pre>
+<h3>Style via classes</h3>
+<p>Prefer <strong>classList</strong> over setting .style — keep the look in CSS, the logic in JS.</p>
+<div class="callout warn">querySelector returning null? Your script ran before the HTML existed. Move it to the end of &lt;body&gt; or add defer.</div>`),
+          article("je-events", "Events: Reacting to the User", "7 min", `
+<p><strong>Events</strong> are things that happen. Listening to them is interactivity.</p>
+<h3>addEventListener</h3>
+<pre><code>const btn = document.querySelector("#go");
 
-document.querySelector("#name").addEventListener("input", (e) =&gt; {
-  out.textContent = \`Typing: \${e.target.value}\`;
-});
-&lt;/script&gt;</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> add a "Clear" button that empties both the input and the paragraph.</div>`),
-          article("je-project", "Final Project: Interactive To-Do List", "22 min", `
-<h3>🎯 Intro</h3>
-<p>Everything in one page: variables, arrays, functions, DOM, events. The classic first project — built properly.</p>
-<h3>💻 Complete solution — study it, then build yours</h3>
-<pre><code>&lt;h2&gt;📚 My Study List &lt;span id="count"&gt;&lt;/span&gt;&lt;/h2&gt;
-&lt;form id="form"&gt;
-  &lt;input id="input" placeholder="Add a topic…" autocomplete="off"&gt;
-  &lt;button&gt;Add&lt;/button&gt;
-&lt;/form&gt;
-&lt;ul id="list"&gt;&lt;/ul&gt;
+btn.addEventListener("click", () =&gt; {
+  console.log("clicked");
+});</code></pre>
+<h3>The ones you'll use</h3>
+<ul>
+  <li><strong>click</strong> — buttons, anything.</li>
+  <li><strong>input</strong> — every keystroke (live search).</li>
+  <li><strong>change</strong> — after leaving a field.</li>
+  <li><strong>submit</strong> — on the form, not the button.</li>
+  <li><strong>keydown</strong> — key pressed.</li>
+</ul>
+<h3>The event object</h3>
+<pre><code>form.addEventListener("submit", (e) =&gt; {
+  e.preventDefault();       // stop the reload
+  console.log(e.target);    // what fired it
+});</code></pre>
+<p><strong>e.preventDefault()</strong> stops the browser's default — essential for forms and links.</p>
+<h3>Delegation</h3>
+<p>Don't add 100 listeners to 100 items. Listen on the parent and check <strong>e.target</strong>. It's faster and works for elements added later.</p>
+<div class="callout tip">Select → change → listen. Those three ideas are every interactive site ever built. Everything else is practice.</div>`),
+          article("je-storage", "Saving Data with localStorage", "6 min", `
+<p>Refresh the page and your to-do list vanishes. <strong>localStorage</strong> fixes that — a tiny database in the browser.</p>
+<h3>The whole API</h3>
+<pre><code>localStorage.setItem("name", "Su");
+localStorage.getItem("name");     // "Su"
+localStorage.removeItem("name");
+localStorage.clear();</code></pre>
+<h3>It only stores strings</h3>
+<pre><code>const todos = ["milk", "code"];
 
-&lt;script&gt;
-let items = [];
+localStorage.setItem("todos", JSON.stringify(todos));
+const back = JSON.parse(localStorage.getItem("todos") || "[]");</code></pre>
+<p><strong>JSON.stringify</strong> to save, <strong>JSON.parse</strong> to read. Forget these and you'll store the useless text "[object Object]".</p>
+<h3>The rules</h3>
+<ul>
+  <li>Survives refresh <em>and</em> closing the browser.</li>
+  <li>Per-site, roughly 5MB.</li>
+  <li>This device only — it does not sync.</li>
+</ul>
+<div class="callout warn">Never store passwords or tokens here. Any script on your page can read it. It's for preferences and drafts, not secrets.</div>`),
+          article("je-debug", "Debugging & Common Errors", "6 min", `
+<p>You'll spend more time fixing than writing. That's the job, not a failure.</p>
+<h3>The errors you WILL meet</h3>
+<ul>
+  <li><strong>Cannot read properties of null</strong> — your selector found nothing. Check the spelling and when the script runs.</li>
+  <li><strong>x is not a function</strong> — typo, or x isn't what you think.</li>
+  <li><strong>x is not defined</strong> — never declared, or out of scope.</li>
+  <li><strong>Unexpected token</strong> — a missing bracket or comma, usually just above the reported line.</li>
+  <li><strong>NaN</strong> — maths on something that isn't a number.</li>
+</ul>
+<h3>Read the stack trace</h3>
+<p>It names the file and line. The top is where it broke; below is how it got there. It's a map.</p>
+<h3>Breakpoints beat console.log</h3>
+<p>DevTools → Sources → click a line number. Execution pauses; inspect every variable at that instant and step through line by line.</p>
+<h3>Bisect</h3>
+<p>Comment out half. Still broken? It's in the other half. Repeat — you'll corner any bug in minutes.</p>
+<div class="callout tip">Before an hour of debugging: hard-refresh (Ctrl+Shift+R). A cached old file explains a shocking number of "impossible" bugs.</div>`),
+          article("je-project", "Final Project: Interactive To-Do List", "12 min", `
+<p>Everything you've learned, in one small real app: variables, arrays, functions, the DOM, events, and localStorage.</p>
+<h3>What to build</h3>
+<ul>
+  <li>An input and an <strong>Add</strong> button.</li>
+  <li>Adding puts the task in a list on the page.</li>
+  <li>Clicking a task marks it done (toggle a class).</li>
+  <li>A delete button per task.</li>
+  <li>It survives a refresh.</li>
+</ul>
+<h3>The shape of it</h3>
+<pre><code>let todos = JSON.parse(localStorage.getItem("todos") || "[]");
 
-const list  = document.querySelector("#list");
-const count = document.querySelector("#count");
-const input = document.querySelector("#input");
+function save() {
+  localStorage.setItem("todos", JSON.stringify(todos));
+}
 
 function render() {
   list.innerHTML = "";
-  for (const item of items) {
+  todos.forEach((t, i) =&gt; {
     const li = document.createElement("li");
+    li.textContent = t.text;
+    if (t.done) li.classList.add("done");
+    list.appendChild(li);
+  });
+}</code></pre>
+<h3>The pattern that scales</h3>
+<div class="flow">
+  <div class="flow-box">🗃️ State</div>
+  <div class="flow-arrow" data-label="change it"></div>
+  <div class="flow-box alt">🔄 render()</div>
+  <div class="flow-arrow" data-label="save"></div>
+  <div class="flow-box">💾 Storage</div>
+</div>
+<p>Keep data in one array, change the array, re-render from it. That single idea is the foundation of React, Vue and every modern framework.</p>
+<h3>Then stretch</h3>
+<p>Add an edit button, a filter (all/active/done), and a counter. Then head to the 🏋️ Practice Zone below.</p>
+<div class="callout tip">Don't rebuild the DOM by hand in ten places. One render() that draws from your data is easier to reason about — and it's how real apps work.</div>`),
+          quiz("je-quiz-3", "Final Quiz: JavaScript", [
+            { q: "querySelector('.card') returns…", options: ["All matches", "The first match", "An array", "A string"], answer: 1 },
+            { q: "Which is safe from XSS when inserting user text?", options: ["innerHTML", "textContent", "Both", "Neither"], answer: 1 },
+            { q: "To stop a form reloading the page you call…", options: ["e.stop()", "e.preventDefault()", "return false only", "e.halt()"], answer: 1 },
+            { q: "localStorage can store…", options: ["Any type directly", "Only strings — use JSON.stringify/parse", "Only numbers", "Only 1 item"], answer: 1 },
+            { q: "You should NEVER put in localStorage…", options: ["A theme preference", "A draft message", "Passwords or tokens", "A username"], answer: 2 },
+            { q: "'Cannot read properties of null' usually means…", options: ["The server is down", "Your selector found nothing", "CSS is broken", "The array is empty"], answer: 1 },
+            { q: "Event delegation means…", options: ["One listener per element", "Listening on the parent and checking e.target", "Removing listeners", "Using inline onclick"], answer: 1 },
+            { q: "The state -> render() -> storage pattern is the foundation of…", options: ["CSS Grid", "Modern frameworks like React and Vue", "HTML", "DNS"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "4 · Going Further",
+        lessons: [
+          article("je-scope", "Scope & Closures", "7 min", `
+<p><strong>Scope</strong> is where a variable can be seen. Get this and a whole class of bugs disappears.</p>
+<h3>The three scopes</h3>
+<ul>
+  <li><strong>Global</strong> — declared outside everything. Visible anywhere. Use sparingly.</li>
+  <li><strong>Function</strong> — declared inside a function; invisible outside.</li>
+  <li><strong>Block</strong> — const/let inside any { } — an if, a loop.</li>
+</ul>
+<pre><code>if (true) {
+  let a = 1;
+  var b = 2;
+}
+console.log(b);  // 2   — var ignores blocks
+console.log(a);  // ReferenceError</code></pre>
+<p>That difference is exactly why <strong>var</strong> is retired.</p>
+<h3>Inner sees outer</h3>
+<p>A function can read variables from where it was <em>written</em>. The outside cannot see in. Think of one-way glass.</p>
+<h3>Closures</h3>
+<pre><code>function counter() {
+  let count = 0;                 // stays alive
+  return () =&gt; ++count;
+}
+const next = counter();
+next();  // 1
+next();  // 2</code></pre>
+<p>The inner function <em>remembers</em> count even though counter() has finished. That memory is a <strong>closure</strong> — and count is now genuinely private.</p>
+<div class="callout tip">Closures aren't an exotic trick — every event handler that uses a variable from outside is one. You've been writing them all along.</div>`),
+          article("je-es6", "Modern JavaScript (ES6+)", "7 min", `
+<p>Modern JS has shortcuts you'll see in every codebase. They're not showing off — they genuinely reduce noise.</p>
+<h3>Destructuring</h3>
+<pre><code>const user = { name: "Su", age: 19 };
+const { name, age } = user;        // pull out fields
 
-    const label = document.createElement("span");
-    label.textContent = item.text;
-    label.style.textDecoration = item.done ? "line-through" : "none";
-    label.addEventListener("click", () =&gt; {
-      item.done = !item.done;
-      render();
-    });
+const [first, second] = [10, 20];  // works on arrays</code></pre>
+<h3>Spread and rest</h3>
+<pre><code>const a = [1, 2];
+const b = [...a, 3];               // [1,2,3]  copy + add
 
-    const del = document.createElement("button");
-    del.textContent = "🗑";
-    del.addEventListener("click", () =&gt; {
-      items = items.filter(x =&gt; x !== item);
-      render();
-    });
+const merged = { ...user, city: "Yangon" };
 
-    li.append(label, " ", del);
-    list.append(li);
+function sum(...nums) {            // rest: collect args
+  return nums.reduce((t, n) =&gt; t + n, 0);
+}</code></pre>
+<p><strong>Spread</strong> copies rather than mutates — the same reason map/filter are preferred.</p>
+<h3>Shorthand and defaults</h3>
+<pre><code>const name = "Su";
+const u = { name };                // { name: "Su" }
+
+function greet(who = "friend") { }</code></pre>
+<h3>Nullish coalescing</h3>
+<pre><code>const port = input ?? 8080;   // only if null/undefined
+const p2   = input || 8080;   // ALSO replaces 0 and ""</code></pre>
+<p><strong>??</strong> is what you usually want — <strong>||</strong> quietly eats valid falsy values like 0.</p>
+<h3>Modules</h3>
+<pre><code>// math.js
+export function add(a, b) { return a + b; }
+
+// app.js
+import { add } from "./math.js";</code></pre>
+<div class="callout tip">Destructuring in parameters — function f({ name, age }) — is everywhere in React and Vue. Learn it now and framework code stops looking alien.</div>`),
+          article("je-errors", "Errors & try/catch", "6 min", `
+<p>Things fail. Networks drop, users type nonsense. Handling that <em>is</em> the professional part.</p>
+<h3>try / catch / finally</h3>
+<pre><code>try {
+  const data = JSON.parse(text);
+  use(data);
+} catch (err) {
+  console.error("Bad JSON:", err.message);
+} finally {
+  hideSpinner();               // always runs
+}</code></pre>
+<h3>Throwing your own</h3>
+<pre><code>function setAge(n) {
+  if (n &lt; 0) throw new Error("Age cannot be negative");
+  return n;
+}</code></pre>
+<p>Fail loudly and early with a clear message, rather than letting bad data spread quietly through your app.</p>
+<h3>Don't swallow errors</h3>
+<pre><code>catch (e) { }        // ✗ silently broken forever</code></pre>
+<p>An empty catch is how bugs become invisible. At minimum, log it.</p>
+<h3>Fail usefully for the user</h3>
+<p>A blank screen reads as broken. "Couldn't load — retry?" reads as software. Same failure, completely different experience.</p>
+<div class="callout warn">try/catch does NOT catch errors inside a callback that runs later — like a setTimeout. Errors are caught where they're thrown, not where the code was written.</div>`),
+          article("je-async", "Promises, Fetch & async/await", "8 min", `
+<p>JavaScript is single-threaded — but it never waits. This is the concept beginners find hardest, and it's worth the effort.</p>
+<h3>Why async exists</h3>
+<p>A network call takes time. Rather than freeze the page, JS starts it, carries on, and runs your code <em>later</em> when the answer arrives.</p>
+<h3>Promises</h3>
+<p>A <strong>promise</strong> is an IOU: pending → fulfilled or rejected.</p>
+<pre><code>fetch("/api/users")
+  .then(r =&gt; r.json())
+  .then(users =&gt; console.log(users))
+  .catch(err =&gt; console.error(err));</code></pre>
+<h3>async/await — the same thing, readable</h3>
+<pre><code>async function load() {
+  try {
+    const r = await fetch("/api/users");
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const users = await r.json();
+    console.log(users);
+  } catch (err) {
+    console.error("Failed:", err);
   }
-  const done = items.filter(x =&gt; x.done).length;
-  count.textContent = \`(\${done}/\${items.length})\`;
+}</code></pre>
+<ul>
+  <li><strong>await</strong> pauses until the promise settles.</li>
+  <li>Only inside an <strong>async</strong> function.</li>
+  <li>An async function always returns a promise.</li>
+</ul>
+<h3>fetch does not throw on 404</h3>
+<p>A 404 or 500 is still a <em>successful</em> network round-trip. You must check <strong>r.ok</strong> yourself. This catches everyone once.</p>
+<h3>Parallel when you can</h3>
+<pre><code>const [a, b] = await Promise.all([getA(), getB()]);</code></pre>
+<p>Two awaits in a row run one after the other. Promise.all runs them together — often twice as fast.</p>
+<div class="callout tip">Show a loading state before the await, hide it in finally. Users forgive slow; they don't forgive a frozen-looking screen.</div>`),
+          article("je-classes", "Classes & Organising Code", "6 min", `
+<p>As programs grow, loose functions become chaos. <strong>Classes</strong> are one way to group data with the behaviour that belongs to it.</p>
+<h3>The basics</h3>
+<pre><code>class Dog {
+  constructor(name) {
+    this.name = name;
+  }
+  speak() {
+    return this.name + " says woof";
+  }
 }
 
-document.querySelector("#form").addEventListener("submit", (e) =&gt; {
-  e.preventDefault();
-  const text = input.value.trim();
-  if (!text) return;
-  items.push({ text, done: false });
-  input.value = "";
-  render();
-});
-
-render();
-&lt;/script&gt;</code></pre>
-<h3>🏋️ Level up</h3>
-<div class="callout tip"><strong>Extend it yourself:</strong> save items to localStorage so the list survives refresh, and add a "clear completed" button using filter.</div>`),
-          quiz("je-quiz-3", "Final Quiz: JavaScript", [
-            { q: "document.querySelector(\".card\") returns...", options: ["All matching elements", "The first matching element", "A string of HTML", "An error"], answer: 1 },
-            { q: "e.preventDefault() in a submit handler...", options: ["Clears the form", "Stops the page from reloading", "Validates inputs", "Sends the data"], answer: 1 },
-            { q: "To respond to a click you use...", options: ["onClickNow()", "el.addEventListener(\"click\", fn)", "el.click = fn only", "listen(el)"], answer: 1 },
-            { q: "items.filter(x => x !== item) is used above to...", options: ["Sort items", "Remove one item immutably", "Duplicate items", "Mark done"], answer: 1 },
+const d = new Dog("Rex");
+d.speak();   // "Rex says woof"</code></pre>
+<ul>
+  <li><strong>constructor</strong> — runs on <strong>new</strong>.</li>
+  <li><strong>this</strong> — the instance being created.</li>
+  <li>Methods are shared by every instance.</li>
+</ul>
+<h3>Inheritance</h3>
+<pre><code>class Puppy extends Dog {
+  speak() { return super.speak() + " (squeakily)"; }
+}</code></pre>
+<h3>You often don't need classes</h3>
+<p>JS is not Java. A plain object plus a few functions is frequently clearer. Reach for a class when you have <em>many instances</em> of a thing with its own state.</p>
+<h3>Organise by feature</h3>
+<p>As files grow, split by what things <em>do</em> — todos.js, api.js, ui.js — and connect them with modules. Small files with clear names beat one giant app.js.</p>
+<div class="callout tip">You now have every core idea in JavaScript. From here, frameworks are just opinions about how to arrange these same pieces.</div>`),
+          quiz("je-quiz-4", "Quiz: Going Further", [
+            { q: "A closure is when an inner function…", options: ["Runs twice", "Remembers variables from where it was written", "Is global", "Has no return"], answer: 1 },
+            { q: "Which respects block scope?", options: ["var", "let and const", "function", "All of them"], answer: 1 },
+            { q: "const { name } = user is called…", options: ["Spreading", "Destructuring", "Mapping", "Casting"], answer: 1 },
+            { q: "Which replaces ONLY null/undefined (not 0 or '')?", options: ["||", "??", "&&", "=="], answer: 1 },
+            { q: "An empty catch block { } is bad because…", options: ["It's slow", "It makes bugs invisible", "It's invalid", "It throws"], answer: 1 },
+            { q: "await can only be used inside…", options: ["A loop", "An async function", "A class", "Anywhere"], answer: 1 },
+            { q: "fetch() on a URL that returns 404 will…", options: ["Throw automatically", "Still resolve — check r.ok yourself", "Return null", "Retry"], answer: 1 },
+            { q: "To run two independent async calls together, use…", options: ["Two awaits in a row", "Promise.all", "A for loop", "setTimeout"], answer: 1 },
           ]),
         ],
       },
@@ -3120,7 +4028,7 @@ git commit -m "Add dark-mode toggle to portfolio header"</code></pre>
     rating: 4.8,
     ratings: 51200,
     students: 402000,
-    hours: 14,
+    hours: 24,
     price: "Free",
     free: true,
     color: "linear-gradient(135deg,#306998,#FFD43B)",
@@ -3137,388 +4045,594 @@ git commit -m "Add dark-mode toggle to portfolio header"</code></pre>
     ],
     sections: [
       {
-        title: "Getting Started",
+        title: "1 · Getting Started",
         lessons: [
-          article("py-setup", "Installing & Running Python", "9 min", `
-<h3>🎯 Intro</h3>
-<p>Before writing code, let's get Python onto your machine and learn the three ways to run it.</p>
-<h3>📝 Summary</h3>
+          article("py-setup", "Installing & Running Python", "6 min", `
+<p><strong>Python</strong> is the friendliest serious language there is. It reads almost like English, and it runs everything from websites to AI.</p>
+<h3>Get it</h3>
+<p>Download from <strong>python.org</strong>. On Windows, tick <em>"Add Python to PATH"</em> during install — skipping it is the #1 setup problem beginners hit.</p>
+<h3>Check it worked</h3>
+<pre><code>python --version
+# Python 3.12.1</code></pre>
+<p>If that errors, PATH wasn't set. Reinstall with the box ticked.</p>
+<h3>Three ways to run code</h3>
 <ul>
-  <li>Download from <strong>python.org</strong> — on Windows, tick <em>"Add Python to PATH"</em> during install</li>
-  <li><strong>REPL:</strong> type <code>python</code> in a terminal for an interactive playground</li>
-  <li><strong>Scripts:</strong> save code as <code>name.py</code>, run with <code>python name.py</code></li>
-  <li><strong>Editors:</strong> VS Code + the Python extension is the popular free setup</li>
+  <li><strong>The REPL</strong> — type <strong>python</strong> and get an interactive prompt. Perfect for trying one line.</li>
+  <li><strong>A file</strong> — save <strong>app.py</strong>, then <strong>python app.py</strong>. This is real work.</li>
+  <li><strong>An editor</strong> — VS Code with the Python extension. Free.</li>
 </ul>
-<h3>💻 Example</h3>
-<pre><code># In the terminal:
-python --version        # e.g. Python 3.12.4
+<h3>Python 2 is dead</h3>
+<p>If a tutorial writes <strong>print "hi"</strong> without brackets, it's Python 2 — over a decade out of date. Close it. You want Python 3.</p>
+<div class="callout tip">Open the REPL and type 2 + 2. You're programming. No project, no setup, no boilerplate — that immediacy is exactly why Python is the best first language.</div>`),
+          article("py-hello", "print, input & Variables", "6 min", `
+<p>Your first real program.</p>
+<pre><code>name = input("What's your name? ")
+print("Hello, " + name + "!")</code></pre>
+<h3>Variables are labels</h3>
+<pre><code>age = 19            # int
+price = 4.99        # float
+name = "Su"         # str
+is_student = True   # bool</code></pre>
+<p>No <strong>let</strong>, no <strong>const</strong>, no type declaration. Python works out the type from the value.</p>
+<h3>input() always gives a string</h3>
+<pre><code>age = input("Age? ")     # "19" — a STRING
+age = int(age)           # now a number
+</code></pre>
+<p>Forget the <strong>int()</strong> and "19" + 1 explodes. This is the most common beginner error in Python, full stop.</p>
+<h3>f-strings — the modern way</h3>
+<pre><code>print(f"Hello {name}, you are {age}")</code></pre>
+<p>Cleaner than gluing with +, and it converts numbers for you.</p>
+<h3>Naming</h3>
+<p>Python uses <strong>snake_case</strong>: <em>user_age</em>, not userAge. Follow it — every Python codebase does.</p>
+<div class="callout warn">TypeError: can only concatenate str to str? You're adding a number to text. Wrap it: str(age), or use an f-string.</div>`),
+          article("py-numbers", "Numbers & Math", "6 min", `
+<p>Python is a genuinely good calculator.</p>
+<h3>The operators</h3>
+<pre><code>7 + 3     # 10
+7 - 3     # 4
+7 * 3     # 21
+7 / 3     # 2.333...  always a float
+7 // 3    # 2         floor division
+7 % 3     # 1         remainder
+7 ** 3    # 343       power</code></pre>
+<h3>int vs float</h3>
+<p><strong>/</strong> always gives a float, even 6 / 2 → 3.0. Use <strong>//</strong> when you want a whole number.</p>
+<h3>The float surprise</h3>
+<pre><code>0.1 + 0.2 == 0.3    # False!
+0.1 + 0.2           # 0.30000000000000004</code></pre>
+<p>Not a Python bug — it's how computers store decimals, in every language. For money, use the <strong>decimal</strong> module, never floats.</p>
+<h3>Useful built-ins</h3>
+<pre><code>abs(-5)        # 5
+round(3.7)     # 4
+round(3.14159, 2)  # 3.14
+min(3, 9)      # 3
+max(3, 9)      # 9
+sum([1,2,3])   # 6</code></pre>
+<h3>Shorthand</h3>
+<pre><code>count += 1     # same as count = count + 1</code></pre>
+<div class="callout warn">Never compare floats with ==. Check the difference is tiny instead: abs(a - b) &lt; 0.0001.</div>`),
+          article("py-strings", "Working with Strings", "7 min", `
+<p>Text handling is most of real programming.</p>
+<h3>The essentials</h3>
+<pre><code>s = "Hello World"
 
-# REPL — try math instantly:
-&gt;&gt;&gt; 2 + 3 * 4
-14
-&gt;&gt;&gt; "ha" * 3
-'hahaha'
-
-# first.py
-print("Python is installed and working!")
-# run it:  python first.py</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> install Python, open the REPL and compute how many seconds are in a year. Then put the same line in a script and run it.</div>`),
-          article("py-hello", "Hello, Python! — print, input & variables", "10 min", `
-<h3>🎯 Intro</h3>
-<p>Python programs are plain text that runs top to bottom. Three tools carry you a long way: <code>print()</code>, <code>input()</code>, and variables.</p>
-<h3>📝 Summary</h3>
-<ul>
-  <li><code>print()</code> shows output; <code>input()</code> asks the user (always returns text!)</li>
-  <li>Variables need no type declarations — just assign</li>
-  <li>f-strings (<code>f"..."</code>) embed values inside text</li>
-  <li>Comments start with <code>#</code> and are ignored by Python</li>
-</ul>
-<h3>💻 Example</h3>
-<pre><code># greeting.py
-name = input("What is your name? ")
-age = int(input("How old are you? "))   # convert text → number
-
-print(f"Hello {name}!")
-print(f"Next year you'll be {age + 1}.")</code></pre>
-<div class="callout">Without <code>int(...)</code>, <code>age + 1</code> would crash — input() gives you a string like "25", not the number 25.</div>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> ask for the user's favorite food and how many times they ate it this week, then print a full sentence using both.</div>`),
-          article("py-numbers", "Numbers & Math", "9 min", `
-<h3>🎯 Intro</h3>
-<p>Python has two everyday number types — and a set of operators you'll use constantly.</p>
-<h3>📝 Summary</h3>
-<ul>
-  <li><code>int</code> — whole numbers; <code>float</code> — decimals</li>
-  <li><code>+ - * /</code> as expected; <code>/</code> ALWAYS gives a float</li>
-  <li><code>//</code> floor division, <code>%</code> remainder, <code>**</code> power</li>
-  <li><code>round()</code>, <code>abs()</code>, <code>min()</code>, <code>max()</code> are built in</li>
-</ul>
-<h3>💻 Example</h3>
-<pre><code>price = 4500
-people = 4
-
-each = price / people        # 1125.0  (float)
-whole = price // people      # 1125    (int)
-left = price % people        # 0       remainder
-squared = people ** 2        # 16
-
-print(f"Each pays: {each}")
-print(round(3.14159, 2))     # 3.14</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> a 7580 kyat bill split between 3 friends — print what each pays rounded to 2 decimals, and the remainder using %.</div>`),
-          article("py-strings", "Working with Strings", "11 min", `
-<h3>🎯 Intro</h3>
-<p>Text is everywhere — names, messages, files. Python's string methods make text work painless.</p>
-<h3>📝 Summary</h3>
-<ul>
-  <li>Index characters: <code>s[0]</code> first, <code>s[-1]</code> last; slice with <code>s[2:5]</code></li>
-  <li><code>.upper() .lower() .strip() .replace() .split()</code> — the daily five</li>
-  <li><code>len(s)</code> gives length; <code>"x" in s</code> checks containment</li>
-</ul>
-<h3>💻 Example</h3>
-<pre><code>msg = "  Learn Python at WebDev Academy  "
-
-clean = msg.strip()
-print(clean.upper())              # LEARN PYTHON AT WEBDEV ACADEMY
-print(clean.replace("Python", "coding"))
-print(len(clean))                 # 30
-print("Python" in clean)          # True
-
-words = clean.split(" ")
-print(words[0], "…", words[-1])   # Learn … Academy</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> take a full name from input(), print it trimmed, in Title Case (.title()), and print how many characters it has without spaces.</div>`),
+len(s)          # 11
+s.upper()       # "HELLO WORLD"
+s.lower()       # "hello world"
+s.strip()       # remove surrounding spaces
+s.replace("World", "Su")
+s.split(" ")    # ["Hello", "World"]
+"-".join(["a","b"])   # "a-b"</code></pre>
+<h3>Strings are immutable</h3>
+<p>Methods <em>return a new string</em> — they never change the original. <strong>s.upper()</strong> alone does nothing; you must assign it: <strong>s = s.upper()</strong>. Everyone trips on this once.</p>
+<h3>Indexing & slicing</h3>
+<pre><code>s[0]      # "H"   first
+s[-1]     # "d"   last
+s[0:5]    # "Hello"
+s[:5]     # same
+s[6:]     # "World"
+s[::-1]   # reversed</code></pre>
+<h3>Checking</h3>
+<pre><code>"World" in s          # True
+s.startswith("Hello") # True
+"123".isdigit()       # True</code></pre>
+<div class="callout tip">Slicing works on lists too — the same s[a:b] syntax. Learn it once, use it everywhere in Python.</div>`),
           quiz("py-quiz-1", "Quiz: Getting Started", [
-            { q: "input() always returns which type?", options: ["int", "float", "str", "bool"], answer: 2 },
-            { q: "What is 7 // 2 in Python?", options: ["3.5", "3", "4", "1"], answer: 1 },
-            { q: "s[-1] gives you...", options: ["An error", "The last character", "The first character", "Everything but the first"], answer: 1 },
-            { q: "Which converts the text \"42\" into a number?", options: ["number(\"42\")", "int(\"42\")", "\"42\".toInt()", "parse(\"42\")"], answer: 1 },
+            { q: "input() always returns a…", options: ["int", "string", "float", "bool"], answer: 1 },
+            { q: "What is 7 // 3?", options: ["2.33", "2", "3", "1"], answer: 1 },
+            { q: "Does 0.1 + 0.2 == 0.3?", options: ["Yes", "No — floats are imprecise", "Only in Python 2", "Error"], answer: 1 },
+            { q: "Python's naming convention is…", options: ["camelCase", "snake_case", "PascalCase", "kebab-case"], answer: 1 },
+            { q: "s.upper() on its own…", options: ["Changes s", "Returns a new string; s is unchanged", "Errors", "Deletes s"], answer: 1 },
+            { q: "s[-1] gives you…", options: ["An error", "The last character", "The first", "The length"], answer: 1 },
+            { q: "The modern way to build a message is…", options: ["'a' + str(b)", "f-strings", "print with commas", "concat()"], answer: 1 },
           ]),
         ],
       },
       {
-        title: "Control Flow",
+        title: "2 · Control Flow",
         lessons: [
-          article("py-if", "Decisions: if / elif / else", "11 min", `
-<h3>🎯 Intro</h3>
-<p>Programs become smart when they can choose. Python uses <strong>indentation</strong> (4 spaces) to group what belongs to each branch.</p>
-<h3>📝 Summary</h3>
-<ul>
-  <li>Comparisons: <code>== != &lt; &gt; &lt;= &gt;=</code></li>
-  <li>Combine with <code>and</code>, <code>or</code>, <code>not</code></li>
-  <li><code>elif</code> chains several conditions; only the first true branch runs</li>
-</ul>
-<h3>💻 Example</h3>
-<pre><code>score = int(input("Your score: "))
+          article("py-if", "Decisions: if / elif / else", "7 min", `
+<p>Indentation isn't style in Python — it <em>is</em> the syntax.</p>
+<pre><code>score = 75
 
 if score &gt;= 80:
-    grade = "A"
-elif score &gt;= 60:
-    grade = "B"
-elif score &gt;= 40:
-    grade = "C"
+    print("Excellent")
+elif score &gt;= 50:
+    print("Pass")
 else:
-    grade = "F"
+    print("Try again")</code></pre>
+<p>The colon opens a block; the <strong>indent</strong> (4 spaces) defines it. No braces. Mixing tabs and spaces causes IndentationError — pick spaces and let your editor handle it.</p>
+<h3>Comparisons</h3>
+<pre><code>==  !=  &lt;  &gt;  &lt;=  &gt;=</code></pre>
+<h3>Logic reads like English</h3>
+<pre><code>if age &gt;= 18 and has_id:
+if day == "Sat" or day == "Sun":
+if not is_banned:</code></pre>
+<p><strong>and or not</strong> — not &amp;&amp; || !. Python optimises for readability.</p>
+<h3>Chained comparison</h3>
+<pre><code>if 0 &lt; score &lt; 100:      # valid Python!</code></pre>
+<h3>Truthiness</h3>
+<p><strong>Falsy</strong>: False, 0, "" , [], {}, None. So <strong>if items:</strong> means "if the list isn't empty" — the idiomatic way.</p>
+<div class="callout warn">= assigns, == compares. Python protects you: using = in an if is a SyntaxError, not a silent bug like in C.</div>`),
+          article("py-while", "while Loops", "6 min", `
+<p>Use <strong>while</strong> when you don't know how many rounds you need.</p>
+<pre><code>count = 0
+while count &lt; 5:
+    print(count)
+    count += 1</code></pre>
+<h3>The classic use: keep asking</h3>
+<pre><code>answer = ""
+while answer != "yes":
+    answer = input("Continue? ")</code></pre>
+<h3>break and continue</h3>
+<pre><code>while True:
+    cmd = input("&gt; ")
+    if cmd == "quit":
+        break         # leave now
+    if cmd == "":
+        continue      # skip this round
+    print(cmd)</code></pre>
+<p><strong>while True</strong> with a <strong>break</strong> is a normal, idiomatic Python pattern — not a hack.</p>
+<h3>The infinite loop</h3>
+<p>Forget <strong>count += 1</strong> and it never ends. Press <strong>Ctrl+C</strong> to stop a runaway program.</p>
+<div class="callout tip">Ask: "do I know the number of rounds?" Yes → for. No → while. That one question picks your loop every time.</div>`),
+          article("py-for", "for Loops & range()", "7 min", `
+<p>Python's <strong>for</strong> loops over things directly — no counters.</p>
+<pre><code>for fruit in ["apple", "banana"]:
+    print(fruit)
 
-passed = score &gt;= 40 and score &lt;= 100
-print(f"Grade: {grade}, valid pass: {passed}")</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> ask for an age and print "child" (under 13), "teenager" (13–19) or "adult" — then add a check for impossible ages like -5.</div>`),
-          article("py-while", "while Loops", "10 min", `
-<h3>🎯 Intro</h3>
-<p><code>while</code> repeats as long as a condition stays true — perfect when you don't know how many rounds you'll need.</p>
-<h3>📝 Summary</h3>
-<ul>
-  <li>Something in the loop must change, or it never ends</li>
-  <li><code>break</code> exits immediately; <code>continue</code> skips to the next round</li>
-  <li>Classic pattern: loop until the user types a quit word</li>
-</ul>
-<h3>💻 Example</h3>
-<pre><code>secret = 7
-guess = None
-
-while guess != secret:
-    guess = int(input("Guess (1-10): "))
-    if guess &lt; secret:
-        print("Too low!")
-    elif guess &gt; secret:
-        print("Too high!")
-
-print("Correct! 🎉")</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> keep asking for words until the user types "stop", then print how many words they entered.</div>`),
-          article("py-for", "for Loops & range()", "11 min", `
-<h3>🎯 Intro</h3>
-<p><code>for</code> visits each item in a sequence. With <code>range()</code>, it becomes a counting machine.</p>
-<h3>📝 Summary</h3>
-<ul>
-  <li><code>range(5)</code> → 0,1,2,3,4; <code>range(1, 6)</code> → 1..5; <code>range(0, 20, 5)</code> steps by 5</li>
-  <li>Loop any string, list, or dictionary directly</li>
-  <li><code>enumerate()</code> gives you index + value together</li>
-</ul>
-<h3>💻 Example</h3>
-<pre><code># multiplication table
-n = 7
-for i in range(1, 11):
-    print(f"{n} x {i} = {n * i}")
-
-# index + value
-courses = ["HTML", "CSS", "Python"]
-for i, c in enumerate(courses, start=1):
-    print(f"{i}. {c}")</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> print all even numbers from 2 to 30 using range's step — then do it again with an if + % check.</div>`),
+for ch in "hello":
+    print(ch)</code></pre>
+<p>Read it aloud: "for each fruit in this list". That's the whole idea.</p>
+<h3>range()</h3>
+<pre><code>range(5)        # 0 1 2 3 4      (stop is exclusive)
+range(1, 6)     # 1 2 3 4 5
+range(0, 10, 2) # 0 2 4 6 8      step</code></pre>
+<h3>enumerate — index AND value</h3>
+<pre><code>for i, name in enumerate(["Su", "Aung"]):
+    print(i, name)     # 0 Su / 1 Aung</code></pre>
+<p>Writing <strong>for i in range(len(items))</strong> is a beginner tell. Use enumerate.</p>
+<h3>zip — two lists together</h3>
+<pre><code>for name, age in zip(names, ages):
+    print(name, age)</code></pre>
+<h3>Don't modify while looping</h3>
+<p>Removing items from a list you're iterating skips elements. Build a new list instead (that's what comprehensions are for).</p>
+<div class="callout tip">If you're tracking an index by hand, Python probably has a built-in: enumerate, zip, or a comprehension. Reach for those first.</div>`),
           quiz("py-quiz-2", "Quiz: Control Flow", [
-            { q: "How does Python group the body of an if statement?", options: ["Curly braces { }", "Indentation", "Parentheses", "The end keyword"], answer: 1 },
-            { q: "range(3) produces...", options: ["1, 2, 3", "0, 1, 2", "0, 1, 2, 3", "3 zeros"], answer: 1 },
-            { q: "break inside a loop...", options: ["Pauses the program", "Skips one round", "Exits the loop immediately", "Restarts the loop"], answer: 2 },
-            { q: "A while loop whose condition never becomes false...", options: ["Stops after 1000 rounds", "Runs forever", "Throws an error", "Is impossible"], answer: 1 },
+            { q: "In Python, blocks are defined by…", options: ["Curly braces", "Indentation", "Semicolons", "end keywords"], answer: 1 },
+            { q: "Python's logical AND is written…", options: ["&&", "and", "AND", "&"], answer: 1 },
+            { q: "range(5) produces…", options: ["1..5", "0,1,2,3,4", "0..5", "5 only"], answer: 1 },
+            { q: "Which is FALSY in Python?", options: ["'0'", "[0]", "[]", "'False'"], answer: 2 },
+            { q: "To get both index and value while looping, use…", options: ["range(len(x))", "enumerate(x)", "zip(x)", "map(x)"], answer: 1 },
+            { q: "'while True:' with a break is…", options: ["A bug", "A normal idiomatic pattern", "Illegal", "Slow"], answer: 1 },
+            { q: "Modifying a list while looping over it…", options: ["Is recommended", "Can skip elements — build a new list instead", "Is faster", "Throws always"], answer: 1 },
           ]),
         ],
       },
       {
-        title: "Data Structures",
+        title: "3 · Data Structures",
         lessons: [
-          article("py-lists", "Lists in Depth", "13 min", `
-<h3>🎯 Intro</h3>
-<p>The list is Python's workhorse: ordered, changeable, and packed with useful methods.</p>
-<h3>📝 Summary</h3>
-<ul>
-  <li><code>.append() .insert() .remove() .pop()</code> — grow and shrink</li>
-  <li><code>.sort()</code> orders in place; <code>sorted(x)</code> returns a new list</li>
-  <li>Slices work like strings: <code>nums[1:3]</code>, <code>nums[::-1]</code> reverses</li>
-  <li><code>sum() len() min() max()</code> work on whole lists</li>
-</ul>
-<h3>💻 Example</h3>
-<pre><code>scores = [75, 92, 58]
-scores.append(88)          # [75, 92, 58, 88]
-scores.sort(reverse=True)  # [92, 88, 75, 58]
+          article("py-lists", "Lists in Depth", "7 min", `
+<p>A <strong>list</strong> is an ordered, changeable collection — Python's workhorse.</p>
+<pre><code>nums = [10, 25, 8]
 
-top3 = scores[:3]
-average = sum(scores) / len(scores)
+nums[0]           # 10
+nums[-1]          # 8
+nums.append(30)   # add to end
+nums.insert(0, 5) # add at position
+nums.remove(25)   # remove by value
+nums.pop()        # remove & return last
+len(nums)
+</code></pre>
+<h3>Slicing</h3>
+<pre><code>nums[1:3]     # items 1 and 2
+nums[:2]      # first two
+nums[::-1]    # reversed copy</code></pre>
+<h3>Sorting</h3>
+<pre><code>nums.sort()            # changes the list
+new = sorted(nums)     # returns a NEW list</code></pre>
+<p>That pattern repeats: <strong>.sort()</strong> mutates, <strong>sorted()</strong> returns. Same for .reverse() vs reversed().</p>
+<h3>The copy trap</h3>
+<pre><code>a = [1, 2]
+b = a          # SAME list, not a copy!
+b.append(3)
+print(a)       # [1, 2, 3]  😱
 
-print(f"Top 3: {top3}")
-print(f"Average: {average:.1f}")
-print(f"Best: {max(scores)}, Worst: {min(scores)}")</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> collect 5 prices from input() into a list, then print them sorted, their total, and the most expensive one.</div>`),
-          article("py-dicts", "Dictionaries", "13 min", `
-<h3>🎯 Intro</h3>
-<p>A dictionary stores <strong>labeled</strong> data: look up by key instead of position. It's how real-world records are modeled.</p>
-<h3>📝 Summary</h3>
-<ul>
-  <li>Create: <code>{"name": "Aye", "score": 85}</code>; read: <code>d["name"]</code></li>
-  <li><code>d.get("key", default)</code> avoids crashes on missing keys</li>
-  <li>Loop: <code>for key, value in d.items():</code></li>
-  <li>Dictionaries nest — a list of dicts is a mini database</li>
-</ul>
-<h3>💻 Example</h3>
+b = a.copy()   # a real copy</code></pre>
+<p>Names point at objects. Assigning copies the <em>label</em>, not the box. This causes real bugs.</p>
+<div class="callout tip">Mutable default arguments — def f(items=[]) — are shared between calls and a famous Python trap. Use None and create inside.</div>`),
+          article("py-dicts", "Dictionaries", "7 min", `
+<p>A <strong>dict</strong> stores <em>labelled</em> data — key → value. It's the most useful structure in Python.</p>
+<pre><code>user = {
+    "name": "Su",
+    "age": 19
+}
+
+user["name"]              # "Su"
+user["city"] = "Yangon"   # add
+del user["age"]           # remove
+"name" in user            # True</code></pre>
+<h3>get() beats [ ]</h3>
+<pre><code>user["email"]              # KeyError — crash!
+user.get("email")          # None — safe
+user.get("email", "n/a")   # a default</code></pre>
+<h3>Looping</h3>
+<pre><code>for key in user:
+    print(key, user[key])
+
+for key, value in user.items():
+    print(key, value)</code></pre>
+<p><strong>.keys()</strong>, <strong>.values()</strong>, <strong>.items()</strong> — items() is what you want most of the time.</p>
+<h3>The real shape of data</h3>
 <pre><code>students = [
-    {"name": "Aye", "score": 85},
-    {"name": "Ko",  "score": 55},
-    {"name": "Mya", "score": 92},
+    {"name": "Su", "score": 90},
+    {"name": "Aung", "score": 72}
 ]
 
 for s in students:
-    status = "pass" if s["score"] &gt;= 60 else "retry"
-    print(f'{s["name"]}: {s["score"]} ({status})')
+    print(s["name"], s["score"])</code></pre>
+<p>A <strong>list of dicts</strong> is exactly what every API and CSV becomes. Master this and you can handle real data.</p>
+<div class="callout tip">Keys must be unique and immutable (strings, numbers, tuples). Dict lookup is instant regardless of size — searching a list is not.</div>`),
+          article("py-tuples", "Tuples, Sets & Comprehensions", "7 min", `
+<h3>Tuples — locked lists</h3>
+<pre><code>point = (3, 5)
+point[0]        # 3
+point[0] = 9    # TypeError — immutable</code></pre>
+<p>Use a tuple when the data shouldn't change: coordinates, RGB, a database row. They can also be dict keys — lists cannot.</p>
+<pre><code>x, y = point          # unpacking
+a, b = b, a           # swap in one line!</code></pre>
+<h3>Sets — unique, unordered</h3>
+<pre><code>s = {1, 2, 2, 3}      # {1, 2, 3}
+set([1,1,2])          # dedupe a list!
+a | b                 # union
+a &amp; b                 # intersection</code></pre>
+<p>Removing duplicates from a list is a one-liner: <strong>list(set(items))</strong>.</p>
+<h3>Comprehensions — very Python</h3>
+<pre><code>squares = [n * n for n in range(5)]
+# [0, 1, 4, 9, 16]
 
-# count pass/fail
-results = {"pass": 0, "retry": 0}
-for s in students:
-    key = "pass" if s["score"] &gt;= 60 else "retry"
-    results[key] += 1
-print(results)   # {'pass': 2, 'retry': 1}</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> build a phone book dict of 3 friends; ask for a name with input() and print the number, or "not found" using .get().</div>`),
-          article("py-tuples", "Tuples, Sets & Comprehensions", "12 min", `
-<h3>🎯 Intro</h3>
-<p>Two more containers with superpowers — plus Python's most-loved shortcut.</p>
-<h3>📝 Summary</h3>
-<ul>
-  <li><strong>Tuple</strong> <code>(lat, lon)</code> — like a list but unchangeable; great for fixed pairs</li>
-  <li><strong>Set</strong> <code>{1, 2, 3}</code> — no duplicates, instant membership checks</li>
-  <li><strong>Comprehension</strong> — build a list in one readable line</li>
-</ul>
-<h3>💻 Example</h3>
-<pre><code>point = (16.8661, 96.1951)          # Yangon lat/lon — fixed forever
-lat, lon = point                     # unpacking
-
-votes = ["mo", "aye", "mo", "ko", "mo"]
-unique_voters = set(votes)
-print(unique_voters)                 # {'mo', 'aye', 'ko'}
-
-nums = [1, 2, 3, 4, 5, 6]
-squares = [n * n for n in nums]
 evens = [n for n in nums if n % 2 == 0]
-print(squares)   # [1, 4, 9, 16, 25, 36]
-print(evens)     # [2, 4, 6]</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> given a list of words with repeats, print the unique words, and use a comprehension to make a list of their lengths.</div>`),
+
+names = [s["name"] for s in students]</code></pre>
+<p>One readable line instead of four. This is the single most "Pythonic" feature there is.</p>
+<pre><code>lookup = {s["name"]: s["score"] for s in students}   # dict comprehension</code></pre>
+<div class="callout warn">Don't cram logic into comprehensions. If it needs a nested if/else and two loops, a normal for loop is clearer — readability wins.</div>`),
           quiz("py-quiz-3", "Quiz: Data Structures", [
-            { q: "Which method adds an item to the end of a list?", options: [".add()", ".push()", ".append()", ".insert_end()"], answer: 2 },
-            { q: "d.get(\"x\", 0) when \"x\" is missing returns...", options: ["An error", "None always", "0", "\"x\""], answer: 2 },
-            { q: "Which container silently removes duplicates?", options: ["list", "tuple", "dict", "set"], answer: 3 },
-            { q: "[n*2 for n in nums] is called a...", options: ["Lambda", "List comprehension", "Generator class", "Decorator"], answer: 1 },
+            { q: "b = a on a list gives you…", options: ["A copy", "The same list under a new name", "An error", "A tuple"], answer: 1 },
+            { q: "user['missing'] on a dict raises…", options: ["None", "KeyError", "0", "False"], answer: 1 },
+            { q: "The safe way to read a maybe-missing key is…", options: ["user['k']", "user.get('k')", "user.k", "get(user)"], answer: 1 },
+            { q: "A tuple is…", options: ["Changeable", "Immutable — cannot be changed", "A dict", "A set"], answer: 1 },
+            { q: "list(set(items)) does what?", options: ["Sorts", "Removes duplicates", "Reverses", "Counts"], answer: 1 },
+            { q: "[n*n for n in range(5)] is a…", options: ["Loop error", "List comprehension", "Set", "Generator only"], answer: 1 },
+            { q: ".sort() vs sorted() — the difference is…", options: ["No difference", ".sort() mutates; sorted() returns a new list", "sorted() is slower only", "sorted() mutates"], answer: 1 },
+            { q: "To loop keys AND values of a dict, use…", options: [".keys()", ".items()", ".values()", "range()"], answer: 1 },
           ]),
         ],
       },
       {
-        title: "Functions, Files & Final Project",
+        title: "4 · Functions & Modules",
         lessons: [
-          article("py-func", "Functions", "13 min", `
-<h3>🎯 Intro</h3>
-<p>Functions turn repeated code into named, reusable, testable pieces — the single biggest step toward professional code.</p>
-<h3>📝 Summary</h3>
+          article("py-func", "Functions", "7 min", `
+<p>Functions turn a pile of statements into named ideas.</p>
+<pre><code>def greet(name):
+    return f"Hello, {name}"
+
+greet("Su")    # "Hello, Su"</code></pre>
+<h3>Defaults and keywords</h3>
+<pre><code>def greet(name, greeting="Hello"):
+    return f"{greeting}, {name}"
+
+greet("Su", greeting="Hi")   # keyword arg — clearer</code></pre>
+<h3>Return</h3>
+<p>No <strong>return</strong> means the function gives back <strong>None</strong>. A function can return several values at once — really a tuple:</p>
+<pre><code>def stats(nums):
+    return min(nums), max(nums)
+
+low, high = stats([3, 9, 1])</code></pre>
+<h3>*args and **kwargs</h3>
+<pre><code>def total(*nums):          # any number of args
+    return sum(nums)
+
+def config(**opts):        # named options as a dict
+    print(opts)</code></pre>
+<h3>Docstrings</h3>
+<pre><code>def area(w, h):
+    """Return the area of a rectangle."""
+    return w * h</code></pre>
+<p>help(area) prints it. Free documentation.</p>
+<div class="callout tip">A good function does one thing and its name says what. If you need "and" to describe it, it's two functions.</div>`),
+          article("py-scope", "Scope & Mutability", "6 min", `
+<p>Two ideas that explain most confusing Python bugs.</p>
+<h3>Scope</h3>
+<pre><code>x = 10               # global
+
+def f():
+    x = 20           # a NEW local x
+    print(x)         # 20
+
+f()
+print(x)             # 10 — untouched</code></pre>
+<p>Assigning inside a function creates a <em>local</em> variable. To change the global you'd need <strong>global x</strong> — which you should almost never do.</p>
+<h3>Mutable vs immutable</h3>
 <ul>
-  <li><code>def name(params):</code> defines; <code>return</code> sends a value back</li>
-  <li>Default values: <code>def greet(name, lang="en")</code></li>
-  <li>A function should do <strong>one</strong> thing, named with a verb</li>
+  <li><strong>Immutable</strong> — int, float, str, tuple. Cannot change.</li>
+  <li><strong>Mutable</strong> — list, dict, set. Can change in place.</li>
 </ul>
-<h3>💻 Example</h3>
-<pre><code>def area(width, height):
-    return width * height
+<pre><code>def add_item(items):
+    items.append("new")     # changes the CALLER's list!
 
-def grade(score):
-    if score &gt;= 80: return "A"
-    if score &gt;= 60: return "B"
-    return "C"
+def rebind(items):
+    items = ["new"]         # only rebinds locally</code></pre>
+<p>Passing a list into a function passes the <em>same object</em>. Mutating it affects the caller — a real source of surprise.</p>
+<h3>The famous trap</h3>
+<pre><code>def f(items=[]):        # ✗ the SAME list every call
+    items.append(1)
+    return items
 
-def greet(name, lang="en"):
-    if lang == "my":
-        return f"မင်္ဂလာပါ {name}!"
-    return f"Hello {name}!"
+f()   # [1]
+f()   # [1, 1]  😱
 
-print(area(4, 5))            # 20
-print(grade(72))             # B
-print(greet("Aye", "my"))    # မင်္ဂလာပါ Aye!</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> write kyat_to_usd(amount, rate=4400) and use it on three amounts; then write is_even(n) returning True/False.</div>`),
-          article("py-files", "Files & Errors", "13 min", `
-<h3>🎯 Intro</h3>
-<p>Real programs save data and survive bad input. Files + try/except are how.</p>
-<h3>📝 Summary</h3>
+def f(items=None):      # ✓ correct
+    if items is None:
+        items = []</code></pre>
+<div class="callout warn">Use 'is None', not '== None'. And never use a mutable default argument — it's evaluated once, at definition.</div>`),
+          article("py-modules", "Modules, pip & Virtual Environments", "7 min", `
+<p>Python's real superpower is the enormous amount of code you don't have to write.</p>
+<h3>Import</h3>
+<pre><code>import math
+math.sqrt(16)          # 4.0
+
+from math import sqrt
+sqrt(16)
+
+import datetime as dt  # alias</code></pre>
+<h3>The standard library is huge</h3>
 <ul>
-  <li><code>with open(path) as f:</code> auto-closes the file for you</li>
-  <li><code>"w"</code> writes (overwrites!), <code>"a"</code> appends, default reads</li>
-  <li><code>try / except</code> catches specific errors so the program keeps going</li>
+  <li><strong>math</strong>, <strong>random</strong>, <strong>datetime</strong></li>
+  <li><strong>json</strong> — read/write JSON</li>
+  <li><strong>os</strong>, <strong>pathlib</strong> — files and paths</li>
+  <li><strong>csv</strong> — spreadsheets</li>
+  <li><strong>re</strong> — regular expressions</li>
 </ul>
-<h3>💻 Example</h3>
-<pre><code># save scores
-with open("scores.txt", "w") as f:
-    f.write("Aye,85\\n")
-    f.write("Ko,55\\n")
+<p>"Batteries included" is the slogan, and it's true.</p>
+<h3>pip — the rest of the world</h3>
+<pre><code>pip install requests
+pip list
+pip freeze &gt; requirements.txt</code></pre>
+<h3>Virtual environments — do this</h3>
+<pre><code>python -m venv venv
+venv\Scripts\activate      # Windows
+source venv/bin/activate   # Mac/Linux</code></pre>
+<p>A venv gives each project its own isolated packages. Without it, two projects needing different versions will break each other.</p>
+<h3>Your own modules</h3>
+<pre><code># helpers.py
+def double(n): return n * 2
 
-# read them back safely
-try:
-    with open("scores.txt") as f:
-        for line in f:
-            name, score = line.strip().split(",")
-            print(f"{name} scored {score}")
+# app.py
+from helpers import double</code></pre>
+<div class="callout tip">Make a venv for every project — always. It's two commands, and it prevents the most frustrating category of Python problems.</div>`),
+          article("py-files", "Files & Errors", "7 min", `
+<p>Real programs read and write data — and things go wrong.</p>
+<h3>Reading and writing</h3>
+<pre><code>with open("notes.txt") as f:
+    text = f.read()
+
+with open("notes.txt", "w") as f:
+    f.write("Hello")
+
+with open("notes.txt", "a") as f:
+    f.write("\\nMore")</code></pre>
+<p>Always use <strong>with</strong> — it closes the file automatically, even if an error happens.</p>
+<h3>Modes</h3>
+<ul>
+  <li><strong>r</strong> read (default) · <strong>w</strong> write (<em>erases the file!</em>) · <strong>a</strong> append</li>
+</ul>
+<h3>JSON</h3>
+<pre><code>import json
+
+with open("data.json", "w") as f:
+    json.dump({"name": "Su"}, f)
+
+with open("data.json") as f:
+    data = json.load(f)</code></pre>
+<h3>try / except</h3>
+<pre><code>try:
+    with open("missing.txt") as f:
+        print(f.read())
 except FileNotFoundError:
-    print("No scores saved yet.")
-except ValueError:
-    print("A line was badly formatted.")</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> write a diary program — each run appends one input() line with today's date to diary.txt, then prints the whole file.</div>`),
-          article("py-project", "Final Project: Student Report Tool", "20 min", `
-<h3>🎯 Intro</h3>
-<p>Time to combine <em>everything</em>: input, dicts, loops, functions, files. A tool a real teacher could use.</p>
-<h3>📝 The task</h3>
+    print("No such file")
+except Exception as e:
+    print("Something else:", e)
+finally:
+    print("always runs")</code></pre>
+<h3>Catch what you expect</h3>
+<p>A bare <strong>except:</strong> swallows everything — including your own typos and Ctrl+C. Name the error you're handling.</p>
+<div class="callout warn">open(file, "w") deletes the contents immediately. Use "a" to append. This has ruined many people's afternoon.</div>`),
+          quiz("py-quiz-4", "Quiz: Functions & Modules", [
+            { q: "A function with no return gives back…", options: ["0", "None", "False", "An error"], answer: 1 },
+            { q: "Assigning to a variable inside a function creates…", options: ["A global", "A new local variable", "An error", "A constant"], answer: 1 },
+            { q: "def f(items=[]) is dangerous because…", options: ["It's slow", "The same list is shared across every call", "It's invalid", "Lists can't be defaults"], answer: 1 },
+            { q: "The correct null check is…", options: ["== None", "is None", "= None", "None()"], answer: 1 },
+            { q: "A virtual environment gives you…", options: ["Faster code", "Isolated packages per project", "A GUI", "Type checking"], answer: 1 },
+            { q: "open('f.txt', 'w') will…", options: ["Append", "Erase the existing contents", "Read", "Fail"], answer: 1 },
+            { q: "Why use 'with open(...)'?", options: ["It's shorter", "It closes the file automatically, even on error", "It's faster", "It compresses"], answer: 1 },
+            { q: "A bare 'except:' is bad because…", options: ["It's slow", "It swallows everything, including your own typos", "It's invalid", "It only catches one error"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "5 · Going Further",
+        lessons: [
+          article("py-oop", "Classes & Objects", "7 min", `
+<p>When you have many <em>things</em> that each hold their own data, a <strong>class</strong> keeps that data with its behaviour.</p>
+<pre><code>class Student:
+    def __init__(self, name, score):
+        self.name = name
+        self.score = score
+
+    def passed(self):
+        return self.score &gt;= 50
+
+    def __str__(self):
+        return f"{self.name}: {self.score}"
+
+s = Student("Su", 90)
+s.passed()      # True
+print(s)        # "Su: 90"</code></pre>
+<h3>The pieces</h3>
 <ul>
-  <li>Enter student names and scores until "done"</li>
-  <li>Compute average, highest, lowest, pass rate</li>
-  <li>Save a formatted report to report.txt</li>
+  <li><strong>__init__</strong> — runs when you create one.</li>
+  <li><strong>self</strong> — this particular object. Always the first parameter.</li>
+  <li><strong>__str__</strong> — what print() shows.</li>
 </ul>
-<h3>💻 Complete solution — read it, then write yours</h3>
-<pre><code>def collect_students():
-    students = []
+<h3>Inheritance</h3>
+<pre><code>class Prefect(Student):
+    def __init__(self, name, score, area):
+        super().__init__(name, score)
+        self.area = area</code></pre>
+<h3>You often don't need a class</h3>
+<p>A dict or a function is frequently clearer. Reach for a class when you have <em>many instances</em> with their own state and behaviour — not to organise loose functions.</p>
+<div class="callout tip">Modern Python: @dataclass gives you __init__ and __str__ for free. Perfect when the class is mostly data.</div>`),
+          article("py-libs", "The Libraries That Made Python Famous", "6 min", `
+<p>Python didn't win on syntax. It won on libraries.</p>
+<h3>Data</h3>
+<ul>
+  <li><strong>pandas</strong> — spreadsheets in code. Load a CSV, filter, group, export.</li>
+  <li><strong>numpy</strong> — fast numeric arrays; the foundation under nearly everything.</li>
+  <li><strong>matplotlib</strong> — charts.</li>
+</ul>
+<h3>Web</h3>
+<ul>
+  <li><strong>requests</strong> — call any API in 3 lines.</li>
+  <li><strong>Flask</strong> — a tiny web server.</li>
+  <li><strong>Django</strong> — a full web framework, batteries included.</li>
+</ul>
+<h3>AI / ML</h3>
+<ul>
+  <li><strong>scikit-learn</strong> — classic machine learning.</li>
+  <li><strong>PyTorch</strong> / <strong>TensorFlow</strong> — deep learning.</li>
+</ul>
+<h3>Automation</h3>
+<ul>
+  <li><strong>openpyxl</strong> — Excel files.</li>
+  <li><strong>beautifulsoup4</strong> — scrape HTML.</li>
+  <li><strong>schedule</strong> — run jobs on a timer.</li>
+</ul>
+<h3>A real example</h3>
+<pre><code>import requests
+
+r = requests.get("https://api.github.com/users/octocat")
+print(r.json()["name"])</code></pre>
+<div class="callout tip">Before writing something complicated, search "python library for X". The answer is almost always yes — and it's usually better tested than what you'd write.</div>`),
+          article("py-debug", "Debugging & Writing Good Python", "6 min", `
+<p>Reading errors well is the difference between an hour and a minute.</p>
+<h3>Read the traceback from the BOTTOM</h3>
+<p>The last line names the error and the message. Just above it is <em>your</em> line. Everything higher is how you got there.</p>
+<h3>The errors you'll meet</h3>
+<ul>
+  <li><strong>SyntaxError</strong> — a typo; often a missing colon or bracket on the line <em>above</em>.</li>
+  <li><strong>IndentationError</strong> — mixed tabs/spaces.</li>
+  <li><strong>NameError</strong> — typo, or used before defined.</li>
+  <li><strong>TypeError</strong> — wrong type; usually str + int.</li>
+  <li><strong>KeyError</strong> / <strong>IndexError</strong> — not there / out of range.</li>
+  <li><strong>AttributeError</strong> — that method doesn't exist on this type.</li>
+</ul>
+<h3>Debug with print — then better</h3>
+<pre><code>print(f"{items=}")     # prints: items=[1, 2, 3]</code></pre>
+<p>The <strong>=</strong> inside an f-string prints the name and value. Then graduate to <strong>breakpoint()</strong> — it drops you into an interactive debugger right there.</p>
+<h3>Write Pythonic code</h3>
+<ul>
+  <li>snake_case names that say what they are.</li>
+  <li>Short functions, one job each.</li>
+  <li><strong>if items:</strong> not <strong>if len(items) &gt; 0:</strong></li>
+  <li>Follow <strong>PEP 8</strong>. Let <strong>black</strong> format it for you.</li>
+</ul>
+<div class="callout tip">Type import this in the REPL. The Zen of Python is real, and "readability counts" is the whole culture in two words.</div>`),
+          article("py-project", "Final Project: Student Report Tool", "12 min", `
+<p>Everything together: input, lists, dicts, functions, files, JSON and error handling.</p>
+<h3>What to build</h3>
+<ul>
+  <li>Add a student (name + score).</li>
+  <li>List all students with pass/fail.</li>
+  <li>Show the average, highest and lowest.</li>
+  <li>Save to a JSON file and load on start.</li>
+  <li>A menu loop that doesn't crash on bad input.</li>
+</ul>
+<h3>The skeleton</h3>
+<pre><code>import json
+
+FILE = "students.json"
+
+def load():
+    try:
+        with open(FILE) as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return []
+
+def save(students):
+    with open(FILE, "w") as f:
+        json.dump(students, f)
+
+def add(students):
+    name = input("Name: ")
     while True:
-        name = input("Student name (or done): ").strip()
-        if name.lower() == "done":
-            return students
         try:
-            score = int(input(f"Score for {name}: "))
+            score = int(input("Score: "))
+            break
         except ValueError:
-            print("Numbers only — try again.")
-            continue
-        students.append({"name": name, "score": score})
+            print("Numbers only!")
+    students.append({"name": name, "score": score})
 
-def summarize(students):
+def report(students):
+    if not students:
+        print("No students yet.")
+        return
+    for s in students:
+        status = "PASS" if s["score"] &gt;= 50 else "FAIL"
+        print(f'{s["name"]:&lt;12} {s["score"]:&gt;3}  {status}')
     scores = [s["score"] for s in students]
-    passed = [s for s in students if s["score"] &gt;= 60]
-    return {
-        "count": len(students),
-        "average": sum(scores) / len(scores),
-        "best": max(students, key=lambda s: s["score"]),
-        "pass_rate": len(passed) / len(students) * 100,
-    }
-
-def save_report(students, stats):
-    with open("report.txt", "w") as f:
-        f.write("CLASS REPORT\\n============\\n")
-        for s in students:
-            f.write(f'{s["name"]:<12} {s["score"]:>3}\\n')
-        f.write(f'\\nStudents: {stats["count"]}\\n')
-        f.write(f'Average:  {stats["average"]:.1f}\\n')
-        f.write(f'Best:     {stats["best"]["name"]}\\n')
-        f.write(f'Pass rate {stats["pass_rate"]:.0f}%\\n')
-
-students = collect_students()
-if students:
-    stats = summarize(students)
-    save_report(students, stats)
-    print(f'Report saved — average {stats["average"]:.1f}, '
-          f'best: {stats["best"]["name"]} 🎉')</code></pre>
-<h3>🏋️ Level up</h3>
-<div class="callout tip"><strong>Extend it yourself:</strong> add letter grades to the report, sort students best-first, and refuse scores outside 0–100.</div>`),
-          quiz("py-quiz-4", "Final Quiz: Python", [
-            { q: "Which keyword defines a function?", options: ["function", "fn", "def", "func"], answer: 2 },
-            { q: "with open(\"f.txt\", \"w\") — what does \"w\" do?", options: ["Reads only", "Appends", "Overwrites/creates for writing", "Locks the file"], answer: 2 },
-            { q: "try/except exists to...", options: ["Speed up code", "Handle errors without crashing", "Import modules", "Format strings"], answer: 1 },
-            { q: "max(students, key=lambda s: s[\"score\"]) returns...", options: ["The highest score number", "The student dict with the highest score", "A sorted list", "An error"], answer: 1 },
-            { q: "A good function should...", options: ["Do as much as possible", "Do one clear thing", "Avoid parameters", "Always print"], answer: 1 },
+    print(f"Average: {sum(scores)/len(scores):.1f}")</code></pre>
+<h3>The menu loop</h3>
+<pre><code>students = load()
+while True:
+    choice = input("1 add  2 report  3 quit: ")
+    if choice == "1": add(students); save(students)
+    elif choice == "2": report(students)
+    elif choice == "3": break
+    else: print("Pick 1, 2 or 3")</code></pre>
+<h3>Then stretch</h3>
+<p>Add search, delete, sort by score, export to CSV, and a Student class.</p>
+<div class="callout tip">Notice the shape: load → change → save, with a loop and validation. That's the skeleton of an enormous amount of real software.</div>`),
+          quiz("py-quiz-5", "Final Quiz: Python", [
+            { q: "In a class, the first parameter of a method is…", options: ["this", "self", "cls", "obj"], answer: 1 },
+            { q: "__init__ runs…", options: ["On import", "When you create an instance", "On print", "Never"], answer: 1 },
+            { q: "Which library would you use to call an API?", options: ["pandas", "requests", "matplotlib", "openpyxl"], answer: 1 },
+            { q: "You should read a traceback…", options: ["Top first", "From the bottom — the error is last", "Randomly", "Not at all"], answer: 1 },
+            { q: "print(f'{items=}') will print…", options: ["Just the value", "items=[...] — name and value", "An error", "Nothing"], answer: 1 },
+            { q: "The Pythonic empty check is…", options: ["if len(items) > 0:", "if items:", "if items != []:", "if items.size:"], answer: 1 },
+            { q: "PEP 8 is…", options: ["A library", "Python's style guide", "A version", "An error"], answer: 1 },
+            { q: "The load -> change -> save loop describes…", options: ["Only this project", "The skeleton of a huge amount of real software", "A bug", "A class"], answer: 1 },
           ]),
         ],
       },
@@ -5947,7 +7061,7 @@ CMD ["node", "dist/server.js"]</code></pre>
     rating: 4.8,
     ratings: 47600,
     students: 356000,
-    hours: 15,
+    hours: 22,
     price: "Free",
     free: true,
     color: "linear-gradient(135deg,#087ea4,#61dafb)",
@@ -5964,218 +7078,270 @@ CMD ["node", "dist/server.js"]</code></pre>
     ],
     sections: [
       {
-        title: "Thinking in React",
+        title: "1 · Thinking in React",
         lessons: [
-          article("re-setup", "Setup with Vite & Your First Component", "11 min", `
-<h3>🎯 Intro</h3>
-<p>Real React projects use a build tool. <strong>Vite</strong> is today's fast standard — one command and you're coding.</p>
-<h3>📝 Summary</h3>
-<ul>
-  <li><code>npm create vite@latest my-app</code> → choose React</li>
-  <li><code>npm install</code> then <code>npm run dev</code> → live at localhost:5173</li>
-  <li>Components live in .jsx files; <code>App.jsx</code> is your root</li>
-</ul>
-<h3>💻 Example</h3>
-<pre><code>// src/App.jsx
-function App() {
-  const student = "Aye";
-  return (
-    &lt;div&gt;
-      &lt;h1&gt;WebDev Academy&lt;/h1&gt;
-      &lt;p&gt;Welcome back, {student}! Today is {new Date().toDateString()}.&lt;/p&gt;
-    &lt;/div&gt;
-  );
+          article("re-why", "Why React Exists", "6 min", `
+<p>Before the syntax, understand the problem React solves. Otherwise it's just ceremony.</p>
+<h3>The pain</h3>
+<p>In plain JavaScript you change the page by hand: find an element, set its text, add a class, remove a node. With one button that's fine. With a to-do list, a filter, a counter and a badge — you're manually keeping five places in sync with your data. They drift. That's most UI bugs.</p>
+<h3>React's one idea</h3>
+<div class="callout"><strong>UI = f(state).</strong> Describe what the screen should look like <em>for a given state</em>. Change the state; React works out the DOM changes.</div>
+<p>You stop writing "how to update" and start writing "what it should look like".</p>
+<h3>Declarative vs imperative</h3>
+<pre><code>// imperative — you do every step
+if (count &gt; 0) badge.classList.remove("hidden");
+badge.textContent = count;
+
+// declarative — you describe the result
+{count &gt; 0 &amp;&amp; &lt;span&gt;{count}&lt;/span&gt;}</code></pre>
+<h3>The virtual DOM</h3>
+<p>React builds a lightweight copy of the tree, compares it to the previous one, and applies only the differences. Touching the real DOM is slow; comparing objects is fast.</p>
+<h3>Do you always need it?</h3>
+<p>No. A landing page doesn't need React — plain HTML is lighter and faster. React earns its weight when you have lots of <em>state changing over time</em>.</p>
+<div class="callout tip">If you can't explain "UI = f(state)", React will feel like magic and fight you. If you can, every hook makes sense.</div>`),
+          article("re-setup", "Setup with Vite & Your First Component", "6 min", `
+<p>The modern way to start — no configuration.</p>
+<pre><code>npm create vite@latest my-app -- --template react
+cd my-app
+npm install
+npm run dev</code></pre>
+<p>That's it. Vite gives you a dev server with instant hot reload.</p>
+<h3>A component is just a function</h3>
+<pre><code>function Welcome() {
+  return &lt;h1&gt;Hello!&lt;/h1&gt;;
 }
 
-export default App;</code></pre>
-<div class="callout">Anything inside <code>{ }</code> in JSX is live JavaScript — variables, math, function calls.</div>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> create the Vite app, then make App show your academy name and a lessons-completed number stored in a variable.</div>`),
-          article("re-jsx", "JSX Rules You Must Know", "10 min", `
-<h3>🎯 Intro</h3>
-<p>JSX looks like HTML but has four rules that trip up every beginner. Learn them once, avoid hours of confusion.</p>
-<h3>📝 Summary</h3>
+export default Welcome;</code></pre>
+<p>A function that returns markup. That's the whole concept.</p>
+<h3>Two rules</h3>
 <ul>
-  <li>Return <strong>one</strong> root element (wrap siblings in <code>&lt;&gt;...&lt;/&gt;</code>)</li>
-  <li><code>className</code> instead of <code>class</code></li>
-  <li>Every tag must close: <code>&lt;img /&gt;</code>, <code>&lt;br /&gt;</code></li>
-  <li>Style takes an object: <code>style={{ color: "purple" }}</code></li>
+  <li><strong>Capitalised name.</strong> <em>Welcome</em>, not <em>welcome</em> — lowercase is treated as an HTML tag.</li>
+  <li><strong>Return one root element.</strong> Wrap siblings in a fragment: <strong>&lt;&gt;...&lt;/&gt;</strong></li>
 </ul>
-<h3>💻 Example</h3>
-<pre><code>function Banner() {
-  const urgent = true;
+<h3>Using it</h3>
+<pre><code>function App() {
+  return (
+    &lt;div&gt;
+      &lt;Welcome /&gt;
+      &lt;Welcome /&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+<p>Write once, use anywhere. That reuse is the point.</p>
+<h3>The file structure</h3>
+<p><strong>index.html</strong> → <strong>main.jsx</strong> (mounts React) → <strong>App.jsx</strong> (your tree). Components usually live in <strong>src/components/</strong>.</p>
+<div class="callout warn">Component not rendering and no error? Check the capital letter. &lt;welcome /&gt; is silently treated as an unknown HTML tag.</div>`),
+          article("re-jsx", "JSX Rules You Must Know", "7 min", `
+<p><strong>JSX</strong> looks like HTML inside JavaScript. It isn't HTML — it compiles to function calls.</p>
+<h3>The differences that catch everyone</h3>
+<ul>
+  <li><strong>className</strong>, not class (class is a JS keyword).</li>
+  <li><strong>htmlFor</strong>, not for.</li>
+  <li><strong>camelCase</strong> events: onClick, onChange.</li>
+  <li><strong>Close every tag</strong>: &lt;br /&gt;, &lt;img /&gt;.</li>
+  <li><strong>One root element</strong> per return.</li>
+</ul>
+<h3>Curly braces = JavaScript</h3>
+<pre><code>const name = "Su";
+
+&lt;h1&gt;Hello {name}&lt;/h1&gt;
+&lt;p&gt;{2 + 2}&lt;/p&gt;
+&lt;img src={url} alt="" /&gt;
+&lt;div style={{ color: "red" }}&gt;   {/* object! */}</code></pre>
+<p>Braces mean "evaluate this expression". Style takes an <em>object</em>, hence the double braces.</p>
+<h3>Expressions only — no statements</h3>
+<pre><code>{if (x) ...}                    ✗ not allowed
+{x ? "yes" : "no"}              ✓ ternary
+{items.length &gt; 0 &amp;&amp; &lt;List /&gt;}  ✓ short-circuit</code></pre>
+<h3>The && gotcha</h3>
+<pre><code>{items.length &amp;&amp; &lt;List /&gt;}   // renders "0" when empty! 😱
+{items.length &gt; 0 &amp;&amp; &lt;List /&gt;}  // ✓</code></pre>
+<p>0 is falsy but React <em>renders</em> it. Always compare explicitly.</p>
+<div class="callout tip">JSX is optional sugar — it becomes React.createElement() calls. Knowing that explains why it follows JavaScript's rules, not HTML's.</div>`),
+          article("re-components", "Components & Props", "7 min", `
+<p><strong>Props</strong> are how a parent passes data down. They're just function arguments.</p>
+<pre><code>function Greeting({ name, age }) {
+  return &lt;p&gt;{name} is {age}&lt;/p&gt;;
+}
+
+&lt;Greeting name="Su" age={19} /&gt;</code></pre>
+<p>Strings use quotes; anything else uses braces. Destructuring in the parameter list is the normal style.</p>
+<h3>Props are read-only</h3>
+<pre><code>function Bad({ name }) {
+  name = "changed";   // ✗ never do this
+}</code></pre>
+<p>Data flows <strong>down</strong>, one way. A component can't change what it was given — which is exactly why React apps are predictable.</p>
+<h3>Defaults</h3>
+<pre><code>function Button({ label = "Click", type = "primary" }) { }</code></pre>
+<h3>children</h3>
+<pre><code>function Card({ children }) {
+  return &lt;div className="card"&gt;{children}&lt;/div&gt;;
+}
+
+&lt;Card&gt;&lt;h2&gt;Anything&lt;/h2&gt;&lt;/Card&gt;</code></pre>
+<p><strong>children</strong> is whatever you put between the tags — the key to reusable wrappers.</p>
+<h3>Passing functions down</h3>
+<pre><code>&lt;Button onClick={handleSave} /&gt;</code></pre>
+<p>Data flows down; <em>events</em> flow up via callbacks. That pairing is the whole architecture.</p>
+<div class="callout tip">Split a component when it does two things or gets too big to see at once. Small components with clear props are easy to test and reuse.</div>`),
+          quiz("re-quiz-1", "Quiz: React Foundations", [
+            { q: "React's core idea is…", options: ["Faster loops", "UI = f(state) — describe the result, not the steps", "Replacing CSS", "Server rendering"], answer: 1 },
+            { q: "A component name must be…", options: ["lowercase", "Capitalised", "In quotes", "Prefixed with use"], answer: 1 },
+            { q: "In JSX you write…", options: ["class", "className", "css-class", "styleClass"], answer: 1 },
+            { q: "Curly braces {} in JSX mean…", options: ["A comment", "Evaluate this JavaScript expression", "An object always", "CSS"], answer: 1 },
+            { q: "Why is {items.length && <List/>} risky?", options: ["It's slow", "It renders '0' when the array is empty", "It's invalid", "It loops"], answer: 1 },
+            { q: "Props are…", options: ["Editable by the child", "Read-only — data flows down", "Global", "Stored in the DOM"], answer: 1 },
+            { q: "What is 'children'?", options: ["Nested components inside your tags", "A state hook", "A CSS class", "An event"], answer: 0 },
+          ]),
+        ],
+      },
+      {
+        title: "2 · State & Interaction",
+        lessons: [
+          article("re-state", "State with useState", "7 min", `
+<p><strong>State</strong> is data that changes over time and should redraw the screen when it does.</p>
+<pre><code>import { useState } from "react";
+
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  return (
+    &lt;button onClick={() =&gt; setCount(count + 1)}&gt;
+      Clicked {count} times
+    &lt;/button&gt;
+  );
+}</code></pre>
+<ul>
+  <li><strong>count</strong> — the current value.</li>
+  <li><strong>setCount</strong> — the only way to change it.</li>
+  <li><strong>useState(0)</strong> — the starting value.</li>
+</ul>
+<h3>Never mutate — always replace</h3>
+<pre><code>count++;              // ✗ nothing happens
+setCount(count + 1);  // ✓
+
+items.push(x);            // ✗ same array — no re-render
+setItems([...items, x]);  // ✓ a new array</code></pre>
+<p>React compares the <em>reference</em>. Same object = "nothing changed". This is the single most common React bug.</p>
+<h3>State updates are asynchronous</h3>
+<pre><code>setCount(count + 1);
+setCount(count + 1);   // still only +1!
+
+setCount(c =&gt; c + 1);
+setCount(c =&gt; c + 1);  // ✓ +2 — use the updater</code></pre>
+<h3>Props vs state</h3>
+<ul>
+  <li><strong>Props</strong> — passed in from outside. Read-only.</li>
+  <li><strong>State</strong> — owned by the component. Changeable.</li>
+</ul>
+<div class="callout warn">If your UI won't update, you almost certainly mutated instead of replacing. Spread it into a new array/object.</div>`),
+          article("re-events", "Events & Lifting State Up", "6 min", `
+<p>Events in React look like HTML but follow JavaScript's rules.</p>
+<pre><code>&lt;button onClick={handleClick}&gt;Go&lt;/button&gt;        ✓ pass the function
+&lt;button onClick={handleClick()}&gt;Go&lt;/button&gt;      ✗ calls it immediately!
+&lt;button onClick={() =&gt; save(id)}&gt;Go&lt;/button&gt;     ✓ need an argument</code></pre>
+<p>That second line is a classic: it runs on render and often causes an infinite loop.</p>
+<h3>The event object</h3>
+<pre><code>function handleSubmit(e) {
+  e.preventDefault();   // still needed for forms
+  ...
+}</code></pre>
+<h3>Lifting state up</h3>
+<p>When two components need the same data, move that state to their nearest <em>common parent</em> and pass it down.</p>
+<div class="flow">
+  <div class="flow-box">👨‍👩‍👦 Parent (owns state)</div>
+  <div class="flow-arrow" data-label="props down"></div>
+  <div class="flow-box alt">🧒 Child</div>
+  <div class="flow-arrow" data-label="callback up"></div>
+  <div class="flow-box">📤 setState</div>
+</div>
+<pre><code>function App() {
+  const [text, setText] = useState("");
   return (
     &lt;&gt;
-      &lt;h2 className="title"&gt;New course out!&lt;/h2&gt;
-      &lt;p style={{ color: urgent ? "red" : "gray", fontWeight: 700 }}&gt;
-        Enrollment closes soon &lt;br /&gt;
-        Don't miss it
-      &lt;/p&gt;
+      &lt;Input value={text} onChange={setText} /&gt;
+      &lt;Preview text={text} /&gt;
     &lt;/&gt;
   );
 }</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> build a Profile component with an image, a styled name, and a bio — breaking none of the four rules.</div>`),
-          article("re-components", "Components & Props", "13 min", `
-<h3>🎯 Intro</h3>
-<p>Components are functions that return markup; <strong>props</strong> are their arguments. Build small pieces, compose big apps.</p>
-<h3>📝 Summary</h3>
-<ul>
-  <li>Component names start with a Capital letter</li>
-  <li>Props flow <strong>down</strong> parent → child, read-only</li>
-  <li>Destructure them: <code>function Card({ title, hours })</code></li>
-  <li><code>children</code> is whatever you nest inside the tag</li>
-</ul>
-<h3>💻 Example</h3>
-<pre><code>function CourseCard({ title, hours, free }) {
-  return (
-    &lt;div className="card"&gt;
-      &lt;h3&gt;{title}&lt;/h3&gt;
-      &lt;p&gt;{hours} hours · {free ? "Free" : "Premium"}&lt;/p&gt;
-    &lt;/div&gt;
-  );
-}
-
-function App() {
-  return (
-    &lt;main&gt;
-      &lt;CourseCard title="HTML Deep Dive" hours={4.5} free={true} /&gt;
-      &lt;CourseCard title="React" hours={15} free={true} /&gt;
-    &lt;/main&gt;
-  );
-}</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> add an instructor prop to CourseCard and render four cards from your favorite courses.</div>`),
-          quiz("re-quiz-1", "Quiz: React Foundations", [
-            { q: "A React component is fundamentally...", options: ["A CSS file", "A function returning markup", "A database model", "An HTML template file"], answer: 1 },
-            { q: "In JSX you set a CSS class with...", options: ["class", "className", "css", "styleClass"], answer: 1 },
-            { q: "Props are...", options: ["Editable by the child", "Read-only inputs passed from the parent", "Global variables", "Only strings"], answer: 1 },
-            { q: "Which starts a React project fastest today?", options: ["npm create vite@latest", "Writing webpack config by hand", "A PHP server", "Copying script tags"], answer: 0 },
-          ]),
-        ],
-      },
-      {
-        title: "State & Interaction",
-        lessons: [
-          article("re-state", "State with useState", "14 min", `
-<h3>🎯 Intro</h3>
-<p>State is data that changes over time. When it changes, React re-renders the UI for you — no manual DOM updates, ever.</p>
-<h3>📝 Summary</h3>
-<ul>
-  <li><code>const [value, setValue] = useState(initial)</code></li>
-  <li>NEVER assign directly — always call the setter</li>
-  <li>Each component instance gets its own state</li>
-  <li>Updating from previous value: <code>setCount(c =&gt; c + 1)</code></li>
-</ul>
-<h3>💻 Example</h3>
-<pre><code>import { useState } from "react";
-
-function LessonTracker() {
-  const [done, setDone] = useState(0);
-  const total = 12;
+<p>One source of truth, shared by both. This is <em>the</em> core React pattern.</p>
+<div class="callout tip">State belongs at the lowest component that needs it — but no lower. Too high and everything re-renders; too low and you can't share it.</div>`),
+          article("re-forms", "Forms & Controlled Inputs", "6 min", `
+<p>In React, the input's value comes <em>from state</em>, not from the DOM.</p>
+<pre><code>function NameForm() {
+  const [name, setName] = useState("");
 
   return (
-    &lt;div&gt;
-      &lt;h3&gt;Progress: {done}/{total} lessons&lt;/h3&gt;
-      &lt;progress value={done} max={total} /&gt;
-      &lt;button onClick={() =&gt; setDone(d =&gt; Math.min(d + 1, total))}&gt;
-        Complete a lesson ✓
-      &lt;/button&gt;
-      {done === total &amp;&amp; &lt;p&gt;🎓 Course finished!&lt;/p&gt;}
-    &lt;/div&gt;
-  );
-}</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> build a like button that toggles 🤍/❤️ with a boolean state, plus a counter showing total likes.</div>`),
-          article("re-forms", "Forms & Controlled Inputs", "13 min", `
-<h3>🎯 Intro</h3>
-<p>In React, the input's value lives in state — the input just displays it. This is the <strong>controlled component</strong> pattern.</p>
-<h3>📝 Summary</h3>
-<ul>
-  <li><code>value={text}</code> + <code>onChange={e =&gt; setText(e.target.value)}</code></li>
-  <li>Submit with <code>onSubmit</code> on the form + <code>e.preventDefault()</code></li>
-  <li>Validation is just JavaScript on the state</li>
-</ul>
-<h3>💻 Example</h3>
-<pre><code>function Signup() {
-  const [email, setEmail] = useState("");
-  const [sent, setSent] = useState(false);
-  const valid = email.includes("@");
-
-  function handleSubmit(e) {
-    e.preventDefault();
-    if (valid) setSent(true);
-  }
-
-  if (sent) return &lt;p&gt;✅ Welcome aboard, {email}!&lt;/p&gt;;
-
-  return (
-    &lt;form onSubmit={handleSubmit}&gt;
+    &lt;form onSubmit={(e) =&gt; { e.preventDefault(); alert(name); }}&gt;
       &lt;input
-        value={email}
-        onChange={(e) =&gt; setEmail(e.target.value)}
-        placeholder="you@example.com"
+        value={name}
+        onChange={(e) =&gt; setName(e.target.value)}
       /&gt;
-      &lt;button disabled={!valid}&gt;Join free&lt;/button&gt;
+      &lt;button&gt;Submit&lt;/button&gt;
     &lt;/form&gt;
   );
 }</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> add a name field, require it to be non-empty, and show a live character count under it.</div>`),
-          article("re-lists", "Lists, Keys & Conditional UI", "12 min", `
-<h3>🎯 Intro</h3>
-<p>Turning arrays into UI is React's bread and butter: <code>map</code> + a stable <code>key</code>, and show/hide with plain JavaScript.</p>
-<h3>📝 Summary</h3>
+<h3>The loop</h3>
+<p>State → value → user types → onChange → setState → re-render. State is the single source of truth; the input just displays it.</p>
+<h3>The read-only trap</h3>
+<pre><code>&lt;input value={name} /&gt;                    // ✗ can't type — no onChange!
+&lt;input value={name} onChange={...} /&gt;     // ✓</code></pre>
+<p>Set value without onChange and React locks the field. Everyone hits this once.</p>
+<h3>Several fields, one state object</h3>
+<pre><code>const [form, setForm] = useState({ name: "", email: "" });
+
+&lt;input
+  name="email"
+  value={form.email}
+  onChange={(e) =&gt;
+    setForm({ ...form, [e.target.name]: e.target.value })
+  }
+/&gt;</code></pre>
+<p>Spread the old object, override one key. Note the computed key — one handler for every field.</p>
+<div class="callout tip">Checkboxes use checked={x} and e.target.checked — not value. Small difference, big confusion.</div>`),
+          article("re-lists", "Lists, Keys & Conditional UI", "7 min", `
+<p>Rendering a list is just <strong>map</strong>.</p>
+<pre><code>const items = ["a", "b", "c"];
+
+&lt;ul&gt;
+  {items.map((item) =&gt; (
+    &lt;li key={item}&gt;{item}&lt;/li&gt;
+  ))}
+&lt;/ul&gt;</code></pre>
+<h3>Keys are not optional</h3>
+<p>A <strong>key</strong> tells React which item is which between renders, so it can move rather than rebuild them.</p>
 <ul>
-  <li><code>{items.map(item =&gt; &lt;Row key={item.id} ... /&gt;)}</code></li>
-  <li>Keys must be stable and unique — use ids, not array index</li>
-  <li>Conditional: <code>{cond &amp;&amp; &lt;X /&gt;}</code> or <code>{cond ? &lt;A /&gt; : &lt;B /&gt;}</code></li>
+  <li><strong>Use a stable unique id</strong> — usually from your data.</li>
+  <li><strong>Don't use the array index</strong> if the list can reorder, filter or delete — React will mix up state between rows. This causes genuinely baffling bugs (checkbox ticks jumping to the wrong row).</li>
+  <li>Index is acceptable only for a static list that never changes.</li>
 </ul>
-<h3>💻 Example</h3>
-<pre><code>const students = [
-  { id: 1, name: "Aye", score: 85 },
-  { id: 2, name: "Ko",  score: 55 },
-  { id: 3, name: "Mya", score: 92 },
-];
-
-function ClassList({ passOnly }) {
-  const shown = passOnly
-    ? students.filter(s =&gt; s.score &gt;= 60)
-    : students;
-
-  return (
-    &lt;ul&gt;
-      {shown.map(s =&gt; (
-        &lt;li key={s.id} style={{ color: s.score &gt;= 60 ? "green" : "red" }}&gt;
-          {s.name} — {s.score} {s.score &gt;= 90 &amp;&amp; "🏆"}
-        &lt;/li&gt;
-      ))}
-    &lt;/ul&gt;
-  );
+<h3>Conditional rendering</h3>
+<pre><code>{loading &amp;&amp; &lt;Spinner /&gt;}
+{error ? &lt;Error /&gt; : &lt;List /&gt;}
+{items.length === 0 &amp;&amp; &lt;p&gt;Nothing yet&lt;/p&gt;}</code></pre>
+<h3>Early return for clarity</h3>
+<pre><code>function List({ items }) {
+  if (!items) return &lt;Spinner /&gt;;
+  if (!items.length) return &lt;Empty /&gt;;
+  return &lt;ul&gt;{items.map(...)}&lt;/ul&gt;;
 }</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> add a button that toggles passOnly with state, and an "empty class" message when the filtered list is empty.</div>`),
+<div class="callout warn">"Each child should have a unique key" isn't a nag — it's a correctness warning. Fix it with a real id, not the index.</div>`),
           quiz("re-quiz-2", "Quiz: State & Interaction", [
-            { q: "How do you update state?", options: ["Assign directly", "Call the setter from useState", "Edit the DOM", "Reload the page"], answer: 1 },
-            { q: "A controlled input's value comes from...", options: ["The DOM", "State", "Props only", "localStorage"], answer: 1 },
-            { q: "List keys should be...", options: ["Array indexes always", "Stable unique ids", "Random each render", "CSS classes"], answer: 1 },
-            { q: "{score > 90 && <Badge />} renders Badge when...", options: ["Always", "score is exactly 90", "score is greater than 90", "Never"], answer: 2 },
+            { q: "Which correctly adds to state?", options: ["items.push(x)", "setItems([...items, x])", "items = [x]", "items.add(x)"], answer: 1 },
+            { q: "Why doesn't items.push(x) re-render?", options: ["push is slow", "It's the same array reference — React sees no change", "push is deprecated", "It needs await"], answer: 1 },
+            { q: "onClick={handleClick()} is wrong because…", options: ["It's slow", "It calls the function immediately on render", "It needs quotes", "It's invalid JSX"], answer: 1 },
+            { q: "To increment twice reliably you use…", options: ["setCount(count+1) twice", "setCount(c => c + 1) twice", "count++ twice", "A loop"], answer: 1 },
+            { q: "An input with value but no onChange is…", options: ["Fine", "Read-only — you can't type", "Faster", "Invalid"], answer: 1 },
+            { q: "Using the array index as a key is risky when…", options: ["Never", "The list can reorder, filter or delete", "The list is static", "There are few items"], answer: 1 },
+            { q: "When two components need the same data you should…", options: ["Duplicate it", "Lift state up to their common parent", "Use the DOM", "Use globals"], answer: 1 },
           ]),
         ],
       },
       {
-        title: "Effects, Data & Project",
+        title: "3 · Effects, Data & Hooks",
         lessons: [
-          article("re-effect", "useEffect & Fetching Data", "15 min", `
-<h3>🎯 Intro</h3>
-<p>Effects handle things <em>outside</em> rendering: fetching data, timers, titles. The dependency array controls when they run.</p>
-<h3>📝 Summary</h3>
-<ul>
-  <li><code>useEffect(fn, [])</code> — run once after first render (perfect for fetch)</li>
-  <li><code>useEffect(fn, [x])</code> — re-run when x changes</li>
-  <li>Track loading and error states — users always see something</li>
-</ul>
-<h3>💻 Example</h3>
+          article("re-effect", "useEffect & Fetching Data", "8 min", `
+<p><strong>useEffect</strong> runs code that reaches <em>outside</em> React: network calls, timers, subscriptions.</p>
 <pre><code>import { useState, useEffect } from "react";
 
 function Users() {
@@ -6184,95 +7350,161 @@ function Users() {
   const [error, setError] = useState(null);
 
   useEffect(() =&gt; {
-    fetch("https://jsonplaceholder.typicode.com/users")
-      .then(r =&gt; { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
-      .then(data =&gt; setUsers(data))
-      .catch(err =&gt; setError(err.message))
+    fetch("/api/users")
+      .then((r) =&gt; {
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        return r.json();
+      })
+      .then(setUsers)
+      .catch((e) =&gt; setError(e.message))
       .finally(() =&gt; setLoading(false));
-  }, []);
+  }, []);   // ← the dependency array
 
   if (loading) return &lt;p&gt;Loading…&lt;/p&gt;;
-  if (error)   return &lt;p&gt;⚠ {error}&lt;/p&gt;;
-
-  return (
-    &lt;ul&gt;
-      {users.map(u =&gt; &lt;li key={u.id}&gt;{u.name} — {u.email}&lt;/li&gt;)}
-    &lt;/ul&gt;
-  );
+  if (error) return &lt;p&gt;Error: {error}&lt;/p&gt;;
+  return &lt;ul&gt;{users.map((u) =&gt; &lt;li key={u.id}&gt;{u.name}&lt;/li&gt;)}&lt;/ul&gt;;
 }</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> fetch /todos from the same API and show only incomplete ones, with a count in the heading.</div>`),
-          article("re-project", "Final Project: Study Tracker App", "25 min", `
-<h3>🎯 Intro</h3>
-<p>Everything combined — components, props, state, forms, lists, conditional UI — in one complete app you can show off.</p>
-<h3>📝 The task</h3>
+<h3>The dependency array decides everything</h3>
 <ul>
-  <li>Add subjects with a form (controlled input)</li>
-  <li>Mark them done / not done, delete them</li>
-  <li>Show live progress and filter buttons</li>
+  <li><strong>[]</strong> — run once, after the first render.</li>
+  <li><strong>[id]</strong> — run again whenever id changes.</li>
+  <li><strong>omitted</strong> — run after <em>every</em> render (usually a bug).</li>
 </ul>
-<h3>💻 Complete solution — study it, then build your own</h3>
-<pre><code>import { useState } from "react";
-
-function StudyTracker() {
-  const [subjects, setSubjects] = useState([
-    { id: 1, title: "HTML basics", done: true },
-    { id: 2, title: "React state", done: false },
-  ]);
-  const [text, setText] = useState("");
-  const [filter, setFilter] = useState("all");
-
-  function add(e) {
-    e.preventDefault();
-    if (!text.trim()) return;
-    setSubjects(s =&gt; [...s, { id: Date.now(), title: text.trim(), done: false }]);
-    setText("");
-  }
-  const toggle = (id) =&gt;
-    setSubjects(s =&gt; s.map(x =&gt; x.id === id ? { ...x, done: !x.done } : x));
-  const remove = (id) =&gt;
-    setSubjects(s =&gt; s.filter(x =&gt; x.id !== id));
-
-  const shown = subjects.filter(x =&gt;
-    filter === "all" ? true : filter === "done" ? x.done : !x.done);
-  const doneCount = subjects.filter(x =&gt; x.done).length;
-
-  return (
-    &lt;div&gt;
-      &lt;h2&gt;📚 Study Tracker ({doneCount}/{subjects.length})&lt;/h2&gt;
-      &lt;form onSubmit={add}&gt;
-        &lt;input value={text} onChange={e =&gt; setText(e.target.value)}
-               placeholder="New subject…" /&gt;
-        &lt;button&gt;Add&lt;/button&gt;
-      &lt;/form&gt;
-      {["all", "todo", "done"].map(f =&gt; (
-        &lt;button key={f} disabled={filter === f} onClick={() =&gt; setFilter(f)}&gt;
-          {f}
-        &lt;/button&gt;
-      ))}
-      &lt;ul&gt;
-        {shown.map(s =&gt; (
-          &lt;li key={s.id}&gt;
-            &lt;label style={{ textDecoration: s.done ? "line-through" : "none" }}&gt;
-              &lt;input type="checkbox" checked={s.done}
-                     onChange={() =&gt; toggle(s.id)} /&gt;
-              {s.title}
-            &lt;/label&gt;
-            &lt;button onClick={() =&gt; remove(s.id)}&gt;🗑&lt;/button&gt;
-          &lt;/li&gt;
-        ))}
-      &lt;/ul&gt;
-      {shown.length === 0 &amp;&amp; &lt;p&gt;Nothing here 🎉&lt;/p&gt;}
-    &lt;/div&gt;
-  );
+<h3>The infinite loop</h3>
+<pre><code>useEffect(() =&gt; {
+  setCount(count + 1);   // no deps → render → effect → render… 💥
+});</code></pre>
+<p>Setting state in an effect with no dependency array loops forever.</p>
+<h3>Cleanup</h3>
+<pre><code>useEffect(() =&gt; {
+  const id = setInterval(tick, 1000);
+  return () =&gt; clearInterval(id);   // runs on unmount
+}, []);</code></pre>
+<p>Return a function to tidy up — timers, listeners, subscriptions. Skip it and you leak.</p>
+<div class="callout warn">Always handle loading AND error states. A component that assumes fetch succeeds shows a blank screen the moment the network hiccups.</div>`),
+          article("re-hooks", "The Rules of Hooks & Custom Hooks", "7 min", `
+<p>Hooks look magical. Two rules keep them sane.</p>
+<h3>The rules</h3>
+<ol>
+  <li><strong>Only call hooks at the top level.</strong> Never inside an if, a loop, or a nested function.</li>
+  <li><strong>Only call them from components</strong> (or other hooks).</li>
+</ol>
+<pre><code>if (loggedIn) {
+  const [x, setX] = useState(0);   // ✗ breaks everything
 }</code></pre>
-<h3>🏋️ Level up</h3>
-<div class="callout tip"><strong>Extend it yourself:</strong> persist subjects to localStorage with useEffect, add an edit button, and show a 🎓 banner at 100% done.</div>`),
-          quiz("re-quiz-3", "Final Quiz: React", [
-            { q: "useEffect(fn, []) runs...", options: ["Every render", "Once after the first render", "Never", "Only on unmount"], answer: 1 },
-            { q: "To add an item to state, you should...", options: ["subjects.push(item)", "Create a NEW array: [...subjects, item]", "Edit the DOM", "Use a global variable"], answer: 1 },
-            { q: "{ ...x, done: !x.done } creates...", options: ["A syntax error", "A copy of x with done flipped", "A deleted object", "A DOM node"], answer: 1 },
-            { q: "Loading and error states exist so that...", options: ["Code looks longer", "Users always see meaningful UI while data arrives or fails", "React requires them", "SEO improves"], answer: 1 },
+<p><strong>Why?</strong> React tracks hooks by <em>call order</em>, not name. Skip one conditionally and every hook after it points at the wrong state. That's the entire reason for the rule.</p>
+<h3>Custom hooks — just reuse</h3>
+<pre><code>function useLocalStorage(key, initial) {
+  const [value, setValue] = useState(() =&gt; {
+    const saved = localStorage.getItem(key);
+    return saved ? JSON.parse(saved) : initial;
+  });
+
+  useEffect(() =&gt; {
+    localStorage.setItem(key, JSON.stringify(value));
+  }, [key, value]);
+
+  return [value, setValue];
+}
+
+// use it anywhere:
+const [todos, setTodos] = useLocalStorage("todos", []);</code></pre>
+<p>A custom hook is just a function starting with <strong>use</strong> that calls other hooks. No new API — it's how you share <em>logic</em> the way components share UI.</p>
+<h3>The other hooks you'll meet</h3>
+<ul>
+  <li><strong>useRef</strong> — a value that survives renders without causing one (DOM nodes, timer ids).</li>
+  <li><strong>useMemo</strong> / <strong>useCallback</strong> — caching. Only reach for these when you have a measured problem.</li>
+</ul>
+<div class="callout tip">Duplicated useState + useEffect in two components? That's a custom hook waiting to be extracted.</div>`),
+          article("re-context", "Context & When to Reach for It", "6 min", `
+<p><strong>Prop drilling</strong>: passing a value down through five components that don't care about it, just to reach the sixth.</p>
+<h3>Context</h3>
+<pre><code>const ThemeContext = createContext("light");
+
+function App() {
+  return (
+    &lt;ThemeContext.Provider value="dark"&gt;
+      &lt;Page /&gt;
+    &lt;/ThemeContext.Provider&gt;
+  );
+}
+
+function DeepChild() {
+  const theme = useContext(ThemeContext);
+  return &lt;div className={theme}&gt;…&lt;/div&gt;;
+}</code></pre>
+<p>Any component inside the Provider can read it, no matter how deep — no props in between.</p>
+<h3>Use it sparingly</h3>
+<p>Context is for things that are genuinely <em>global and rarely change</em>: theme, language, logged-in user. Putting fast-changing state in context re-renders every consumer and hurts.</p>
+<h3>It's not a state manager</h3>
+<p>Context <em>transports</em> state; it doesn't manage it. For big apps people add Zustand or Redux — but honestly, useState + context covers most real projects.</p>
+<h3>Don't reach for it too early</h3>
+<p>Passing props two levels is fine. Reach for context at three or four, and only when the value is genuinely shared.</p>
+<div class="callout tip">Theme, language, current user → context. A form's text → keep it local. If it changes on every keystroke, context is the wrong tool.</div>`),
+          quiz("re-quiz-3", "Quiz: Effects & Hooks", [
+            { q: "useEffect with [] runs…", options: ["Every render", "Once, after the first render", "Never", "On unmount only"], answer: 1 },
+            { q: "Setting state in useEffect with NO dependency array causes…", options: ["Nothing", "An infinite loop", "A syntax error", "Faster renders"], answer: 1 },
+            { q: "Returning a function from useEffect is for…", options: ["The result", "Cleanup — timers, listeners, subscriptions", "Errors", "Props"], answer: 1 },
+            { q: "Why can't hooks go inside an if?", options: ["Style", "React tracks hooks by call order — skipping one misaligns them all", "Speed", "They can"], answer: 1 },
+            { q: "A custom hook is…", options: ["A special API", "A function starting with 'use' that calls other hooks", "A component", "A class"], answer: 1 },
+            { q: "Context is best used for…", options: ["Every piece of state", "Rarely-changing global things: theme, language, user", "Form text", "Animations"], answer: 1 },
+            { q: "When fetching, you should always handle…", options: ["Only success", "Loading AND error states", "Only errors", "Nothing"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "4 · Build It",
+        lessons: [
+          article("re-project", "Final Project: Study Tracker App", "14 min", `
+<p>Everything together: components, props, state, lists, keys, forms, effects and a custom hook.</p>
+<h3>What to build</h3>
+<ul>
+  <li>Add a subject with a target number of hours.</li>
+  <li>Log hours studied against each subject.</li>
+  <li>A progress bar per subject.</li>
+  <li>Filter: all / in-progress / done.</li>
+  <li>It survives a refresh (localStorage).</li>
+</ul>
+<h3>Component tree — plan before you type</h3>
+<pre><code>App                 (owns the state)
+ ├─ AddSubject      (form → callback up)
+ ├─ FilterBar       (filter state)
+ └─ SubjectList
+     └─ SubjectCard (props in, callback up)
+         └─ ProgressBar</code></pre>
+<h3>The state</h3>
+<pre><code>const [subjects, setSubjects] = useLocalStorage("subjects", []);
+const [filter, setFilter] = useState("all");
+
+// derived — do NOT store this in state!
+const visible = subjects.filter((s) =&gt; {
+  if (filter === "done") return s.done &gt;= s.target;
+  if (filter === "active") return s.done &lt; s.target;
+  return true;
+});</code></pre>
+<h3>The most important lesson here</h3>
+<div class="callout"><strong>Don't put derived data in state.</strong> Calculate it during render. Storing a filtered copy means two sources of truth that drift out of sync — a classic React bug.</div>
+<h3>Adding immutably</h3>
+<pre><code>function addSubject(name, target) {
+  setSubjects([...subjects, { id: Date.now(), name, target, done: 0 }]);
+}
+
+function logHours(id, hours) {
+  setSubjects(subjects.map((s) =&gt;
+    s.id === id ? { ...s, done: s.done + hours } : s
+  ));
+}</code></pre>
+<p><strong>map</strong> to update one item — replace the matching object, keep the rest. Never mutate.</p>
+<h3>Then stretch</h3>
+<p>Add delete, edit, a total-hours summary, and a chart. Then head to the 🏋️ Practice Zone below.</p>
+<div class="callout tip">Draw your component tree on paper first, and decide who owns each piece of state. Ten minutes of that saves hours of refactoring.</div>`),
+          quiz("re-quiz-4", "Final Quiz: React", [
+            { q: "Derived data (like a filtered list) should be…", options: ["Stored in state", "Calculated during render", "Put in context", "Saved to localStorage"], answer: 1 },
+            { q: "To update one item in a state array you use…", options: ["items[i] = x", "setItems(items.map(...))", "items.splice()", "push"], answer: 1 },
+            { q: "Which correctly updates one object immutably?", options: ["s.done = 5", "{ ...s, done: 5 }", "s['done'] = 5", "Object.assign(s, {done:5})"], answer: 1 },
+            { q: "State should live…", options: ["Always in App", "At the lowest component that needs it — but no lower", "In the DOM", "In CSS"], answer: 1 },
+            { q: "Two sources of truth for the same data causes…", options: ["Speed", "Drift — they get out of sync", "Nothing", "Better UX"], answer: 1 },
+            { q: "React's virtual DOM helps because…", options: ["It replaces HTML", "Comparing objects is faster than touching the real DOM", "It caches CSS", "It runs on the server"], answer: 1 },
           ]),
         ],
       },
@@ -13080,6 +14312,842 @@ ORDER BY total DESC;</code></pre>
             { q: "Which is a core ERP module?", options: ["Photo editing", "Finance & Accounting", "Video streaming", "Game design"], answer: 1 },
             { q: "Which is an open-source ERP popular with small businesses?", options: ["SAP S/4HANA", "Odoo", "Photoshop", "Slack"], answer: 1 },
             { q: "A common reason ERP projects fail is…", options: ["Too little customization", "Over-customizing and migrating bad data", "Using one database", "Training people too much"], answer: 1 },
+          ]),
+        ],
+      },
+    ],
+  },
+  {
+    id: "digital-marketing",
+    title: "Digital Marketing: Zero to Hero",
+    subtitle: "The complete path — strategy, SEO, content, social, paid ads, email, analytics, and a portfolio that gets you hired.",
+    instructor: "Nadia Rahman",
+    category: "Career",
+    level: "All Levels",
+    rating: 4.8,
+    ratings: 9120,
+    students: 41200,
+    hours: 26,
+    price: "Free",
+    color: "linear-gradient(135deg,#ff6a00,#ee0979)",
+    icon: "&#128227;",
+    description:
+      "Start with zero knowledge and finish able to run real campaigns. You'll learn the strategy first (customers, positioning, goals), then every channel that matters — SEO, content, social, paid ads on Google and Meta, and email automation. You'll learn to measure everything with analytics, A/B testing and attribution, then build a portfolio and land the work. No jargon, no fluff, and every lesson works whether you're marketing a shop, a startup, or yourself.",
+    whatYouLearn: [
+      "Build a real strategy: customers, positioning, goals and KPIs",
+      "Get found free with SEO, content and social",
+      "Run profitable Google & Meta ads and know your CAC, LTV and ROAS",
+      "Grow an email list that sells while you sleep",
+      "Measure honestly with analytics, UTMs, A/B tests and attribution",
+      "Build a portfolio and get hired, freelance, or grow your own business",
+    ],
+    sections: [
+      {
+        title: "1 · Foundations",
+        lessons: [
+          article("dm-what", "What Digital Marketing Actually Is", "6 min", `
+<p><strong>Digital marketing</strong> is getting the right message to the right person at the right time — using the internet. That's it. Everything else is detail.</p>
+<h3>The one problem it solves</h3>
+<p>Every business has the same problem: <em>"People who would love what I sell don't know I exist."</em> Digital marketing closes that gap.</p>
+<h3>Why it beats a billboard</h3>
+<ul>
+  <li><strong>Targeted</strong> — reach 25-year-olds in Yangon who like coffee, not "everyone".</li>
+  <li><strong>Measurable</strong> — you know exactly what each customer cost you.</li>
+  <li><strong>Cheap to start</strong> — a post costs nothing; a billboard costs a fortune.</li>
+  <li><strong>Fast to fix</strong> — a bad ad can be changed in a minute.</li>
+</ul>
+<h3>The honest version</h3>
+<p>Marketing cannot save a bad product. It can only make a bad product fail faster, because more people find out. Fix the product first.</p>
+<div class="callout tip">Marketing isn't tricking people into buying. It's helping the people who <em>already</em> have the problem find your solution.</div>`),
+          article("dm-channels", "The Channels Map", "7 min", `
+<p>"Digital marketing" is an umbrella. Underneath are <strong>channels</strong> — different ways to reach people. You do not need all of them.</p>
+<h3>The main channels</h3>
+<ul>
+  <li><strong>SEO</strong> — show up free in Google when someone searches.</li>
+  <li><strong>Paid ads</strong> — pay to appear instantly.</li>
+  <li><strong>Content</strong> — posts, videos, guides that pull people in.</li>
+  <li><strong>Social</strong> — build an audience and community.</li>
+  <li><strong>Email</strong> — talk directly to people who said yes.</li>
+</ul>
+<h3>Owned vs rented vs earned</h3>
+<div class="flow">
+  <div class="flow-box">🏠 Owned</div>
+  <div class="flow-arrow" data-label="site, list"></div>
+  <div class="flow-box alt">🏢 Rented</div>
+  <div class="flow-arrow" data-label="FB, TikTok"></div>
+  <div class="flow-box warn">📣 Earned</div>
+</div>
+<p><strong>Owned</strong> is yours forever. <strong>Rented</strong> can vanish when an algorithm changes. <strong>Earned</strong> is when others talk about you — the most trusted, least controllable.</p>
+<h3>Pick two, not five</h3>
+<p>Beginners spread across every platform and do all of them badly. Pick the two where your customers already are, win those, then expand.</p>
+<div class="callout warn">If your whole business lives on one social page, you're building on rented land. Move people to something you own — a site, an email list.</div>`),
+          article("dm-funnel", "The Funnel: Awareness → Loyalty", "6 min", `
+<p>Nobody meets you and buys instantly. They move through stages. The <strong>funnel</strong> is just a name for that journey.</p>
+<div class="flow">
+  <div class="flow-box">👀 Awareness</div>
+  <div class="flow-arrow" data-label="interest"></div>
+  <div class="flow-box alt">🤔 Consideration</div>
+  <div class="flow-arrow" data-label="decision"></div>
+  <div class="flow-box">🛒 Action</div>
+  <div class="flow-arrow" data-label="delight"></div>
+  <div class="flow-box warn">💚 Loyalty</div>
+</div>
+<h3>Match the message to the stage</h3>
+<ul>
+  <li><strong>Awareness</strong> — they don't know you. Teach, don't sell.</li>
+  <li><strong>Consideration</strong> — they're comparing. Show proof: reviews, demos, cases.</li>
+  <li><strong>Action</strong> — they're ready. Remove friction: clear price, easy checkout.</li>
+  <li><strong>Loyalty</strong> — they bought. Keep them: support, tips, offers.</li>
+</ul>
+<h3>Why it's a funnel and not a tube</h3>
+<p>It narrows. 1,000 see you, 100 click, 10 ask, 1 buys. That's normal. Your job isn't to stop the narrowing — it's to find the <em>one step</em> where you lose the most and fix that.</p>
+<div class="callout tip">The #1 beginner mistake: shouting "BUY NOW!" at people in the awareness stage. It's like proposing on a first date.</div>`),
+          article("dm-persona", "Know Your Customer", "7 min", `
+<p>You cannot write a good message until you know who you're writing to. "Everyone" is not an audience.</p>
+<h3>Build one real persona</h3>
+<p>Not a fantasy — a real, specific person:</p>
+<ul>
+  <li><strong>Situation</strong> — who are they, what's their day like?</li>
+  <li><strong>Problem</strong> — what hurts enough to pay to fix?</li>
+  <li><strong>Trigger</strong> — what makes them search <em>today</em>, not next year?</li>
+  <li><strong>Objection</strong> — what stops them buying? (price, trust, time)</li>
+  <li><strong>Where</strong> — which sites, groups, apps are they already on?</li>
+</ul>
+<h3>How to research without a budget</h3>
+<ul>
+  <li><strong>Talk to 5 customers</strong> — 30 minutes each beats any survey.</li>
+  <li><strong>Read reviews</strong> of competitors — complaints are free market research.</li>
+  <li><strong>Search forums</strong> and groups — people describe problems in their own words.</li>
+  <li><strong>Ask your sales/support</strong> — they hear objections all day.</li>
+</ul>
+<div class="callout tip">Steal their words. The exact phrase a customer uses to describe their problem is the best headline you'll ever write.</div>`),
+          article("dm-position", "Positioning & Your Message", "7 min", `
+<p><strong>Positioning</strong> is the space you own in someone's head. If you're "a bit of everything", you're nothing.</p>
+<h3>The positioning sentence</h3>
+<div class="callout">For <strong>[specific person]</strong> who <strong>[has this problem]</strong>, we are the <strong>[category]</strong> that <strong>[unique benefit]</strong> — unlike <strong>[alternative]</strong>.</div>
+<p>Example: <em>"For Myanmar students who can't afford bootcamps, WebDev Academy is the free coding school that teaches in Burmese — unlike English-only platforms."</em></p>
+<h3>Features vs benefits</h3>
+<ul>
+  <li><strong>Feature</strong> — "26 video modules." (what it is)</li>
+  <li><strong>Benefit</strong> — "Get job-ready in 8 weeks." (what it does for me)</li>
+  <li><strong>Proof</strong> — "1,200 students hired." (why believe you)</li>
+</ul>
+<p>People buy benefits and believe proof. Features only reassure them afterwards.</p>
+<h3>Be different, not just better</h3>
+<p>"Better" is an argument you have to win every time. "Different" is a category you own. Be the only one who does X for Y.</p>
+<div class="callout warn">If your competitor could put their logo on your website and nothing would look wrong — you have no positioning.</div>`),
+          article("dm-goals", "Goals, KPIs & the One Number", "6 min", `
+<p>Marketing without a goal is just noise you pay for.</p>
+<h3>Make goals SMART</h3>
+<ul>
+  <li><strong>S</strong>pecific — "grow email list", not "grow".</li>
+  <li><strong>M</strong>easurable — "to 1,000 subscribers".</li>
+  <li><strong>A</strong>chievable — from 200, not from 0 to a million.</li>
+  <li><strong>R</strong>elevant — does it actually drive revenue?</li>
+  <li><strong>T</strong>ime-bound — "by 31 March".</li>
+</ul>
+<h3>Goal → KPI → metric</h3>
+<div class="flow">
+  <div class="flow-box">🎯 Goal</div>
+  <div class="flow-arrow" data-label="measured by"></div>
+  <div class="flow-box alt">📊 KPI</div>
+  <div class="flow-arrow" data-label="made of"></div>
+  <div class="flow-box">🔢 Metrics</div>
+</div>
+<p>Goal: more sales → KPI: conversion rate → metrics: visits, add-to-carts, checkouts.</p>
+<h3>The One Number</h3>
+<p>Before <em>any</em> campaign, write down the single number that decides whether it worked. If you can't name it, don't run the campaign.</p>
+<div class="callout tip">A goal you check monthly is a goal. A goal you check yearly is a wish.</div>`),
+          quiz("dm-quiz1", "Quiz: Foundations", [
+            { q: "Digital marketing is best described as…", options: ["Tricking people into buying", "Getting the right message to the right person at the right time online", "Only running Facebook ads", "Designing logos"], answer: 1 },
+            { q: "Which channel is 'owned' rather than 'rented'?", options: ["Your Facebook page", "Your TikTok following", "Your website and email list", "A trending hashtag"], answer: 2 },
+            { q: "Someone in the AWARENESS stage should mostly get…", options: ["'BUY NOW!' offers", "Helpful content that teaches", "A checkout page", "A contract"], answer: 1 },
+            { q: "The best free customer research is usually…", options: ["Guessing", "Talking to 5 real customers and reading competitor reviews", "Buying a report", "Asking your boss"], answer: 1 },
+            { q: "Good positioning means being…", options: ["A bit of everything", "Different in a way a specific person cares about", "The cheapest always", "The newest"], answer: 1 },
+            { q: "'Get job-ready in 8 weeks' is an example of a…", options: ["Feature", "Benefit", "Proof", "Metric"], answer: 1 },
+            { q: "Before running any campaign you should first…", options: ["Pick a logo colour", "Write down the ONE number that decides if it worked", "Buy followers", "Post everywhere"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "2 · Your Home Base",
+        lessons: [
+          article("dm-site", "Website vs Landing Page", "6 min", `
+<p>Every channel sends people <em>somewhere</em>. That somewhere decides whether the money was wasted.</p>
+<h3>The difference</h3>
+<ul>
+  <li><strong>Website</strong> — many pages, many purposes. A shop with departments. Good for browsing, SEO, trust.</li>
+  <li><strong>Landing page</strong> — one page, <em>one</em> goal, no distractions. Built for a single campaign.</li>
+</ul>
+<h3>Why landing pages win for ads</h3>
+<p>Send ad traffic to your homepage and people arrive, get confused, and leave. A landing page continues the exact promise the ad made — same words, same offer.</p>
+<div class="flow">
+  <div class="flow-box">📣 Ad promise</div>
+  <div class="flow-arrow" data-label="must match"></div>
+  <div class="flow-box alt">📄 Landing page</div>
+  <div class="flow-arrow" data-label="one action"></div>
+  <div class="flow-box">✅ Conversion</div>
+</div>
+<div class="callout warn">Message mismatch is the #1 killer of ad budgets. If the ad says "free checklist" and the page says "book a demo", you paid for a bounce.</div>`),
+          article("dm-landing", "Landing Pages That Convert", "7 min", `
+<p>A converting page answers five questions in order, fast.</p>
+<h3>The five questions</h3>
+<ol>
+  <li><strong>What is this?</strong> — clear headline, no cleverness.</li>
+  <li><strong>What's in it for me?</strong> — the benefit, in their words.</li>
+  <li><strong>Why believe you?</strong> — proof: reviews, numbers, logos, screenshots.</li>
+  <li><strong>What do I do?</strong> — one obvious button.</li>
+  <li><strong>What's the risk?</strong> — free, refund, no card needed.</li>
+</ol>
+<h3>One page, one action</h3>
+<p>Every extra link is an exit. Remove the nav bar on a campaign landing page — seriously.</p>
+<h3>Above the fold</h3>
+<p>Assume they read only the first screen. Headline + benefit + button must live there. Everything below is for people who need convincing.</p>
+<div class="callout tip">Show your page to someone for 5 seconds, then hide it. If they can't say what you offer and what to do, rewrite it.</div>`),
+          article("dm-copy", "Copywriting That Sells", "7 min", `
+<p><strong>Copywriting</strong> is writing that makes someone act. It's not about beautiful sentences — it's about clarity.</p>
+<h3>Clear beats clever</h3>
+<p>"Unleash your synergy" means nothing. "Cut your invoice time in half" sells. If they have to think, you lost.</p>
+<h3>You, not we</h3>
+<p>Count the "we" on your page. Now rewrite each as "you". <em>"We offer fast delivery"</em> → <em>"You get it tomorrow."</em></p>
+<h3>Headline formulas that work</h3>
+<ul>
+  <li><strong>Outcome + time</strong> — "Learn HTML in 30 days."</li>
+  <li><strong>How to + benefit + without pain</strong> — "How to rank on Google without paying for ads."</li>
+  <li><strong>Number + thing</strong> — "7 mistakes that kill your ads."</li>
+</ul>
+<h3>The call to action</h3>
+<p>Be specific about what happens next. "Submit" is cold. "Get my free checklist" tells them exactly what they get.</p>
+<div class="callout tip">Write the way you'd explain it to a friend in a tea shop. Then delete every word that isn't needed.</div>`),
+          article("dm-ux", "Speed, Mobile & Trust", "6 min", `
+<p>The best copy in the world can't save a page that takes 8 seconds to load.</p>
+<h3>Speed is money</h3>
+<p>Every extra second of load time loses visitors. Most leave before they ever see your offer. Compress images, cut heavy scripts, test on a real phone.</p>
+<h3>Mobile first, genuinely</h3>
+<p>Most of your traffic is on a phone, often on a slow connection. If the button is hard to tap with a thumb, it doesn't exist.</p>
+<h3>Trust signals</h3>
+<ul>
+  <li><strong>HTTPS</strong> — a browser warning ends the visit instantly.</li>
+  <li><strong>Real contact info</strong> — a human address and phone.</li>
+  <li><strong>Real faces &amp; reviews</strong> — not stock photos.</li>
+  <li><strong>Clear pricing</strong> — hidden prices read as "expensive".</li>
+</ul>
+<div class="callout">Test your own site on a cheap phone with mobile data — not your fast laptop on office wifi. That's what your customer actually has.</div>`),
+          quiz("dm-quiz2", "Quiz: Your Home Base", [
+            { q: "A landing page differs from a website because it has…", options: ["More links", "One page and one goal, no distractions", "More pages", "A bigger menu"], answer: 1 },
+            { q: "The #1 killer of ad budgets is…", options: ["Small images", "Message mismatch between ad and landing page", "Too much proof", "Fast loading"], answer: 1 },
+            { q: "On a campaign landing page, the nav bar should usually be…", options: ["Bigger", "Removed — every extra link is an exit", "Sticky", "Duplicated"], answer: 1 },
+            { q: "A better CTA than 'Submit' is…", options: ["'Click'", "'Get my free checklist'", "'Go'", "'Enter'"], answer: 1 },
+            { q: "Good copy uses…", options: ["'We' as much as possible", "'You' — written from the reader's benefit", "Long clever words", "Company history first"], answer: 1 },
+            { q: "You should test your site on…", options: ["Only your fast laptop", "A cheap phone on mobile data, like real customers use", "A 4K monitor", "Nothing"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "3 · Getting Found: SEO",
+        lessons: [
+          article("dm-seo", "How Search Engines Rank Pages", "7 min", `
+<p><strong>SEO</strong> (Search Engine Optimisation) means earning a spot in Google's free results. No ad spend — just being the best answer.</p>
+<h3>What Google is actually trying to do</h3>
+<p>Google has one job: give the searcher the best answer, fast. Every ranking rule follows from that. So the strategy is simple — <em>be the best answer</em>.</p>
+<h3>The three pillars</h3>
+<ul>
+  <li><strong>Technical</strong> — can Google reach and read your page?</li>
+  <li><strong>Content</strong> — does the page genuinely answer the question?</li>
+  <li><strong>Authority</strong> — do other trusted sites link to you?</li>
+</ul>
+<div class="flow">
+  <div class="flow-box">🔍 Crawl</div>
+  <div class="flow-arrow" data-label="find"></div>
+  <div class="flow-box alt">📇 Index</div>
+  <div class="flow-arrow" data-label="store"></div>
+  <div class="flow-box">🏆 Rank</div>
+</div>
+<h3>SEO is slow — that's the point</h3>
+<p>Ads stop the second you stop paying. SEO compounds: a page written today can bring free visitors for years. Expect 3–6 months before real movement.</p>
+<div class="callout warn">Beware anyone selling "guaranteed #1 rankings" or bulk backlinks. Google penalises this, and recovery takes months.</div>`),
+          article("dm-keywords", "Keywords & Search Intent", "7 min", `
+<p>A <strong>keyword</strong> is what someone types. But the word matters less than the <strong>intent</strong> behind it.</p>
+<h3>Four kinds of intent</h3>
+<ul>
+  <li><strong>Informational</strong> — "how to learn html" (wants to learn)</li>
+  <li><strong>Navigational</strong> — "webdev academy login" (wants a specific site)</li>
+  <li><strong>Commercial</strong> — "best html course" (comparing)</li>
+  <li><strong>Transactional</strong> — "buy html course" (ready to pay)</li>
+</ul>
+<p>Selling a course to "how to learn html" fails. Teaching it wins — and the trust brings them back when they're ready to buy.</p>
+<h3>Long-tail beats short</h3>
+<p>"Shoes" is impossible. <em>"Waterproof running shoes for flat feet"</em> has fewer searches — but those people know exactly what they want, and there's less competition.</p>
+<h3>How to choose</h3>
+<ul>
+  <li><strong>Volume</strong> — enough people search it.</li>
+  <li><strong>Difficulty</strong> — can you realistically compete?</li>
+  <li><strong>Relevance</strong> — does it bring <em>buyers</em>, not just readers?</li>
+</ul>
+<div class="callout tip">Check what already ranks. If page 1 is all huge brands, pick a more specific keyword — don't fight a war you can't win.</div>`),
+          article("dm-onpage", "On-Page SEO", "7 min", `
+<p><strong>On-page SEO</strong> is everything you control on the page itself.</p>
+<h3>The essentials</h3>
+<ul>
+  <li><strong>Title tag</strong> — the blue link in Google. Put the keyword near the front. ~60 characters.</li>
+  <li><strong>Meta description</strong> — the grey text. Doesn't rank you, but wins the click. ~155 characters.</li>
+  <li><strong>One H1</strong> — the page's real heading.</li>
+  <li><strong>H2/H3 structure</strong> — real sections, not decoration.</li>
+  <li><strong>URL</strong> — short and readable: /digital-marketing-basics</li>
+  <li><strong>Image alt text</strong> — describe the image; helps blind users and Google.</li>
+  <li><strong>Internal links</strong> — link your related pages to each other.</li>
+</ul>
+<h3>Write for humans first</h3>
+<p>Stuffing "cheap shoes Yangon" 40 times does not work anymore — it actively hurts. Use the keyword naturally, plus the words that <em>naturally</em> come with it.</p>
+<div class="callout tip">Answer the question in the first paragraph. Google (and readers) reward pages that get to the point.</div>`),
+          article("dm-tech", "Technical SEO Basics", "6 min", `
+<p>If Google can't reach or read your page, nothing else matters. Technical SEO is plumbing.</p>
+<h3>The checklist</h3>
+<ul>
+  <li><strong>Speed</strong> — a slow site ranks lower and converts worse.</li>
+  <li><strong>Mobile-friendly</strong> — Google indexes the mobile version <em>first</em>.</li>
+  <li><strong>HTTPS</strong> — required, and a trust signal.</li>
+  <li><strong>Sitemap.xml</strong> — a map of your pages for crawlers.</li>
+  <li><strong>Robots.txt</strong> — tells crawlers where <em>not</em> to go.</li>
+  <li><strong>No broken links</strong> — dead ends waste crawl budget and annoy users.</li>
+  <li><strong>Canonical tags</strong> — tell Google which version is the real one when pages duplicate.</li>
+</ul>
+<h3>Free tools that matter</h3>
+<p><strong>Google Search Console</strong> is non-negotiable and free: it shows what you rank for, what's broken, and what Google can't index. Set it up on day one.</p>
+<div class="callout warn">A stray "noindex" tag or a robots.txt block can delete you from Google entirely. When traffic vanishes overnight, check these first.</div>`),
+          article("dm-links", "Authority & Link Building", "6 min", `
+<p>A link from another site is a <strong>vote</strong>. Google counts votes — but weighs them by who's voting.</p>
+<h3>Quality over quantity</h3>
+<p>One link from a respected news site beats 500 from spam directories. Bad links can actively harm you.</p>
+<h3>How to earn links honestly</h3>
+<ul>
+  <li><strong>Be worth linking to</strong> — original data, a genuinely useful free tool, the definitive guide.</li>
+  <li><strong>Guest posts</strong> — write for a site your audience reads.</li>
+  <li><strong>Digital PR</strong> — do something newsworthy; journalists link.</li>
+  <li><strong>Fix broken links</strong> — find a dead link on a site, offer your page as the replacement.</li>
+  <li><strong>Be quotable</strong> — publish a statistic people want to cite.</li>
+</ul>
+<div class="callout warn">Never buy links. It's against Google's rules, it's detectable, and the penalty can erase years of work.</div>`),
+          article("dm-local", "Local SEO", "6 min", `
+<p>If you have a physical shop or serve a city, <strong>local SEO</strong> is the highest-return SEO there is. "Near me" searches are ready to buy <em>now</em>.</p>
+<h3>The big three</h3>
+<ul>
+  <li><strong>Google Business Profile</strong> — free, and the single most important local asset. Complete every field, add real photos, post updates.</li>
+  <li><strong>NAP consistency</strong> — Name, Address, Phone identical <em>everywhere</em> online. Mismatches confuse Google.</li>
+  <li><strong>Reviews</strong> — quantity, quality, recency. Reply to every one, especially the bad ones.</li>
+</ul>
+<h3>Local intent wins</h3>
+<p>Someone searching "coffee near me" will visit within the hour. That's not a lead — that's a customer walking to your door.</p>
+<div class="callout tip">Just ask. The simplest growth move for a local business: ask every happy customer for a Google review, right when they're happy.</div>`),
+          quiz("dm-quiz3", "Quiz: SEO", [
+            { q: "Google's core goal is to…", options: ["Sell ads only", "Give the searcher the best answer fast", "Rank the newest page", "Reward the longest page"], answer: 1 },
+            { q: "Someone searching 'best html course' has which intent?", options: ["Navigational", "Commercial (comparing)", "Transactional", "None"], answer: 1 },
+            { q: "'Long-tail' keywords are…", options: ["Longer, more specific, easier to rank and convert better", "Always more expensive", "Impossible to rank for", "Only for big brands"], answer: 0 },
+            { q: "The meta description mainly affects…", options: ["Your ranking directly", "Whether people click your result", "Your load speed", "Your backlinks"], answer: 1 },
+            { q: "Google indexes which version of your site first?", options: ["Desktop", "Mobile", "The printed version", "The oldest"], answer: 1 },
+            { q: "Backlinks from trusted sites act like…", options: ["Penalties", "Votes for your page", "Ads", "Keywords"], answer: 1 },
+            { q: "The most important free local SEO asset is…", options: ["A billboard", "Your Google Business Profile", "A TikTok account", "A fax number"], answer: 1 },
+            { q: "Buying links is…", options: ["A smart shortcut", "Against Google's rules and risks a penalty", "Required", "Free"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "4 · Content Marketing",
+        lessons: [
+          article("dm-content", "Content People Actually Click", "6 min", `
+<p><strong>Content marketing</strong> is earning attention by being useful instead of interrupting.</p>
+<h3>The rule</h3>
+<p>Ask: <em>"Would someone share this if it had no logo on it?"</em> If no, it's an ad, not content.</p>
+<h3>What works</h3>
+<ul>
+  <li><strong>Answer a real question</strong> your customers keep asking.</li>
+  <li><strong>Be specific</strong> — "Cut your load time by 2s" beats "Improve your website".</li>
+  <li><strong>Show, don't claim</strong> — screenshots, numbers, before/after.</li>
+  <li><strong>One idea per piece</strong> — confused readers leave.</li>
+</ul>
+<h3>The 80/20 rule</h3>
+<p>80% genuinely helpful, 20% about you. Flip that ratio and people stop listening.</p>
+<div class="callout tip">Your best content ideas are sitting in your inbox — the questions customers already email you. Answer each one publicly.</div>`),
+          article("dm-formats", "Formats & Repurposing", "6 min", `
+<p>Writing something once and posting it once is wasting it.</p>
+<h3>One thing becomes ten</h3>
+<div class="flow">
+  <div class="flow-box">📄 One guide</div>
+  <div class="flow-arrow" data-label="cut up"></div>
+  <div class="flow-box alt">🎬 Video + 5 posts</div>
+  <div class="flow-arrow" data-label="reuse"></div>
+  <div class="flow-box">📧 Email + infographic</div>
+</div>
+<h3>Match format to platform</h3>
+<ul>
+  <li><strong>Deep guide</strong> — your blog (SEO lives here).</li>
+  <li><strong>Short video</strong> — TikTok, Reels, Shorts (reach).</li>
+  <li><strong>Carousel / image</strong> — Instagram, Facebook (saves).</li>
+  <li><strong>Long video</strong> — YouTube (trust + search).</li>
+  <li><strong>Email</strong> — your list (revenue).</li>
+</ul>
+<div class="callout tip">Make the big thing first, then slice. Making 10 separate small things is 10× the work for less result.</div>`),
+          article("dm-calendar", "The Content Calendar", "6 min", `
+<p>Consistency beats brilliance. One useful post every week for a year beats one viral hit.</p>
+<h3>Plan in themes, not panic</h3>
+<p>Pick 3–4 topics you want to be known for. Every piece must serve one. This builds authority instead of noise.</p>
+<h3>A simple, survivable calendar</h3>
+<ul>
+  <li><strong>Weekly</strong> — one real piece (guide/video).</li>
+  <li><strong>3× week</strong> — slices of that piece on social.</li>
+  <li><strong>Monthly</strong> — one bigger asset (data, tool, template).</li>
+  <li><strong>Batch</strong> — write four at once; publish weekly.</li>
+</ul>
+<h3>Be honest about capacity</h3>
+<p>A plan you abandon in week 3 is worse than a small plan you keep for a year. Halve your plan, then keep it.</p>
+<div class="callout">Publish on a schedule people can rely on. An audience that knows when you show up will come back.</div>`),
+          article("dm-video", "Video & Short-Form", "6 min", `
+<p>Video is where attention went. You don't need a studio — you need a phone and a point.</p>
+<h3>The first 3 seconds decide everything</h3>
+<p>No slow intros, no "hey guys, welcome back". Open with the payoff: "Your ads are losing money — here's why."</p>
+<h3>What actually matters</h3>
+<ul>
+  <li><strong>Hook</strong> — first line stops the scroll.</li>
+  <li><strong>Value</strong> — one useful idea, fast.</li>
+  <li><strong>Captions</strong> — most people watch on mute.</li>
+  <li><strong>Vertical</strong> — for Reels/TikTok/Shorts.</li>
+  <li><strong>Audio quality</strong> — bad audio kills a video faster than bad video.</li>
+</ul>
+<h3>Retention is the algorithm</h3>
+<p>Platforms push what people <em>keep watching</em>. Short and complete beats long and padded.</p>
+<div class="callout tip">Film one idea per video. If you have five ideas, that's five videos — not one long one nobody finishes.</div>`),
+          quiz("dm-quiz4", "Quiz: Content Marketing", [
+            { q: "A good test for real content is…", options: ["Does it mention our product 10 times?", "Would someone share it even with no logo on it?", "Is it over 5000 words?", "Does it use big words?"], answer: 1 },
+            { q: "The healthy content ratio is roughly…", options: ["80% about you", "80% genuinely helpful, 20% about you", "100% promotion", "50/50 always"], answer: 1 },
+            { q: "The smart way to produce content is…", options: ["Make 10 separate small things", "Make one big thing, then slice it into many", "Post once a year", "Copy competitors"], answer: 1 },
+            { q: "In short-form video, the first 3 seconds should…", options: ["Say 'hey guys welcome back'", "Open with the payoff and stop the scroll", "Show a long logo intro", "Be silent"], answer: 1 },
+            { q: "Captions matter because…", options: ["They look nice", "Most people watch on mute", "They boost audio", "They're required by law"], answer: 1 },
+            { q: "A content plan you abandon in week 3 is…", options: ["Better than a small plan you keep", "Worse than a small plan you keep for a year", "Ideal", "Normal and fine"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "5 · Social Media",
+        lessons: [
+          article("dm-social-pick", "Choosing Your Platforms", "6 min", `
+<p>You cannot be everywhere well. Choose where your customer already is, and where your format fits.</p>
+<h3>What each platform is really for</h3>
+<ul>
+  <li><strong>Facebook</strong> — broad reach, groups, older audiences, local business.</li>
+  <li><strong>Instagram</strong> — visual products, lifestyle, younger.</li>
+  <li><strong>TikTok</strong> — fastest organic reach left; entertainment-first.</li>
+  <li><strong>YouTube</strong> — long trust + it's a search engine (content lives for years).</li>
+  <li><strong>LinkedIn</strong> — B2B, hiring, professional services.</li>
+  <li><strong>Telegram / Viber</strong> — direct community, huge in many markets.</li>
+</ul>
+<h3>Two questions</h3>
+<ol>
+  <li>Are my customers there in numbers?</li>
+  <li>Can I sustain that format weekly — forever?</li>
+</ol>
+<div class="callout tip">Two platforms done well beats six done badly. You can always add a third once the first two run themselves.</div>`),
+          article("dm-organic", "Organic Social That Works", "6 min", `
+<p><strong>Organic</strong> means unpaid. Reach is harder than it used to be — platforms want you to pay. So earn it.</p>
+<h3>What algorithms reward</h3>
+<ul>
+  <li><strong>Watch time / dwell</strong> — did people stay?</li>
+  <li><strong>Saves &amp; shares</strong> — worth far more than likes.</li>
+  <li><strong>Comments</strong> — real conversation, not "nice post".</li>
+  <li><strong>Speed of engagement</strong> — the first hour decides distribution.</li>
+</ul>
+<h3>The post shapes that work</h3>
+<ul>
+  <li><strong>Teach one thing</strong> — a tip they can use today.</li>
+  <li><strong>Show the work</strong> — behind the scenes, before/after.</li>
+  <li><strong>Take a position</strong> — a real opinion beats safe mush.</li>
+  <li><strong>Tell a story</strong> — a customer's problem and result.</li>
+</ul>
+<div class="callout warn">Never buy followers. You get a dead audience that never engages, which teaches the algorithm your content is bad — and it stops showing it to real people.</div>`),
+          article("dm-community", "Community & Engagement", "5 min", `
+<p>An audience watches. A <strong>community</strong> talks back — and defends you.</p>
+<h3>The rules</h3>
+<ul>
+  <li><strong>Reply to everything</strong>, early on. Every comment is a relationship.</li>
+  <li><strong>Ask real questions</strong> — not "thoughts?" but "what stopped you from starting?"</li>
+  <li><strong>Feature your people</strong> — show their work, name them.</li>
+  <li><strong>Handle criticism in public</strong> — calmly. Watchers judge how you respond.</li>
+</ul>
+<h3>Move them somewhere you own</h3>
+<p>A follower is rented. Invite the community into a group, a newsletter, an app — something an algorithm can't take away.</p>
+<div class="callout tip">The fastest way to grow early: spend more time commenting usefully on other people's posts than on your own.</div>`),
+          article("dm-influencer", "Influencers & UGC", "6 min", `
+<p>People trust people far more than brands. That's the whole idea.</p>
+<h3>Small is often better</h3>
+<ul>
+  <li><strong>Nano/micro</strong> (1k–50k) — cheap, high trust, real engagement.</li>
+  <li><strong>Macro</strong> (100k+) — reach, but expensive and often hollow.</li>
+</ul>
+<p>Ten micro-influencers with real communities usually beat one celebrity post.</p>
+<h3>How to pick</h3>
+<p>Ignore follower count. Look at the <strong>comments</strong> — are they real conversations or bot emoji? Check whether their audience is actually your customer.</p>
+<h3>UGC — user generated content</h3>
+<p>Your customers' own photos and reviews are your best ads: free, trusted, and endless. Ask for them, feature them, get permission.</p>
+<div class="callout warn">Disclose paid partnerships. It's the law in most places, and hiding it destroys the trust you paid for.</div>`),
+          quiz("dm-quiz5", "Quiz: Social Media", [
+            { q: "The right number of platforms for a beginner is…", options: ["All of them", "Two, done well", "Six", "Zero"], answer: 1 },
+            { q: "Algorithms reward saves and shares because…", options: ["They're easy to fake", "They signal real value more than likes", "They're paid", "They're rare"], answer: 1 },
+            { q: "Buying followers is bad because…", options: ["It's expensive only", "A dead audience teaches the algorithm your content is bad", "It's too fast", "It boosts reach"], answer: 1 },
+            { q: "The difference between an audience and a community is…", options: ["Size", "A community talks back and defends you", "Cost", "Platform"], answer: 1 },
+            { q: "When choosing an influencer you should mainly check…", options: ["Follower count", "Whether comments are real conversations from your customers", "Their follower growth ads", "Their logo"], answer: 1 },
+            { q: "Paid partnerships must be…", options: ["Hidden", "Disclosed — it's the law in most places", "Deleted", "Ignored"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "6 · Paid Advertising",
+        lessons: [
+          article("dm-ads", "How Ad Auctions Work", "7 min", `
+<p>SEO is a slow build. <strong>Paid ads</strong> buy attention instantly — which is powerful and dangerous.</p>
+<h3>It's an auction — but not a simple one</h3>
+<p>Meta and Google run an auction for every impression. The highest bid does <em>not</em> always win. Roughly:</p>
+<div class="callout"><strong>Ad rank ≈ your bid × how relevant/likely-to-be-clicked your ad is</strong></div>
+<p>So a great ad people love can beat a richer, boring competitor — and pay <em>less</em> per click. Relevance is a discount.</p>
+<h3>The structure (same idea on both)</h3>
+<div class="flow">
+  <div class="flow-box">🎯 Campaign</div>
+  <div class="flow-arrow" data-label="the goal"></div>
+  <div class="flow-box alt">👥 Ad set</div>
+  <div class="flow-arrow" data-label="who + budget"></div>
+  <div class="flow-box">🖼️ Ad</div>
+</div>
+<ul>
+  <li><strong>Campaign</strong> — the objective (sales, leads, traffic).</li>
+  <li><strong>Ad set / ad group</strong> — who sees it, budget, schedule.</li>
+  <li><strong>Ad</strong> — the actual creative.</li>
+</ul>
+<div class="callout tip">Pick the objective that matches your real goal. Choose "traffic" and the platform finds cheap clickers. Choose "purchases" and it finds buyers.</div>`),
+          article("dm-google-ads", "Google Search Ads", "7 min", `
+<p>Google ads catch <strong>demand that already exists</strong>. Someone is searching for what you sell, right now.</p>
+<h3>Why it converts</h3>
+<p>Intent. Nobody searches "emergency plumber Yangon" for fun. You're not creating desire — you're meeting it.</p>
+<h3>Match types matter</h3>
+<ul>
+  <li><strong>Broad</strong> — widest reach, most waste.</li>
+  <li><strong>Phrase</strong> — must contain your meaning.</li>
+  <li><strong>Exact</strong> — tightest, most expensive, best intent.</li>
+</ul>
+<h3>Negative keywords save your budget</h3>
+<p>Selling paid courses? Add "free" as a negative, or you'll pay for people who will never buy. This one habit saves more money than any other.</p>
+<h3>Quality Score</h3>
+<p>Google scores keyword ↔ ad ↔ landing page relevance. High score = lower cost per click. Relevance literally pays.</p>
+<div class="callout warn">Check your search terms report weekly. You'll be shocked what you're paying for — and every irrelevant term is a negative keyword you should add.</div>`),
+          article("dm-meta-ads", "Meta (Facebook & Instagram) Ads", "7 min", `
+<p>Google catches demand. <strong>Meta creates</strong> it — people weren't looking for you, so the creative must stop them.</p>
+<h3>The key difference</h3>
+<p>On Google, keywords do the work. On Meta, the <strong>creative</strong> does. A great image/video with weak targeting beats perfect targeting with a boring ad.</p>
+<h3>Let the machine target</h3>
+<p>Modern Meta targeting works best when you give it room and a clear signal (a real purchase event) rather than micro-slicing tiny audiences.</p>
+<h3>The pixel is everything</h3>
+<p>Install the Meta pixel/conversions API and send real events (view, add-to-cart, purchase). Without it, the algorithm is blind and optimises for nothing.</p>
+<h3>Creative fatigue is real</h3>
+<p>The same ad shown too often stops working — performance decays. Rotate new creative regularly; it's the main lever on Meta.</p>
+<div class="callout tip">Test 3–5 very <em>different</em> creative angles, not 5 shades of the same button. Big differences teach you what people care about.</div>`),
+          article("dm-targeting", "Targeting & Audiences", "6 min", `
+<p>The right message to the wrong person is wasted money.</p>
+<h3>The three audience types</h3>
+<ul>
+  <li><strong>Cold</strong> — never heard of you. Goal: interest, not sales.</li>
+  <li><strong>Warm (retargeting)</strong> — visited, watched, engaged. Goal: convince.</li>
+  <li><strong>Hot</strong> — added to cart, past customers. Goal: close.</li>
+</ul>
+<div class="flow">
+  <div class="flow-box">❄️ Cold</div>
+  <div class="flow-arrow" data-label="teach"></div>
+  <div class="flow-box alt">🌤️ Warm</div>
+  <div class="flow-arrow" data-label="prove"></div>
+  <div class="flow-box warn">🔥 Hot</div>
+</div>
+<h3>Retargeting is the cheapest money</h3>
+<p>Showing an ad to someone who already visited converts far better than a stranger. Start here before scaling cold traffic.</p>
+<h3>Lookalikes</h3>
+<p>Upload your best customers; the platform finds people who resemble them. Quality in, quality out — feed it <em>buyers</em>, not all traffic.</p>
+<div class="callout warn">Don't retarget forever. Following someone around the internet for 6 months after they bought is annoying and wasteful — set exclusions.</div>`),
+          article("dm-budget", "Budget, CAC, LTV & ROAS", "7 min", `
+<p>This lesson is the difference between a marketer and someone who spends money.</p>
+<h3>The four numbers</h3>
+<ul>
+  <li><strong>CPC</strong> — cost per click.</li>
+  <li><strong>CAC</strong> — Customer Acquisition Cost: total spend ÷ customers won.</li>
+  <li><strong>LTV</strong> — Lifetime Value: what a customer is worth over time.</li>
+  <li><strong>ROAS</strong> — Return On Ad Spend: revenue ÷ ad spend.</li>
+</ul>
+<h3>The rule that decides everything</h3>
+<div class="callout"><strong>If LTV &gt; CAC, spend more. If CAC &gt; LTV, stop — you're buying customers at a loss.</strong></div>
+<h3>Worked example</h3>
+<p>You spend 100,000 MMK, get 200 clicks (500 CPC), and 10 buy → <strong>CAC = 10,000</strong>. If each customer spends 8,000 once, you're losing money. But if they come back and spend 40,000 over a year, <strong>LTV = 40,000</strong> — spend more.</p>
+<h3>Why beginners go broke</h3>
+<p>They judge an ad on day one, panic, and scale on feelings. Give it enough data, kill losers fast, and only pour money into what already pays back.</p>
+<div class="callout warn">ROAS of 2 sounds like profit — but if your margin is 30%, you're losing. Always compare against <em>margin</em>, not revenue.</div>`),
+          article("dm-creative", "Ad Creative That Converts", "6 min", `
+<p>On paid social, creative <em>is</em> the strategy.</p>
+<h3>The anatomy</h3>
+<ul>
+  <li><strong>Hook</strong> — first 3 seconds / the image. Stops the thumb.</li>
+  <li><strong>Problem</strong> — name their pain in their words.</li>
+  <li><strong>Proof</strong> — show it working.</li>
+  <li><strong>CTA</strong> — one clear action.</li>
+</ul>
+<h3>What tends to win</h3>
+<ul>
+  <li><strong>Looks native</strong> — like a post, not a poster.</li>
+  <li><strong>Real people</strong> — beats polished stock every time.</li>
+  <li><strong>Motion</strong> — beats a static image.</li>
+  <li><strong>Text on screen</strong> — sound is off.</li>
+  <li><strong>UGC style</strong> — a customer filming their result outperforms studio ads.</li>
+</ul>
+<div class="callout tip">Your ad competes with a friend's baby photo and a funny video — not with other ads. Be interesting first, promotional second.</div>`),
+          quiz("dm-quiz6", "Quiz: Paid Advertising", [
+            { q: "In an ad auction, the winner is…", options: ["Always the highest bidder", "Decided by bid AND relevance — a great ad can beat a richer one", "Random", "The oldest account"], answer: 1 },
+            { q: "Google Search ads work so well because…", options: ["They're cheap", "They catch demand that already exists — real intent", "They're colourful", "They're new"], answer: 1 },
+            { q: "Negative keywords are used to…", options: ["Insult competitors", "Stop paying for irrelevant searches", "Boost rankings", "Add more reach"], answer: 1 },
+            { q: "On Meta, the biggest lever on performance is usually…", options: ["The creative", "The account age", "The font", "The bid alone"], answer: 0 },
+            { q: "You should scale ad spend when…", options: ["The ad feels good", "LTV is greater than CAC", "CAC is greater than LTV", "It has many likes"], answer: 1 },
+            { q: "Retargeting means showing ads to…", options: ["Total strangers", "People who already visited or engaged", "Your staff", "Competitors"], answer: 1 },
+            { q: "A ROAS of 2 with a 30% margin means…", options: ["Great profit", "You're actually losing money — compare against margin, not revenue", "Break even exactly", "Nothing"], answer: 1 },
+            { q: "The best-performing ad creative usually…", options: ["Looks like a polished poster", "Looks native, uses real people and text on screen", "Has no CTA", "Is silent and static"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "7 · Email & Automation",
+        lessons: [
+          article("dm-list", "Building a List (Permission First)", "6 min", `
+<p>Email is old, unglamorous — and usually the highest-return channel there is. Because you <strong>own</strong> the list.</p>
+<h3>Why it beats social</h3>
+<p>No algorithm sits between you and the reader. You send, they get it. A social platform can cut your reach tomorrow; your list is yours.</p>
+<h3>Permission first</h3>
+<p>Someone gave you their address. That's trust. Buying a list destroys it — and breaks the law in many countries (GDPR and friends carry real fines).</p>
+<h3>Give a real reason</h3>
+<p>"Subscribe to our newsletter" is not a reason. A <strong>lead magnet</strong> is:</p>
+<ul>
+  <li>A checklist or template they'd actually use</li>
+  <li>A free lesson or mini-course</li>
+  <li>A discount for a first order</li>
+  <li>A tool or calculator</li>
+</ul>
+<div class="callout tip">Solve one small, specific problem instantly. "The 10-point pre-launch checklist" beats "Our monthly updates" every time.</div>`),
+          article("dm-sequences", "Welcome & Nurture Sequences", "6 min", `
+<p><strong>Automation</strong> means writing an email once and having it send itself, forever, at the perfect moment.</p>
+<h3>The sequences that make money</h3>
+<ul>
+  <li><strong>Welcome</strong> — sent instantly. Highest open rate you'll ever get. Deliver what you promised, set expectations.</li>
+  <li><strong>Nurture</strong> — a few useful emails that build trust <em>before</em> any offer.</li>
+  <li><strong>Abandoned cart</strong> — "you left this behind." Recovers real revenue for almost nothing.</li>
+  <li><strong>Post-purchase</strong> — how to get the most from it. Reduces refunds, drives repeats.</li>
+  <li><strong>Win-back</strong> — reach quiet subscribers before they're gone.</li>
+</ul>
+<h3>Sequence shape</h3>
+<div class="flow">
+  <div class="flow-box">👋 Welcome</div>
+  <div class="flow-arrow" data-label="give value"></div>
+  <div class="flow-box alt">🎁 Teach ×3</div>
+  <div class="flow-arrow" data-label="earned it"></div>
+  <div class="flow-box">🛒 Offer</div>
+</div>
+<div class="callout">Set the welcome email up today if you have nothing else. It's the single highest-ROI automation in marketing.</div>`),
+          article("dm-segment", "Segmentation & Personalisation", "6 min", `
+<p>Sending everyone the same email is why people unsubscribe.</p>
+<h3>Segment by behaviour, not just name</h3>
+<ul>
+  <li><strong>New vs customer</strong> — never sell someone what they already bought.</li>
+  <li><strong>Interest</strong> — what did they click?</li>
+  <li><strong>Engagement</strong> — opens often vs never.</li>
+  <li><strong>Value</strong> — big spenders deserve different treatment.</li>
+</ul>
+<h3>Real personalisation isn't a first name</h3>
+<p>"Hi [Name]" is not personalisation — everyone does it. Sending a <em>relevant</em> email based on what they actually did is.</p>
+<h3>Fewer, better emails</h3>
+<p>Emailing more doesn't earn more — it earns unsubscribes. Email the right segment with the right thing.</p>
+<div class="callout tip">Prune dead subscribers. People who never open hurt your deliverability for everyone else. A smaller engaged list beats a big dead one.</div>`),
+          article("dm-deliver", "Deliverability: Landing in the Inbox", "5 min", `
+<p>An email in spam is worth exactly zero. Deliverability is whether you arrive at all.</p>
+<h3>The technical basics</h3>
+<ul>
+  <li><strong>SPF, DKIM, DMARC</strong> — DNS records that prove you're really you. Set these up once; without them you're likely spam.</li>
+  <li><strong>Real reply-to</strong> — "noreply@" hurts trust and engagement.</li>
+  <li><strong>Easy unsubscribe</strong> — hiding it gets you marked as spam, which is far worse.</li>
+</ul>
+<h3>Reputation is behavioural</h3>
+<p>Providers watch: do people open, reply, and not complain? Engagement <em>is</em> deliverability. This is why pruning dead subscribers matters.</p>
+<h3>Warm up</h3>
+<p>Blasting 50,000 emails from a brand-new domain is the fastest way to get blocked. Ramp volume gradually.</p>
+<div class="callout warn">One spam complaint per 1,000 emails is roughly the danger line. Never add someone who didn't ask — the damage outlives the campaign.</div>`),
+          quiz("dm-quiz7", "Quiz: Email & Automation", [
+            { q: "Email is usually high-return because…", options: ["It's new and trendy", "You own the list — no algorithm between you and the reader", "It's free to buy lists", "Nobody else uses it"], answer: 1 },
+            { q: "A good lead magnet…", options: ["Says 'subscribe to our newsletter'", "Solves one small, specific problem instantly", "Is a company brochure", "Is hidden"], answer: 1 },
+            { q: "The highest-ROI automation to set up first is…", options: ["A yearly recap", "The welcome email", "A survey", "A birthday card"], answer: 1 },
+            { q: "Real personalisation means…", options: ["Adding 'Hi [Name]'", "Sending relevant content based on what they actually did", "Using bold text", "Sending more often"], answer: 1 },
+            { q: "SPF, DKIM and DMARC exist to…", options: ["Make emails prettier", "Prove you're really you so you don't land in spam", "Track opens", "Speed up sending"], answer: 1 },
+            { q: "People who never open your emails should be…", options: ["Emailed twice as often", "Pruned — they hurt deliverability for everyone", "Ignored forever", "Sold to"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "8 · Analytics & Optimisation",
+        lessons: [
+          article("dm-analytics", "Measuring What Matters", "6 min", `
+<p>The superpower of digital is measurement. The trap is measuring the <em>wrong</em> things.</p>
+<h3>Vanity vs real metrics</h3>
+<ul>
+  <li><strong>Vanity</strong> — followers, likes, impressions. Feel good, pay nothing.</li>
+  <li><strong>Real</strong> — conversion rate, CAC, LTV, revenue.</li>
+</ul>
+<p>10,000 followers and zero sales is a hobby. 200 followers and 20 customers is a business.</p>
+<h3>The funnel in numbers</h3>
+<p>1,000 visits → 50 sign-ups (5% conversion) → 5 customers (10% close). Now you can see exactly where you lose people — and fix <em>that</em> step.</p>
+<h3>Find the weakest step</h3>
+<p>Doubling a 1% step to 2% is usually easier — and worth more — than squeezing a step that already works at 40%.</p>
+<div class="callout tip">A metric you can't act on is trivia. For every number you track, ask: "If this moves, what would I <em>do</em> differently?"</div>`),
+          article("dm-ga4", "Analytics & UTM Tracking", "7 min", `
+<p>You need to know where people came from. Otherwise you're guessing which channel deserves the budget.</p>
+<h3>UTMs: tag every link</h3>
+<p>UTMs are labels you add to a URL so analytics can tell you the source:</p>
+<ul>
+  <li><strong>utm_source</strong> — facebook, google, newsletter</li>
+  <li><strong>utm_medium</strong> — cpc, email, social</li>
+  <li><strong>utm_campaign</strong> — spring_sale</li>
+  <li><strong>utm_content</strong> — which specific ad/link</li>
+</ul>
+<p>Without them, everything lands in "direct" and you learn nothing.</p>
+<h3>Events over pageviews</h3>
+<p>Modern analytics (GA4) counts <strong>events</strong> — actions people take. Define the ones that mean money: sign-up, add-to-cart, purchase. Pageviews alone tell you almost nothing.</p>
+<h3>Be consistent</h3>
+<p>"Facebook", "facebook" and "FB" become three different sources and your report becomes a mess. Agree a naming convention and never break it.</p>
+<div class="callout warn">Check your tracking <em>before</em> spending. Discovering your purchase event never fired — after a month of ads — is a very expensive lesson.</div>`),
+          article("dm-ab", "A/B Testing & CRO", "7 min", `
+<p><strong>CRO</strong> (Conversion Rate Optimisation) is getting more from the traffic you already have. It's cheaper than buying more.</p>
+<h3>Why it compounds</h3>
+<p>Going from 2% to 3% conversion is a <strong>50% revenue increase</strong> with zero extra ad spend — and it applies to every visitor, forever.</p>
+<h3>How an A/B test works</h3>
+<div class="flow">
+  <div class="flow-box">🅰️ Control</div>
+  <div class="flow-arrow" data-label="split traffic"></div>
+  <div class="flow-box alt">🅱️ Variant</div>
+  <div class="flow-arrow" data-label="measure"></div>
+  <div class="flow-box">📊 Winner</div>
+</div>
+<h3>The rules</h3>
+<ul>
+  <li><strong>One change at a time</strong> — or you won't know what worked.</li>
+  <li><strong>Enough traffic</strong> — 10 visitors proves nothing.</li>
+  <li><strong>Decide the metric first</strong> — and don't stop the moment you're winning.</li>
+  <li><strong>Test big things</strong> — offer, headline, page structure. Not button colour.</li>
+</ul>
+<div class="callout warn">Stopping a test early because it's "winning" is the most common analytics mistake. Small samples swing wildly — wait for real data.</div>`),
+          article("dm-attribution", "Attribution: Who Gets the Credit?", "6 min", `
+<p>A customer saw a TikTok, googled you, clicked an ad, then bought from an email. <strong>Which channel gets the credit?</strong> That's attribution.</p>
+<h3>The models</h3>
+<ul>
+  <li><strong>Last click</strong> — all credit to the final touch. Simple, and wrong: it over-credits email/branded search.</li>
+  <li><strong>First click</strong> — all credit to discovery. Over-credits awareness channels.</li>
+  <li><strong>Linear</strong> — split evenly across touches.</li>
+  <li><strong>Data-driven</strong> — the platform models real contribution. Best, needs volume.</li>
+</ul>
+<h3>Why it matters</h3>
+<p>Judge everything by last click and you'll cut the awareness channels that <em>started</em> every sale — then wonder why sales dried up.</p>
+<h3>Nothing is perfect</h3>
+<p>Privacy changes, blocked cookies and multiple devices mean no model is truth. Use attribution as a compass, not a verdict — and sanity-check against total revenue.</p>
+<div class="callout tip">The oldest test still works: turn a channel off for two weeks and watch total sales. If nothing changes, it wasn't working.</div>`),
+          quiz("dm-quiz8", "Quiz: Analytics & Optimisation", [
+            { q: "Which is a VANITY metric?", options: ["Conversion rate", "Customer acquisition cost", "Follower count", "Revenue"], answer: 2 },
+            { q: "UTMs exist to…", options: ["Speed up your site", "Tell analytics where a visitor came from", "Improve SEO", "Send email"], answer: 1 },
+            { q: "Without UTMs, most traffic gets reported as…", options: ["Paid", "Direct — and you learn nothing", "Email", "Social"], answer: 1 },
+            { q: "Raising conversion from 2% to 3% means…", options: ["A tiny 1% gain", "A 50% revenue increase with no extra ad spend", "Nothing", "More ad cost"], answer: 1 },
+            { q: "In an A/B test you should…", options: ["Change five things at once", "Change one thing and wait for enough traffic", "Stop as soon as you're winning", "Skip the metric"], answer: 1 },
+            { q: "Judging everything by LAST-CLICK attribution tends to…", options: ["Be perfectly accurate", "Under-credit the awareness channels that started the sale", "Over-credit TikTok", "Be illegal"], answer: 1 },
+            { q: "A simple real-world test of a channel's value is…", options: ["Ask a friend", "Turn it off for two weeks and watch total sales", "Double the budget", "Change the logo"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "9 · Zero to Hero: Get Hired",
+        lessons: [
+          article("dm-campaign", "Run Your First Real Campaign", "7 min", `
+<p>Reading about marketing teaches you nothing until you spend a real (small) budget on a real offer.</p>
+<h3>The starter project</h3>
+<p>Find a real business — a friend's shop, a family stall, a charity, or yourself. Then:</p>
+<ol>
+  <li><strong>Pick one goal</strong> and the one number that proves it.</li>
+  <li><strong>Write the positioning sentence</strong> for their customer.</li>
+  <li><strong>Build one landing page</strong> with one action.</li>
+  <li><strong>Set up tracking</strong> — UTMs + a conversion event. Test it works.</li>
+  <li><strong>Spend a tiny budget</strong> — enough for ~100 clicks, no more.</li>
+  <li><strong>Run 2 creatives</strong> against each other.</li>
+  <li><strong>Measure, write down what happened, and why.</strong></li>
+</ol>
+<h3>Losing is fine — not learning isn't</h3>
+<p>Your first campaign may lose money. That's tuition, and it's cheaper than any course. What matters is that you can explain <em>why</em> it did what it did.</p>
+<div class="callout tip">Start with retargeting or a local Google search ad. Warm/high-intent traffic gives a beginner the fastest honest feedback.</div>`),
+          article("dm-portfolio", "Build a Portfolio That Gets You Hired", "6 min", `
+<p>A certificate says you attended. A <strong>portfolio</strong> proves you can do the work. Employers hire the second one.</p>
+<h3>The case study format</h3>
+<p>For each project, one page:</p>
+<ul>
+  <li><strong>Context</strong> — who, what they sell, the problem.</li>
+  <li><strong>Goal</strong> — the one number.</li>
+  <li><strong>What you did</strong> — and <em>why</em> you chose it.</li>
+  <li><strong>Result</strong> — with real numbers.</li>
+  <li><strong>What you'd do next</strong> — shows you think beyond the task.</li>
+</ul>
+<h3>Small real numbers beat big fake ones</h3>
+<p>"Grew a tea shop's orders 18% on a 50,000 MMK budget" is more impressive than a made-up "10× growth". Real, modest, explained = credible.</p>
+<h3>No clients yet?</h3>
+<p>Market yourself. Your own blog, your own list, your own campaign <em>is</em> the portfolio piece — and it proves you'll do it without being asked.</p>
+<div class="callout">Show the failures too, with what you learned. Every experienced marketer knows campaigns fail; only beginners pretend otherwise.</div>`),
+          article("dm-career", "Freelance, Agency or In-House?", "6 min", `
+<p>Three very different lives. Pick deliberately.</p>
+<h3>The three paths</h3>
+<ul>
+  <li><strong>In-house</strong> — one brand, deep knowledge, stable pay, slower variety.</li>
+  <li><strong>Agency</strong> — many clients, fast learning, great early training, high pressure.</li>
+  <li><strong>Freelance</strong> — freedom and higher rates, but you're also sales, admin and support.</li>
+</ul>
+<h3>Specialise, then broaden</h3>
+<p>"Digital marketer" competes with everyone. "Meta ads for local restaurants" gets hired and charges more. Niche down first — you can widen later.</p>
+<h3>Getting the first paid work</h3>
+<ul>
+  <li>Do one project free or cheap — for a case study, agreed up front.</li>
+  <li>Audit a business publicly and send it to them, unasked.</li>
+  <li>Be visible where clients are; publish what you learn.</li>
+</ul>
+<div class="callout tip">Agencies are the fastest classroom — you'll see more accounts in one year than in five in-house. A great first step even if you plan to freelance later.</div>`),
+          article("dm-next", "Where to Go Next: Free & Paid Certifications", "5 min", `
+<p>You now know how the pieces fit. The fastest way to prove it is a recognised certification — and the best ones are <strong>free</strong>.</p>
+<h3>🆓 Free, and worth your time</h3>
+<ul>
+  <li><a href="https://learndigital.withgoogle.com/digitalgarage" target="_blank" rel="noopener"><strong>Google Digital Garage</strong> — Fundamentals of Digital Marketing</a><br>
+    ~40 hours, 26 modules, free certificate. The best all-round starting point.</li>
+  <li><a href="https://academy.hubspot.com/" target="_blank" rel="noopener"><strong>HubSpot Academy</strong></a><br>
+    Strongest on content marketing, email automation and inbound strategy.</li>
+  <li><a href="https://www.facebook.com/business/learn" target="_blank" rel="noopener"><strong>Meta Blueprint</strong></a><br>
+    Paid Facebook &amp; Instagram advertising, straight from the source.</li>
+  <li><a href="https://www.semrush.com/academy/" target="_blank" rel="noopener"><strong>Semrush Academy</strong></a><br>
+    The go-to free platform for SEO and competitive research.</li>
+</ul>
+<h3>🎓 Paid — for a career pivot</h3>
+<ul>
+  <li><a href="https://www.coursera.org/professional-certificates/google-digital-marketing-ecommerce" target="_blank" rel="noopener"><strong>Google Digital Marketing &amp; E-commerce Certificate</strong> (Coursera)</a><br>
+    Multi-month, subscription-based, very practical — builds a real project portfolio.</li>
+  <li><a href="https://www.udacity.com/" target="_blank" rel="noopener"><strong>Udacity — Digital Marketing Nanodegree</strong></a><br>
+    Premium. Real ad budgets, multi-platform execution, mentor feedback.</li>
+  <li><a href="https://cxl.com/institute/" target="_blank" rel="noopener"><strong>CXL — Digital Marketing Minidegree</strong></a><br>
+    For working marketers who want elite depth in analytics, growth and conversion optimisation.</li>
+</ul>
+<div class="callout tip">Start with <strong>Google Digital Garage</strong> — free, respected worldwide, finishable in a few weeks. Only pay for a certificate once you know which part of marketing you actually enjoy.</div>
+<div class="callout warn">A certificate opens the door; a portfolio gets the job. Do both — but if you only have time for one, build the portfolio.</div>`),
+          quiz("dm-quiz9", "Quiz: Zero to Hero", [
+            { q: "Your first campaign budget should be…", options: ["Everything you have", "Tiny — enough for ~100 clicks to learn from", "Zero", "Borrowed"], answer: 1 },
+            { q: "If your first campaign loses money, it…", options: ["Means you should quit", "Is tuition — as long as you can explain why", "Should be hidden", "Was illegal"], answer: 1 },
+            { q: "In a portfolio case study, the most credible results are…", options: ["Big made-up numbers", "Small real numbers with context and reasoning", "No numbers", "Competitor numbers"], answer: 1 },
+            { q: "With no clients yet, your best portfolio piece is…", options: ["Nothing — wait for a client", "Marketing yourself: your own blog, list and campaign", "A fake case study", "A certificate photo"], answer: 1 },
+            { q: "Which path is usually the fastest classroom?", options: ["In-house", "Agency — many accounts in a short time", "Freelance", "None"], answer: 1 },
+            { q: "For getting hired, the best positioning is…", options: ["'Digital marketer' — as broad as possible", "A specific niche like 'Meta ads for local restaurants'", "No title", "Cheapest rate"], answer: 1 },
+            { q: "Between a certificate and a portfolio, employers trust…", options: ["The certificate", "The portfolio — it proves you can do the work", "Neither", "The longest CV"], answer: 1 },
           ]),
         ],
       },

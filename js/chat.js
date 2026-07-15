@@ -35,6 +35,7 @@
       caseb: '<path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/>',
       bot: '<rect x="4" y="8" width="16" height="12" rx="3"/><line x1="12" y1="8" x2="12" y2="4"/><circle cx="12" cy="3" r="1"/><circle cx="9" cy="13" r="1"/><circle cx="15" cy="13" r="1"/><path d="M9 17h6"/>',
       mic: '<path d="M12 1a3 3 0 0 1 3 3v8a3 3 0 0 1-6 0V4a3 3 0 0 1 3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>',
+      sparkle: '<path d="m12 3 1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3Z"/><path d="M18 16.5 18.7 18.3 20.5 19 18.7 19.7 18 21.5 17.3 19.7 15.5 19 17.3 18.3 18 16.5Z"/>',
       play: '<polygon points="6 3 20 12 6 21 6 3"/>',
       pause: '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>',
     };
@@ -801,9 +802,16 @@
       '<label class="chat-photo" title="' + esc(t("chat_photo")) + '">' + ICON("camera") + '<input type="file" accept="image/*" hidden></label>' +
       '<button type="button" class="chat-photo chat-stick" id="chat-stick" title="Sticker">😊</button>' +
       "</div>" +
+      /* ✨ Polish: appears once there's something worth improving */
+      '<div class="polish-menu" id="polish-menu" hidden>' +
+      [["fix", "polish_fix"], ["en", "polish_en"], ["my", "polish_my"],
+       ["pro", "polish_pro"], ["casual", "polish_casual"]]
+        .map(([k, key]) => '<button type="button" data-polish="' + k + '">' + esc(t(key)) + "</button>").join("") +
+      "</div>" +
       '<div class="chat-pill">' +
       '<button type="button" class="chat-plus" id="chat-plus" aria-expanded="false" aria-label="' + esc(t("chat_more")) + '" title="' + esc(t("chat_more")) + '">+</button>' +
       '<textarea rows="1" maxlength="500" placeholder="' + esc(t("chat_placeholder") + (window.AI && window.AI.ready() ? " · @ai 🤖" : "")) + '"></textarea>' +
+      '<button type="button" class="chat-polish" id="chat-polish" hidden aria-expanded="false" title="' + esc(t("polish_title")) + '" aria-label="' + esc(t("polish_title")) + '">' + ICON("sparkle") + "</button>" +
       '<button type="button" class="chat-photo chat-mic" id="chat-mic" title="' + esc(t("chat_voice")) + '">' + ICON("mic") + "</button>" +
       '<button class="chat-send" type="submit" aria-label="Send">' + ICON("send") + "</button>" +
       "</div></form>";
@@ -821,6 +829,54 @@
       box.querySelectorAll("[data-rmimg]").forEach((b) =>
         b.addEventListener("click", () => { caseImgs.splice(Number(b.getAttribute("data-rmimg")), 1); paintThumbs(); }));
     };
+    /* ✨ Polish — clean up the draft before sending. Shows at 4+ words, like
+       Viber's. Rewrites the textarea in place; never sends by itself. */
+    const POLISH = {
+      fix: "Fix ONLY the spelling and grammar of this chat message. Keep the same language, meaning and tone. Do not add anything.",
+      en: "Translate this chat message into natural, friendly English.",
+      my: "Translate this chat message into natural, friendly Burmese (Myanmar script).",
+      pro: "Rewrite this chat message in a polite, professional tone. Keep the same language and meaning.",
+      casual: "Rewrite this chat message in a warm, casual tone. Keep the same language and meaning.",
+    };
+    const polishBtn = footEl.querySelector("#chat-polish");
+    const polishMenu = footEl.querySelector("#polish-menu");
+    const updatePolish = () => {
+      const words = (inp.value || "").trim().split(/\s+/).filter(Boolean).length;
+      const show = !!(window.AI && window.AI.ready()) && words >= 4;
+      polishBtn.hidden = !show;
+      if (!show) { polishMenu.hidden = true; polishBtn.setAttribute("aria-expanded", "false"); }
+    };
+    inp.addEventListener("input", updatePolish);
+    polishBtn.addEventListener("click", () => {
+      const open = polishMenu.hidden;
+      polishMenu.hidden = !open;
+      polishBtn.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+    polishMenu.querySelectorAll("[data-polish]").forEach((b) =>
+      b.addEventListener("click", () => {
+        const text = (inp.value || "").trim();
+        if (!text) return;
+        const kind = b.getAttribute("data-polish");
+        polishMenu.hidden = true;
+        polishBtn.setAttribute("aria-expanded", "false");
+        polishBtn.classList.add("busy");
+        showStatus("✨ " + t("polish_working"));
+        window.AI.complete(POLISH[kind] + " Reply with ONLY the message itself — no quotes, no notes, no explanation.\n\n" + text, { maxTokens: 400 })
+          .then((res) => {
+            let out = String(res || "").trim();
+            if (window.AI.stripFences) out = window.AI.stripFences(out);
+            out = out.replace(/^["'“”]+|["'“”]+$/g, "").trim();
+            if (!out) throw new Error("empty");
+            inp.value = out.slice(0, 500);
+            inp.dispatchEvent(new Event("input"));
+            inp.focus();
+            showStatus("");
+          })
+          .catch(() => showStatus("⚠ " + t("polish_fail")))
+          .finally(() => polishBtn.classList.remove("busy"));
+      })
+    );
+
     /* + reveals the extras (case study, photo, sticker) and turns into an × */
     const plusBtn = footEl.querySelector("#chat-plus");
     const trayEl = footEl.querySelector("#chat-tray");

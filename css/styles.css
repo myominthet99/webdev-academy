@@ -1340,6 +1340,36 @@ a.lesson-row:hover .ttl { color: var(--purple); }
   border: 1px solid var(--line); border-radius: 14px;
   animation: trayIn .18s ease-out;
 }
+/* ✨ Polish */
+.chat-polish {
+  flex: 0 0 auto; align-self: center; width: 32px; height: 32px;
+  border: 0; border-radius: 50%; background: transparent; cursor: pointer;
+  color: var(--purple); display: grid; place-items: center; padding: 0;
+  transition: background .2s ease, transform .2s ease;
+  animation: trayIn .2s ease-out;
+}
+.chat-polish .ci { width: 18px; height: 18px; }
+.chat-polish:hover { background: var(--surface); transform: scale(1.08); }
+.chat-polish[aria-expanded="true"] { background: var(--surface); }
+.chat-polish.busy { animation: polishSpin .9s linear infinite; }
+@keyframes polishSpin { to { transform: rotate(360deg); } }
+.polish-menu {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  padding: 8px; background: var(--surface-2);
+  border: 1px solid var(--line); border-radius: 14px;
+  animation: trayIn .18s ease-out;
+}
+.polish-menu button {
+  border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+  border-radius: 999px; padding: 6px 11px; font-size: 12.5px; font-weight: 600;
+  cursor: pointer; font-family: inherit;
+  transition: border-color .15s ease, color .15s ease;
+}
+.polish-menu button:hover { border-color: var(--purple); color: var(--purple); }
+@media (prefers-reduced-motion: reduce) {
+  .chat-polish, .polish-menu { animation: none; transition: none; }
+  .chat-polish.busy { animation: none; opacity: .5; }
+}
 @keyframes trayIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 .chat-pill .chat-photo { align-self: center; padding: 6px; border-radius: 50%; border: 0; background: transparent; }
 .chat-pill .chat-photo:hover { background: var(--surface); }

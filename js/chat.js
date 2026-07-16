@@ -37,6 +37,7 @@
       mic: '<path d="M12 1a3 3 0 0 1 3 3v8a3 3 0 0 1-6 0V4a3 3 0 0 1 3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>',
       sparkle: '<path d="m12 3 1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3Z"/><path d="M18 16.5 18.7 18.3 20.5 19 18.7 19.7 18 21.5 17.3 19.7 15.5 19 17.3 18.3 18 16.5Z"/>',
       translate: '<path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/>',
+      list: '<line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>',
       play: '<polygon points="6 3 20 12 6 21 6 3"/>',
       pause: '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>',
     };
@@ -803,7 +804,9 @@
       "  </div></div>" +
       /* One-pill composer: the extras hide behind + so the box stays calm */
       '<form class="chat-form" id="chat-form">' +
+      '<div class="sum-panel" id="sum-panel" hidden></div>' +
       '<div class="chat-tray" id="chat-tray" hidden>' +
+      '<button type="button" class="chat-casebtn" id="chat-sum" title="' + esc(t("sum_title")) + '">' + ICON("list") + "</button>" +
       '<button type="button" class="chat-casebtn" id="chat-case" title="' + esc(t("case_share")) + '">' + ICON("caseb") + "</button>" +
       '<label class="chat-photo" title="' + esc(t("chat_photo")) + '">' + ICON("camera") + '<input type="file" accept="image/*" hidden></label>' +
       '<button type="button" class="chat-photo chat-stick" id="chat-stick" title="Sticker">😊</button>' +
@@ -882,6 +885,50 @@
           .finally(() => polishBtn.classList.remove("busy"));
       })
     );
+
+    /* 📋 Catch me up — summarise the recent conversation into bullets.
+       Reads roomCache (already on the client), so no new backend. Private:
+       the summary is rendered for this reader only and never sent. */
+    const sumBtn = footEl.querySelector("#chat-sum");
+    const sumPanel = footEl.querySelector("#sum-panel");
+    sumBtn.addEventListener("click", () => {
+      if (!sumPanel.hidden) { sumPanel.hidden = true; return; } /* toggle */
+      if (!(window.AI && window.AI.ready())) { showStatus("⚠ " + t("sum_noai")); return; }
+      const msgs = roomCache.filter((m) => (m.text || "").trim() && !m.sticker).slice(-60);
+      if (msgs.length < 3) { showStatus("⚠ " + t("sum_thin")); return; }
+      sumPanel.hidden = false;
+      sumPanel.innerHTML = '<div class="sum-head"><b>📋 ' + esc(t("sum_title")) + "</b>" +
+        '<button type="button" class="chat-close-mini" id="sum-x">' + ICON("x") + "</button></div>" +
+        '<p class="muted" style="margin:0">' + esc(t("sum_working")) + "</p>";
+      sumPanel.querySelector("#sum-x").addEventListener("click", () => { sumPanel.hidden = true; });
+
+      const transcript = msgs.map((m) =>
+        (m.bot ? "AI Bot" : String(m.name || "?")) + ": " + String(m.editedText || m.text).slice(0, 300)
+      ).join("\n");
+      const prompt =
+        "You are catching a student up on their class chat. Summarise the conversation below in 3-6 short bullet points: " +
+        "the main topics, any decisions, and any question that is still unanswered. " +
+        (lang() === "my" ? "Reply in simple Burmese (keep technical words like HTML/CSS in English). " : "Reply in simple English. ") +
+        "Start each bullet with '- '. No preamble, no title, bullets only.\n\n" + transcript;
+
+      window.AI.complete(prompt, { maxTokens: 500 })
+        .then((res) => {
+          let out = String(res || "").trim();
+          if (window.AI.stripFences) out = window.AI.stripFences(out);
+          if (!out) throw new Error("empty");
+          const items = out.split("\n").map((l) => l.replace(/^\s*[-•*]\s*/, "").trim()).filter(Boolean);
+          sumPanel.innerHTML = '<div class="sum-head"><b>📋 ' + esc(t("sum_title")) + "</b>" +
+            '<span class="sum-n">' + msgs.length + " " + esc(t("sum_msgs")) + "</span>" +
+            '<button type="button" class="chat-close-mini" id="sum-x2">' + ICON("x") + "</button></div>" +
+            "<ul>" + items.map((x) => "<li>" + esc(x) + "</li>").join("") + "</ul>" +
+            '<p class="sum-foot">' + esc(t("sum_private")) + "</p>";
+          sumPanel.querySelector("#sum-x2").addEventListener("click", () => { sumPanel.hidden = true; });
+        })
+        .catch(() => {
+          sumPanel.innerHTML = '<div class="sum-head"><b>📋 ' + esc(t("sum_title")) + "</b></div>" +
+            '<p class="muted" style="margin:0">⚠ ' + esc(t("sum_fail")) + "</p>";
+        });
+    });
 
     /* + reveals the extras (case study, photo, sticker) and turns into an × */
     const plusBtn = footEl.querySelector("#chat-plus");

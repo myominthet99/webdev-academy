@@ -38,6 +38,9 @@
       sparkle: '<path d="m12 3 1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3Z"/><path d="M18 16.5 18.7 18.3 20.5 19 18.7 19.7 18 21.5 17.3 19.7 15.5 19 17.3 18.3 18 16.5Z"/>',
       translate: '<path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/>',
       list: '<line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>',
+      clip: '<path d="M21.44 11.05 12.25 20.24a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>',
+      file: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><polyline points="14 2 14 8 20 8"/>',
+      down: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>',
       play: '<polygon points="6 3 20 12 6 21 6 3"/>',
       pause: '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>',
     };
@@ -632,6 +635,11 @@
               list.slice(0, 4).map((s) => '<img class="chat-img" loading="lazy" src="' + esc(String(s)) + '" alt="photo">').join("") + "</div>";
           })() +
           (msg.aud ? '<div class="chat-aud"><button type="button" data-aud="' + ref + '">' + ICON("play") + "</button><span class=\"aud-bar\"><i></i></span><span class=\"aud-dur\">" + (Number(msg.dur) ? Number(msg.dur) + "s" : "🎤") + "</span></div>" : "") +
+          (msg.file && /^data:/.test(String(msg.file))
+            ? '<a class="chat-file" href="' + esc(String(msg.file)) + '" download="' + esc(String(msg.fileName || "file")) + '">' +
+              ICON("file") + '<span class="chat-file-n"><b>' + esc(String(msg.fileName || "file")) + "</b>" +
+              '<i>' + fileKB(msg.file) + " KB</i></span>" + ICON("down") + "</a>"
+            : "") +
           (text ? '<div class="chat-text">' + formatText(text) + (msg.editedText ? ' <span class="chat-edited">(edited)</span>' : "") + "</div>" : "") +
           (reactionHtml ? '<div class="chat-reactions">' + reactionHtml + (trending ? '<span class="msg-trending">🔥 ' + esc(t("chat_trending")) + '</span>' : "") + '</div>' : "") +
           '<div class="chat-meta"><span class="chat-time">' + fmtTime(msg.ts) + "</span>" +
@@ -809,6 +817,8 @@
       '<button type="button" class="chat-casebtn" id="chat-sum" title="' + esc(t("sum_title")) + '">' + ICON("list") + "</button>" +
       '<button type="button" class="chat-casebtn" id="chat-case" title="' + esc(t("case_share")) + '">' + ICON("caseb") + "</button>" +
       '<label class="chat-photo" title="' + esc(t("chat_photo")) + '">' + ICON("camera") + '<input type="file" accept="image/*" hidden></label>' +
+      '<label class="chat-photo" id="chat-filebtn" title="' + esc(t("file_attach")) + '">' + ICON("clip") +
+        '<input type="file" id="chat-file" accept=".pdf,.txt,.csv,.md,.json,.zip,.doc,.docx,.xls,.xlsx,.ppt,.pptx" hidden></label>' +
       '<button type="button" class="chat-photo chat-stick" id="chat-stick" title="Sticker">😊</button>' +
       "</div>" +
       /* ✨ Polish: appears once there's something worth improving */
@@ -885,6 +895,30 @@
           .finally(() => polishBtn.classList.remove("busy"));
       })
     );
+
+    /* 📎 Attach a small file. Hard limits, because every student downloads
+       this on every chat open — it lives inside the message, not in a blob
+       store. Type allowlist keeps executables/HTML out of a teen chat. */
+    footEl.querySelector("#chat-file").addEventListener("change", (e) => {
+      const f = (e.target.files || [])[0];
+      e.target.value = "";
+      if (!f) return;
+      if (!FILE_OK.test(f.name)) { showStatus("⚠ " + t("file_type")); return; }
+      if (f.size > FILE_MAX) {
+        showStatus("⚠ " + t("file_big").replace("{n}", Math.round(f.size / 1024)));
+        return;
+      }
+      showStatus("⏳ " + t("file_reading"));
+      const r = new FileReader();
+      r.onload = () => {
+        const data = String(r.result || "");
+        if (data.length > 300000) { showStatus("⚠ " + t("file_type")); return; } /* base64 overhead guard */
+        send("", null, { file: data, fileName: f.name.slice(0, 100), fileType: f.type || "" });
+        showStatus("");
+      };
+      r.onerror = () => showStatus("⚠ " + t("file_fail"));
+      r.readAsDataURL(f);
+    });
 
     /* 📋 Catch me up — summarise the recent conversation into bullets.
        Reads roomCache (already on the client), so no new backend. Private:
@@ -1039,9 +1073,16 @@
   }
 
   /* ---------------- actions ---------------- */
+  /* Attachments are base64 inside the message, so they are downloaded by
+     every student on every chat open. That is why the cap is small and
+     strict — see FILE_MAX. Anything bigger needs Firebase Storage. */
+  const FILE_MAX = 200 * 1024;                       /* 200 KB on disk */
+  const FILE_OK = /\.(pdf|txt|csv|md|json|zip|docx?|xlsx?|pptx?)$/i;
+  const fileKB = (dataUrl) => Math.max(1, Math.round(String(dataUrl || "").length * 0.75 / 1024));
+
   function send(text, img, extra) {
     text = (text || "").trim();
-    if (!text && !img && !(extra && extra.aud)) return;
+    if (!text && !img && !(extra && (extra.aud || extra.file))) return;
     const u = me();
     if (!u) { showStatus(t("chat_login")); return; }
     if (!isPaying()) { showStatus("🔒 " + t("chat_premium_only")); return; }

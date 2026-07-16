@@ -84,6 +84,15 @@
             },
             "ts": {
               ".validate": "newData.isNumber()"
+            },
+            "file": {
+              ".validate": "newData.isString() && newData.val().length <= 300000"
+            },
+            "fileName": {
+              ".validate": "newData.isString() && newData.val().length <= 100"
+            },
+            "fileType": {
+              ".validate": "newData.isString() && newData.val().length <= 80"
             }
           }
         },

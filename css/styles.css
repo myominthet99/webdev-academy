@@ -1356,6 +1356,20 @@ a.lesson-row:hover .ttl { color: var(--purple); }
   border: 1px solid var(--line); border-radius: 14px;
   animation: trayIn .18s ease-out;
 }
+/* 📎 Small file attachment */
+.chat-file {
+  display: flex; align-items: center; gap: 9px;
+  margin: 6px 0 2px; padding: 9px 11px;
+  background: var(--surface-2); border: 1px solid var(--line);
+  border-radius: 10px; text-decoration: none; color: var(--ink);
+  transition: border-color .15s ease, background .15s ease;
+}
+.chat-file:hover { border-color: var(--purple); background: var(--surface); }
+.chat-file .ci { width: 20px; height: 20px; flex: 0 0 auto; color: var(--purple); }
+.chat-file-n { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.chat-file-n b { font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chat-file-n i { font-size: 11px; color: var(--muted); font-style: normal; }
+
 /* 📋 Catch me up — private chat summary */
 .sum-panel {
   background: var(--surface-2); border: 1px solid var(--line);

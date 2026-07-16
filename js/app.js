@@ -2045,6 +2045,7 @@
 
       <div class="container">
         ${streakNudge()}
+        ${almostCard()}
         ${dailyHomeCard()}
         ${reviewHomeCard()}
         ${howtoHomeCard()}
@@ -4151,6 +4152,7 @@
         </div>
         ${statsHeader()}
         ${goalCard()}
+        ${almostCard()}
         <h2 class="section-title">${t("my_learning")}</h2>
         ${
           mine.length
@@ -5465,6 +5467,42 @@
   function motivHomeCard() {
     return `<div class="motiv-card">💪 <em>“${motivText(motivPick(todayKey()))}”</em></div>`;
   }
+  /* 🎯 "Almost there" — the single course you are closest to finishing.
+     Students sample many courses and finish none: the shortest popular
+     course is 20 lessons and the flagship is 45, so 20 lessons spread
+     across four courses completes nothing. This picks ONE target and says
+     how many lessons are left — not a percentage, a countable number. */
+  function almostDone() {
+    let best = null;
+    COURSES.forEach((c) => {
+      if (!isEnrolled(c.id)) return;
+      const tot = totalLessons(c), cc = completedCount(c);
+      if (!tot || cc === 0 || cc >= tot) return; /* untouched or already finished */
+      const pct = cc / tot;
+      if (!best || pct > best.pct || (pct === best.pct && tot - cc < best.left)) {
+        best = { c: c, left: tot - cc, pct: pct };
+      }
+    });
+    return best;
+  }
+  function almostCard() {
+    const a = almostDone();
+    if (!a) return "";
+    const flat = lessonsOf(a.c);
+    const done = completedSet(a.c.id);
+    const next = (flat.find((x) => !done.has(x.lesson.id)) || flat[0]).lesson.id;
+    const label = a.left === 1 ? t("almost_one") : t("almost_n").replace("{n}", a.left);
+    return `<a class="daily-card almost-card" href="#/learn/${a.c.id}/${next}">
+        <span class="dc-ic">🎯</span>
+        <span class="dc-txt">
+          <b>${label}</b>
+          <span class="muted">${cf(a.c, "title")}</span>
+          <span class="progress thin"><span style="width:${Math.round(a.pct * 100)}%"></span></span>
+        </span>
+        <span class="btn btn-primary btn-sm">${t("continue")} →</span>
+      </a>`;
+  }
+
   function streakNudge() {
     const s = jget(ns("wda_streak"), { last: "", count: 0 });
     if (!s.count) return "";

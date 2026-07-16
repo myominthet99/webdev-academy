@@ -1356,6 +1356,21 @@ a.lesson-row:hover .ttl { color: var(--purple); }
   border: 1px solid var(--line); border-radius: 14px;
   animation: trayIn .18s ease-out;
 }
+/* 🌐 Inline message translation */
+.chat-tr.on { color: var(--purple); }
+.chat-trans {
+  margin: 6px 0 2px; padding: 7px 10px;
+  background: var(--surface-2); border-left: 3px solid var(--purple);
+  border-radius: 8px; font-size: 13.5px; line-height: 1.55;
+  overflow-wrap: anywhere; animation: trayIn .18s ease-out;
+}
+.chat-trans-lbl {
+  font-size: 10px; font-weight: 700; color: var(--purple);
+  letter-spacing: .3px; margin-right: 4px;
+}
+body.lang-my .chat-trans { line-height: 1.75; }
+@media (prefers-reduced-motion: reduce) { .chat-trans { animation: none; } }
+
 /* ✨ Polish */
 .chat-polish {
   flex: 0 0 auto; align-self: center; width: 32px; height: 32px;

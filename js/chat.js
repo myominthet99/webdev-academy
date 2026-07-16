@@ -36,6 +36,7 @@
       bot: '<rect x="4" y="8" width="16" height="12" rx="3"/><line x1="12" y1="8" x2="12" y2="4"/><circle cx="12" cy="3" r="1"/><circle cx="9" cy="13" r="1"/><circle cx="15" cy="13" r="1"/><path d="M9 17h6"/>',
       mic: '<path d="M12 1a3 3 0 0 1 3 3v8a3 3 0 0 1-6 0V4a3 3 0 0 1 3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>',
       sparkle: '<path d="m12 3 1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3Z"/><path d="M18 16.5 18.7 18.3 20.5 19 18.7 19.7 18 21.5 17.3 19.7 15.5 19 17.3 18.3 18 16.5Z"/>',
+      translate: '<path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/>',
       play: '<polygon points="6 3 20 12 6 21 6 3"/>',
       pause: '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>',
     };
@@ -635,6 +636,8 @@
           '<div class="chat-meta"><span class="chat-time">' + fmtTime(msg.ts) + "</span>" +
           '<div class="chat-actions">' +
           '<button class="chat-replybtn" data-reply="' + ref + '" title="' + esc(t("chat_reply")) + '">' + ICON("reply") + "</button>" +
+          (text && window.AI && window.AI.ready()
+            ? '<button class="chat-tr" data-tr="' + ref + '" title="' + esc(t("chat_translate")) + '">' + ICON("translate") + "</button>" : "") +
           '<button class="chat-react" data-react="' + ref + '" title="React">' + ICON("smile") + "</button>" +
           (!mine && !msg.bot ? '<button class="chat-report" data-report="' + ref + '" title="' + esc(t("chat_report")) + '">🚩</button>' : "") +
           (!mine && !msg.bot && msg.userId ? '<button class="chat-block" data-block="' + esc(msg.userId) + '" data-bname="' + esc((msg.name || "?")) + '" title="' + esc(t("chat_block")) + '">🚫</button>' : "") +
@@ -661,6 +664,9 @@
     );
     listEl.querySelectorAll("[data-solve]").forEach((b) =>
       b.addEventListener("click", () => toggleSolved(b.getAttribute("data-solve")))
+    );
+    listEl.querySelectorAll("[data-tr]").forEach((b) =>
+      b.addEventListener("click", () => translateMsg(b.getAttribute("data-tr"), b))
     );
     listEl.querySelectorAll("[data-report]").forEach((b) =>
       b.addEventListener("click", () => report(b.getAttribute("data-report")))
@@ -1176,6 +1182,47 @@
     const list = msg.reactions[emoji];
     Promise.resolve(backend.setPath(room, ref, "reactions/" + emoji, list && list.length ? list : null))
       .catch(() => showStatus("⚠ " + t("chat_send_err")));
+  }
+
+  /* 🌐 Translate a message you RECEIVED. Direction is detected from the
+     text itself (Myanmar script U+1000–109F), so there's nothing to pick:
+     Burmese → English, anything else → Burmese. Shown inline, toggleable,
+     and never sent anywhere — it's only rendered for the reader. */
+  const hasMyanmar = (s) => /[က-႟]/.test(String(s || ""));
+  function translateMsg(ref, btn) {
+    const msg = roomCache.find((m) => (m._key || m.id) === ref);
+    if (!msg) return;
+    const src = String(msg.editedText || msg.text || "").trim();
+    if (!src || !(window.AI && window.AI.ready())) return;
+    const bubble = btn.closest(".chat-bubble");
+    if (!bubble) return;
+    const existing = bubble.querySelector(".chat-trans");
+    if (existing) { existing.remove(); btn.classList.remove("on"); return; } /* toggle off */
+
+    const toEnglish = hasMyanmar(src);
+    const box = document.createElement("div");
+    box.className = "chat-trans";
+    box.innerHTML = '<span class="chat-trans-lbl">' + (toEnglish ? "🇬🇧 EN" : "🇲🇲 MY") + "</span> " + esc(t("chat_translating"));
+    const textEl = bubble.querySelector(".chat-text");
+    if (textEl) textEl.insertAdjacentElement("afterend", box); else bubble.appendChild(box);
+    btn.classList.add("on");
+
+    const prompt = (toEnglish
+      ? "Translate this chat message from Burmese (Myanmar) into natural English."
+      : "Translate this chat message into natural Burmese (Myanmar script).") +
+      " Keep technical words (HTML, CSS, JavaScript, tag names, code) in English. Reply with ONLY the translation — no quotes, no notes.\n\n" + src;
+
+    window.AI.complete(prompt, { maxTokens: 400 })
+      .then((res) => {
+        let out = String(res || "").trim();
+        if (window.AI.stripFences) out = window.AI.stripFences(out);
+        out = out.replace(/^["'“”]+|["'“”]+$/g, "").trim();
+        if (!out) throw new Error("empty");
+        box.innerHTML = '<span class="chat-trans-lbl">' + (toEnglish ? "🇬🇧 EN" : "🇲🇲 MY") + "</span> " + esc(out);
+      })
+      .catch(() => {
+        box.innerHTML = '<span class="chat-trans-lbl">⚠️</span> ' + esc(t("chat_trans_fail"));
+      });
   }
 
   function togglePin(ref) {

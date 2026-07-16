@@ -2623,6 +2623,42 @@
 
   const PREVIEW_LESSONS = 2; /* free taste of a premium course before the paywall */
 
+  /* ---- Lottie (optional, lazy) -----------------------------------------
+     The player is 164KB. It is deliberately NOT precached by the service
+     worker and NOT loaded at boot — it downloads only the first time an
+     animation actually plays, so a student who never finishes a lesson
+     never pays a byte for it. If anything is missing or fails, the caller
+     keeps its CSS animation; nothing breaks. Player: lottie-web (MIT). */
+  let lottiePromise = null;
+  function loadLottie() {
+    if (window.lottie) return Promise.resolve(window.lottie);
+    if (lottiePromise) return lottiePromise;
+    lottiePromise = new Promise((resolve, reject) => {
+      const s = document.createElement("script");
+      s.src = "js/vendor/lottie_light.min.js";
+      s.async = true;
+      s.onload = () => (window.lottie ? resolve(window.lottie) : reject(new Error("no lottie")));
+      s.onerror = () => reject(new Error("lottie failed"));
+      document.head.appendChild(s);
+    }).catch((e) => { lottiePromise = null; throw e; });
+    return lottiePromise;
+  }
+  /* Play `src` into `mount`. Resolves false if unavailable — callers must
+     treat Lottie as a bonus, never a requirement. */
+  function playLottie(mount, src, opts) {
+    if (!mount) return Promise.resolve(false);
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return Promise.resolve(false);
+    return loadLottie()
+      .then((lot) => fetch(src).then((r) => { if (!r.ok) throw new Error("404"); return r.json(); }).then((data) => {
+        lot.loadAnimation(Object.assign({
+          container: mount, renderer: "svg", loop: false, autoplay: true, animationData: data,
+        }, opts || {}));
+        mount.classList.add("has-lottie");
+        return true;
+      }))
+      .catch(() => false); /* silent: the CSS animation is already showing */
+  }
+
   /* 🎉 SoloLearn-style celebration when a lesson is completed:
      confetti + XP + streak, then continue */
   function showCelebration(nextHash) {
@@ -2642,7 +2678,7 @@
     wrap.innerHTML = `
       <div class="cele-confetti" aria-hidden="true">${confetti}</div>
       <div class="cele-card">
-        <div class="cele-emoji">🎉</div>
+        <div class="cele-emoji" id="cele-art">🎉</div>
         <h2>${t("cele_done")}</h2>
         <div class="cele-xp">+10 XP</div>
         <div class="cele-streak">🔥 ${dayStreak()} ${t("stat_streak")}</div>
@@ -2650,6 +2686,9 @@
         <button class="btn btn-primary btn-block" id="cele-next">${nextHash ? t("next_lesson") : t("finish")} →</button>
       </div>`;
     document.body.appendChild(wrap);
+    /* Bonus only: the 🎉 and the CSS confetti are already on screen. If the
+       player or the file is missing, nothing changes and nobody notices. */
+    playLottie(document.getElementById("cele-art"), "lottie/celebrate.json");
     const go = () => {
       wrap.remove();
       if (nextHash) location.hash = nextHash;

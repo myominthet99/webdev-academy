@@ -305,6 +305,13 @@ button { font-family: inherit; cursor: pointer; }
   animation: popIn .35s cubic-bezier(.2, 1.4, .4, 1) .1s both;
 }
 .cele-emoji { font-size: 56px; animation: celePop .6s cubic-bezier(.2, 1.6, .4, 1) .2s both; }
+/* when the optional Lottie loads it replaces the emoji in place; if it
+   never loads (offline, blocked, missing file) the emoji simply stays */
+.cele-emoji.has-lottie {
+  font-size: 0; width: 132px; height: 132px; margin: -8px auto -4px;
+  animation: none;
+}
+.cele-emoji.has-lottie svg { display: block; width: 100%; height: 100%; }
 .cele-card h2 { margin: 8px 0 4px; }
 .cele-xp {
   display: inline-block; margin: 10px 0 4px; padding: 6px 18px; border-radius: 999px;

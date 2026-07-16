@@ -8306,7 +8306,7 @@ $(el).closest("li")   → el.closest("li")</code></pre>
     rating: 4.5,
     ratings: 24500,
     students: 178000,
-    hours: 4,
+    hours: 10,
     price: "Free",
     free: true,
     color: "linear-gradient(135deg,#712cf9,#9461fb)",
@@ -8321,176 +8321,234 @@ $(el).closest("li")   → el.closest("li")</code></pre>
     ],
     sections: [
       {
-        title: "Framework Foundations",
+        title: "1 · Framework Foundations",
         lessons: [
-          article("bs-setup", "Setup & the Grid", "11 min", `
-<h3>🎯 Intro</h3>
-<p>Bootstrap's grid divides the page into 12 columns that rearrange on small screens.</p>
-<h3>💻 Example</h3>
+          article("bs-why", "Why Use a CSS Framework?", "6 min", `
+<p>You've written CSS by hand. So why hand that job to someone else?</p>
+<h3>The honest trade</h3>
+<ul>
+  <li><strong>You gain</strong> — speed. A navbar, modal, form and grid that already work on every browser and screen.</li>
+  <li><strong>You lose</strong> — control, and some page weight. Every site risks looking the same.</li>
+</ul>
+<h3>When a framework wins</h3>
+<p>Admin panels, internal tools, prototypes, a landing page due tomorrow, or a team with no designer. Nobody is admiring your dashboard's border-radius — they want it to work.</p>
+<h3>When to write your own CSS</h3>
+<p>A brand-led marketing site, a portfolio, anything where <em>looking distinctive is the point</em>. Fighting a framework to look unique costs more than starting from scratch.</p>
+<h3>The landscape</h3>
+<ul>
+  <li><strong>Bootstrap</strong> — ready-made components. You use its classes and its look.</li>
+  <li><strong>Tailwind</strong> — utility classes; you compose your own look. More control, more typing, needs a build step.</li>
+  <li><strong>Bulma / Foundation</strong> — smaller alternatives.</li>
+</ul>
+<h3>Learn CSS first — you already did</h3>
+<p>A framework is a shortcut over knowledge you have. Without it you cannot debug why a column collapsed. People who skip CSS and learn only Bootstrap get stuck the first time it doesn't do what they want.</p>
+<div class="callout tip">This academy is hand-written CSS with no framework — deliberately. Zero dependencies, works offline, loads instantly. That's a valid choice too.</div>`),
+          article("bs-setup", "Setup & the Grid", "7 min", `
+<p>One link tag and you have Bootstrap.</p>
 <pre><code>&lt;link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"&gt;
 
-&lt;div class="container"&gt;
+&lt;!-- only if you need dropdowns/modals/carousel --&gt;
+&lt;script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"&gt;&lt;/script&gt;</code></pre>
+<p>Bootstrap 5 dropped jQuery — the JS is optional. If you only need layout and styling, skip it and save the download.</p>
+<h3>The grid: container → row → col</h3>
+<pre><code>&lt;div class="container"&gt;
   &lt;div class="row"&gt;
-    &lt;div class="col-md-8"&gt;Main content&lt;/div&gt;
+    &lt;div class="col-md-8"&gt;Main&lt;/div&gt;
     &lt;div class="col-md-4"&gt;Sidebar&lt;/div&gt;
   &lt;/div&gt;
 &lt;/div&gt;</code></pre>
-<div class="callout">col-md-8 = 8 of 12 columns on medium+ screens; on phones both stack full-width automatically.</div>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> build a 3-column pricing row that stacks on mobile (col-md-4 × 3).</div>`),
-          article("bs-components", "Components & Utilities", "12 min", `
-<h3>🎯 Intro</h3>
-<p>Buttons, cards, alerts — copy the classes, get the design.</p>
-<h3>💻 Example</h3>
-<pre><code>&lt;button class="btn btn-primary"&gt;Enroll now&lt;/button&gt;
-&lt;button class="btn btn-outline-secondary"&gt;Preview&lt;/button&gt;
-
-&lt;div class="card mt-3" style="width:18rem"&gt;
-  &lt;div class="card-body"&gt;
-    &lt;h5 class="card-title"&gt;HTML Course&lt;/h5&gt;
-    &lt;p class="card-text text-muted"&gt;Learn the skeleton of the web.&lt;/p&gt;
-    &lt;a href="#" class="btn btn-primary"&gt;Start&lt;/a&gt;
-  &lt;/div&gt;
-&lt;/div&gt;
-
-&lt;div class="alert alert-success mt-3"&gt;Lesson complete! 🎉&lt;/div&gt;</code></pre>
-<div class="callout tip">Utilities: <code>mt-3</code> = margin-top, <code>p-2</code> = padding, <code>text-center</code>, <code>d-flex</code>… tiny classes, no custom CSS.</div>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> recreate one of this site's course cards using Bootstrap card classes.</div>`),
-          quiz("bs-quiz", "Quiz: Bootstrap", [
-            { q: "Bootstrap's grid has how many columns?", options: ["10", "12", "16", "Unlimited"], answer: 1 },
-            { q: "btn btn-primary gives you...", options: ["A form", "A styled button", "A nav bar", "An error"], answer: 1 },
-            { q: "mt-3 is a utility for...", options: ["Font size", "Margin-top", "Max width", "Mobile only"], answer: 1 },
+<h3>12 columns, always</h3>
+<p>Every row is 12 units wide. <strong>col-md-8</strong> + <strong>col-md-4</strong> = 12. Want three equal columns? Three <strong>col-md-4</strong>. The numbers must add to 12 or things wrap.</p>
+<h3>The breakpoint is the important bit</h3>
+<p><strong>col-md-8</strong> means "8 of 12 <em>from medium screens up</em>". Below that it becomes full width automatically. That's the whole responsive trick:</p>
+<pre><code>col-      &lt;576px   (phones — always full width)
+col-sm-   ≥576px
+col-md-   ≥768px   ← the common one
+col-lg-   ≥992px
+col-xl-   ≥1200px</code></pre>
+<h3>Just col</h3>
+<p><strong>&lt;div class="col"&gt;</strong> with no number = equal share of whatever's left. Often all you need.</p>
+<div class="callout warn">Columns must sit inside a .row, and rows inside a .container. Skip the row and your padding breaks in ways that are genuinely confusing to debug.</div>`),
+          article("bs-components", "Components & Utilities", "7 min", `
+<p>Two different things, and knowing which is which is most of Bootstrap.</p>
+<h3>Components — pre-built things</h3>
+<pre><code>&lt;button class="btn btn-primary"&gt;Save&lt;/button&gt;
+&lt;div class="card"&gt;…&lt;/div&gt;
+&lt;div class="alert alert-warning"&gt;Careful&lt;/div&gt;
+&lt;span class="badge bg-success"&gt;New&lt;/span&gt;</code></pre>
+<p>Note the pattern: a <strong>base</strong> class (btn) plus a <strong>variant</strong> (btn-primary). Forget the base and you get unstyled text.</p>
+<h3>The colour names</h3>
+<p><strong>primary · secondary · success · danger · warning · info · light · dark</strong> — used everywhere: btn-danger, alert-success, bg-dark, text-muted.</p>
+<h3>Utilities — one job each</h3>
+<pre><code>&lt;div class="d-flex justify-content-between align-items-center p-3 mb-4 rounded shadow-sm"&gt;</code></pre>
+<ul>
+  <li><strong>Spacing</strong> — <strong>m</strong>argin / <strong>p</strong>adding + side + size 0-5: <em>mt-3</em>, <em>px-2</em>, <em>mb-4</em>.</li>
+  <li><strong>Display</strong> — d-none, d-flex, d-md-block.</li>
+  <li><strong>Flex</strong> — justify-content-*, align-items-*.</li>
+  <li><strong>Text</strong> — text-center, text-muted, fw-bold.</li>
+</ul>
+<p>Sides: <strong>t</strong>op, <strong>b</strong>ottom, <strong>s</strong>tart(left), <strong>e</strong>nd(right), <strong>x</strong>(both sides), <strong>y</strong>(top+bottom).</p>
+<h3>Responsive utilities</h3>
+<p><strong>d-none d-md-block</strong> = hidden on phones, visible from medium up. Any utility takes a breakpoint.</p>
+<div class="callout tip">Learn the spacing scale (m/p + t/b/s/e/x/y + 0-5) and you can lay out most pages without writing a line of CSS.</div>`),
+          quiz("bs-quiz", "Quiz: Foundations", [
+            { q: "A CSS framework is the WRONG choice when…", options: ["Building an admin panel", "Looking distinctive is the whole point", "Prototyping", "You have no designer"], answer: 1 },
+            { q: "The Bootstrap grid is always…", options: ["10 columns", "12 columns", "16 columns", "Flexible"], answer: 1 },
+            { q: "What does col-md-8 mean?", options: ["8px wide", "8 of 12 columns, from medium screens up", "8 columns always", "Margin of 8"], answer: 1 },
+            { q: "Columns must be placed inside…", options: ["Anything", "A .row, which sits in a .container", "A .card", "A form"], answer: 1 },
+            { q: "'btn-primary' without 'btn' gives you…", options: ["A blue button", "Unstyled text — you need the base class too", "An error", "A link"], answer: 1 },
+            { q: "What does 'mb-4' do?", options: ["Margin bottom, size 4", "Border 4", "4 columns", "Max-width 4"], answer: 0 },
+            { q: "Bootstrap 5's JavaScript is…", options: ["Required always", "Optional — only for dropdowns/modals/carousel", "jQuery-based", "Not included"], answer: 1 },
           ]),
         ],
       },
       {
-        title: "Building Blocks",
+        title: "2 · Building Blocks",
         lessons: [
-          article("bs-navbar", "Responsive Navbar", "12 min", `
-<h3>🎯 Intro</h3>
-<p>The responsive navbar — desktop menu that collapses into a ☰ burger on phones — is Bootstrap's most-copied component.</p>
-<h3>📝 Summary</h3>
-<ul>
-  <li><code>navbar-expand-md</code> = horizontal on medium+ screens, collapsed below</li>
-  <li>The toggler button targets the collapse div by id</li>
-  <li>Needs Bootstrap's JS bundle for the toggle to work</li>
-</ul>
-<h3>💻 Example</h3>
-<pre><code>&lt;script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"&gt;&lt;/script&gt;
-
-&lt;nav class="navbar navbar-expand-md bg-dark navbar-dark"&gt;
+          article("bs-navbar", "Responsive Navbar", "7 min", `
+<p>The component people reach for Bootstrap for. It's fiddly by hand and free here.</p>
+<pre><code>&lt;nav class="navbar navbar-expand-md navbar-dark bg-dark"&gt;
   &lt;div class="container"&gt;
-    &lt;a class="navbar-brand" href="#"&gt;WebDev Academy&lt;/a&gt;
-    &lt;button class="navbar-toggler" data-bs-toggle="collapse"
-            data-bs-target="#menu"&gt;
+    &lt;a class="navbar-brand" href="#"&gt;WebDev&lt;/a&gt;
+
+    &lt;button class="navbar-toggler" type="button"
+            data-bs-toggle="collapse" data-bs-target="#nav"&gt;
       &lt;span class="navbar-toggler-icon"&gt;&lt;/span&gt;
     &lt;/button&gt;
-    &lt;div class="collapse navbar-collapse" id="menu"&gt;
+
+    &lt;div class="collapse navbar-collapse" id="nav"&gt;
       &lt;ul class="navbar-nav ms-auto"&gt;
-        &lt;li class="nav-item"&gt;&lt;a class="nav-link active" href="#"&gt;Courses&lt;/a&gt;&lt;/li&gt;
-        &lt;li class="nav-item"&gt;&lt;a class="nav-link" href="#"&gt;Roadmap&lt;/a&gt;&lt;/li&gt;
+        &lt;li class="nav-item"&gt;&lt;a class="nav-link active" href="#"&gt;Home&lt;/a&gt;&lt;/li&gt;
+        &lt;li class="nav-item"&gt;&lt;a class="nav-link" href="#"&gt;Courses&lt;/a&gt;&lt;/li&gt;
       &lt;/ul&gt;
     &lt;/div&gt;
   &lt;/div&gt;
 &lt;/nav&gt;</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> run it in the playground, shrink the result pane, and watch the menu collapse into the burger.</div>`),
-          article("bs-forms", "Forms & Feedback", "12 min", `
-<h3>🎯 Intro</h3>
-<p>Bootstrap makes forms look professional with two classes — and adds validation states for free.</p>
-<h3>📝 Summary</h3>
+<h3>The parts that matter</h3>
 <ul>
-  <li><code>form-label</code> + <code>form-control</code> style any input</li>
-  <li><code>form-select form-check</code> for dropdowns and checkboxes</li>
-  <li><code>is-invalid</code> + <code>invalid-feedback</code> show errors</li>
+  <li><strong>navbar-expand-md</strong> — horizontal from medium up; a burger menu below.</li>
+  <li><strong>data-bs-target="#nav"</strong> must match the <strong>id="nav"</strong>. This is the #1 reason a burger does nothing.</li>
+  <li><strong>ms-auto</strong> — auto margin-start pushes the links right.</li>
+  <li>The burger <em>needs Bootstrap's JS</em>. No JS = a button that does nothing.</li>
 </ul>
-<h3>💻 Example</h3>
-<pre><code>&lt;form class="p-4" style="max-width:420px"&gt;
+<h3>It's still a list of links</h3>
+<p>Underneath it's &lt;nav&gt;&lt;ul&gt;&lt;li&gt;&lt;a&gt; — exactly what you'd write by hand. Bootstrap just styles and collapses it.</p>
+<div class="callout warn">Burger not opening? Check three things, in order: is bootstrap.bundle.js loaded, does data-bs-target match the id, and is the id unique on the page.</div>`),
+          article("bs-forms", "Forms & Feedback", "7 min", `
+<p>Forms are where Bootstrap saves the most time — and where people forget accessibility.</p>
+<pre><code>&lt;form class="needs-validation" novalidate&gt;
   &lt;div class="mb-3"&gt;
-    &lt;label class="form-label"&gt;Email&lt;/label&gt;
-    &lt;input type="email" class="form-control is-invalid"&gt;
+    &lt;label for="email" class="form-label"&gt;Email&lt;/label&gt;
+    &lt;input type="email" class="form-control" id="email" required&gt;
     &lt;div class="invalid-feedback"&gt;Please enter a valid email.&lt;/div&gt;
   &lt;/div&gt;
-  &lt;div class="mb-3"&gt;
-    &lt;label class="form-label"&gt;Course&lt;/label&gt;
-    &lt;select class="form-select"&gt;
-      &lt;option&gt;HTML Deep Dive&lt;/option&gt;
-      &lt;option&gt;Bootstrap&lt;/option&gt;
-    &lt;/select&gt;
-  &lt;/div&gt;
+
   &lt;div class="form-check mb-3"&gt;
-    &lt;input class="form-check-input" type="checkbox" id="agree"&gt;
-    &lt;label class="form-check-label" for="agree"&gt;I agree to learn daily&lt;/label&gt;
+    &lt;input class="form-check-input" type="checkbox" id="ok"&gt;
+    &lt;label class="form-check-label" for="ok"&gt;I agree&lt;/label&gt;
   &lt;/div&gt;
-  &lt;button class="btn btn-primary w-100"&gt;Enroll&lt;/button&gt;
+
+  &lt;button class="btn btn-primary" type="submit"&gt;Sign up&lt;/button&gt;
 &lt;/form&gt;</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> build a contact form with name, email, message textarea and a full-width submit — with one field showing the invalid state.</div>`),
+<h3>The classes</h3>
+<ul>
+  <li><strong>form-control</strong> — inputs, textareas, selects.</li>
+  <li><strong>form-label</strong> — the label.</li>
+  <li><strong>form-check</strong> — checkboxes and radios (different markup!).</li>
+  <li><strong>mb-3</strong> — the standard gap between fields.</li>
+</ul>
+<h3>Validation feedback</h3>
+<p><strong>is-invalid</strong> / <strong>is-valid</strong> on the input reveal <strong>invalid-feedback</strong> / <strong>valid-feedback</strong>. Add them with JS after checking.</p>
+<h3>Bootstrap does NOT excuse you from labels</h3>
+<p>Every input still needs a <strong>&lt;label for&gt;</strong> matching its <strong>id</strong>. A placeholder is not a label. A pretty framework does not make an unlabelled field usable with a screen reader.</p>
+<div class="callout warn">Bootstrap's validation styling is cosmetic. The server must still validate everything — a red border stops nobody who is determined.</div>`),
+          article("bs-custom", "Customising Without Fighting It", "7 min", `
+<p>The complaint: "every Bootstrap site looks the same." That's a choice, not a law.</p>
+<h3>The wrong way</h3>
+<pre><code>.btn-primary { background: #a435f0 !important; }</code></pre>
+<p>Override by brute force and you'll be adding <strong>!important</strong> forever, in more places than you expect, and it'll break on the next update.</p>
+<h3>The right way: CSS variables</h3>
+<p>Bootstrap 5 is built on CSS custom properties, so you can retheme it in place:</p>
+<pre><code>:root {
+  --bs-primary: #a435f0;
+  --bs-border-radius: 12px;
+  --bs-body-font-family: system-ui, sans-serif;
+}</code></pre>
+<h3>Or compile your own</h3>
+<p>With Sass you set variables <em>before</em> importing Bootstrap and it rebuilds itself — smaller and properly themed. That needs a build step, which is a real cost.</p>
+<h3>Just don't ship what you don't use</h3>
+<p>The full CSS is ~190KB (~25KB gzipped). If you use the grid and buttons only, you're shipping a carousel, an offcanvas and a toast to every visitor — on mobile data.</p>
+<h3>The three-minute de-Bootstrap</h3>
+<p>Change the font, change the primary colour, increase the border-radius, add more spacing. Those four moves and nobody will recognise it.</p>
+<div class="callout tip">If you find yourself writing !important against a framework, stop. Either theme it properly with variables, or write that component yourself.</div>`),
           quiz("bs-quiz-2", "Quiz: Components", [
-            { q: "navbar-expand-md means the menu is horizontal...", options: ["Always", "On medium screens and larger", "Only on phones", "Never"], answer: 1 },
-            { q: "Which class styles a text input?", options: ["input-style", "form-control", "text-box", "bs-input"], answer: 1 },
-            { q: "invalid-feedback text appears when the input has...", options: ["focus", "is-invalid", "disabled", "required"], answer: 1 },
+            { q: "navbar-expand-md means…", options: ["Always horizontal", "Horizontal from medium up; burger below", "Always a burger", "Expands on click"], answer: 1 },
+            { q: "The burger button does nothing. First thing to check?", options: ["The colour", "Is bootstrap.bundle.js loaded, and does data-bs-target match the id?", "The grid", "The container"], answer: 1 },
+            { q: "Which pushes navbar links to the right?", options: ["text-end", "ms-auto", "float-right", "pull-right"], answer: 1 },
+            { q: "Bootstrap forms still require…", options: ["Nothing extra", "A real &lt;label for&gt; matching the input id", "A placeholder only", "JavaScript"], answer: 1 },
+            { q: "Bootstrap's validation styling is…", options: ["Real security", "Cosmetic — the server must still validate", "Server-side", "Unnecessary"], answer: 1 },
+            { q: "The right way to change Bootstrap's primary colour is…", options: ["!important overrides", "Set --bs-primary (or Sass variables)", "Edit bootstrap.min.css", "Inline styles"], answer: 1 },
+            { q: "Writing !important against a framework means…", options: ["You're doing well", "You should theme it properly or write it yourself", "It's required", "The CDN failed"], answer: 1 },
           ]),
         ],
       },
       {
-        title: "Project: Landing Page",
+        title: "3 · Project: Landing Page",
         lessons: [
-          article("bs-project", "Final Project: Course Landing Page", "20 min", `
-<h3>🎯 Intro</h3>
-<p>Hero, feature cards, and a signup form — a complete landing page with zero custom CSS.</p>
-<h3>💻 Complete solution — run it in the playground</h3>
-<pre><code>&lt;link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"&gt;
-
-&lt;section class="bg-dark text-white text-center py-5"&gt;
-  &lt;div class="container py-4"&gt;
-    &lt;h1 class="display-5 fw-bold"&gt;Learn Web Development&lt;/h1&gt;
-    &lt;p class="lead text-white-50"&gt;Free bilingual courses — HTML to full-stack.&lt;/p&gt;
+          article("bs-project", "Final Project: Course Landing Page", "12 min", `
+<p>Build a real landing page for a course — the thing Bootstrap is genuinely good at.</p>
+<h3>What to build</h3>
+<ul>
+  <li>A responsive <strong>navbar</strong> with a burger on phones.</li>
+  <li>A <strong>hero</strong>: headline, one line, a CTA button.</li>
+  <li><strong>Three feature cards</strong> in a row → stacked on phones.</li>
+  <li>A <strong>pricing</strong> row with the middle plan highlighted.</li>
+  <li>A <strong>sign-up form</strong> with labels and validation.</li>
+  <li>A <strong>footer</strong>.</li>
+</ul>
+<h3>The skeleton</h3>
+<pre><code>&lt;section class="py-5 bg-dark text-white text-center"&gt;
+  &lt;div class="container"&gt;
+    &lt;h1 class="display-4 fw-bold"&gt;Learn Web Development&lt;/h1&gt;
+    &lt;p class="lead"&gt;Free, in Burmese and English.&lt;/p&gt;
     &lt;a href="#signup" class="btn btn-primary btn-lg"&gt;Start free&lt;/a&gt;
   &lt;/div&gt;
 &lt;/section&gt;
 
-&lt;section class="container py-5"&gt;
-  &lt;div class="row g-4"&gt;
-    &lt;div class="col-md-4"&gt;
-      &lt;div class="card h-100 text-center p-3"&gt;
-        &lt;div class="fs-1"&gt;🎓&lt;/div&gt;
-        &lt;h5&gt;29 Courses&lt;/h5&gt;
-        &lt;p class="text-muted"&gt;From first HTML tag to deployment.&lt;/p&gt;
+&lt;section class="py-5"&gt;
+  &lt;div class="container"&gt;
+    &lt;div class="row g-4"&gt;
+      &lt;div class="col-md-4"&gt;
+        &lt;div class="card h-100 p-3"&gt;
+          &lt;h5 class="card-title"&gt;Hands-on&lt;/h5&gt;
+          &lt;p class="card-text"&gt;Write real code from lesson one.&lt;/p&gt;
+        &lt;/div&gt;
       &lt;/div&gt;
+      &lt;!-- two more col-md-4 --&gt;
     &lt;/div&gt;
-    &lt;div class="col-md-4"&gt;
-      &lt;div class="card h-100 text-center p-3"&gt;
-        &lt;div class="fs-1"&gt;🧪&lt;/div&gt;
-        &lt;h5&gt;Live Playground&lt;/h5&gt;
-        &lt;p class="text-muted"&gt;Try every example in your browser.&lt;/p&gt;
-      &lt;/div&gt;
-    &lt;/div&gt;
-    &lt;div class="col-md-4"&gt;
-      &lt;div class="card h-100 text-center p-3"&gt;
-        &lt;div class="fs-1"&gt;💬&lt;/div&gt;
-        &lt;h5&gt;Community&lt;/h5&gt;
-        &lt;p class="text-muted"&gt;Chat with fellow students live.&lt;/p&gt;
-      &lt;/div&gt;
-    &lt;/div&gt;
-  &lt;/div&gt;
-&lt;/section&gt;
-
-&lt;section id="signup" class="bg-light py-5"&gt;
-  &lt;div class="container" style="max-width:480px"&gt;
-    &lt;h3 class="text-center mb-4"&gt;Join free&lt;/h3&gt;
-    &lt;input class="form-control mb-3" placeholder="Your name"&gt;
-    &lt;input type="email" class="form-control mb-3" placeholder="Email"&gt;
-    &lt;button class="btn btn-primary w-100"&gt;Create account&lt;/button&gt;
   &lt;/div&gt;
 &lt;/section&gt;</code></pre>
-<h3>🏋️ Level up</h3>
-<div class="callout tip"><strong>Extend it yourself:</strong> add the responsive navbar from the earlier lesson, a pricing row (3 cards), and a footer with social links.</div>`),
+<h3>The two classes that make it look finished</h3>
+<ul>
+  <li><strong>g-4</strong> on the row — gutters between cards.</li>
+  <li><strong>h-100</strong> on the card — all cards match height even with different text. Without it they're ragged, and that's the #1 thing that looks amateur.</li>
+</ul>
+<h3>Checklist</h3>
+<ul>
+  <li>Viewport meta tag present.</li>
+  <li>Test at 360px — does the burger work, do cards stack?</li>
+  <li>Every input has a label.</li>
+  <li>Change the font and primary colour so it isn't stock Bootstrap.</li>
+  <li>Only load the JS bundle if you're using the burger.</li>
+</ul>
+<div class="callout tip">Build it with the grid alone first, then add cards, then style. Trying to do layout and looks together is how you end up fighting the framework.</div>`),
           quiz("bs-quiz-3", "Final Quiz: Bootstrap", [
-            { q: "h-100 on the cards makes them...", options: ["100px tall", "Equal full height in their row", "Hidden", "Full width"], answer: 1 },
-            { q: "display-5 fw-bold styles a...", options: ["Table", "Large bold heading", "Flexbox", "Modal"], answer: 1 },
-            { q: "row g-4 — the g-4 sets...", options: ["4 columns", "Gutter (gap) size", "Margin top", "Grid rows"], answer: 1 },
+            { q: "Three cards of different text lengths look ragged. Fix?", options: ["Fixed heights", "h-100 on the cards", "text-center", "More padding"], answer: 1 },
+            { q: "'g-4' on a row adds…", options: ["4 columns", "Gutters (gaps) between columns", "Grid mode", "A border"], answer: 1 },
+            { q: "col-md-4 three times means…", options: ["Three columns from medium up, stacked on phones", "Always three across", "4px columns", "Broken layout"], answer: 0 },
+            { q: "The fastest way to stop looking like stock Bootstrap is…", options: ["!important everywhere", "Change the font, primary colour, radius and spacing", "Use a different CDN", "Remove the grid"], answer: 1 },
+            { q: "You use only the grid and buttons. You should…", options: ["Ship the whole 190KB anyway", "Consider compiling only what you use", "Add more components", "Use two frameworks"], answer: 1 },
+            { q: "Before shipping, test at…", options: ["1920px only", "360px — burger works, cards stack", "Print size", "Nothing"], answer: 1 },
           ]),
         ],
       },
@@ -9323,7 +9381,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     rating: 4.6,
     ratings: 16800,
     students: 112000,
-    hours: 7,
+    hours: 16,
     price: "Free",
     free: true,
     color: "linear-gradient(135deg,#092e20,#44b78b)",
@@ -9338,179 +9396,275 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     ],
     sections: [
       {
-        title: "Django Foundations",
+        title: "1 · Django Foundations",
         lessons: [
-          article("dj-start", "Project, App & First View", "12 min", `
-<h3>🎯 Intro</h3>
-<p>Django projects contain apps; each app owns its models, views and URLs.</p>
-<h3>💻 Example</h3>
-<pre><code># terminal
-pip install django
-django-admin startproject academy
-cd academy
-python manage.py startapp courses
-python manage.py runserver
-
-# courses/views.py
+          article("dj-what", "What Django Is (and Isn't)", "7 min", `
+<p><strong>Django</strong> is Python's "batteries-included" web framework. It hands you an admin panel, a database layer, authentication and security — before you write a line of your own.</p>
+<h3>The philosophy</h3>
+<p>Django's motto is "the web framework for perfectionists with deadlines". It has strong opinions about how things should be done. Follow them and you move fast; fight them and you suffer.</p>
+<h3>Batteries included vs micro</h3>
+<ul>
+  <li><strong>Django</strong> — everything in the box: ORM, admin, auth, forms, security. Great for content sites, dashboards, anything with a database.</li>
+  <li><strong>Flask / FastAPI</strong> — minimal; you add what you need. Great for small APIs and when you want control.</li>
+</ul>
+<p>Neither is "better". Django saves you weeks on a CRUD-heavy site; it's overkill for a three-endpoint API.</p>
+<h3>The request cycle</h3>
+<div class="flow">
+  <div class="flow-box">🌐 URL</div>
+  <div class="flow-arrow" data-label="routes to"></div>
+  <div class="flow-box alt">⚙️ View</div>
+  <div class="flow-arrow" data-label="renders"></div>
+  <div class="flow-box">📄 Template</div>
+</div>
+<p>A URL maps to a <strong>view</strong> (a Python function), which talks to <strong>models</strong> (the database) and returns a <strong>template</strong> (HTML). Django calls this MTV — Model, Template, View.</p>
+<h3>What it gives you free</h3>
+<p>A production-grade admin panel, protection against SQL injection / XSS / CSRF, user accounts and passwords done properly. Rebuilding those yourself is where security bugs live.</p>
+<div class="callout tip">Know some Python first. Django is a lot of framework at once, and if the language itself is new you'll struggle to tell Django from Python.</div>`),
+          article("dj-start", "Project, App & First View", "7 min", `
+<p>Django splits into a <strong>project</strong> (the whole site) and <strong>apps</strong> (features inside it).</p>
+<pre><code>pip install django
+django-admin startproject mysite
+cd mysite
+python manage.py runserver          # http://127.0.0.1:8000
+python manage.py startapp courses   # a feature app</code></pre>
+<h3>Project vs app</h3>
+<ul>
+  <li><strong>Project</strong> — settings, the master URL file, the site itself.</li>
+  <li><strong>App</strong> — one focused feature (courses, accounts, blog). Reusable across projects.</li>
+</ul>
+<p>Then add your app to <strong>INSTALLED_APPS</strong> in settings.py, or Django ignores it entirely — a very common first stumble.</p>
+<h3>A view</h3>
+<pre><code># courses/views.py
 from django.http import HttpResponse
 
 def home(request):
-    return HttpResponse("Welcome to WebDev Academy!")
+    return HttpResponse("Hello from Django")</code></pre>
+<h3>Wire the URL</h3>
+<pre><code># courses/urls.py
+from django.urls import path
+from . import views
+urlpatterns = [ path("", views.home, name="home") ]
 
-# academy/urls.py
-from courses import views
-urlpatterns = [ path("", views.home) ]</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> add an /about view returning your academy's description.</div>`),
-          article("dj-models", "Models & the Free Admin", "14 min", `
-<h3>🎯 Intro</h3>
-<p>Describe your data as a Python class — Django creates the database table AND an admin UI for it.</p>
-<h3>💻 Example</h3>
+# mysite/urls.py
+from django.urls import path, include
+urlpatterns = [
+    path("admin/", admin.site.urls),
+    path("", include("courses.urls")),
+]</code></pre>
+<p>Every view takes <strong>request</strong> and returns a response. That never changes.</p>
+<div class="callout warn">manage.py is your control panel — runserver, migrate, createsuperuser all go through it. Run it from the folder that contains it, or nothing works.</div>`),
+          article("dj-models", "Models & the Free Admin", "7 min", `
+<p>A <strong>model</strong> is a Python class that becomes a database table. You never write SQL to create it.</p>
 <pre><code># courses/models.py
 from django.db import models
 
 class Course(models.Model):
-    title = models.CharField(max_length=100)
-    hours = models.FloatField()
-    free  = models.BooleanField(default=True)
+    title = models.CharField(max_length=120)
+    is_free = models.BooleanField(default=True)
+    created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.title
+        return self.title</code></pre>
+<h3>Migrations turn models into tables</h3>
+<pre><code>python manage.py makemigrations   # write the change
+python manage.py migrate          # apply it to the DB</code></pre>
+<p><strong>makemigrations</strong> records <em>what</em> changed; <strong>migrate</strong> runs it. Change a model? Run both again. This is Django's version control for your database schema.</p>
+<h3>The free admin — Django's killer feature</h3>
+<pre><code>python manage.py createsuperuser
 
-# terminal
-python manage.py makemigrations
-python manage.py migrate
-python manage.py createsuperuser   # then visit /admin ✨</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> register Course in courses/admin.py and add two courses through the admin panel.</div>`),
-          quiz("dj-quiz", "Quiz: Django", [
-            { q: "Which command starts the dev server?", options: ["django run", "python manage.py runserver", "npm start", "django serve"], answer: 1 },
-            { q: "A Django model maps to...", options: ["A CSS file", "A database table", "A URL", "A template"], answer: 1 },
-            { q: "The admin interface is...", options: ["A paid add-on", "Built in — enable and go to /admin", "Only for superusers' code", "Deprecated"], answer: 1 },
+# courses/admin.py
+from .models import Course
+admin.site.register(Course)</code></pre>
+<p>Visit <strong>/admin</strong> and you have a full, secure interface to add, edit, search and delete your data — built from your model, for free. Clients can manage content without you.</p>
+<h3>__str__ matters</h3>
+<p>Without <strong>__str__</strong> the admin shows "Course object (1)". With it, the actual title. Always add it.</p>
+<div class="callout tip">The admin alone is why many teams pick Django. A content-managed site that would take weeks elsewhere is an afternoon here.</div>`),
+          quiz("dj-quiz", "Quiz: Foundations", [
+            { q: "Django is best described as…", options: ["A minimal micro-framework", "A batteries-included framework — admin, ORM, auth built in", "A database", "A CSS library"], answer: 1 },
+            { q: "The difference between a project and an app is…", options: ["Nothing", "A project is the whole site; an app is one feature inside it", "Apps are bigger", "Projects have no code"], answer: 1 },
+            { q: "A Django model becomes…", options: ["A template", "A database table", "A URL", "A CSS file"], answer: 1 },
+            { q: "makemigrations vs migrate…", options: ["Same thing", "makemigrations records the change; migrate applies it", "migrate is first", "Neither touches the DB"], answer: 1 },
+            { q: "Django's standout free feature is…", options: ["Animations", "The auto-generated admin panel", "A CSS grid", "A chat system"], answer: 1 },
+            { q: "You add a new app but Django ignores it. Likely cause?", options: ["Wrong Python version", "It's not in INSTALLED_APPS", "Missing CSS", "The server is off"], answer: 1 },
+            { q: "Adding __str__ to a model…", options: ["Is required to run", "Makes the admin show real names, not 'object (1)'", "Creates the table", "Speeds queries"], answer: 1 },
           ]),
         ],
       },
       {
-        title: "Templates & the ORM",
+        title: "2 · Templates & the ORM",
         lessons: [
-          article("dj-templates", "Templates: HTML with Superpowers", "13 min", `
-<h3>🎯 Intro</h3>
-<p>Views hand data to templates; templates render HTML with loops, conditions and inheritance.</p>
-<h3>📝 Summary</h3>
+          article("dj-templates", "Templates: HTML with Superpowers", "7 min", `
+<p>Templates are HTML files with placeholders Django fills in.</p>
+<pre><code>&lt;!-- courses/templates/courses/list.html --&gt;
+&lt;h1&gt;Courses&lt;/h1&gt;
+&lt;ul&gt;
+  {% for course in courses %}
+    &lt;li&gt;{{ course.title }} —
+        {% if course.is_free %}Free{% else %}Premium{% endif %}&lt;/li&gt;
+  {% empty %}
+    &lt;li&gt;No courses yet.&lt;/li&gt;
+  {% endfor %}
+&lt;/ul&gt;</code></pre>
+<h3>Two kinds of tag</h3>
 <ul>
-  <li><code>{{ variable }}</code> prints (auto-escaped — XSS-safe by default)</li>
-  <li><code>{% for %} {% if %}</code> control flow</li>
-  <li><code>{% extends "base.html" %}</code> — one layout, many pages</li>
+  <li><strong>{{ variable }}</strong> — print a value.</li>
+  <li><strong>{% logic %}</strong> — for, if, block, url, csrf_token.</li>
 </ul>
-<h3>💻 Example</h3>
-<pre><code># courses/views.py
-from django.shortcuts import render
+<h3>The view passes the data</h3>
+<pre><code>from django.shortcuts import render
 from .models import Course
 
 def course_list(request):
     courses = Course.objects.all()
-    return render(request, "courses/list.html", {"courses": courses})
+    return render(request, "courses/list.html", {"courses": courses})</code></pre>
+<p>The <strong>context</strong> dict — {"courses": courses} — is the bridge from Python to HTML.</p>
+<h3>Django escapes HTML by default</h3>
+<p>User input in a template is auto-escaped, so &lt;script&gt; shows as text, not runs. This blocks XSS <em>for free</em>. Only bypass it with <strong>|safe</strong> when you're certain the content is trusted — and usually you aren't.</p>
+<h3>DRY with inheritance</h3>
+<pre><code>&lt;!-- base.html --&gt;
+&lt;body&gt;{% block content %}{% endblock %}&lt;/body&gt;
 
-&lt;!-- templates/courses/list.html --&gt;
+&lt;!-- list.html --&gt;
 {% extends "base.html" %}
-{% block content %}
-  &lt;h1&gt;Our Courses ({{ courses|length }})&lt;/h1&gt;
-  {% if not courses %}
-    &lt;p&gt;No courses yet — check back soon!&lt;/p&gt;
-  {% endif %}
-  &lt;ul&gt;
-  {% for c in courses %}
-    &lt;li&gt;{{ c.title }} — {{ c.hours }}h
-        {% if c.free %}&lt;strong&gt;FREE&lt;/strong&gt;{% endif %}&lt;/li&gt;
-  {% endfor %}
-  &lt;/ul&gt;
-{% endblock %}</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> make a base.html with a nav block, and an about page that extends it.</div>`),
-          article("dj-orm", "Querying with the ORM", "13 min", `
-<h3>🎯 Intro</h3>
-<p>The ORM writes SQL for you — in Python. Filters chain, reads are lazy, and it's injection-proof by design.</p>
-<h3>📝 Summary</h3>
+{% block content %}...{% endblock %}</code></pre>
+<p>Write the navbar and footer once in <strong>base.html</strong>; every page extends it.</p>
+<div class="callout warn">Templates deliberately can't run arbitrary Python — no course.objects.filter() in a template. Do the logic in the view and pass the result. That separation is a feature, not a limit.</div>`),
+          article("dj-orm", "Querying with the ORM", "8 min", `
+<p>The <strong>ORM</strong> (Object-Relational Mapper) lets you query the database in Python. No SQL, and injection-safe by default.</p>
+<pre><code>Course.objects.all()                       # every row
+Course.objects.filter(is_free=True)        # WHERE is_free = true
+Course.objects.get(id=1)                    # exactly one (errors if 0 or many)
+Course.objects.filter(title__icontains="python")   # LIKE, case-insensitive
+Course.objects.order_by("-created")         # newest first
+Course.objects.count()</code></pre>
+<h3>Create, update, delete</h3>
+<pre><code>c = Course.objects.create(title="SQL", is_free=True)
+c.title = "SQL Basics"
+c.save()
+c.delete()</code></pre>
+<h3>The field lookups</h3>
+<p>Double underscore = a condition: <strong>price__gt=0</strong> (greater than), <strong>title__startswith="A"</strong>, <strong>created__year=2026</strong>. This is how the ORM expresses SQL's WHERE.</p>
+<h3>filter vs get</h3>
 <ul>
-  <li><code>Model.objects.all() / .get(id=1) / .filter(...)</code></li>
-  <li>Field lookups: <code>hours__gte=5</code>, <code>title__icontains="css"</code></li>
-  <li><code>.order_by("-hours")</code> sorts; <code>.count()</code> aggregates</li>
+  <li><strong>filter()</strong> — returns a set (maybe empty). Safe.</li>
+  <li><strong>get()</strong> — returns exactly one; <em>raises</em> if none or many. Wrap it or use get_object_or_404.</li>
 </ul>
-<h3>💻 Example</h3>
-<pre><code>from courses.models import Course
+<h3>The N+1 trap</h3>
+<pre><code># ✗ one query per course to fetch its teacher — hundreds of queries
+for c in Course.objects.all():
+    print(c.teacher.name)
 
-Course.objects.create(title="Django", hours=12, free=True)
+# ✓ two queries total
+for c in Course.objects.select_related("teacher"):
+    print(c.teacher.name)</code></pre>
+<p>Looping and touching a related object fires a query <em>each time</em>. <strong>select_related</strong> / <strong>prefetch_related</strong> fetch them together. This is the single most common Django performance bug.</p>
+<div class="callout tip">Turn on the Django Debug Toolbar in development. It shows the SQL behind every page — you'll spot an N+1 the moment one appears.</div>`),
+          article("dj-forms", "Forms, Validation & CSRF", "7 min", `
+<p>Django forms handle rendering, validation and cleaning — the tedious, bug-prone parts.</p>
+<pre><code># forms.py
+from django import forms
 
-long_free = (Course.objects
-    .filter(free=True, hours__gte=5)
-    .exclude(title__icontains="old")
-    .order_by("-hours"))
-
-first = Course.objects.get(id=1)      # exactly one (or error)
-total = Course.objects.count()
-
-# UPDATE and DELETE
-first.hours = 13
-first.save()
-Course.objects.filter(hours__lt=1).delete()</code></pre>
-<h3>🏋️ Practice Task</h3>
-<div class="callout tip"><strong>Try it yourself:</strong> in <code>python manage.py shell</code>, create 3 courses and query: free ones, the longest one, and how many contain "web" in the title.</div>`),
+class ContactForm(forms.Form):
+    name = forms.CharField(max_length=80)
+    email = forms.EmailField()
+    message = forms.CharField(widget=forms.Textarea)</code></pre>
+<h3>The view pattern</h3>
+<pre><code>def contact(request):
+    if request.method == "POST":
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data      # validated + typed
+            # ... use it ...
+            return redirect("thanks")
+    else:
+        form = ContactForm()
+    return render(request, "contact.html", {"form": form})</code></pre>
+<p>This GET-shows / POST-validates / redirect-on-success shape is the same for nearly every form you'll write.</p>
+<h3>CSRF — the token you must not remove</h3>
+<pre><code>&lt;form method="post"&gt;
+  {% csrf_token %}
+  {{ form.as_p }}
+  &lt;button&gt;Send&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+<p>Django blocks any POST without a valid <strong>{% csrf_token %}</strong>. This stops a malicious site submitting forms as your logged-in user. Forget it and you get a 403 — the token is protecting you, not annoying you.</p>
+<h3>ModelForm — even less code</h3>
+<pre><code>class CourseForm(forms.ModelForm):
+    class Meta:
+        model = Course
+        fields = ["title", "is_free"]</code></pre>
+<p>A form built straight from a model, with <strong>form.save()</strong> writing to the database. Most create/edit pages are a ModelForm.</p>
+<div class="callout warn">Never disable CSRF to "make the form work". The 403 means it's doing its job. Add {% csrf_token %} inside every POST form.</div>`),
           quiz("dj-quiz-2", "Quiz: Templates & ORM", [
-            { q: "{{ user_input }} in a template is...", options: ["Dangerous by default", "Auto-escaped (XSS-safe)", "Ignored", "Only for numbers"], answer: 1 },
-            { q: "hours__gte=5 means hours...", options: ["equals 5", "greater than or equal to 5", "less than 5", "grouped by 5"], answer: 1 },
-            { q: "{% extends \"base.html\" %} gives you...", options: ["Faster queries", "Layout inheritance", "A database", "URL routing"], answer: 1 },
+            { q: "{{ course.title }} in a template…", options: ["Runs a function", "Prints a value", "Loops", "Is a comment"], answer: 1 },
+            { q: "Django templates auto-escape output, which…", options: ["Slows the page", "Blocks XSS by default", "Breaks HTML", "Needs |safe always"], answer: 1 },
+            { q: "The context dict in render() is…", options: ["The URL", "The bridge passing Python data into the template", "The database", "A form"], answer: 1 },
+            { q: "filter() vs get() — get() is dangerous because it…", options: ["Is slow", "Raises an error if there are 0 or many matches", "Returns a list", "Skips NULLs"], answer: 1 },
+            { q: "Looping courses and touching c.teacher fires a query each time. This is…", options: ["Normal", "The N+1 problem — use select_related", "A syntax error", "Required"], answer: 1 },
+            { q: "{% csrf_token %} exists to…", options: ["Style the form", "Stop other sites POSTing as your logged-in user", "Validate email", "Speed submission"], answer: 1 },
+            { q: "A ModelForm is…", options: ["A CSS class", "A form built from a model, with .save() to the DB", "A template", "A migration"], answer: 1 },
           ]),
         ],
       },
       {
-        title: "Project: Course Site",
+        title: "3 · Building & Shipping",
         lessons: [
-          article("dj-project", "Final Project: List & Detail Pages", "20 min", `
-<h3>🎯 Intro</h3>
-<p>The classic Django pattern — a list page linking to detail pages — is the skeleton of blogs, shops and course sites alike.</p>
-<h3>💻 Complete solution — study it, then build yours</h3>
-<pre><code># courses/urls.py
-from django.urls import path
-from . import views
-
-urlpatterns = [
-    path("", views.course_list, name="course_list"),
-    path("course/&lt;int:pk&gt;/", views.course_detail, name="course_detail"),
-]
-
-# courses/views.py
-from django.shortcuts import render, get_object_or_404
-from .models import Course
+          article("dj-project", "Final Project: List & Detail Pages", "10 min", `
+<p>The core of almost every content site: a list of things, and a page per thing.</p>
+<h3>The model</h3>
+<pre><code>class Course(models.Model):
+    title = models.CharField(max_length=120)
+    slug = models.SlugField(unique=True)
+    description = models.TextField()
+    is_free = models.BooleanField(default=True)</code></pre>
+<h3>Two views</h3>
+<pre><code>from django.shortcuts import render, get_object_or_404
 
 def course_list(request):
-    q = request.GET.get("q", "")
-    courses = Course.objects.filter(title__icontains=q) if q \\
-              else Course.objects.all()
-    return render(request, "courses/list.html",
-                  {"courses": courses, "q": q})
+    courses = Course.objects.order_by("title")
+    return render(request, "courses/list.html", {"courses": courses})
 
-def course_detail(request, pk):
-    course = get_object_or_404(Course, pk=pk)   # clean 404 if missing
-    return render(request, "courses/detail.html", {"course": course})
-
-&lt;!-- list.html (inside the content block) --&gt;
-&lt;form&gt;&lt;input name="q" value="{{ q }}" placeholder="Search…"&gt;&lt;/form&gt;
-{% for c in courses %}
-  &lt;p&gt;&lt;a href="{% url 'course_detail' c.pk %}"&gt;{{ c.title }}&lt;/a&gt;&lt;/p&gt;
-{% empty %}
-  &lt;p&gt;Nothing found for “{{ q }}”.&lt;/p&gt;
-{% endfor %}
-
-&lt;!-- detail.html --&gt;
-&lt;h1&gt;{{ course.title }}&lt;/h1&gt;
-&lt;p&gt;{{ course.hours }} hours · {% if course.free %}Free{% else %}Premium{% endif %}&lt;/p&gt;
-&lt;a href="{% url 'course_list' %}"&gt;← All courses&lt;/a&gt;</code></pre>
-<h3>🏋️ Level up</h3>
-<div class="callout tip"><strong>Extend it yourself:</strong> add an Enrollment model with a ForeignKey to Course, show enrollment counts on the list page, and register both models in the admin.</div>`),
+def course_detail(request, slug):
+    course = get_object_or_404(Course, slug=slug)
+    return render(request, "courses/detail.html", {"course": course})</code></pre>
+<p><strong>get_object_or_404</strong> shows a proper 404 instead of crashing when the slug doesn't exist — always use it for detail pages.</p>
+<h3>URLs with a parameter</h3>
+<pre><code>urlpatterns = [
+    path("", views.course_list, name="course_list"),
+    path("&lt;slug:slug&gt;/", views.course_detail, name="course_detail"),
+]</code></pre>
+<h3>Link them by name, never by hardcoded path</h3>
+<pre><code>&lt;a href="{% url 'course_detail' course.slug %}"&gt;{{ course.title }}&lt;/a&gt;</code></pre>
+<p>Use <strong>{% url %}</strong> with the name. Change a URL pattern later and every link updates itself — hardcoded "/courses/x/" would all break.</p>
+<h3>Then stretch</h3>
+<p>Add search (filter on a query param), pagination (Django has a Paginator), a ModelForm to add a course, and login-required on the create view.</p>
+<div class="callout tip">List + detail + a form is 80% of web apps. Master this shape and most Django sites are variations on it.</div>`),
+          article("dj-deploy", "Settings, Security & Deployment", "7 min", `
+<p>The gap between "works on my laptop" and "safe on the internet" is mostly settings.</p>
+<h3>The three that bite everyone</h3>
+<pre><code>DEBUG = False              # NEVER True in production
+ALLOWED_HOSTS = ["yoursite.com"]
+SECRET_KEY = os.environ["SECRET_KEY"]   # from env, NOT in code</code></pre>
+<ul>
+  <li><strong>DEBUG = True</strong> in production shows your code, settings and database structure to strangers on any error page. It is the classic Django leak.</li>
+  <li><strong>SECRET_KEY</strong> in your repo = compromised. It signs sessions and passwords. Read it from an environment variable.</li>
+</ul>
+<h3>Static files</h3>
+<p>Django doesn't serve CSS/JS in production. Run <strong>collectstatic</strong> and let the host (or WhiteNoise) serve them. "My CSS vanished after deploy" is almost always this.</p>
+<h3>The database</h3>
+<p>The default SQLite is fine to learn on. For a real deployment use <strong>PostgreSQL</strong> — configured through env vars, never hardcoded credentials.</p>
+<h3>Where to deploy</h3>
+<p><strong>Railway</strong>, <strong>Render</strong>, <strong>Fly.io</strong> and <strong>PythonAnywhere</strong> all run Django with generous free tiers. The checklist: DEBUG off, SECRET_KEY and DB from env, ALLOWED_HOSTS set, collectstatic run, migrations applied.</p>
+<h3>Don't reinvent auth</h3>
+<p>Django's built-in <strong>django.contrib.auth</strong> gives you login, logout, password reset and hashing, done correctly. Use it. Hand-rolled authentication is where the worst bugs live.</p>
+<div class="callout warn">The single most common Django security incident is shipping with DEBUG = True. Set it from an env var so it's False everywhere except your own machine.</div>`),
           quiz("dj-quiz-3", "Final Quiz: Django", [
-            { q: "get_object_or_404 does what when the id doesn't exist?", options: ["Crashes with 500", "Returns None", "Shows a clean 404 page", "Creates the object"], answer: 2 },
-            { q: "{% url 'course_detail' c.pk %} generates...", options: ["A database query", "The URL for that route by name", "A template", "JavaScript"], answer: 1 },
-            { q: "{% empty %} inside {% for %} renders when...", options: ["There's an error", "The list has no items", "The loop ends", "Always"], answer: 1 },
+            { q: "For a detail page that might not exist, use…", options: ["objects.get()", "get_object_or_404()", "objects.all()", "filter()"], answer: 1 },
+            { q: "Link to a URL in a template with…", options: ["A hardcoded path", "{% url 'name' %} — so links survive pattern changes", "JavaScript", "An id"], answer: 1 },
+            { q: "DEBUG = True in production…", options: ["Is fine", "Leaks your code, settings and DB structure to anyone", "Speeds the site", "Is required"], answer: 1 },
+            { q: "SECRET_KEY should be…", options: ["In your repo", "Read from an environment variable, never committed", "Blank", "The same as the DB password"], answer: 1 },
+            { q: "'My CSS vanished after deploy' is usually…", options: ["A DB issue", "Static files — run collectstatic / use WhiteNoise", "DEBUG", "A migration"], answer: 1 },
+            { q: "For authentication you should…", options: ["Roll your own", "Use django.contrib.auth", "Skip it", "Store plain passwords"], answer: 1 },
+            { q: "List + detail + a form covers…", options: ["Almost nothing", "About 80% of web apps", "Only blogs", "Only admin"], answer: 1 },
           ]),
         ],
       },

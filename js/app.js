@@ -232,7 +232,7 @@
 
   /* Bonus XP earned outside lessons (daily challenge, code exercises) */
   const bonusXp = () => Number(jget(ns("wda_xtra"), 0)) || 0;
-  const addBonusXp = (n) => jset(ns("wda_xtra"), bonusXp() + n);
+  const addBonusXp = (n) => { addWeekXp(n); jset(ns("wda_xtra"), bonusXp() + n); };
 
   /* 🎯 "Your turn" action step: mark a lesson's action done (once → +5 XP). */
   const loadActions = () => jget(ns("wda_actions"), {});
@@ -290,6 +290,10 @@
   }
   const weekCount = () => { const w = jget(ns("wda_week"), {}); return w.wk === weekKey() ? (Number(w.n) || 0) : 0; };
   const bumpWeek = () => { const wk = weekKey(); jset(ns("wda_week"), { wk, n: weekCount() + 1 }); };
+  /* XP earned THIS week — powers the weekly recap. Bumped alongside week
+     lessons (base +10) and inside addBonusXp (quiz/review/interview bonuses). */
+  const weekXp = () => { const w = jget(ns("wda_week_xp"), {}); return w.wk === weekKey() ? (Number(w.n) || 0) : 0; };
+  const addWeekXp = (n) => { const wk = weekKey(); jset(ns("wda_week_xp"), { wk, n: weekXp() + (Number(n) || 0) }); };
 
   /* Mirror this device's streak state onto its push-token row so the worker's
      scheduled sender can remind only students whose streak is about to break.
@@ -490,7 +494,7 @@
     if (done) set.add(lessonId);
     else set.delete(lessonId);
     state.completed[courseId] = [...set];
-    if (done) { bumpDayStreak(); bumpWeek(); }
+    if (done) { bumpDayStreak(); bumpWeek(); addWeekXp(10); /* base lesson XP */ }
     saveState();
     if (typeof pushLeaderboard === "function") pushLeaderboard();
     if (done) { setTimeout(maybeToastBadges, 500); trackLessonDone(courseId, lessonId); }
@@ -1860,6 +1864,138 @@
     window.scrollTo(0, 0);
   }
 
+  /* ---------------- Explore Open Source ----------------
+     A curated shelf of real, famous GitHub projects so students see where
+     the skills they're learning actually lead — and can read real code.
+     Star counts are approximate but refreshed live from the GitHub API
+     (cached 24h) with a graceful offline fallback to the static number. */
+  const REPO_CATS = ["All", "Learn", "Frontend", "AI", "Projects", "Tools"];
+  const REPOS = [
+    { owner: "kamranahmedse", repo: "developer-roadmap", ic: "🗺️", stars: 305000, lang: "TypeScript", cat: "Learn",
+      what: "Step-by-step visual guides to becoming a modern developer.",
+      whatMy: "Developer တစ်ယောက်ဖြစ်ဖို့ အဆင့်ဆင့် ရုပ်ပုံလမ်းညွှန်များ။",
+      why: "See exactly what to learn next — frontend, backend, DevOps & more.",
+      whyMy: "နောက်ဘာဆက်သင်ရမလဲ တိတိကျကျ မြင်ရမယ် — frontend, backend, DevOps။" },
+    { owner: "shadcn-ui", repo: "ui", ic: "🎨", stars: 82000, lang: "TypeScript", cat: "Frontend",
+      what: "Beautiful components you copy & paste into your own apps.",
+      whatMy: "သင့် app ထဲ copy-paste လုပ်လို့ရတဲ့ လှပတဲ့ component များ။",
+      why: "Build pro-looking UIs fast — and read real, modern component code.",
+      whyMy: "professional UI တွေ မြန်မြန်တည်ဆောက် — ခေတ်မီ component code အစစ် ဖတ်ပါ။" },
+    { owner: "plausible", repo: "analytics", ic: "📈", stars: 22000, lang: "Elixir", cat: "Tools",
+      what: "A simple, privacy-friendly Google Analytics alternative.",
+      whatMy: "ရိုးရှင်းပြီး privacy ကို လေးစားတဲ့ Google Analytics အစားထိုး။",
+      why: "See how a real product measures traffic — the marketer's angle in code.",
+      whyMy: "product အစစ်တစ်ခု traffic ကို ဘယ်လိုတိုင်းတာလဲ code ထဲမှာ ကြည့်ပါ။" },
+    { owner: "microsoft", repo: "Web-Dev-For-Beginners", ic: "📚", stars: 88000, lang: "JavaScript", cat: "Learn",
+      what: "A free 24-lesson curriculum teaching web dev from scratch.",
+      whatMy: "web dev ကို အစမှစသင်ပေးတဲ့ အခမဲ့ သင်ခန်းစာ ၂၄ ခု။",
+      why: "Free lessons & projects that pair perfectly with your courses here.",
+      whyMy: "ဒီက သင်တန်းတွေနဲ့ လိုက်ဖက်တဲ့ အခမဲ့ သင်ခန်းစာနဲ့ project များ။" },
+    { owner: "ollama", repo: "ollama", ic: "🤖", stars: 110000, lang: "Go", cat: "AI",
+      what: "Run large language models like Llama locally on your machine.",
+      whatMy: "Llama လို AI model တွေကို ကိုယ့်စက်ပေါ်မှာ တိုက်ရိုက် run ပါ။",
+      why: "The easiest way to explore AI — trending across the whole industry.",
+      whyMy: "AI ကို လေ့လာဖို့ အလွယ်ဆုံးနည်း — industry တစ်ခုလုံးမှာ ခေတ်စားနေတယ်။" },
+    { owner: "freeCodeCamp", repo: "freeCodeCamp", ic: "🔥", stars: 410000, lang: "TypeScript", cat: "Learn",
+      what: "Learn to code for free with an interactive curriculum.",
+      whatMy: "အပြန်အလှန် သင်ခန်းစာနဲ့ ကုဒ်ရေးတာ အခမဲ့ သင်ယူပါ။",
+      why: "Thousands of challenges and real certifications, completely free.",
+      whyMy: "challenge ထောင်ချီနဲ့ certification အစစ်များ၊ လုံးဝအခမဲ့။" },
+    { owner: "public-apis", repo: "public-apis", ic: "🔌", stars: 335000, lang: "Python", cat: "Projects",
+      what: "A giant list of free APIs for building projects.",
+      whatMy: "project တည်ဆောက်ဖို့ အခမဲ့ API များ စာရင်းကြီး။",
+      why: "Find data for your next project — weather, movies, maps and more.",
+      whyMy: "နောက် project အတွက် data ရှာပါ — ရာသီဥတု၊ ရုပ်ရှင်၊ မြေပုံ။" },
+    { owner: "codecrafters-io", repo: "build-your-own-x", ic: "🛠️", stars: 340000, lang: "Markdown", cat: "Projects",
+      what: "Rebuild your favourite tech from scratch: a Git, a shell, a browser.",
+      whatMy: "ကြိုက်နှစ်သက်ရာ tech တွေကို အစမှ ပြန်တည်ဆောက်: Git, shell, browser။",
+      why: "The best way to truly understand how things work — by building them.",
+      whyMy: "အလုပ်လုပ်ပုံကို တကယ်နားလည်ဖို့ အကောင်းဆုံးနည်း — ကိုယ်တိုင်တည်ဆောက်ခြင်း။" },
+  ];
+  const rf = (r, field) => (lang === "my" && r[field + "My"]) || r[field];
+  const fmtStars = (n) => n >= 1000 ? (n / 1000).toFixed(n >= 100000 ? 0 : 1).replace(/\.0$/, "") + "k" : String(n);
+
+  /* refresh star counts from the GitHub API, cached 24h; fails silently
+     (offline / rate-limited) so the static number always shows */
+  function refreshRepoStars() {
+    let cache = jget("wda_repostars", {});
+    const fresh = (v) => v && (Date.now() - (v.ts || 0) < 86400000);
+    REPOS.forEach((r) => {
+      const key = r.owner + "/" + r.repo;
+      if (fresh(cache[key])) { paintStars(key, cache[key].n); return; }
+      fetch("https://api.github.com/repos/" + key)
+        .then((res) => res.ok ? res.json() : null)
+        .then((d) => {
+          if (!d || typeof d.stargazers_count !== "number") return;
+          cache = jget("wda_repostars", {});
+          cache[key] = { n: d.stargazers_count, ts: Date.now() };
+          jset("wda_repostars", cache);
+          paintStars(key, d.stargazers_count);
+        })
+        .catch(() => {});
+    });
+  }
+  function paintStars(key, n) {
+    const el = document.querySelector('[data-stars="' + key + '"]');
+    if (el) el.textContent = "★ " + fmtStars(n);
+  }
+
+  function renderExplore() {
+    const cards = (list) => list.map((r) => {
+      const key = r.owner + "/" + r.repo;
+      const cached = (jget("wda_repostars", {})[key] || {}).n;
+      return `
+      <div class="panel repo-card" data-cat="${r.cat}">
+        <div class="repo-head">
+          <span class="repo-ic">${r.ic}</span>
+          <div class="repo-id">
+            <b>${escapeHtml(r.repo)}</b>
+            <span class="muted">${escapeHtml(r.owner)}</span>
+          </div>
+        </div>
+        <p class="repo-what">${escapeHtml(rf(r, "what"))}</p>
+        <p class="repo-why">💡 ${escapeHtml(rf(r, "why"))}</p>
+        <div class="repo-foot">
+          <span class="repo-tags">
+            <span class="chip repo-tag">${escapeHtml(r.lang)}</span>
+            <span class="repo-stars" data-stars="${key}">★ ${fmtStars(cached || r.stars)}</span>
+          </span>
+          <a class="btn btn-outline btn-sm" href="https://github.com/${key}" target="_blank" rel="noopener">${t("xp_view")}</a>
+        </div>
+      </div>`;
+    }).join("");
+    app.innerHTML = `
+      <div class="container" style="max-width:920px">
+        <h1 class="tool-h">🌍 ${t("xp_title")}</h1>
+        <p class="section-sub">${t("xp_sub")}</p>
+        <div class="chips" id="xp-filters">
+          ${REPO_CATS.map((c, i) => `<button class="chip ${i === 0 ? "active" : ""}" data-xcat="${c}">${c === "All" ? t("ht_all") : t("xcat_" + c.toLowerCase())}</button>`).join("")}
+        </div>
+        <div class="repo-grid" id="xp-grid">${cards(REPOS)}</div>
+        <p class="muted" style="font-size:12px;margin-top:14px">${t("xp_note")}</p>
+      </div>`;
+    const grid = document.getElementById("xp-grid");
+    document.getElementById("xp-filters").addEventListener("click", (e) => {
+      const b = e.target.closest("[data-xcat]");
+      if (!b) return;
+      document.querySelectorAll("#xp-filters .chip").forEach((x) => x.classList.toggle("active", x === b));
+      const cat = b.getAttribute("data-xcat");
+      grid.innerHTML = cards(cat === "All" ? REPOS : REPOS.filter((r) => r.cat === cat));
+      refreshRepoStars();
+    });
+    refreshRepoStars();
+    window.scrollTo(0, 0);
+  }
+
+  function exploreHomeCard() {
+    return `
+      <a class="daily-card" href="#/explore">
+        <span class="dc-ic">🌍</span>
+        <div class="dc-txt"><b>${t("xp_card_t")}</b><span class="muted">${t("xp_card_b")}</span></div>
+        <span class="btn btn-outline btn-sm">${t("xp_card_btn")}</span>
+      </a>`;
+  }
+
   /* ---------------- View: Course map — infographic lesson flow ---------------- */
   function renderCourseMap(courseId) {
     const c = courseById(courseId);
@@ -2059,11 +2195,13 @@
       <div class="container">
         ${streakNudge()}
         ${almostCard()}
+        ${recapHomeCard()}
         ${dailyHomeCard()}
         ${reviewHomeCard()}
         ${howtoHomeCard()}
         ${communityHomeCard()}
         ${careerHomeCard()}
+        ${exploreHomeCard()}
         ${motivHomeCard()}
         ${resumeBanner()}
         ${fresh.length ? `
@@ -4167,6 +4305,7 @@
         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
           <h2 class="section-title">${t("dash_title")}</h2>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <a class="btn btn-outline btn-sm" href="#/recap">📊 ${t("recap_title")}</a>
             <a class="btn btn-outline btn-sm" href="#/review">🧠 ${t("review_title")}</a>
             <a class="btn btn-outline btn-sm" href="#/notes">📓 ${t("nb_title")}</a>
             <a class="btn btn-outline btn-sm" href="#/portfolio">📁 ${t("portfolio_mine")}</a>
@@ -5721,6 +5860,101 @@
     });
     return best;
   }
+  /* ---------------- Weekly recap ----------------
+     "Your week" — lessons, XP, streak and review cards due this week, plus
+     the single best next step. A gentle Sunday push (worker) points here. */
+  function weekRecapData() {
+    const deck = srsLoad(); srsSyncDeck(deck);
+    const due = Object.keys(deck.cards).length ? srsDueIds(deck).length : 0;
+    /* the next lesson to do: the enrolled course closest to finishing */
+    let next = null;
+    const mine = COURSES.filter((c) => isEnrolled(c.id) && progressPct(c) < 100)
+      .sort((a, b) => progressPct(b) - progressPct(a));
+    if (mine.length) {
+      const c = mine[0];
+      const flat = lessonsOf(c), done = completedSet(c.id);
+      next = { c, lid: (flat.find((x) => !done.has(x.lesson.id)) || flat[0]).lesson.id };
+    }
+    return { lessons: weekCount(), xp: weekXp(), streak: dayStreak(), due, goal: Number(jget(ns("wda_goal"), 0)) || 0, next };
+  }
+
+  function recapHomeCard() {
+    if (!loggedIn()) return "";
+    const r = weekRecapData();
+    /* only surface it once there's something to celebrate this week */
+    if (r.lessons < 1 && r.xp < 1) return "";
+    return `
+      <a class="daily-card" href="#/recap">
+        <span class="dc-ic">📊</span>
+        <div class="dc-txt"><b>${t("recap_card_t")}</b><span class="muted">${
+          t("recap_card_b").replace("{l}", r.lessons).replace("{x}", r.xp)
+        }</span></div>
+        <span class="btn btn-outline btn-sm">${t("recap_card_btn")} →</span>
+      </a>`;
+  }
+
+  function renderRecap() {
+    if (!loggedIn()) { location.hash = "#/"; if (window.Auth) window.Auth.openModal("login"); return; }
+    const r = weekRecapData();
+    const goalPct = r.goal > 0 ? Math.min(100, Math.round((r.lessons / r.goal) * 100)) : 0;
+    const stat = (v, l) => `<div class="stat"><strong>${v}</strong><span>${l}</span></div>`;
+    const nextHtml = r.next
+      ? `<a class="daily-card" href="#/learn/${r.next.c.id}/${r.next.lid}">
+           <span class="dc-ic">▶️</span>
+           <div class="dc-txt"><b>${t("recap_next")}</b><span class="muted">${escapeHtml(cf(r.next.c, "title"))}</span></div>
+           <span class="btn btn-primary btn-sm">${t("continue")}</span>
+         </a>`
+      : `<a class="daily-card" href="#/courses">
+           <span class="dc-ic">🚀</span>
+           <div class="dc-txt"><b>${t("recap_next")}</b><span class="muted">${t("browse_courses")}</span></div>
+           <span class="btn btn-primary btn-sm">${t("browse_courses")}</span>
+         </a>`;
+    app.innerHTML = `
+      <div class="container" style="max-width:640px">
+        <h2 class="section-title">📊 ${t("recap_title")}</h2>
+        <p class="section-sub">${t("recap_sub")}</p>
+        <div class="panel recap-hero">
+          <div class="recap-stats">
+            ${stat("+" + r.xp, t("recap_xp"))}
+            ${stat(r.lessons, t("recap_lessons"))}
+            ${stat("🔥 " + r.streak, t("stat_streak"))}
+            ${stat(r.due, t("recap_due"))}
+          </div>
+          ${r.goal > 0 ? `
+            <div class="recap-goal">
+              <div class="tl-row" style="justify-content:space-between"><span>${t("recap_goal").replace("{n}", r.goal)}</span><b>${r.lessons}/${r.goal}</b></div>
+              <div class="progress"><span style="width:${goalPct}%"></span></div>
+              ${r.lessons >= r.goal ? `<p class="recap-win">🎉 ${t("recap_goal_hit")}</p>` : ""}
+            </div>` : ""}
+          <p class="recap-msg">${
+            r.lessons >= 5 ? "🔥 " + t("recap_msg_hot")
+            : r.lessons >= 1 ? "💪 " + t("recap_msg_ok")
+            : "🌱 " + t("recap_msg_start")
+          }</p>
+        </div>
+        <h3 class="section-title" style="font-size:18px">${t("recap_keep")}</h3>
+        ${r.due ? `<a class="daily-card" href="#/review">
+            <span class="dc-ic">🧠</span>
+            <div class="dc-txt"><b>${t("review_title")}</b><span class="muted">${t("rv_home_due").replace("{n}", r.due)}</span></div>
+            <span class="btn btn-primary btn-sm">${r.due} 🔁</span>
+          </a>` : ""}
+        ${nextHtml}
+        <div class="tl-row no-print" style="margin-top:14px">
+          <button class="btn btn-outline btn-sm" id="recap-share">📣 ${t("recap_share")}</button>
+          <a class="btn btn-outline btn-sm" href="#/my-learning">${t("dash_title")}</a>
+          <span class="tl-status" id="recap-share-st"></span>
+        </div>
+      </div>`;
+    const sh = app.querySelector("#recap-share");
+    if (sh) sh.addEventListener("click", () => {
+      const msg = t("recap_share_msg").replace("{l}", r.lessons).replace("{x}", r.xp).replace("{s}", r.streak);
+      const st = app.querySelector("#recap-share-st");
+      if (window.Chat && window.Chat.post) { window.Chat.post("📊 " + msg); window.Chat.open(); if (st) st.textContent = "✓"; }
+      else if (navigator.clipboard) navigator.clipboard.writeText(msg).then(() => { if (st) st.textContent = t("cert_copied"); });
+    });
+    window.scrollTo(0, 0);
+  }
+
   function almostCard() {
     const a = almostDone();
     if (!a) return "";
@@ -8496,8 +8730,9 @@
       : parts[0] === "tools" ? "tools"
       : parts[0] === "howto" ? "tools"
       : parts[0] === "gallery" ? "gallery"
+      : parts[0] === "explore" ? "gallery"
       : parts[0] === "daily" ? "home"
-      : ["my-learning", "review", "leaderboard", "account", "certificate", "community", "call", "battle", "cv", "interview"].indexOf(parts[0]) >= 0 ? "me"
+      : ["my-learning", "review", "leaderboard", "account", "certificate", "community", "call", "battle", "cv", "interview", "recap"].indexOf(parts[0]) >= 0 ? "me"
       : "";
     document.querySelectorAll("#tabbar a").forEach((a) =>
       a.classList.toggle("active", a.getAttribute("data-tab") === tabOf)
@@ -8555,6 +8790,8 @@
     else if (parts[0] === "verify") renderVerify(parts[1] ? decodeURIComponent(parts[1]) : "");
     else if (parts[0] === "cv") renderCV();
     else if (parts[0] === "interview") renderInterview();
+    else if (parts[0] === "recap") renderRecap();
+    else if (parts[0] === "explore") renderExplore();
     else if (parts[0] === "certificate" && parts[1]) renderCertificate(parts[1]);
     else if (parts[0] === "course" && parts[1]) renderCourse(parts[1]);
     else if (parts[0] === "learn" && parts[1] && parts[2]) renderLearn(parts[1], parts[2]);

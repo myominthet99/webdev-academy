@@ -37,6 +37,9 @@
     "wda_reviews",      /* course reviews                   */
     "wda_cv",           /* CV builder fields                */
     "wda_iv_hist",      /* mock-interview history           */
+    "wda_week",         /* lessons completed this week      */
+    "wda_week_xp",      /* XP earned this week (recap)      */
+    "wda_goal",         /* weekly lesson goal               */
   ];
   const shouldSync = (k) => typeof k === "string" && SYNC_PREFIXES.some((p) => k.indexOf(p) === 0);
   /* Firebase paths may not contain . # $ [ ] / — swap them for commas.

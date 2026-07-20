@@ -240,32 +240,44 @@ export default {
     const all = await fetch(dbUrl + "/stats/pushTokens.json?access_token=" + access).then((r) => r.json()).catch(() => null) || {};
     const now = new Date();
     const yUTC = new Date(now.getTime() - 86400000).toISOString().slice(0, 10);
+    const weekAgo = new Date(now.getTime() - 7 * 86400000).toISOString().slice(0, 10);
     const jobs = [];
+    const kill = (tk, res) => {
+      if (res.status === 404 || res.status === 400)
+        return fetch(dbUrl + "/stats/pushTokens/" + tk + ".json?access_token=" + access, { method: "DELETE" }).catch(() => {});
+    };
 
     for (const tk of Object.keys(all)) {
       const m = all[tk];
       if (!m || typeof m !== "object") continue;
-      if (m.last !== yUTC) continue; /* streak alive (studied yesterday) but not today */
-      /* local hour from the stored getTimezoneOffset() (minutes to add to
-         local → UTC), send window = 19:00 local */
+      /* local wall-clock from the stored getTimezoneOffset() (minutes to add
+         to local → UTC): local = UTC − offset */
       const tz = Number(m.tz) || 0;
-      const localMin = (now.getUTCHours() * 60 + now.getUTCMinutes()) - tz;
-      const localHour = ((Math.floor(localMin / 60)) % 24 + 24) % 24;
-      if (localHour !== 19) continue;
-
+      const localNow = new Date(now.getTime() - tz * 60000);
+      const localHour = localNow.getUTCHours();
+      const localDow = localNow.getUTCDay(); /* 0 = Sunday */
       const streak = Number(m.streak) || 0;
       const my = m.lang === "my";
-      const title = my ? "🔥 Streak ကို ဆက်ထိန်းပါ!" : "🔥 Keep your streak alive!";
-      const body = my
-        ? (streak > 1 ? streak + " ရက်ဆက် streak မပျက်အောင် ဒီနေ့ သင်ခန်းစာတစ်ခု လုပ်လိုက်ပါ!" : "ဒီနေ့ သင်ခန်းစာတစ်ခုနဲ့ streak စလိုက်ပါ!")
-        : (streak > 1 ? "Do one lesson today so your " + streak + "-day streak doesn't break!" : "Do one lesson today to keep your streak going!");
 
-      jobs.push(
-        fcmSend(access, projectId, decodeURIComponent(tk), title, body, SITE + "#/").then((res) => {
-          if (res.status === 404 || res.status === 400)
-            return fetch(dbUrl + "/stats/pushTokens/" + tk + ".json?access_token=" + access, { method: "DELETE" }).catch(() => {});
-        }).catch(() => {})
-      );
+      /* 🔥 daily streak reminder — 19:00 local, only if the streak is at risk
+         (studied yesterday, not yet today). One nudge per student per day. */
+      if (m.last === yUTC && localHour === 19) {
+        const title = my ? "🔥 Streak ကို ဆက်ထိန်းပါ!" : "🔥 Keep your streak alive!";
+        const body = my
+          ? (streak > 1 ? streak + " ရက်ဆက် streak မပျက်အောင် ဒီနေ့ သင်ခန်းစာတစ်ခု လုပ်လိုက်ပါ!" : "ဒီနေ့ သင်ခန်းစာတစ်ခုနဲ့ streak စလိုက်ပါ!")
+          : (streak > 1 ? "Do one lesson today so your " + streak + "-day streak doesn't break!" : "Do one lesson today to keep your streak going!");
+        jobs.push(fcmSend(access, projectId, decodeURIComponent(tk), title, body, SITE + "#/").then((res) => kill(tk, res)).catch(() => {}));
+      }
+
+      /* 📊 weekly recap — Sunday 18:00 local, to anyone who studied in the
+         last 7 days. Points at #/recap. One send per student per week. */
+      if (localDow === 0 && localHour === 18 && m.last && m.last >= weekAgo) {
+        const title = my ? "📊 သင့်တစ်ပတ်တာ — WebDev Academy" : "📊 Your week on WebDev Academy";
+        const body = my
+          ? (streak > 0 ? "🔥 " + streak + " ရက် streak! သင့် recap ကြည့်ပြီး ဆက်လုပ်ပါ။" : "သင့်တစ်ပတ်တာ recap ကြည့်ပြီး နောက်တစ်ဆင့် ဆက်တက်ပါ!")
+          : (streak > 0 ? "🔥 " + streak + "-day streak! Open your recap and keep it going." : "See your week's recap and pick your next step!");
+        jobs.push(fcmSend(access, projectId, decodeURIComponent(tk), title, body, SITE + "#/recap").then((res) => kill(tk, res)).catch(() => {}));
+      }
     }
     ctx.waitUntil(Promise.allSettled(jobs));
   },

@@ -4526,7 +4526,14 @@
       { c: '<code>alert()</code>', d: "Inline code styling (monospace)" },
       { g: "🔗 Links & images" },
       { c: '<a href="https://example.com">Visit Us</a>', d: 'Link — add target="_blank" for a new tab' },
+      { c: '<a href="#top"> · <a href="mailto:x@y.com"> · tel:', d: "Jump to an id / open email / dial" },
+      { c: 'target="_blank" rel="noopener"', d: "New tab — always pair with rel for security" },
       { c: '<img src="cat.jpg" alt="A cat">', d: "Image — alt text = accessibility (void)" },
+      { c: '<picture><source srcset="…"><img …></picture>', d: "Different image per screen / format" },
+      { g: "🎬 Media" },
+      { c: '<video src="clip.mp4" controls></video>', d: "Video with play/pause bar" },
+      { c: '<audio src="song.mp3" controls></audio>', d: "Audio player" },
+      { c: '<iframe src="…" title="Map"></iframe>', d: "Embed another page (YouTube, maps)" },
       { g: "📋 Lists" },
       { c: '<ul><li>Item</li></ul>', d: "Bulleted list" },
       { c: '<ol><li>Step 1</li></ol>', d: "Numbered list" },
@@ -4588,9 +4595,16 @@
       { g: "📱 Responsive" },
       { c: '@media (max-width: 600px) { … }', d: "Phone-only styles" },
       { c: 'img { max-width: 100%; height: auto; }', d: "Unbreakable images" },
+      { g: "👁️ Position & overflow" },
+      { c: 'position: relative | absolute | fixed | sticky', d: "Take an element out of normal flow" },
+      { c: 'top / right / bottom / left · z-index: 10;', d: "Place it · stacking order (higher = front)" },
+      { c: 'overflow: hidden | auto | scroll;', d: "Clip or scroll content that spills out" },
+      { c: 'display: none · visibility: hidden', d: "Remove from layout / hide but keep space" },
       { g: "✨ Effects" },
       { c: 'transition: all .2s ease;', d: "Smooth hover changes" },
       { c: '.btn:hover { filter: brightness(1.1); }', d: "Hover state" },
+      { c: 'opacity: .5; · cursor: pointer;', d: "See-through / hand cursor on hover" },
+      { c: 'white-space: nowrap; text-overflow: ellipsis; overflow: hidden;', d: "One line with a … when too long" },
       { g: "⚡ Pro" },
       { c: ':root { --brand: #a435f0; } · color: var(--brand);', d: "CSS variables — theme in one place" },
       { c: 'font-size: clamp(16px, 2.5vw, 22px);', d: "Fluid type: min, preferred, max" },
@@ -4619,7 +4633,10 @@
       { c: 'list.map(x => x * 2)', d: "Transform every item" },
       { c: 'list.filter(x => x > 10)', d: "Keep matching items" },
       { c: 'list.find(x => x.id === 7)', d: "First match (or undefined)" },
-      { c: 'list.includes("tea")', d: "Contains?" },
+      { c: 'list.includes("tea") · list.indexOf("tea")', d: "Contains? / at which position" },
+      { c: 'list.forEach(x => …) · list.some(…) · list.every(…)', d: "Do each / any match? / all match?" },
+      { c: 'list.join(", ") · "a,b".split(",")', d: "Array ↔ string" },
+      { c: 'Object.keys(o) · Object.values(o) · Object.entries(o)', d: "Loop an object's fields" },
       { g: "🖱️ DOM & events" },
       { c: 'document.querySelector("#btn")', d: "Grab an element" },
       { c: 'el.addEventListener("click", fn)', d: "React to events" },
@@ -4789,10 +4806,117 @@
       { c: '> [!NOTE] · > [!WARNING]', d: "GitHub alert boxes" },
       { c: '```diff  + added  - removed  ```', d: "Diff highlighting in code blocks" },
     ],
+    python: [
+      { g: "🐍 Basics" },
+      { c: 'name = "Su"; xp = 0', d: "Variables — no keyword, no semicolons" },
+      { c: 'print(f"Hi, {name}! XP: {xp}")', d: "f-string: print with variables inside" },
+      { c: 'int("5") · str(5) · float("1.5")', d: "Convert between types" },
+      { c: 'type(x) · len(x)', d: "What type is it? / how long?" },
+      { c: '# a comment', d: "Comment (Python has no // )" },
+      { g: "🔀 Logic (indentation = the block)" },
+      { c: 'if xp >= 100:\n    win()\nelif xp > 0:\n    keep()\nelse:\n    start()', d: "4-space indent replaces { } — colons matter" },
+      { c: '"Pro" if xp >= 100 else "Rookie"', d: "One-line if (ternary)" },
+      { c: 'and · or · not', d: "Boolean logic in WORDS (not && || !)" },
+      { c: 'x == y · x is None', d: "Equal value / is the same object" },
+      { g: "📋 Lists, dicts & sets" },
+      { c: 'nums = [1, 2, 3]; nums.append(4)', d: "List + add to the end" },
+      { c: 'nums[0] · nums[-1] · nums[1:3]', d: "First / last / slice" },
+      { c: 'me = {"name": "Su", "xp": 0}', d: "Dict — key → value" },
+      { c: 'me["xp"] · me.get("age", 0)', d: "Read a key (2nd form gives a default)" },
+      { c: '{1, 2, 3}', d: "Set — only unique items" },
+      { c: '"tea" in nums · nums.sort()', d: "Contains? / sort in place" },
+      { g: "🔁 Loops" },
+      { c: 'for item in nums:', d: "Loop over a list" },
+      { c: 'for i in range(5):', d: "0, 1, 2, 3, 4" },
+      { c: 'for k, v in me.items():', d: "Loop a dict's keys + values" },
+      { c: 'for i, x in enumerate(nums):', d: "Loop WITH the index" },
+      { c: 'while x < 10:', d: "Loop until the condition fails" },
+      { g: "⚙️ Functions" },
+      { c: 'def add(a, b):\n    return a + b', d: "Define a function" },
+      { c: 'def greet(name="friend"):', d: "Default argument" },
+      { c: 'lambda x: x * 2', d: "Tiny anonymous function" },
+      { g: "🔤 Strings" },
+      { c: 's.upper() · s.lower() · s.strip()', d: "Case / trim whitespace" },
+      { c: 's.split(",") · ",".join(list)', d: "String ↔ list" },
+      { c: 's.replace("a", "b") · s.startswith("09")', d: "Swap text / starts with?" },
+      { g: "📂 Files & modules" },
+      { c: 'with open("f.txt") as f:\n    data = f.read()', d: "Read a file (auto-closes it)" },
+      { c: 'import math · from math import pi', d: "Use a library" },
+      { c: 'import json; json.loads(s); json.dumps(obj)', d: "Text ↔ Python object" },
+      { g: "⚡ Pro" },
+      { c: '[x * 2 for x in nums]', d: "List comprehension — transform in one line" },
+      { c: '[x for x in nums if x > 2]', d: "…with a filter" },
+      { c: '{k: v for k, v in pairs}', d: "Dict comprehension" },
+      { c: 'try:\n    ...\nexcept ValueError as e:\n    ...', d: "Handle errors" },
+      { c: 'sorted(users, key=lambda u: u.xp, reverse=True)', d: "Sort objects by a field, descending" },
+      { c: 'sum(nums) · max(nums) · min(nums)', d: "Quick aggregates" },
+      { c: 'a, b = b, a', d: "Swap two variables, no temp" },
+      { c: 'class Dog:\n    def __init__(self, name):\n        self.name = name', d: "A class + its constructor" },
+      { c: 'if __name__ == "__main__":', d: "Run this only when the file is executed directly" },
+    ],
+    emmet: [
+      { g: "✨ What is Emmet? (built into VS Code)" },
+      { c: 'div  →  <div></div>', d: "Type the abbreviation, press Tab — it expands" },
+      { c: '!  →  full HTML5 page', d: "The whole starter document, instantly" },
+      { g: "🏗️ Nesting & siblings" },
+      { c: 'ul>li', d: "> = child: <ul><li></li></ul>" },
+      { c: 'div+p+span', d: "+ = siblings, one after another" },
+      { c: 'div>ul>li^p', d: "^ climbs back up a level" },
+      { c: '(header>nav)+main', d: "( ) groups, to control the nesting" },
+      { g: "🔢 Multiply & number" },
+      { c: 'li*5', d: "Five <li> at once" },
+      { c: 'li.item$*3', d: "$ = 1, 2, 3 → item1, item2, item3" },
+      { c: 'li{Item $}*3', d: "…with numbered text inside" },
+      { g: "🏷️ Class, id, attributes & text" },
+      { c: '.card', d: "Bare class → <div class=\"card\">" },
+      { c: 'p#intro', d: "# = id → <p id=\"intro\">" },
+      { c: 'a[href=# target=_blank]', d: "[ ] sets attributes" },
+      { c: 'input:email · input:checkbox', d: "Typed inputs (also :text :date :submit)" },
+      { c: 'h1{Hello world}', d: "{ } sets the text content" },
+      { g: "⚡ Real starters" },
+      { c: 'a:link · img:s · link:css', d: "Common tag shortcuts, fully formed" },
+      { c: '.wrap>.row>.col*3', d: "A whole layout skeleton in one line" },
+      { c: 'ul.menu>li.item$*4>a', d: "A 4-item nav with links, done" },
+    ],
+    http: [
+      { g: "📮 Methods (what you're asking for)" },
+      { c: 'GET', d: "Read data — must never change anything" },
+      { c: 'POST', d: "Create something new" },
+      { c: 'PUT · PATCH', d: "Replace the whole thing / update part of it" },
+      { c: 'DELETE', d: "Remove it" },
+      { g: "✅ Success (2xx)" },
+      { c: '200 OK', d: "It worked" },
+      { c: '201 Created', d: "A new thing was made (after POST)" },
+      { c: '204 No Content', d: "Worked — nothing to send back" },
+      { g: "↪️ Redirect (3xx)" },
+      { c: '301 · 302', d: "Moved permanently / temporarily" },
+      { c: '304 Not Modified', d: "Use your cached copy" },
+      { g: "🙅 Client errors (4xx = your request)" },
+      { c: '400 Bad Request', d: "Malformed — the server can't parse it" },
+      { c: '401 Unauthorized', d: "You're not logged in / no valid token" },
+      { c: '403 Forbidden', d: "Logged in, but not allowed" },
+      { c: '404 Not Found', d: "No such URL" },
+      { c: '409 Conflict', d: "Clashes with the current state" },
+      { c: '429 Too Many Requests', d: "Slow down — rate limited" },
+      { g: "💥 Server errors (5xx = their fault)" },
+      { c: '500 Internal Server Error', d: "The server crashed" },
+      { c: '502 · 503 · 504', d: "Bad gateway / down / timeout" },
+      { g: "🧾 Headers you'll meet" },
+      { c: 'Content-Type: application/json', d: "What kind of body this is" },
+      { c: 'Authorization: Bearer <token>', d: "Prove who you are" },
+      { c: 'Cache-Control: no-cache', d: "If/how long it may be cached" },
+      { c: 'Access-Control-Allow-Origin', d: "CORS — which sites may call this API" },
+      { g: "⚡ Pro" },
+      { c: 'fetch(url, { method: "POST", headers, body })', d: "Send JSON from the browser" },
+      { c: 'Idempotent: GET, PUT, DELETE', d: "Same call twice = same result (POST is not)" },
+      { c: '?page=2&limit=10', d: "Query params come after the ?" },
+      { c: '200 with {"error": …}  ← smell', d: "Use real status codes, not 200-for-everything" },
+    ],
   };
   const CHEAT_TABS = [
-    ["html", "HTML"], ["css", "CSS"], ["js", "JavaScript"], ["git", "Git"],
-    ["sql", "SQL"], ["terminal", "Terminal"], ["regex", "Regex"], ["markdown", "Markdown"],
+    ["html", "HTML"], ["css", "CSS"], ["js", "JavaScript"], ["python", "Python"],
+    ["git", "Git"], ["sql", "SQL"], ["terminal", "Terminal"], ["http", "HTTP"],
+    ["regex", "Regex"], ["emmet", "Emmet"], ["markdown", "Markdown"],
   ];
 
   function toolBody(id) {
@@ -4800,6 +4924,10 @@
       case "cheats": return `
         <div class="chips" id="ch-tabs" style="margin-top:0">
           ${CHEAT_TABS.map(([k, label], i) => `<button class="chip ${i === 0 ? "active" : ""}" data-sheet="${k}">${label}</button>`).join("")}
+        </div>
+        <div class="ch-searchbar">
+          <input class="tl-in ch-search" id="ch-search" type="search" autocomplete="off" placeholder="🔍 ${escapeHtml(t("cheat_search"))}">
+          <span class="ch-count muted" id="ch-count"></span>
         </div>
         <div id="ch-rows"></div>`;
       case "color": return `
@@ -4947,27 +5075,51 @@
 
     if (id === "cheats") {
       const rows = $("#ch-rows");
-      const paint = (sheet) => {
-        rows.innerHTML = (CHEATS[sheet] || []).map((r) => r.g
-          ? `<div class="ch-group">${escapeHtml(r.g)}</div>`
-          : `
-          <div class="tl-out ch-row">
-            <code>${escapeHtml(r.c)}</code>
-            <span class="ch-desc">${escapeHtml(r.d)}</span>
+      const search = $("#ch-search");
+      const countEl = $("#ch-count");
+      let current = "html";
+      /* escape first, then wrap matches in <mark> so highlighting a query
+         inside HTML-ish code snippets never breaks the markup */
+      const hl = (text, q) => {
+        const e = escapeHtml(text);
+        if (!q) return e;
+        const eq = escapeHtml(q).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        try { return e.replace(new RegExp("(" + eq + ")", "ig"), '<mark class="ch-hit">$1</mark>'); }
+        catch (err) { return e; }
+      };
+      const paint = () => {
+        const q = search.value.trim().toLowerCase();
+        const list = CHEATS[current] || [];
+        let html = "", shown = 0, pendingGroup = null;
+        list.forEach((r) => {
+          if (r.g) { pendingGroup = r.g; return; }
+          /* filter on both the code and its description */
+          if (q && r.c.toLowerCase().indexOf(q) < 0 && r.d.toLowerCase().indexOf(q) < 0) return;
+          if (pendingGroup) { html += `<div class="ch-group">${escapeHtml(pendingGroup)}</div>`; pendingGroup = null; }
+          shown++;
+          html += `<div class="tl-out ch-row">
+            <code>${hl(r.c, q)}</code>
+            <span class="ch-desc">${hl(r.d, q)}</span>
             <button class="btn btn-outline btn-sm" data-cpc title="${escapeHtml(t("tl_copy"))}">📋</button>
-          </div>`).join("");
+          </div>`;
+        });
+        rows.innerHTML = html || `<p class="muted" style="padding:14px 2px">🔍 ${escapeHtml(t("cheat_none"))}</p>`;
+        countEl.textContent = q ? shown + " " + t("cheat_matches") : "";
       };
       $("#ch-tabs").addEventListener("click", (e) => {
         const b = e.target.closest("[data-sheet]");
         if (!b) return;
         document.querySelectorAll("#ch-tabs .chip").forEach((x) => x.classList.toggle("active", x === b));
-        paint(b.getAttribute("data-sheet"));
+        current = b.getAttribute("data-sheet");
+        paint();
       });
+      search.addEventListener("input", paint);
       rows.addEventListener("click", (e) => {
         const b = e.target.closest("[data-cpc]");
+        /* copy the raw snippet, not the <mark>-highlighted version */
         if (b) tlCopy(b, b.parentElement.querySelector("code").textContent);
       });
-      paint("html");
+      paint();
     }
 
     if (id === "color") {

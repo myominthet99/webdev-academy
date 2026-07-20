@@ -47,14 +47,25 @@
   let cloudCourses = [];
   function syncCourses() {
     COURSES.length = 0;
-    /* built-in courses get generated cover art (tools/gen-covers.js) */
-    BUILTIN_COURSES.forEach((c) => COURSES.push(c.image ? c : Object.assign({}, c, { image: "covers/" + c.id + ".svg" })));
-    /* the author's local copy wins over the published one, so their
-       in-progress edits are what they see */
-    const local = loadCustomCourses();
-    const seen = new Set(local.map((c) => c.id));
-    local.forEach((c) => COURSES.push(Object.assign({ custom: true }, c)));
-    cloudCourses.forEach((c) => { if (!seen.has(c.id)) COURSES.push(Object.assign({ custom: true, published: true }, c)); });
+    /* Admin edits of BUILT-IN courses are stored as custom courses with the
+       same id — they replace the original in place (same catalog position),
+       and deleting the copy brings the original back. The author's local
+       copy wins over the published one, so their in-progress edits are what
+       they see. */
+    const override = new Map();
+    cloudCourses.forEach((c) => override.set(c.id, Object.assign({ custom: true, published: true }, c)));
+    loadCustomCourses().forEach((c) => override.set(c.id, Object.assign({ custom: true }, c)));
+    BUILTIN_COURSES.forEach((c) => {
+      const ov = override.get(c.id);
+      if (ov) {
+        COURSES.push(Object.assign(ov, { builtin: true }));
+        override.delete(c.id);
+      } else {
+        /* built-in courses get generated cover art (tools/gen-covers.js) */
+        COURSES.push(c.image ? c : Object.assign({}, c, { image: "covers/" + c.id + ".svg" }));
+      }
+    });
+    override.forEach((c) => COURSES.push(c)); /* brand-new admin courses */
   }
   syncCourses();
 
@@ -293,6 +304,8 @@
       body: JSON.stringify({
         ts: Date.now(), streak: Number(s.count) || 0, last: String(s.last || ""),
         tz: new Date().getTimezoneOffset(), lang: lang,
+        /* who owns this token — lets the worker target mention/reply pushes */
+        uid: (window.Auth.current() || {}).id || "",
       }),
     }).catch(() => {});
   }
@@ -2050,6 +2063,7 @@
         ${reviewHomeCard()}
         ${howtoHomeCard()}
         ${communityHomeCard()}
+        ${careerHomeCard()}
         ${motivHomeCard()}
         ${resumeBanner()}
         ${fresh.length ? `
@@ -2087,6 +2101,9 @@
         filter.query = "";
       })
     );
+
+    /* optional Lottie flame on the streak-at-risk nudge (see lottie/README.md) */
+    playLottie(document.getElementById("streak-art"), "lottie/streak.json", { loop: true });
 
     /* Upgrade Trending with REAL view data once it arrives */
     fetchTrending((totals) => {
@@ -2520,7 +2537,7 @@
     /* full tutor = premium or paid course; free students get the two
        comprehension chips (Simpler / Burmese), capped per day */
     const fullTutor = isPremiumUser() || (!isFree(course) && hasCourseAccess(course.id));
-    const freeChips = { simple: 1, burmese: 1, recap: 1, diagram: 1, realworld: 1, story: 1 };
+    const freeChips = { simple: 1, burmese: 1, recap: 1, diagram: 1, visual: 1, realworld: 1, story: 1 };
     /* plain-text lesson body for context (tags stripped, capped) */
     const tmp = document.createElement("div");
     tmp.innerHTML = lesson.type === "quiz" ? "" : (lf(lesson, "content") || "");
@@ -2574,6 +2591,7 @@
     const chipQs = {
       recap: "List the 3 most important things a beginner should remember from this lesson, as exactly 3 short bullet points. Start each line with '- '. Keep each bullet under 14 words. No intro, no code — just the 3 bullets.",
       diagram: "Draw a simple text mind-map / diagram (ASCII art) of the key parts of this lesson and how they connect. Use indentation with ├─ └─ branches and → arrows. Put the WHOLE diagram inside one ``` code block and add nothing outside it. Keep it small, clear and beginner-friendly.",
+      visual: "I am a visual learner. Explain this lesson with this exact structure, using short lines and NO dense paragraphs: 1) **Big picture** — 2 sentences on what this is and how the pieces fit together. 2) **Picture it like...** — one real-world analogy of a physical object or system I can picture. 3) **Diagram** — one small ASCII diagram or flowchart of the structure/flow, inside a ``` code block, using ├─ └─ and → arrows. 4) **The parts** — the key components as bullets, each starting with a **bold** name. 5) **Compare** — only if there is a natural contrast (before vs after, this vs a related idea), a tiny 2-column text table inside a ``` code block; otherwise skip it.",
       simple: "Re-explain this whole lesson in very simple English, like I am 12 years old. Use short sentences and one everyday real-life analogy to make the main idea click.",
       burmese: "Re-explain this whole lesson in simple Burmese (Myanmar language), step by step, so a beginner truly understands. Keep technical words (HTML, CSS, tag names, code) in English. Use short sentences.",
       realworld: "Give ONE short, concrete real-world example of how the main idea of this lesson is used in a real website, app or everyday situation. 2-3 simple sentences a teenager can relate to.",
@@ -2583,7 +2601,7 @@
     };
     /* These aids are stable per lesson, so cache the first result (per lesson
        AND language) — re-opening is instant and spends no free-use credit. */
-    const CACHED = { recap: 1, diagram: 1, realworld: 1, story: 1 };
+    const CACHED = { recap: 1, diagram: 1, visual: 1, realworld: 1, story: 1 };
     const langHint = lang === "my" ? " Reply in simple Burmese; keep technical words (HTML, CSS, tag names, code) in English." : "";
     const cacheKeyFor = (kind) => ns("wda_aicache::" + kind + "::" + lang + "::" + lesson.id);
     const updateFreeLeft = () => {
@@ -2649,8 +2667,11 @@
   function playLottie(mount, src, opts) {
     if (!mount) return Promise.resolve(false);
     if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return Promise.resolve(false);
-    return loadLottie()
-      .then((lot) => fetch(src).then((r) => { if (!r.ok) throw new Error("404"); return r.json(); }).then((data) => {
+    /* fetch the (tiny) animation FIRST — the 164KB player only downloads
+       once we know there is actually something to play */
+    return fetch(src)
+      .then((r) => { if (!r.ok) throw new Error("404"); return r.json(); })
+      .then((data) => loadLottie().then((lot) => {
         lot.loadAnimation(Object.assign({
           container: mount, renderer: "svg", loop: false, autoplay: true, animationData: data,
         }, opts || {}));
@@ -2999,6 +3020,7 @@
                 return `<div class="tutor-chips">
                      <button type="button" data-tq="recap">🎯 ${t("tutor_recap")}</button>
                      <button type="button" data-tq="diagram">🗺️ ${t("tutor_diagram")}</button>
+                     <button type="button" data-tq="visual">👁️ ${t("tutor_visual")}</button>
                      <button type="button" data-tq="simple">💡 ${t("tutor_simple")}</button>
                      <button type="button" data-tq="burmese">🇲🇲 ${t("tutor_burmese")}</button>
                      <button type="button" data-tq="realworld">📖 ${t("tutor_realworld")}</button>
@@ -3408,8 +3430,10 @@
       saveQuizScore(lesson.id, score, total);
       const res = document.getElementById("quiz-result");
       res.innerHTML = `
-        <div class="quiz-result">${passed ? "🎉" : "📚"} ${t("you_scored")} ${score} / ${total}.
+        <div class="quiz-result"><span class="lot-art" id="quiz-art">${passed ? "🎉" : "📚"}</span> ${t("you_scored")} ${score} / ${total}.
           ${passed ? t("passed_msg") : t("fail_msg")}</div>`;
+      /* optional Lottie upgrade of the emoji (see lottie/README.md) */
+      playLottie(document.getElementById("quiz-art"), passed ? "lottie/quiz-pass.json" : "lottie/quiz-fail.json");
       if (passed) {
         markComplete(course.id, lesson.id, true);
         res.innerHTML += `<p class="muted">${t("marked_complete")}</p>`;
@@ -4146,6 +4170,8 @@
             <a class="btn btn-outline btn-sm" href="#/review">🧠 ${t("review_title")}</a>
             <a class="btn btn-outline btn-sm" href="#/notes">📓 ${t("nb_title")}</a>
             <a class="btn btn-outline btn-sm" href="#/portfolio">📁 ${t("portfolio_mine")}</a>
+            <a class="btn btn-outline btn-sm" href="#/cv">📄 ${t("cv_mine")}</a>
+            <a class="btn btn-outline btn-sm" href="#/interview">🎤 ${t("iv_title")}</a>
             <a class="btn btn-outline btn-sm" href="#/showcase">🌟 ${t("showcase_title")}</a>
             <a class="btn btn-outline btn-sm" href="#/leaderboard">🏆 ${t("lb_title")}</a>
           </div>
@@ -4202,6 +4228,7 @@
     { id: "color", ic: "🎨" },
     { id: "gradient", ic: "🌈" },
     { id: "shadow", ic: "📦" },
+    { id: "boxmodel", ic: "📐" },
     { id: "json", ic: "🧾" },
     { id: "regex", ic: "🔍" },
     { id: "units", ic: "📏" },
@@ -4809,6 +4836,32 @@
         </div>
         <div class="tl-out"><code id="sh-css"></code><button class="btn btn-primary btn-sm" data-copy="#sh-css">📋 ${t("tl_copy")}</button></div>`;
 
+      case "boxmodel": return `
+        <div class="bm-stage">
+          <div class="bm-margin" id="bm-box-m"><span class="bm-tag">margin</span>
+            <div class="bm-border" id="bm-box-b"><span class="bm-tag">border</span>
+              <div class="bm-padding" id="bm-box-p"><span class="bm-tag">padding</span>
+                <div class="bm-content" id="bm-box-c">content</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="bm-legend">
+          <span><i style="background:#f6b26b"></i> margin</span>
+          <span><i style="background:#ffd966"></i> border</span>
+          <span><i style="background:#b6d7a8"></i> padding</span>
+          <span><i style="background:#9fc5e8"></i> content</span>
+        </div>
+        <div class="tl-cols">
+          <div><div class="tl-lab">width <span id="bm-wv"></span></div><input type="range" class="tl-range" id="bm-w" min="60" max="240" value="140"></div>
+          <div><div class="tl-lab">height <span id="bm-hv"></span></div><input type="range" class="tl-range" id="bm-h" min="30" max="140" value="56"></div>
+          <div><div class="tl-lab">padding <span id="bm-pv"></span></div><input type="range" class="tl-range" id="bm-p" min="0" max="50" value="24"></div>
+          <div><div class="tl-lab">border <span id="bm-bv"></span></div><input type="range" class="tl-range" id="bm-b" min="0" max="20" value="6"></div>
+          <div><div class="tl-lab">margin <span id="bm-mv"></span></div><input type="range" class="tl-range" id="bm-m" min="0" max="50" value="20"></div>
+        </div>
+        <div class="tl-status ok" id="bm-total"></div>
+        <div class="tl-out"><code id="bm-css" style="white-space:pre"></code><button class="btn btn-primary btn-sm" data-copy="#bm-css">📋 ${t("tl_copy")}</button></div>`;
+
       case "json": return `
         <textarea class="tl-ta" id="js-in" rows="10" placeholder="${t("tl_json_ph")}"></textarea>
         <div class="tl-row">
@@ -4961,6 +5014,27 @@
         $("#sh-css").textContent = "box-shadow: " + css + ";";
       };
       ["#sh-x", "#sh-y", "#sh-b", "#sh-s", "#sh-o", "#sh-c"].forEach((s) => $(s).addEventListener("input", upd));
+      upd();
+    }
+
+    if (id === "boxmodel") {
+      const upd = () => {
+        const w = +$("#bm-w").value, h = +$("#bm-h").value, p = +$("#bm-p").value, b = +$("#bm-b").value, m = +$("#bm-m").value;
+        $("#bm-wv").textContent = w + "px"; $("#bm-hv").textContent = h + "px";
+        $("#bm-pv").textContent = p + "px"; $("#bm-bv").textContent = b + "px"; $("#bm-mv").textContent = m + "px";
+        $("#bm-box-m").style.padding = m + "px";
+        $("#bm-box-b").style.padding = b + "px";
+        $("#bm-box-p").style.padding = p + "px";
+        const c = $("#bm-box-c");
+        c.style.width = w + "px"; c.style.height = h + "px";
+        /* the "aha" line: how the pieces ADD UP to the size on screen */
+        const tw = w + 2 * p + 2 * b, th = h + 2 * p + 2 * b;
+        $("#bm-total").textContent = t("tl_bm_total") + ": " +
+          w + " + 2×" + p + " + 2×" + b + " = " + tw + "px × " + th + "px";
+        $("#bm-css").textContent =
+          "width: " + w + "px;\nheight: " + h + "px;\npadding: " + p + "px;\nborder: " + b + "px solid;\nmargin: " + m + "px;";
+      };
+      ["#bm-w", "#bm-h", "#bm-p", "#bm-b", "#bm-m"].forEach((s) => $(s).addEventListener("input", upd));
       upd();
     }
 
@@ -5406,6 +5480,16 @@
         <span class="btn ${done ? "btn-outline" : "btn-primary"} btn-sm">${done ? "✓" : "+20 XP"}</span>
       </a>`;
   }
+  /* Home-feed card for the career features (mock interview + CV) */
+  function careerHomeCard() {
+    return `
+      <a class="daily-card" href="#/interview">
+        <span class="dc-ic">🎤</span>
+        <div class="dc-txt"><b>${t("career_card_t")}</b><span class="muted">${t("career_card_b")}</span></div>
+        <span class="btn btn-primary btn-sm">${t("career_card_btn")}</span>
+      </a>`;
+  }
+
   function renderDaily() {
     const q = dailyQuestion();
     if (!q) return renderNotFound();
@@ -5510,7 +5594,7 @@
     try { yStr = new Date(Date.now() - 864e5).toISOString().slice(0, 10); } catch (e) { return ""; }
     /* studied yesterday but not yet today → streak is at risk */
     if (s.last !== yStr) return "";
-    return `<div class="streak-nudge">🔥 ${t("nudge_streak").replace("{n}", s.count)}</div>`;
+    return `<div class="streak-nudge"><span class="lot-art" id="streak-art">🔥</span> ${t("nudge_streak").replace("{n}", s.count)}</div>`;
   }
 
   function communityHomeCard() {
@@ -5939,7 +6023,16 @@
   /* ---------------- View: Certificate ---------------- */
   /* Draw the certificate on a canvas so students can download a PNG
      (phones can't print — an image is shareable on Facebook etc.) */
-  function drawCertPng(name, courseTitle, meta, dateStr, certId) {
+  /* Certificate IDs are deterministic (owner + course), so the same student
+     always gets the same ID — and the CV builder can recompute it. */
+  const certIdFor = (owner, courseId) =>
+    "WDA-" + (function (s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(36).toUpperCase(); })(owner + "|" + courseId);
+  /* Short human-readable site URL for print/PNG (localhost would look silly
+     on a shared certificate) */
+  const siteShort = () =>
+    /^(localhost|127\.)/.test(location.host) ? "myominthet99.github.io/webdev-academy/" : location.host + location.pathname;
+
+  function drawCertPng(name, courseTitle, meta, dateStr, certId, verifyUrl) {
     const W = 1400, H = 990;
     const cv = document.createElement("canvas");
     cv.width = W; cv.height = H;
@@ -5977,7 +6070,12 @@
     x.fillText(meta, W / 2, 660);
     x.fillText(dateStr, W / 2, 800);
     x.fillStyle = "#b0b0bd"; x.font = "18px " + FAM;
-    x.fillText(t("cert_id") + ": " + certId + " · myominthet99.github.io/webdev-academy", W / 2, 860);
+    if (verifyUrl) {
+      x.fillText(t("cert_id") + ": " + certId, W / 2, 848);
+      x.fillText(t("cert_verify_at") + " " + verifyUrl, W / 2, 882);
+    } else {
+      x.fillText(t("cert_id") + ": " + certId + " · myominthet99.github.io/webdev-academy", W / 2, 860);
+    }
     x.beginPath(); x.arc(W - 190, H - 195, 66, 0, Math.PI * 2);
     x.fillStyle = "#654ea3"; x.fill();
     x.fillStyle = "#fff"; x.font = "bold 60px Arial";
@@ -5996,7 +6094,11 @@
     }
     const u = loggedIn() ? window.Auth.current() : null;
     const name = u ? (u.name || u.email) : "Guest";
-    const certId = "WDA-" + (function (s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(36).toUpperCase(); })((u ? u.id : "guest") + "|" + c.id);
+    const certId = certIdFor(u ? u.id : "guest", c.id);
+    /* Public verify link — only for logged-in students (guest certs have no
+       owner, so no verification record is published for them). */
+    const verifyShort = u ? siteShort() + "#/verify/" + certId : "";
+    const verifyUrl = u ? location.origin + location.pathname + "#/verify/" + certId : "";
     let dateStr;
     try { dateStr = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }); }
     catch (e) { dateStr = ""; }
@@ -6011,11 +6113,15 @@
           <div class="cert-course">${escapeHtml(cf(c, "title"))}</div>
           <div class="cert-date">${dateStr}</div>
           <div class="cert-id">${t("cert_id")}: ${certId}</div>
+          ${u ? `<div class="cert-verify">🔎 ${t("cert_verify_at")} ${escapeHtml(verifyShort)}</div>` : ""}
           <div class="cert-seal">✓</div>
         </div>
+        <div class="cert-cheer no-print"><span class="lot-art" id="cert-art">🎓</span></div>
         <div class="cert-actions no-print">
           <a class="btn btn-outline" href="#/course/${c.id}">${t("cert_back")}</a>
           <button class="btn btn-outline" id="cert-copy" type="button">${t("cert_copy")}</button>
+          ${u ? `<button class="btn btn-outline" id="cert-vcopy" type="button">🔎 ${t("cert_verify_copy")}</button>` : ""}
+          <a class="btn btn-outline" href="#/cv">📄 ${t("cv_mine")}</a>
           <button class="btn btn-outline" id="cert-print" type="button">${t("cert_print")}</button>
           <button class="btn btn-primary" id="cert-dl" type="button">⬇ ${t("cert_download")}</button>
           <button class="btn btn-primary" id="cert-fb" type="button">${t("cert_share_fb")}</button>
@@ -6023,11 +6129,13 @@
         </div>
       </div>`;
     const certMeta = totalLessons(c) + " " + t("lessons_word") + " · " + c.hours + " " + t("hours_content");
+    /* optional Lottie upgrade of the 🎓 (see lottie/README.md) */
+    playLottie(document.getElementById("cert-art"), "lottie/certificate.json");
     const p = app.querySelector("#cert-print");
     if (p) p.addEventListener("click", () => window.print());
     const dl = app.querySelector("#cert-dl");
     if (dl) dl.addEventListener("click", () => {
-      const cv = drawCertPng(name, cf(c, "title"), certMeta, dateStr, certId);
+      const cv = drawCertPng(name, cf(c, "title"), certMeta, dateStr, certId, verifyShort);
       const a = document.createElement("a");
       a.href = cv.toDataURL("image/png");
       a.download = "WebDevAcademy-Certificate-" + c.id + ".png";
@@ -6045,7 +6153,7 @@
     const sc = app.querySelector("#cert-chat");
     if (sc) sc.addEventListener("click", () => {
       if (!window.Chat || !window.Chat.post) return;
-      const cv = drawCertPng(name, cf(c, "title"), certMeta, dateStr, certId);
+      const cv = drawCertPng(name, cf(c, "title"), certMeta, dateStr, certId, verifyShort);
       /* downscale to a chat-friendly JPEG so the message stays light */
       const small = document.createElement("canvas");
       const ratio = 800 / cv.width;
@@ -6062,7 +6170,388 @@
       if (navigator.clipboard) navigator.clipboard.writeText(link).then(ok).catch(ok);
       else ok();
     });
+    const vc = app.querySelector("#cert-vcopy");
+    if (vc) vc.addEventListener("click", () => {
+      const ok = () => { vc.textContent = t("cert_copied"); };
+      if (navigator.clipboard) navigator.clipboard.writeText(verifyUrl).then(ok).catch(ok);
+      else ok();
+    });
+    /* Publish the public verification record that #/verify/<id> reads.
+       Write-once: the first view keeps the original issue date; owner-only
+       per the database rules; fails silently offline. */
+    const vbase = statsBase();
+    if (u && vbase) {
+      fetch(vbase + "/certs/" + certId + ".json").then((r) => r.json()).then((rec) => {
+        if (rec && rec.ts) return;
+        return authFetch(vbase + "/certs/" + certId + ".json", {
+          method: "PUT",
+          body: JSON.stringify({
+            name: String(name).slice(0, 60),
+            course: String(c.title).slice(0, 120),
+            cid: String(c.id).slice(0, 60),
+            uid: u.id,
+            ts: Date.now(),
+          }),
+        });
+      }).catch(() => {});
+    }
     window.scrollTo(0, 0);
+  }
+
+  /* ---------------- View: Certificate verification (public) ----------------
+     Anyone with a certificate ID — an employer included — can confirm it is
+     real. Reads the public write-once record at certs/<id>; no login needed. */
+  function renderVerify(certId) {
+    certId = String(certId || "").trim().toUpperCase();
+    app.innerHTML = `
+      <div class="container" style="max-width:560px">
+        <h2 class="section-title">🔎 ${t("vf_title")}</h2>
+        <p class="section-sub">${t("vf_sub")}</p>
+        <form id="vf-form" class="panel vf-form">
+          <label class="muted" for="vf-input">${t("cert_id")}</label>
+          <div class="vf-row">
+            <input id="vf-input" autocomplete="off" placeholder="WDA-XXXXXXX" value="${escapeHtml(certId)}">
+            <button class="btn btn-primary" type="submit">${t("vf_check")}</button>
+          </div>
+        </form>
+        <div id="vf-result"></div>
+      </div>`;
+    const res = app.querySelector("#vf-result");
+    const check = (id) => {
+      const base = statsBase();
+      if (!base) { res.innerHTML = `<div class="panel"><p class="muted">${t("lb_offline")}</p></div>`; return; }
+      res.innerHTML = `<p class="muted">⏳</p>`;
+      fetch(base + "/certs/" + encodeURIComponent(id) + ".json")
+        .then((r) => r.json())
+        .then((rec) => {
+          if (rec && rec.name && rec.course) {
+            let dateStr = "";
+            try { dateStr = new Date(rec.ts).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }); } catch (e) {}
+            res.innerHTML = `
+              <div class="panel vf-card ok">
+                <div class="vf-mark">✓</div>
+                <h3>${t("vf_valid")}</h3>
+                <div class="vf-rows">
+                  <div><span class="muted">${t("vf_issued_to")}</span><b>${escapeHtml(rec.name)}</b></div>
+                  <div><span class="muted">${t("vf_course_w")}</span><b>${escapeHtml(rec.course)}</b></div>
+                  <div><span class="muted">${t("vf_date_w")}</span><b>${dateStr}</b></div>
+                  <div><span class="muted">${t("cert_id")}</span><b>${escapeHtml(id)}</b></div>
+                </div>
+              </div>`;
+          } else {
+            res.innerHTML = `
+              <div class="panel vf-card bad">
+                <div class="vf-mark">✗</div>
+                <h3>${t("vf_invalid")}</h3>
+                <p class="muted">${t("vf_invalid_sub")}</p>
+              </div>`;
+          }
+        })
+        .catch(() => { res.innerHTML = `<div class="panel"><p class="muted">${t("lb_offline")}</p></div>`; });
+    };
+    app.querySelector("#vf-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const id = String(app.querySelector("#vf-input").value || "").trim().toUpperCase();
+      if (!id) return;
+      const target = "#/verify/" + encodeURIComponent(id);
+      if (location.hash === target) check(id); else location.hash = target;
+    });
+    if (certId) check(certId);
+    window.scrollTo(0, 0);
+  }
+
+  /* ---------------- View: CV builder ----------------
+     Turns what the app already knows about the student — finished courses,
+     verifiable certificates, portfolio projects — into a clean printable
+     CV. The student types only the personal bits; Print = save as PDF. */
+  function renderCV() {
+    const u = loggedIn() ? window.Auth.current() : null;
+    const saved = jget(ns("wda_cv"), {});
+    const v = (k, d) => (saved[k] != null && saved[k] !== "" ? saved[k] : (d || ""));
+    const fields = {
+      name: v("name", u ? (u.name || "") : ""),
+      headline: v("headline"),
+      email: v("email", u ? (u.email || "") : ""),
+      phone: v("phone"),
+      location: v("location"),
+      links: v("links"),
+      about: v("about"),
+      skills: v("skills"),
+      edu: v("edu"),
+      exp: v("exp"),
+    };
+    const input = (key, label, ph) => `
+      <label>${label}</label>
+      <input name="${key}" value="${escapeHtml(fields[key])}" placeholder="${escapeHtml(ph || "")}">`;
+    const area = (key, label, ph, rows) => `
+      <label>${label}</label>
+      <textarea name="${key}" rows="${rows || 3}" placeholder="${escapeHtml(ph || "")}">${escapeHtml(fields[key])}</textarea>`;
+    app.innerHTML = `
+      <div class="container" style="max-width:1020px">
+        <div class="no-print" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+          <h2 class="section-title" style="margin-bottom:0">📄 ${t("cv_title")}</h2>
+          <button class="btn btn-primary" id="cv-print" type="button">🖨 ${t("cv_print")}</button>
+        </div>
+        <p class="section-sub no-print">${t("cv_sub")}</p>
+        <div class="cv-grid">
+          <form class="panel auth-form cv-form no-print" id="cv-form">
+            <h2 style="margin-top:0">${t("cv_details")}</h2>
+            ${input("name", t("cv_name"))}
+            ${input("headline", t("cv_headline"), t("cv_headline_ph"))}
+            ${input("email", t("auth_email"))}
+            ${input("phone", t("cv_phone"))}
+            ${input("location", t("cv_location"))}
+            ${input("links", t("cv_links"), t("cv_links_ph"))}
+            ${area("about", t("cv_about"), t("cv_about_ph"))}
+            ${area("skills", t("cv_skills_extra"), t("cv_skills_ph"), 2)}
+            ${area("edu", t("cv_edu"), t("cv_edu_ph"))}
+            ${area("exp", t("cv_exp"), t("cv_exp_ph"))}
+          </form>
+          <div class="panel cv-sheet" id="cv-sheet"></div>
+        </div>
+      </div>`;
+    const form = app.querySelector("#cv-form");
+    const sheet = app.querySelector("#cv-sheet");
+    const collect = () => {
+      const d = new FormData(form);
+      const out = {};
+      ["name", "headline", "email", "phone", "location", "links", "about", "skills", "edu", "exp"]
+        .forEach((k) => { out[k] = String(d.get(k) || ""); });
+      return out;
+    };
+    const draw = () => {
+      const f = collect();
+      const done = COURSES.filter((c) => progressPct(c) === 100);
+      const learning = COURSES.filter((c) => { const p = progressPct(c); return p > 0 && p < 100; });
+      const projects = loadPortfolio().slice().sort((a, b) => (b.ts || 0) - (a.ts || 0)).slice(0, 6);
+      /* skills = the categories the student actually studied + their own list */
+      const auto = [];
+      done.concat(learning).forEach((c) => { if (auto.indexOf(c.category) < 0) auto.push(c.category); });
+      const skills = auto.concat(String(f.skills || "").split(",").map((s) => s.trim()).filter(Boolean));
+      const lines = (s) => String(s || "").split("\n").map((x) => x.trim()).filter(Boolean);
+      const certRow = (c) => {
+        const id = u ? certIdFor(u.id, c.id) : "";
+        return `<div class="cv-item"><b>${escapeHtml(cf(c, "title"))}</b> — WebDev Academy · ${totalLessons(c)} ${t("lessons_word")}
+          ${u ? `<div class="cv-cert">${t("cv_cert_w")} ${id} · ${t("cv_verify_w")}: ${escapeHtml(siteShort())}#/verify/${id}</div>` : ""}</div>`;
+      };
+      const contact = [f.email, f.phone, f.location, f.links].filter(Boolean).map(escapeHtml).join(" · ");
+      sheet.innerHTML = `
+        <div class="cv-head">
+          <div class="cv-name">${escapeHtml(f.name) || "—"}</div>
+          ${f.headline ? `<div class="cv-headline">${escapeHtml(f.headline)}</div>` : ""}
+          ${contact ? `<div class="cv-contact">${contact}</div>` : ""}
+        </div>
+        ${f.about ? `<h2>${t("cv_sec_about")}</h2><p class="cv-about">${escapeHtml(f.about)}</p>` : ""}
+        ${skills.length ? `<h2>${t("cv_sec_skills")}</h2><div class="cv-chips">${skills.map((s) => `<span class="chip">${escapeHtml(s)}</span>`).join("")}</div>` : ""}
+        ${done.length || learning.length ? `<h2>${t("cv_sec_courses")}</h2>
+          ${done.map(certRow).join("")}
+          ${learning.map((c) => `<div class="cv-item">${escapeHtml(cf(c, "title"))} — WebDev Academy · ${progressPct(c)}% (${t("cv_in_progress")})</div>`).join("")}` : ""}
+        ${projects.length ? `<h2>${t("cv_sec_projects")}</h2>${projects.map((p) => `<div class="cv-item"><b>${p.ic ? escapeHtml(p.ic) + " " : ""}${escapeHtml(p.title || "Project")}</b>${p.course ? ` — ${escapeHtml(p.course)}` : ""}</div>`).join("")}` : ""}
+        ${lines(f.edu).length ? `<h2>${t("cv_sec_edu")}</h2>${lines(f.edu).map((l) => `<div class="cv-item">${escapeHtml(l)}</div>`).join("")}` : ""}
+        ${lines(f.exp).length ? `<h2>${t("cv_sec_exp")}</h2>${lines(f.exp).map((l) => `<div class="cv-item">${escapeHtml(l)}</div>`).join("")}` : ""}
+        ${!done.length && !learning.length && !projects.length ? `<p class="muted cv-hint no-print">💡 ${t("cv_empty_hint")}</p>` : ""}`;
+    };
+    let saveTimer = null;
+    form.addEventListener("input", () => {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => { jset(ns("wda_cv"), collect()); draw(); }, 250);
+    });
+    form.addEventListener("submit", (e) => e.preventDefault());
+    app.querySelector("#cv-print").addEventListener("click", () => window.print());
+    draw();
+    window.scrollTo(0, 0);
+  }
+
+  /* ---------------- View: AI mock interview ----------------
+     A practice job interview: the AI interviewer asks 5 entry-level
+     questions one at a time, reacts to every answer, then scores the
+     candidate with concrete tips. Free students get one session a day. */
+  const IV_ROLES = [
+    { id: "webdev", ic: "💻", title: "Junior Web Developer" },
+    { id: "marketing", ic: "📣", title: "Digital Marketing Assistant" },
+    { id: "hr", ic: "🤝", title: "HR Assistant" },
+    { id: "itpm", ic: "📋", title: "IT Project Coordinator" },
+    { id: "erp", ic: "🏢", title: "ERP Support Consultant" },
+  ];
+  const IV_TOTAL = 5;
+  const ivUsedToday = () => { const r = jget(ns("wda_iv_day"), null); return r && r.d === dateKey(0) ? r.n : 0; };
+  const ivMarkUsed = () => jset(ns("wda_iv_day"), { d: dateKey(0), n: ivUsedToday() + 1 });
+
+  function renderInterview() {
+    /* same mini-markdown the tutor uses (bold + line breaks only) */
+    const fmt = (s) => escapeHtml(String(s)).replace(/\*\*([^*\n]+)\*\*/g, "<strong>$1</strong>").replace(/\n/g, "<br>");
+
+    function drawLanding() {
+      const hist = jget(ns("wda_iv_hist"), []).slice(-5).reverse();
+      const histHtml = hist.length
+        ? `<div class="panel"><h2 style="margin-top:0">🗂 ${t("iv_history")}</h2>
+            ${hist.map((h) => {
+              const role = IV_ROLES.find((r) => r.id === h.role);
+              let d = ""; try { d = new Date(h.ts).toLocaleDateString(); } catch (e) {}
+              return `<div class="iv-hrow"><span>${role ? role.ic + " " + escapeHtml(role.title) : escapeHtml(String(h.role))}</span>
+                <span class="muted">${d}</span><b>${h.score != null ? h.score + "/10" : "—"}</b></div>`;
+            }).join("")}</div>`
+        : "";
+      app.innerHTML = `
+        <div class="container" style="max-width:680px">
+          <h2 class="section-title">🎤 ${t("iv_title")}</h2>
+          <p class="section-sub">${t("iv_sub")}</p>
+          <div class="panel">
+            <h2 style="margin-top:0">${t("iv_pick_role")}</h2>
+            <div class="iv-roles">
+              ${IV_ROLES.map((r, i) => `<button type="button" class="iv-role ${i === 0 ? "sel" : ""}" data-role="${r.id}">${r.ic} ${escapeHtml(r.title)}</button>`).join("")}
+            </div>
+            <h2>${t("iv_pick_lang")}</h2>
+            <div class="iv-roles">
+              <button type="button" class="iv-role ${lang !== "my" ? "sel" : ""}" data-ivlang="en">English</button>
+              <button type="button" class="iv-role ${lang === "my" ? "sel" : ""}" data-ivlang="my">မြန်မာ</button>
+            </div>
+            <div style="margin-top:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+              <button class="btn btn-primary" id="iv-start" type="button">🎤 ${t("iv_start")}</button>
+              <span class="muted" id="iv-note" style="font-size:13px">${isPremiumUser() ? "⭐" : t("iv_daily_note")}</span>
+            </div>
+          </div>
+          ${histHtml}
+        </div>`;
+      const sel = { role: IV_ROLES[0].id, my: lang === "my" };
+      app.querySelectorAll("[data-role]").forEach((b) => b.addEventListener("click", () => {
+        sel.role = b.dataset.role;
+        app.querySelectorAll("[data-role]").forEach((x) => x.classList.toggle("sel", x === b));
+      }));
+      app.querySelectorAll("[data-ivlang]").forEach((b) => b.addEventListener("click", () => {
+        sel.my = b.dataset.ivlang === "my";
+        app.querySelectorAll("[data-ivlang]").forEach((x) => x.classList.toggle("sel", x === b));
+      }));
+      app.querySelector("#iv-start").addEventListener("click", () => {
+        const note = app.querySelector("#iv-note");
+        if (!window.AI) { note.innerHTML = escapeHtml(t("ai_no_key")); return; }
+        if (!isPremiumUser() && ivUsedToday() >= 1) {
+          note.innerHTML = `🔒 ${t("iv_daily_out")} <a href="#/premium">⭐ ${t("prem_go")}</a>`;
+          return;
+        }
+        drawSession(IV_ROLES.find((r) => r.id === sel.role) || IV_ROLES[0], sel.my);
+      });
+      window.scrollTo(0, 0);
+    }
+
+    function drawSession(role, my) {
+      app.innerHTML = `
+        <div class="container" style="max-width:680px">
+          <div class="panel">
+            <div class="iv-top">
+              <b>${role.ic} ${escapeHtml(role.title)}</b>
+              <span class="muted" id="iv-count"></span>
+              <button class="btn btn-outline btn-sm" id="iv-quit" type="button">✕ ${t("iv_quit")}</button>
+            </div>
+            <div class="tutor-log" id="iv-log" style="max-height:none"></div>
+            <form class="tutor-form" id="iv-form">
+              <input autocomplete="off" placeholder="${escapeHtml(t("iv_answer_ph"))}">
+              <button class="btn btn-primary" type="submit">${t("iv_send")}</button>
+            </form>
+            <div id="iv-end" hidden style="margin-top:12px"></div>
+          </div>
+        </div>`;
+      const log = app.querySelector("#iv-log");
+      const form = app.querySelector("#iv-form");
+      const inp = form.querySelector("input");
+      const count = app.querySelector("#iv-count");
+      log.hidden = false;
+      let qNum = 1;          /* which question is on the table */
+      const transcript = []; /* alternating {q} / {a} rows for the prompt */
+      const bubble = (who, html) => {
+        const d = document.createElement("div");
+        d.className = "tutor-msg " + who;
+        d.innerHTML = html;
+        log.appendChild(d);
+        d.scrollIntoView({ block: "nearest" });
+        return d;
+      };
+      const counter = () => { count.textContent = t("iv_q_of").replace("{n}", Math.min(qNum, IV_TOTAL)).replace("{total}", IV_TOTAL); };
+      const sys =
+        'You are a friendly but professional interviewer at a company in Myanmar, interviewing a young candidate for the role of "' + role.title + '". ' +
+        (my ? "Interview in simple Burmese (Myanmar language); keep job and technical terms in English. " : "Use simple, clear English. ") +
+        "Ask realistic entry-level questions: introduction, motivation, basic knowledge for the role, and one situational question. " +
+        "Ask exactly ONE question at a time and never answer for the candidate. Keep every message under 80 words. Be encouraging but honest.";
+      const convo = () => transcript.map((x) => (x.q != null ? "Interviewer: " + x.q : "Candidate: " + x.a)).join("\n").slice(-6000);
+      const busy = (on) => { inp.disabled = on; form.querySelector("button").disabled = on; };
+      const step = (prompt, after) => {
+        const wait = bubble("bot", "⏳ " + escapeHtml(t("tutor_thinking")));
+        busy(true);
+        window.AI.complete(convo() + "\n\n" + prompt, { system: sys, maxTokens: 1500, temperature: 0.8 })
+          .then((reply) => {
+            wait.innerHTML = fmt(reply);
+            transcript.push({ q: String(reply).slice(0, 600) });
+            if (after) after(reply, false);
+          })
+          .catch((err) => {
+            const m = (err && err.message) || String(err);
+            wait.innerHTML = m === "no-key" ? escapeHtml(t("ai_no_key")) : "⚠ " + escapeHtml(m);
+            if (after) after(null, true);
+          })
+          .then(() => { busy(false); inp.focus(); });
+      };
+      const finish = () => {
+        const wait = bubble("bot", "⏳ " + escapeHtml(t("tutor_thinking")));
+        busy(true);
+        window.AI.complete(
+          convo() + "\n\nThe interview is over. Evaluate the candidate's answers. Reply with EXACTLY this structure:\n" +
+            "SCORE: <number 1-10>/10\n✅ two short bullets: what went well\n💪 three short bullets: what to improve\n" +
+            "Then ONE example of a stronger answer to their weakest question." +
+            (my ? " Write it in simple Burmese; keep terms in English." : ""),
+          { system: sys, maxTokens: 2000 }
+        ).then((reply) => {
+          wait.innerHTML = fmt(reply);
+          const m = String(reply).match(/SCORE:\s*(\d+(?:\.\d+)?)/i);
+          const score = m ? Math.max(0, Math.min(10, Number(m[1]))) : null;
+          const h = jget(ns("wda_iv_hist"), []);
+          h.push({ role: role.id, ts: Date.now(), score: score, lang: my ? "my" : "en" });
+          jset(ns("wda_iv_hist"), h.slice(-30));
+          addBonusXp(25); pushLeaderboard(); setTimeout(maybeToastBadges, 400);
+          form.hidden = true;
+          const end = app.querySelector("#iv-end");
+          end.hidden = false;
+          end.innerHTML = `
+            <div><span class="lot-art" id="iv-art">🏆</span> <b>${t("iv_done")}${score != null ? " — " + t("iv_score_w") + " " + score + "/10" : ""}</b>
+              <b style="color:var(--green)"> +25 XP</b></div>
+            <div class="tl-row" style="margin-top:10px">
+              <button class="btn btn-primary btn-sm" id="iv-again" type="button">🔁 ${t("iv_again")}</button>
+              <a class="btn btn-outline btn-sm" href="#/cv">📄 ${t("cv_mine")}</a>
+            </div>`;
+          /* optional Lottie upgrade of the 🏆 (see lottie/README.md) */
+          playLottie(document.getElementById("iv-art"), "lottie/trophy.json");
+          app.querySelector("#iv-again").addEventListener("click", drawLanding);
+        }).catch((err) => {
+          const m2 = (err && err.message) || String(err);
+          wait.innerHTML = m2 === "no-key" ? escapeHtml(t("ai_no_key")) : "⚠ " + escapeHtml(m2);
+          busy(false);
+        });
+      };
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const a = inp.value.trim();
+        if (!a || inp.disabled) return;
+        inp.value = "";
+        const mine = bubble("me", escapeHtml(a));
+        transcript.push({ a: a.slice(0, 800) });
+        if (qNum >= IV_TOTAL) { finish(); return; }
+        step(
+          "The candidate just answered question " + qNum + ". In ONE message: give 1-2 sentences of specific, honest feedback on that answer, then ask question " + (qNum + 1) + " of " + IV_TOTAL + ".",
+          (reply, failed) => {
+            if (failed) { transcript.pop(); mine.remove(); inp.value = a; bubble("bot", "↩ " + escapeHtml(t("iv_err_retry"))); return; }
+            qNum++; counter();
+          }
+        );
+      });
+      app.querySelector("#iv-quit").addEventListener("click", drawLanding);
+      counter();
+      /* the free daily slot is only spent once the first question arrives */
+      step("Begin the interview: greet the candidate in one short sentence and ask question 1 of " + IV_TOTAL + ".", (reply, failed) => {
+        if (!failed && !isPremiumUser()) ivMarkUsed();
+      });
+      window.scrollTo(0, 0);
+    }
+
+    drawLanding();
   }
 
   /* ---------------- View: Admin (create/manage courses) ---------------- */
@@ -6099,6 +6588,23 @@
   function lessonRowHtml(l) {
     l = l || {};
     const type = l.type || "video";
+    /* Lesson kinds the editor has no UI for (built-in code exercises with
+       hidden check scripts, etc.) ride through as-is: the raw lesson JSON
+       is kept in a hidden field and restored verbatim on save. They can
+       still be reordered and deleted. */
+    if (["video", "article", "quiz"].indexOf(type) < 0) {
+      return `<div class="admin-lesson admin-lesson-locked" data-type="locked">
+        <input type="hidden" name="lraw" value="${escapeHtml(JSON.stringify(l))}">
+        <div class="admin-row">
+          <span class="admin-locked-note">🏋️ <b>${escapeHtml(l.title || l.id || "?")}</b> <span class="muted">· ${escapeHtml(type)} · ${t("admin_kept_asis")}</span></span>
+          <span class="admin-move">
+            <button type="button" class="mv" data-move="up" title="Move up">▲</button>
+            <button type="button" class="mv" data-move="down" title="Move down">▼</button>
+          </span>
+        </div>
+        <button type="button" class="chat-del admin-rm-lesson" data-rm-lesson>🗑</button>
+      </div>`;
+    }
     const types = [["video", t("type_video")], ["article", t("type_article")], ["quiz", t("type_quiz")]];
     return `<div class="admin-lesson" data-type="${type}">
       <input type="hidden" name="lid" value="${l.id ? escapeHtml(l.id) : ""}">
@@ -7474,8 +7980,37 @@
     if (editId === "insights") return renderAdminInsights();
     if (editId === "students") return renderAdminStudents();
     if (editId === "content") return renderContentCreator();
+    /* editing prefills lesson bodies, which live in the lazy bundle */
+    if (editId && !window.APP_CONTENT) {
+      app.innerHTML = `<div class="container"><div class="empty"><h2>⏳</h2></div></div>`;
+      loadContent().then(() => renderAdmin(editId)).catch(() => renderAdmin());
+      return;
+    }
     const custom = loadCustomCourses();
-    const editing = editId ? custom.find((c) => c.id === editId) : null;
+    const BUILTIN_IDS = new Set(BUILTIN_COURSES.map((b) => b.id));
+    /* Any course — built-in included — can be opened in the editor. A
+       built-in is materialized into an editable copy: lesson bodies are
+       pulled inline from the content bundle, and saving stores it as a
+       custom course with the SAME id, which replaces the original
+       (see syncCourses). Deleting the copy restores the original. */
+    const editableCopy = (c) => Object.assign({}, c, {
+      sections: (c.sections || []).map((s) => ({
+        title: s.title,
+        lessons: (s.lessons || []).map((l) => {
+          if (["video", "article", "quiz"].indexOf(l.type) < 0) return JSON.parse(JSON.stringify(l));
+          const base = { id: l.id, title: l.title, duration: l.duration, type: l.type };
+          if (l.type === "quiz") base.questions = JSON.parse(JSON.stringify(l.questions || []));
+          else {
+            base.content = l.content != null ? l.content : ((window.APP_CONTENT[l.id] || {}).c || "");
+            if (l.src) base.src = l.src;
+          }
+          return base;
+        }),
+      })),
+    });
+    const editing = editId
+      ? (custom.find((c) => c.id === editId) || (courseById(editId) ? editableCopy(courseById(editId)) : null))
+      : null;
     const cats = CATEGORIES.filter((c) => c !== "All");
     const levels = ["Beginner", "Intermediate", "All Levels"];
     const initialSections = editing && editing.sections && editing.sections.length ? editing.sections : [{ title: "Lessons", lessons: [] }];
@@ -7534,13 +8069,21 @@
           ? `<div class="mylist">${custom.map((c) => `
               <div class="myrow">
                 <a class="mthumb" style="background:${c.color || "#654ea3"}" href="#/course/${c.id}">${c.icon || "📘"}</a>
-                <div><h3>${escapeHtml(c.title)}</h3><p class="muted">${(c.sections || []).reduce((a, s) => a + s.lessons.length, 0)} ${t("lessons_word")}</p></div>
+                <div><h3>${escapeHtml(c.title)}</h3><p class="muted">${(c.sections || []).reduce((a, s) => a + s.lessons.length, 0)} ${t("lessons_word")}${BUILTIN_IDS.has(c.id) ? ` · ✏️ ${t("admin_edited_builtin")}` : ""}</p></div>
                 <div style="display:flex;gap:8px">
                   <a class="btn btn-outline btn-sm" href="#/admin/${c.id}">${t("admin_edit")}</a>
-                  <button class="btn btn-ghost btn-sm" data-del-course="${c.id}">${t("admin_delete")}</button>
+                  <button class="btn btn-ghost btn-sm" data-del-course="${c.id}">${BUILTIN_IDS.has(c.id) ? "↺ " + t("admin_reset") : t("admin_delete")}</button>
                 </div>
               </div>`).join("")}</div>`
           : `<p class="muted">${t("admin_none")}</p>`}
+        <h3 class="section-title">${t("admin_all_courses")}</h3>
+        <p class="section-sub">${t("admin_all_courses_sub")}</p>
+        <div class="mylist">${BUILTIN_COURSES.filter((c) => !custom.some((x) => x.id === c.id)).map((c) => `
+          <div class="myrow">
+            <a class="mthumb" style="background:${c.color || "#654ea3"}" href="#/course/${c.id}">${c.icon || "📘"}</a>
+            <div><h3>${escapeHtml(c.title)}</h3><p class="muted">${(c.sections || []).reduce((a, s) => a + s.lessons.length, 0)} ${t("lessons_word")}</p></div>
+            <a class="btn btn-outline btn-sm" href="#/admin/${encodeURIComponent(c.id)}">✏️ ${t("admin_edit")}</a>
+          </div>`).join("")}</div>
       </div>`;
 
     const form = app.querySelector("#admin-form");
@@ -7716,6 +8259,9 @@
       const sections = [...sectionsC.querySelectorAll(".admin-section")].map((sec, si) => {
         const stitle = sec.querySelector('[name="stitle"]').value.trim() || "Section " + (si + 1);
         const lessons = [...sec.querySelectorAll(".admin-lesson")].map((row, li) => {
+          /* locked lesson kinds (exercises etc.) pass through untouched */
+          const raw = row.querySelector('[name="lraw"]');
+          if (raw) { try { return JSON.parse(raw.value); } catch (e2) { return null; } }
           const g = (n) => { const el = row.querySelector('[name="' + n + '"]'); return el ? el.value.trim() : ""; };
           const lt = g("ltitle");
           if (!lt) return null;
@@ -7774,8 +8320,9 @@
 
     app.querySelectorAll("[data-del-course]").forEach((b) =>
       b.addEventListener("click", () => {
-        if (!window.confirm(t("admin_deleteq"))) return;
         const delId = b.getAttribute("data-del-course");
+        /* deleting an edited copy of a built-in = reset to the original */
+        if (!window.confirm(BUILTIN_IDS.has(delId) ? t("admin_resetq") : t("admin_deleteq"))) return;
         saveCustomCourses(loadCustomCourses().filter((c) => c.id !== delId));
         unpublishCourse(delId);
         syncCourses();
@@ -7798,7 +8345,7 @@
       : parts[0] === "howto" ? "tools"
       : parts[0] === "gallery" ? "gallery"
       : parts[0] === "daily" ? "home"
-      : ["my-learning", "review", "leaderboard", "account", "certificate", "community", "call", "battle"].indexOf(parts[0]) >= 0 ? "me"
+      : ["my-learning", "review", "leaderboard", "account", "certificate", "community", "call", "battle", "cv", "interview"].indexOf(parts[0]) >= 0 ? "me"
       : "";
     document.querySelectorAll("#tabbar a").forEach((a) =>
       a.classList.toggle("active", a.getAttribute("data-tab") === tabOf)
@@ -7853,6 +8400,9 @@
     else if (parts[0] === "my-learning") renderMyLearning();
     else if (parts[0] === "account") renderAccount();
     else if (parts[0] === "admin") renderAdmin(parts[1]);
+    else if (parts[0] === "verify") renderVerify(parts[1] ? decodeURIComponent(parts[1]) : "");
+    else if (parts[0] === "cv") renderCV();
+    else if (parts[0] === "interview") renderInterview();
     else if (parts[0] === "certificate" && parts[1]) renderCertificate(parts[1]);
     else if (parts[0] === "course" && parts[1]) renderCourse(parts[1]);
     else if (parts[0] === "learn" && parts[1] && parts[2]) renderLearn(parts[1], parts[2]);

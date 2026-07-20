@@ -35,6 +35,8 @@
     "wda_lesson_time",  /* time tracking                    */
     "wda_custom_courses", /* admin-created courses          */
     "wda_reviews",      /* course reviews                   */
+    "wda_cv",           /* CV builder fields                */
+    "wda_iv_hist",      /* mock-interview history           */
   ];
   const shouldSync = (k) => typeof k === "string" && SYNC_PREFIXES.some((p) => k.indexOf(p) === 0);
   /* Firebase paths may not contain . # $ [ ] / — swap them for commas.

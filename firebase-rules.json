@@ -123,6 +123,10 @@
       }
     },
     "stats": {
+      "aiConfig": {
+        ".read": true,
+        ".write": "auth != null && auth.token.email === 'mmtboy90@gmail.com'"
+      },
       "announcement": {
         ".read": true,
         ".write": "auth != null && auth.token.email === 'mmtboy90@gmail.com'",
@@ -206,6 +210,9 @@
           ".write": "auth != null",
           "ts": {
             ".validate": "newData.isNumber()"
+          },
+          "uid": {
+            ".validate": "newData.isString() && newData.val().length <= 128"
           },
           "streak": {
             ".validate": "newData.isNumber()"
@@ -364,6 +371,56 @@
         },
         "title": {
           ".validate": "newData.isString() && newData.val().length <= 120"
+        }
+      }
+    },
+    "notify": {
+      "$nid": {
+        ".write": "auth != null && !data.exists() && newData.exists() && !root.child('banned').child(auth.uid).exists()",
+        "to": {
+          ".validate": "newData.isString() && newData.val().length <= 128"
+        },
+        "type": {
+          ".validate": "newData.isString() && newData.val().length <= 10"
+        },
+        "room": {
+          ".validate": "newData.isString() && newData.val().length <= 120"
+        },
+        "from": {
+          ".validate": "newData.isString() && newData.val().length <= 40"
+        },
+        "text": {
+          ".validate": "newData.isString() && newData.val().length <= 120"
+        },
+        "ts": {
+          ".validate": "newData.isNumber()"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+    "certs": {
+      "$certId": {
+        ".read": true,
+        ".write": "auth != null && (auth.token.email === 'mmtboy90@gmail.com' || (newData.exists() && newData.child('uid').val() === auth.uid && (!data.exists() || data.child('uid').val() === auth.uid)))",
+        "name": {
+          ".validate": "newData.isString() && newData.val().length <= 60"
+        },
+        "course": {
+          ".validate": "newData.isString() && newData.val().length <= 120"
+        },
+        "cid": {
+          ".validate": "newData.isString() && newData.val().length <= 60"
+        },
+        "uid": {
+          ".validate": "newData.isString() && newData.val().length <= 128"
+        },
+        "ts": {
+          ".validate": "newData.isNumber()"
+        },
+        "$other": {
+          ".validate": false
         }
       }
     }

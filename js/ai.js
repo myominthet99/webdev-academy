@@ -115,5 +115,7 @@
       });
   }
 
-  window.AI = { ready: ready, complete: complete, stripFences: stripFences };
+  window.AI = { ready: ready, complete: complete, stripFences: stripFences,
+    /* the chat pings <worker>/notify to deliver mention/reply pushes */
+    proxyUrl: () => AI_CONFIG.proxyUrl };
 })();

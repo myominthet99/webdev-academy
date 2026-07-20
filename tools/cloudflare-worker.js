@@ -123,6 +123,54 @@ export default {
       return json({ sent: sent, removed: dead, total: tokens.length }, 200);
     }
 
+    /* ------- 🔔 /notify — drain the mention/reply queue (no secret) -------
+       The website writes shape-validated rows to RTDB /notify (auth-gated,
+       banned users can't) and pings this route. We read the queue as admin,
+       send an FCM to every push token owned by each target uid, and delete
+       the rows. Rows older than 15 min are dropped unsent, so a spammed
+       ping can never replay old notifications. */
+    if (new URL(request.url).pathname === "/notify") {
+      if (!env.FCM_SA) return json({ error: { message: "push not configured" } }, 500);
+      let auth;
+      try { auth = await saAccessToken(env); } catch (e) { return json({ error: { message: "oauth failed" } }, 502); }
+      const { access, projectId, dbUrl } = auth;
+
+      const q = await fetch(dbUrl + "/notify.json?access_token=" + access).then((r) => r.json()).catch(() => null) || {};
+      const ids = Object.keys(q);
+      if (!ids.length) return json({ sent: 0 }, 200);
+
+      /* index tokens by owner uid (uid is written by the site on enable) */
+      const all = await fetch(dbUrl + "/stats/pushTokens.json?access_token=" + access).then((r) => r.json()).catch(() => null) || {};
+      const byUid = {};
+      for (const tk of Object.keys(all)) {
+        const m = all[tk];
+        if (m && m.uid) (byUid[m.uid] = byUid[m.uid] || []).push({ tk: tk, lang: m.lang });
+      }
+
+      let sent = 0;
+      const now = Date.now();
+      for (const id of ids.slice(0, 50)) {
+        const it = q[id] || {};
+        /* consume the row first — every path below deletes it exactly once */
+        await fetch(dbUrl + "/notify/" + id + ".json?access_token=" + access, { method: "DELETE" }).catch(() => {});
+        if (!it.to || !it.ts || now - Number(it.ts) > 15 * 60 * 1000) continue;
+        const room = String(it.room || "community");
+        const url = SITE + (room !== "community" ? "#/course/" + encodeURIComponent(room) : "#/community");
+        for (const rec of (byUid[it.to] || []).slice(0, 5)) {
+          const my = rec.lang === "my";
+          const from = String(it.from || "?").slice(0, 40);
+          const title = it.type === "reply"
+            ? (my ? "↩ " + from + " က ပြန်ဖြေထားပါတယ်" : "↩ " + from + " replied to you")
+            : (my ? "💬 " + from + " က သင့်ကို ခေါ်ထားပါတယ်" : "💬 " + from + " mentioned you");
+          const res = await fcmSend(access, projectId, decodeURIComponent(rec.tk), title, String(it.text || "").slice(0, 140), url);
+          if (res.ok) sent++;
+          else if (res.status === 404 || res.status === 400)
+            await fetch(dbUrl + "/stats/pushTokens/" + rec.tk + ".json?access_token=" + access, { method: "DELETE" }).catch(() => {});
+        }
+      }
+      return json({ sent: sent }, 200);
+    }
+
     /* ---------------- 🤖 AI relay (Gemini → Groq failover) ---------------- */
     let payload;
     try { payload = await request.json(); }

@@ -64,8 +64,11 @@
   /* Message formatting: escape, then code blocks, links, and @mentions */
   function formatText(text) {
     let s = esc(text);
-    /* ```multi-line code``` and `inline code` */
-    s = s.replace(/```([\s\S]+?)```/g, (m, c) => '<pre class="chat-code">' + c.trim() + "</pre>");
+    /* ```multi-line code``` and `inline code` — fenced blocks get a
+       ▶ button that opens the snippet in the Playground */
+    s = s.replace(/```([\s\S]+?)```/g, (m, c) =>
+      '<div class="chat-codewrap"><pre class="chat-code">' + c.trim() + "</pre>" +
+      '<button type="button" class="chat-run" data-run>▶ ' + esc(t("chat_run_pg")) + "</button></div>");
     s = s.replace(/`([^`\n]+)`/g, '<code class="chat-icode">$1</code>');
     /* clickable links (trailing punctuation left out of the href) */
     s = s.replace(/https?:\/\/[^\s]+/g, (url) => {
@@ -524,6 +527,7 @@
     if (open) {
       unread = 0; renderBadge(); renderList(); renderFoot(); renderPresence(); scrollBottom();
       markPresence(room);
+      flushOutbox(); /* retry anything typed while offline */
       startLive(); /* cloud presence + typing */
       const inp = footEl.querySelector("#chat-form textarea");
       if (inp) inp.focus();
@@ -573,8 +577,13 @@
     const filtered = (searchQuery
       ? roomCache.filter((m) => (m.text || "").toLowerCase().includes(searchQuery) || (m.name || "").toLowerCase().includes(searchQuery))
       : roomCache).filter((m) => !blocked[m.userId]);
+    /* 🕓 offline outbox: queued messages for this room stay visible until sent */
+    const pendingHtml = loadOutbox().filter((x) => x.room === room).map((x) =>
+      '<div class="chat-msg mine pending"><div class="chat-bubble">' +
+      (x.msg.text ? '<div class="chat-text">' + formatText(x.msg.text) + "</div>" : "") +
+      '<div class="chat-meta"><span class="chat-time">🕓 ' + esc(t("chat_queued")) + "</span></div></div></div>").join("");
     if (!filtered.length) {
-      listEl.innerHTML = roomBar + blockedBar + '<div class="chat-empty">' + (searchQuery ? "No messages match" : t("chat_empty")) + "</div>";
+      listEl.innerHTML = roomBar + blockedBar + '<div class="chat-empty">' + (searchQuery ? "No messages match" : t("chat_empty")) + "</div>" + pendingHtml;
       wireRoomBar();
       return;
     }
@@ -658,9 +667,23 @@
           "</div></div></div></div>"
         );
       })
-      .join("");
+      .join("") + pendingHtml;
     listEl.querySelectorAll("[data-del]").forEach((b) =>
       b.addEventListener("click", () => del(b.getAttribute("data-del")))
+    );
+    /* ▶ open a shared code block in the Playground (same URL-safe base64
+       the playground's own share link uses) */
+    listEl.querySelectorAll("[data-run]").forEach((b) =>
+      b.addEventListener("click", () => {
+        const pre = b.parentElement.querySelector(".chat-code");
+        if (!pre) return;
+        const code = pre.textContent.replace(/^[a-zA-Z]+\n/, ""); /* drop a ```html tag line */
+        let enc = "";
+        try { enc = btoa(unescape(encodeURIComponent(code))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); } catch (e) {}
+        if (!enc) return;
+        setOpen(false);
+        location.hash = "#/playground/" + enc;
+      })
     );
     listEl.querySelectorAll("[data-edit]").forEach((b) =>
       b.addEventListener("click", () => edit(b.getAttribute("data-edit")))
@@ -695,7 +718,8 @@
       b.addEventListener("click", () => {
         const msg = roomCache.find((m) => (m._key || m.id) === b.getAttribute("data-reply"));
         if (!msg) return;
-        replyTo = { name: msg.name || "?", text: ((msg.caseTitle ? "📋 " + msg.caseTitle + " · " : "") + ((msg.editedText || msg.text) || (msg.img ? "📷 photo" : ""))).slice(0, 80) };
+        replyTo = { name: msg.name || "?", text: ((msg.caseTitle ? "📋 " + msg.caseTitle + " · " : "") + ((msg.editedText || msg.text) || (msg.img ? "📷 photo" : ""))).slice(0, 80),
+          uid: msg.bot ? null : (msg.userId || null) /* who to push-notify */ };
         updateReplyBar();
         const inp = footEl && footEl.querySelector("#chat-form textarea");
         if (inp) inp.focus();
@@ -1080,6 +1104,70 @@
   const FILE_OK = /\.(pdf|txt|csv|md|json|zip|docx?|xlsx?|pptx?)$/i;
   const fileKB = (dataUrl) => Math.max(1, Math.round(String(dataUrl || "").length * 0.75 / 1024));
 
+  /* 📡 Offline outbox — a message typed on a dead connection queues here
+     and sends itself when the network returns. Mobile data drops all the
+     time; a typed message must never be lost. */
+  const outboxKey = () => { const u = me(); return KEY + "::outbox::" + (u ? u.id : "guest"); };
+  const loadOutbox = () => { try { return JSON.parse(localStorage.getItem(outboxKey()) || "[]"); } catch (e) { return []; } };
+  const saveOutbox = (l) => { try { localStorage.setItem(outboxKey(), JSON.stringify(l.slice(0, 20))); } catch (e) {} };
+  let flushing = false;
+  function flushOutbox() {
+    if (flushing || !loadOutbox().length) return;
+    flushing = true;
+    const step = () => {
+      const q = loadOutbox();
+      if (!q.length) { flushing = false; if (open) renderList(); return; }
+      const item = q[0];
+      Promise.resolve(backend.add(item.room, item.msg)).then(() => {
+        saveOutbox(loadOutbox().slice(1));
+        notifyTargets(item.msg, item.targets, item.room);
+        step();
+      }).catch(() => { flushing = false; if (open) renderList(); });
+    };
+    step();
+  }
+  window.addEventListener("online", flushOutbox);
+
+  /* 🔔 Who should be push-notified by this message: the replied-to student
+     plus up to three @mentions (names resolved from recent room authors). */
+  function collectNotifyTargets(text, replyUid) {
+    const u = me();
+    const out = [];
+    const add = (uid, type) => {
+      if (uid && u && uid !== u.id && !out.some((x) => x.to === uid)) out.push({ to: uid, type: type });
+    };
+    add(replyUid, "reply");
+    const toks = String(text || "").match(/(^|\s)@([\w.-]+)/g) || [];
+    if (toks.length) {
+      const byName = {};
+      roomCache.forEach((m) => { if (m.userId && !m.bot && m.name) byName[String(m.name).toLowerCase()] = m.userId; });
+      toks.forEach((tk) => add(byName[tk.trim().slice(1).toLowerCase()], "mention"));
+    }
+    return out.slice(0, 3);
+  }
+  /* One queue row per target (shape-validated by the rules; banned accounts
+     can't write), then ping the worker's /notify route — it reads the queue
+     as admin, finds the target's push tokens and sends the FCM. */
+  function notifyTargets(msg, targets, r) {
+    if (!targets || !targets.length || !FIREBASE_CONFIG) return;
+    targets.forEach((tg) => {
+      withAuth(FIREBASE_CONFIG.databaseURL + "/notify.json")
+        .then((url) => fetch(url, {
+          method: "POST",
+          body: JSON.stringify({
+            to: tg.to, type: tg.type, room: String(r).slice(0, 120),
+            from: String(msg.name || "?").slice(0, 40),
+            text: String(msg.text || "📷").slice(0, 120), ts: Date.now(),
+          }),
+        }))
+        .then(() => {
+          const purl = window.AI && window.AI.proxyUrl && window.AI.proxyUrl();
+          if (purl) fetch(purl + "/notify", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" }).catch(() => {});
+        })
+        .catch(() => {});
+    });
+  }
+
   function send(text, img, extra) {
     text = (text || "").trim();
     if (!text && !img && !(extra && (extra.aud || extra.file))) return;
@@ -1099,8 +1187,26 @@
     };
     if (img) msg.img = img;
     if (extra) Object.assign(msg, extra); /* e.g. case studies: {caseStudy, caseTitle} */
-    if (replyTo) { msg.reply = { name: replyTo.name, text: replyTo.text }; replyTo = null; updateReplyBar(); }
-    Promise.resolve(backend.add(room, msg)).catch(() => {
+    let replyUid = null;
+    if (replyTo) { msg.reply = { name: replyTo.name, text: replyTo.text }; replyUid = replyTo.uid || null; replyTo = null; updateReplyBar(); }
+    const targets = collectNotifyTargets(text, replyUid);
+    /* offline → queue instead of failing; it flushes on the "online" event */
+    if (!navigator.onLine) {
+      const q = loadOutbox(); q.push({ room: room, msg: msg, targets: targets }); saveOutbox(q);
+      showStatus("🕓 " + t("chat_queued"));
+      renderList(); scrollBottom();
+      return;
+    }
+    Promise.resolve(backend.add(room, msg)).then(() => {
+      notifyTargets(msg, targets, room);
+      flushOutbox(); /* anything still queued rides along */
+    }).catch(() => {
+      if (!navigator.onLine) { /* dropped mid-flight → queue it */
+        const q = loadOutbox(); q.push({ room: room, msg: msg, targets: targets }); saveOutbox(q);
+        showStatus("🕓 " + t("chat_queued"));
+        renderList(); scrollBottom();
+        return;
+      }
       /* a rules rejection may mean this account is banned — say so plainly */
       if (FIREBASE_CONFIG) {
         withAuth(FIREBASE_CONFIG.databaseURL + "/banned/" + encodeURIComponent(u.id) + ".json")

@@ -13167,6 +13167,454 @@ curl http://localhost:11434/api/chat -d '{
     ],
   },
   {
+    id: "prompt-engineering",
+    title: "Prompt Engineering Mastery",
+    subtitle: "Talk to AI like a pro — from your first structured prompt to Chain-of-Thought, JSON output, RAG prompts and systematic testing.",
+    instructor: "Myo Min Thet",
+    category: "AI",
+    level: "Beginner",
+    rating: 4.9,
+    ratings: 640,
+    students: 7420,
+    hours: 12,
+    price: "Free",
+    free: false,
+    color: "linear-gradient(135deg,#134e5e,#71b280)",
+    icon: "🪄",
+    description:
+      "Everyone types into AI chat boxes — very few get professional results out of them. This course turns you into one of the few. You'll learn how LLMs actually think (tokens, context, temperature), master the anatomy of a strong prompt, then level up through the full technique ladder: zero-shot and few-shot, Chain-of-Thought, system prompts, constraints, Tree-of-Thoughts, multimodal prompting and JSON output for apps. The final section connects prompts to real systems — RAG, agents, and systematic prompt testing — and ends with a career map. Simple English, Myanmar-flavored examples, exercises you can run in this academy's own AI tutor.",
+    whatYouLearn: [
+      "Understand tokens, context windows, temperature and why models hallucinate",
+      "Write structured prompts with Role, Context, Task and Format every time",
+      "Use few-shot examples and Chain-of-Thought to boost answer quality",
+      "Control AI with system prompts, constraints and negative prompting",
+      "Get reliable JSON output for apps, tools and automations",
+      "Test prompts systematically and build a portfolio that proves your skill",
+    ],
+    sections: [
+      {
+        title: "Foundations — How AI Thinks (Week 1)",
+        lessons: [
+          article("pe-what", "What is Prompt Engineering?", "8 min", `
+<h3>🎯 The highest-leverage skill of the AI era</h3>
+<p>The same AI model gives one person a useless wall of text and another person a perfect answer. The difference is not luck — it's the <strong>prompt</strong>. Prompt engineering is designing your input so the model reliably produces the output you actually need.</p>
+<div class="flow">
+  <div class="flow-box">😕 "write about my shop"<br><small>vague ask —<br>model guesses everything</small></div>
+  <div class="flow-arrow" data-label="vs"></div>
+  <div class="flow-box alt">🪄 Role + Context +<br>Task + Format<br><small>engineered prompt</small></div>
+  <div class="flow-arrow" data-label="produces"></div>
+  <div class="flow-box">✅ Exactly what<br>you needed<br><small>first try, every try</small></div>
+</div>
+<h3>📝 Why this still matters in 2026</h3>
+<ul>
+  <li><strong>AI is in every job now</strong> — writing, coding, design, marketing, support. The person who prompts well does an afternoon of work in ten minutes.</li>
+  <li><strong>Models got smarter, not psychic</strong> — they still can't read your mind. Clear inputs beat clever models.</li>
+  <li><strong>It's the gateway skill</strong> — RAG systems, agents and AI apps are all built on engineered prompts. This course is step one of the AI-builder ladder.</li>
+</ul>
+<h3>💡 The ladder you'll climb</h3>
+<ol>
+  <li><strong>Fundamentals</strong> — how models think + prompt anatomy (this week).</li>
+  <li><strong>Techniques</strong> — few-shot, Chain-of-Thought, system prompts, constraints.</li>
+  <li><strong>Advanced</strong> — Tree-of-Thoughts, multimodal, JSON for apps.</li>
+  <li><strong>Applied</strong> — RAG, agents, testing, and your career map.</li>
+</ol>
+<div class="callout tip"><strong>Try it yourself:</strong> ask this academy's AI tutor "write about my shop" — then ask again with a role ("you are a Facebook marketer"), context (what your shop sells), and a format ("3 short posts with emoji"). Feel the difference. That feeling is this whole course.</div>`),
+          article("pe-llm", "Inside the Model: Tokens, Context & Temperature", "10 min", `
+<h3>🎯 A very good guesser</h3>
+<p>A large language model does one thing: given text, it predicts the next small piece — a <strong>token</strong> — thousands of times in a row. Everything that looks like intelligence emerges from that loop. Understanding this changes how you prompt.</p>
+<div class="flow">
+  <div class="flow-box">📝 Your prompt<br><small>split into tokens<br>(~4 characters each)</small></div>
+  <div class="flow-arrow" data-label="fed into"></div>
+  <div class="flow-box alt">🧠 The model<br><small>predicts the next token,<br>again and again</small></div>
+  <div class="flow-arrow" data-label="streams out"></div>
+  <div class="flow-box">💬 The answer<br><small>until a natural stop</small></div>
+</div>
+<h3>📝 Four words that explain 90% of AI behavior</h3>
+<ul>
+  <li><strong>Token</strong> — the unit of thinking AND billing. "Mingalaba" is about 4 tokens.</li>
+  <li><strong>Context window</strong> — how much text the model can see at once. Anything outside the window <em>does not exist</em> for the model — that's why long chats "forget" the beginning.</li>
+  <li><strong>Temperature</strong> — the randomness dial. Low = same careful answer every time (facts, extraction). High = varied and creative (brainstorms, stories).</li>
+  <li><strong>Hallucination</strong> — the model produces confident-sounding text, not verified facts. When it doesn't know, it guesses <em>fluently</em>. Your prompts must plan for this.</li>
+</ul>
+<h3>💡 Three consequences for your prompts</h3>
+<ol>
+  <li>Put the important stuff <strong>in</strong> the prompt — the model can't see your screen, your files or your last conversation.</li>
+  <li>Order matters — instructions near the task text get followed more reliably than instructions buried far away.</li>
+  <li>Always give an escape hatch: "If you are not sure, say so." This one line kills most hallucinations.</li>
+</ol>
+<div class="callout tip"><strong>Try it yourself:</strong> ask the AI tutor the same question twice and compare wording — that's temperature. Then ask it about your own street by name and watch it politely guess — that's why we engineer prompts.</div>`),
+          article("pe-anatomy", "The Anatomy of a Strong Prompt", "12 min", `
+<h3>🎯 The four building blocks</h3>
+<p>Almost every professional prompt is built from the same four parts. Miss one, and the model fills the gap with a guess.</p>
+<ul>
+  <li><strong>1. Role / Persona</strong> — who the AI should be. "You are an experienced Burmese-English translator" activates different knowledge than no role at all.</li>
+  <li><strong>2. Context</strong> — what the AI needs to know: background, audience, constraints, the situation.</li>
+  <li><strong>3. Task</strong> — the clear action, one sentence, verb first: "Write…", "Summarize…", "List…", "Compare…".</li>
+  <li><strong>4. Format &amp; Tone</strong> — the shape of the answer: table, bullet list, JSON, word limit, language, voice.</li>
+</ul>
+<h3>💻 The template you'll use forever</h3>
+<pre><code>ROLE: You are a friendly social media manager for small shops.
+
+CONTEXT: My shop "Shwe Lin Yone" sells handmade bags in Yangon.
+Customers are women aged 20-35 on Facebook. Price range 15,000-40,000 MMK.
+
+TASK: Write 3 Facebook post ideas announcing our Thingyan sale (20% off).
+
+FORMAT: Each post under 60 words, one emoji per post,
+end with a question to boost comments. Write in Burmese.</code></pre>
+<h3>📝 Weak vs strong — same request</h3>
+<ul>
+  <li>❌ "write facebook post for my bag shop sale" → generic, English, wrong audience.</li>
+  <li>✅ The template above → three ready-to-publish Burmese posts in your exact voice.</li>
+</ul>
+<div class="callout"><strong>The 10-second check:</strong> before sending any prompt, scan for the four blocks — Role? Context? Task? Format? If two are missing, don't send it yet.</div>
+<div class="callout tip"><strong>Try it yourself:</strong> take something you asked an AI this week and rewrite it with all four blocks. Run both versions in the AI tutor and compare. Keep the template — it's your new home page.</div>`),
+          quiz("pe-quiz-1", "Quiz: Fundamentals", [
+            { q: "An LLM fundamentally works by…", options: ["Searching the internet live", "Predicting the next token again and again", "Copying from a database of answers", "Running your code"], answer: 1 },
+            { q: "Text outside the context window is…", options: ["Summarized automatically", "Remembered forever", "Invisible to the model", "Stored in the cloud"], answer: 2 },
+            { q: "For extracting exact data, temperature should be…", options: ["As high as possible", "Low — you want the same careful answer every time", "It doesn't matter", "Negative"], answer: 1 },
+            { q: "The four blocks of a strong prompt are…", options: ["Please, thanks, sorry, goodbye", "Role, Context, Task, Format", "Question, answer, question, answer", "Copy, paste, send, wait"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "The Essential Techniques (Weeks 2–3)",
+        lessons: [
+          article("pe-shots", "Zero-Shot vs Few-Shot Prompting", "10 min", `
+<h3>🎯 Show, don't just tell</h3>
+<p><strong>Zero-shot</strong> = instructions only. <strong>Few-shot</strong> = instructions plus 2–3 examples of perfect input→output pairs. Examples teach the model your exact style, format and edge cases better than any adjective can.</p>
+<h3>💻 The few-shot pattern</h3>
+<pre><code>TASK: Classify each customer message as ORDER, QUESTION, or COMPLAINT.
+
+Example 1:
+Message: "Do you have this in red?"
+Answer: QUESTION
+
+Example 2:
+Message: "I ordered 3 days ago and nothing arrived!!"
+Answer: COMPLAINT
+
+Example 3:
+Message: "I'll take two of the small ones, deliver to Hledan"
+Answer: ORDER
+
+Now classify:
+Message: "The bag broke after one week 😡"
+Answer:</code></pre>
+<h3>📝 When to use which</h3>
+<ul>
+  <li><strong>Zero-shot</strong> — simple, common tasks the model has seen a million times: "summarize this", "translate this".</li>
+  <li><strong>Few-shot</strong> — anything with YOUR format, YOUR categories, YOUR style: classification, data extraction, writing in your brand voice, Burmese-English mixed content.</li>
+  <li><strong>Rule of thumb:</strong> output wrong format twice? Stop editing adjectives — add two examples instead.</li>
+</ul>
+<h3>💡 Choosing good examples</h3>
+<ol>
+  <li>Cover variety — one normal case, one tricky case, one edge case.</li>
+  <li>Keep them short — examples eat context window.</li>
+  <li>Make them perfect — the model copies your examples' mistakes too!</li>
+</ol>
+<div class="callout tip"><strong>Try it yourself:</strong> ask the AI tutor to classify 3 messages zero-shot, then again with the few-shot pattern above. Count how many labels changed — that jump is why professionals default to few-shot.</div>`),
+          article("pe-cot", "Chain-of-Thought: Make It Think First", "10 min", `
+<h3>🎯 Answers improve when the model shows its working</h3>
+<p><strong>Chain-of-Thought (CoT)</strong> prompting asks the model to reason step-by-step BEFORE giving the final answer. For math, logic, planning and tricky decisions, this single technique can double accuracy.</p>
+<h3>💻 The magic phrase, upgraded</h3>
+<pre><code>QUESTION: A shop buys bags for 12,000 MMK and sells for 18,000 MMK.
+This month it sold 45 bags but 3 were returned for full refunds.
+Rent was 150,000 MMK. What was the profit?
+
+Think through this step by step:
+1. First, work out each part of the calculation.
+2. Show every step with numbers.
+3. Then give the final answer on its own line starting with "ANSWER:".</code></pre>
+<p>Without CoT the model may jump to a confident wrong number. With CoT, mistakes become visible — and usually don't happen at all.</p>
+<h3>📝 When CoT helps (and when it doesn't)</h3>
+<ul>
+  <li>✅ Math, money, logic puzzles, multi-condition decisions ("which phone should I buy given…"), debugging, planning.</li>
+  <li>❌ Simple lookups and short creative tasks — extra steps just slow things down.</li>
+  <li>💡 Modern "reasoning" models think internally by default — but asking for visible steps still helps YOU verify, and structures the final answer.</li>
+</ul>
+<h3>💡 The separator trick</h3>
+<p>Always ask for reasoning and answer in <strong>separate labeled parts</strong> ("show steps, then ANSWER: on its own line"). Your eyes — or your code — can then grab just the answer while the reasoning stays checkable.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> give the AI tutor the bag-shop problem twice — once plain, once with the step-by-step instruction. Check both against your own calculation (profit = 42×6,000 − 150,000 = 102,000 MMK).</div>`),
+          article("pe-system", "Role & System Prompts: Setting the Rules", "10 min", `
+<h3>🎯 Two channels, two jobs</h3>
+<p>Apps built on AI send two kinds of text: the <strong>system prompt</strong> (standing instructions, set once by the builder) and <strong>user messages</strong> (whatever the person types). The system prompt is where behavior, safety and format rules live — the user can't easily override them.</p>
+<div class="flow">
+  <div class="flow-box alt">⚙️ System prompt<br><small>who the AI is, rules,<br>tone, output format</small></div>
+  <div class="flow-arrow" data-label="governs"></div>
+  <div class="flow-box">💬 Every user message<br><small>questions, tasks,<br>even trick attempts</small></div>
+  <div class="flow-arrow" data-label="produces"></div>
+  <div class="flow-box">✅ Consistent behavior<br><small>same persona,<br>every reply</small></div>
+</div>
+<h3>💻 A real system prompt (an academy tutor bot)</h3>
+<pre><code>You are "Saya Lin", a patient coding tutor for Myanmar teenagers.
+
+BEHAVIOR:
+- Explain in simple English; add Burmese for hard concepts.
+- Guide with hints first — never give homework answers directly.
+- Use one emoji per reply maximum. Keep replies under 150 words.
+
+SAFETY:
+- Only discuss programming and study topics.
+- If asked anything else, warmly steer back to learning.</code></pre>
+<h3>📝 What belongs in a system prompt</h3>
+<ul>
+  <li><strong>Persona</strong> — name, expertise, personality.</li>
+  <li><strong>Guardrails</strong> — allowed topics, refusal rules, safety lines.</li>
+  <li><strong>Format law</strong> — length limits, language, structure that must hold for EVERY reply.</li>
+</ul>
+<div class="callout"><strong>Why it matters to you:</strong> even in a chat box, starting your conversation with a mini system prompt ("For this whole chat, act as… and always…") makes every later message cheaper and more consistent.</div>
+<div class="callout tip"><strong>Try it yourself:</strong> write a system prompt for a bot that answers questions about YOUR school or shop. Include one persona line, two guardrails, and one format rule. Test it as your first message to the AI tutor.</div>`),
+          article("pe-negative", "Constraints & Negative Prompting", "8 min", `
+<h3>🎯 Telling AI what NOT to do</h3>
+<p>Models are eager to impress — they over-explain, add fluff, and invent details. <strong>Constraints</strong> (limits) and <strong>negative prompts</strong> (explicit don'ts) cut all of that away.</p>
+<h3>💻 The constraint toolbox</h3>
+<pre><code>TASK: Explain what an API is.
+
+CONSTRAINTS:
+- Maximum 80 words.
+- No jargon: do NOT use "endpoint", "protocol", or "interface".
+- Explain like I'm 14, with one real-life analogy.
+- Do not use bullet points — one flowing paragraph.
+- If any part is uncertain, say "I'm not sure" instead of guessing.</code></pre>
+<h3>📝 The five most useful constraints</h3>
+<ul>
+  <li><strong>Length</strong> — "under 100 words", "exactly 5 bullet points". Vague asks get long answers.</li>
+  <li><strong>Vocabulary</strong> — "no jargon", "avoid these words: …", "B1-level English".</li>
+  <li><strong>Scope</strong> — "only from the text I gave you", "don't mention competitors".</li>
+  <li><strong>Structure</strong> — "no introduction, start directly with step 1".</li>
+  <li><strong>The honesty hatch</strong> — "say UNKNOWN rather than invent". The single best anti-hallucination line.</li>
+</ul>
+<h3>💡 One warning</h3>
+<p>Negative rules work best <em>specific and few</em>. A list of 15 don'ts confuses the model — pick the 3 that matter, and phrase positively where possible ("write one paragraph" beats "don't use lists, don't use headers, don't…").</p>
+<div class="callout tip"><strong>Try it yourself:</strong> ask the AI tutor to explain "cloud computing" plain, then again with the constraint toolbox above. The second answer is the one you could actually send to a customer.</div>`),
+          quiz("pe-quiz-2", "Quiz: Core Techniques", [
+            { q: "Your output format keeps coming out wrong. The professional fix is…", options: ["Type in ALL CAPS", "Add 2–3 perfect input→output examples (few-shot)", "Ask 10 more times", "Switch languages"], answer: 1 },
+            { q: "Chain-of-Thought helps most with…", options: ["Short creative slogans", "Math, logic and multi-step decisions", "Copying text", "Nothing — it's decoration"], answer: 1 },
+            { q: "A system prompt is where you put…", options: ["Your daily questions", "Standing rules: persona, guardrails, format law", "Passwords", "Only greetings"], answer: 1 },
+            { q: "The best single line against hallucination:", options: ["\"Be smart\"", "\"Answer faster\"", "\"If unsure, say UNKNOWN instead of guessing\"", "\"Use more emoji\""], answer: 2 },
+          ]),
+        ],
+      },
+      {
+        title: "Advanced Methods & Workflows (Weeks 4–5)",
+        lessons: [
+          article("pe-tot", "Tree-of-Thoughts & Self-Consistency", "10 min", `
+<h3>🎯 One answer is a sample — several answers are a signal</h3>
+<p>For hard problems, a single reply is just one path the model happened to take. Two techniques exploit that:</p>
+<ul>
+  <li><strong>Self-consistency</strong> — ask the same hard question several times (or ask for several independent solutions), then take the majority answer. Wrong paths disagree with each other; correct paths agree.</li>
+  <li><strong>Tree-of-Thoughts (ToT)</strong> — ask the model to branch: propose multiple approaches first, evaluate each, THEN solve using the best one.</li>
+</ul>
+<h3>💻 ToT in one practical prompt</h3>
+<pre><code>PROBLEM: Our page loads slowly on mobile in Myanmar (slow 3G common).
+
+Step 1 — List 3 fundamentally different approaches to fix this.
+Step 2 — For each: one strength, one weakness, effort (low/med/high).
+Step 3 — Pick the best approach FOR OUR SITUATION and explain why.
+Step 4 — Give the step-by-step plan for that approach only.</code></pre>
+<p>This forces exploration before commitment — the same discipline good engineers use, encoded in a prompt.</p>
+<h3>📝 When these are worth the extra tokens</h3>
+<ul>
+  <li>✅ Decisions with trade-offs (tech choices, pricing, planning), tricky math, anything where a wrong answer is expensive.</li>
+  <li>❌ Everyday tasks — the simple techniques from Section 2 are cheaper and enough.</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> take a real decision you're facing (course to study next, feature to build first) and run the 4-step ToT prompt on it. Notice how Step 2 alone often changes your mind.</div>`),
+          article("pe-iterate", "Iterative Refinement: Debugging Your Prompts", "10 min", `
+<h3>🎯 Prompts are drafts, not spells</h3>
+<p>Professionals don't write perfect prompts — they <strong>debug</strong> them. The loop is exactly like debugging code:</p>
+<div class="flow">
+  <div class="flow-box">▶️ Run the prompt<br><small>on real inputs</small></div>
+  <div class="flow-arrow" data-label="inspect"></div>
+  <div class="flow-box warn">🔍 Find the failure<br><small>wrong format? tone?<br>missed a case?</small></div>
+  <div class="flow-arrow" data-label="fix"></div>
+  <div class="flow-box alt">✏️ Change ONE thing<br><small>one rule, one example,<br>one constraint</small></div>
+  <div class="flow-arrow" data-label="repeat"></div>
+  <div class="flow-box">✅ Stable prompt<br><small>save it in your library</small></div>
+</div>
+<h3>📝 Diagnosing the four common failures</h3>
+<ul>
+  <li><strong>Wrong format</strong> → your Format block is vague → add a literal example of the output shape.</li>
+  <li><strong>Too generic</strong> → missing Context → add audience, situation, and one detail only you know.</li>
+  <li><strong>Invented facts</strong> → no escape hatch → add "only from the info provided; else say UNKNOWN".</li>
+  <li><strong>Ignores a rule</strong> → rule buried mid-paragraph → move it to a numbered RULES list near the task.</li>
+</ul>
+<h3>💡 Keep a prompt library</h3>
+<p>Every time a prompt survives three different inputs, save it — a notes file with the prompt, an example output, and a one-line "use for…". After a month you'll have a personal toolkit worth more than any cheat sheet, and teammates will start asking for it.</p>
+<div class="callout"><strong>Change one thing at a time.</strong> If you change five things and it improves, you learned nothing. Single changes teach you what actually works — that knowledge is the real skill.</div>
+<div class="callout tip"><strong>Try it yourself:</strong> take your weakest prompt from this course so far and run the loop three times, one change per run. Write down which single change moved quality most.</div>`),
+          article("pe-multimodal", "Multimodal Prompting: Images, Audio & Documents", "10 min", `
+<h3>🎯 Prompts aren't just text anymore</h3>
+<p>Modern models (Claude, Gemini, GPT-4o) accept <strong>images, documents and audio</strong> alongside your text. The prompting rules you've learned still apply — plus a few new ones.</p>
+<h3>📝 What multimodal unlocks</h3>
+<ul>
+  <li><strong>Screenshots</strong> — "Why is this CSS layout broken?" with the actual screenshot beats any description.</li>
+  <li><strong>Photos</strong> — handwritten notes → typed text; a product photo → a sales description; a whiteboard → structured meeting notes.</li>
+  <li><strong>Documents</strong> — a PDF invoice → extracted totals; a contract → plain-language summary of risks.</li>
+  <li><strong>Audio</strong> — voice memos → transcripts → action lists.</li>
+</ul>
+<h3>💻 The pattern: direct the model's eyes</h3>
+<pre><code>(attach: photo of a handwritten Burmese price list)
+
+TASK: Convert this handwritten price list into a table.
+
+LOOK FOR: item name (Burmese), price in MMK, and any crossed-out
+items (mark them "discontinued").
+
+FORMAT: a table with columns: Item | Price (MMK) | Status.
+If any handwriting is unreadable, write "???" — do not guess.</code></pre>
+<h3>💡 Three multimodal habits</h3>
+<ol>
+  <li><strong>Say what to look at</strong> — "focus on the error message in the bottom-left" beats hoping it notices.</li>
+  <li><strong>Ask for structure</strong> — images in, tables/JSON out. Unstructured descriptions of images are rarely useful.</li>
+  <li><strong>Keep the honesty hatch</strong> — "write ??? if unreadable" matters even more with blurry photos than with text.</li>
+</ol>
+<div class="callout tip"><strong>Try it yourself:</strong> photograph a real receipt or handwritten note and ask an AI (Claude or Gemini) to extract it into a table with the pattern above. Check every cell — you'll learn exactly where vision models are strong and weak.</div>`),
+          article("pe-json", "Tool Calling & JSON Output for Apps", "12 min", `
+<h3>🎯 When the reader is a program, not a person</h3>
+<p>The moment AI output feeds an app, a database or an automation (like your n8n flows), pretty paragraphs become useless. Programs need <strong>exact, valid JSON</strong> — and getting it reliably is a prompt engineering discipline.</p>
+<h3>💻 The strict-JSON prompt pattern</h3>
+<pre><code>ROLE: You are a data extractor for an online shop.
+
+TASK: Extract order details from the customer message.
+
+RULES:
+- Reply with ONLY valid JSON. No explanations, no markdown fences.
+- Use exactly these fields. Missing info → null. NEVER invent values.
+
+FORMAT:
+{ "customer": "...", "items": [ { "name": "...", "qty": 1 } ],
+  "township": "...", "phone": "...", "cod": true }
+
+MESSAGE: "Ma Ma, I want 2 blue bags and 1 wallet, send to Sanchaung,
+09-4321..., I'll pay on delivery"</code></pre>
+<h3>📝 Why each rule exists</h3>
+<ul>
+  <li><strong>"ONLY valid JSON"</strong> — one stray sentence breaks the app that parses it.</li>
+  <li><strong>"exactly these fields"</strong> — code reads fields by name; surprise fields = bugs.</li>
+  <li><strong>"missing → null, never invent"</strong> — a made-up phone number is far worse than an empty one.</li>
+</ul>
+<h3>💡 Tool / function calling — the same idea, formalized</h3>
+<p>APIs let you register functions ("check_stock", "create_order") with typed parameters. The model then <em>fills in the arguments</em> as structured JSON and your code executes the call. Every rule above still applies — you're just declaring the format as a schema instead of showing it in the prompt. This is the bridge into AI engineering.</p>
+<div class="callout"><strong>Always validate:</strong> even at temperature 0, parse the JSON in code and check required fields before using it. Trust, but verify — the model is a very good guesser, not a database.</div>
+<div class="callout tip"><strong>Try it yourself:</strong> run the extractor prompt on three fake customer messages — one complete, one missing the phone, one in mixed Burmese-English. Check: valid JSON all three times? Nulls where info was missing?</div>`),
+        ],
+      },
+      {
+        title: "Applied Prompting & Your Career (Week 6+)",
+        lessons: [
+          article("pe-rag", "Prompts Meet Your Data: RAG", "10 min", `
+<h3>🎯 The model doesn't know YOUR world</h3>
+<p>No model knows your shop's prices, your school's timetable, or this month's news. <strong>Retrieval-Augmented Generation (RAG)</strong> fixes that: search your documents first, paste the best matches into the prompt as context, then ask the question.</p>
+<div class="flow">
+  <div class="flow-box">❓ User question<br><small>"what's the refund<br>policy?"</small></div>
+  <div class="flow-arrow" data-label="search first"></div>
+  <div class="flow-box warn">🗄️ Your documents<br><small>best 2–3 matching<br>chunks retrieved</small></div>
+  <div class="flow-arrow" data-label="pasted into"></div>
+  <div class="flow-box alt">🪄 The RAG prompt<br><small>context + question<br>+ grounding rules</small></div>
+  <div class="flow-arrow" data-label="answers"></div>
+  <div class="flow-box">✅ Grounded answer<br><small>with source cited</small></div>
+</div>
+<h3>💻 The grounding prompt — the part that is pure prompt engineering</h3>
+<pre><code>Answer the question using ONLY the context below.
+
+RULES:
+- If the answer is not in the context, reply exactly:
+  "I don't have that information."
+- Quote the relevant sentence when possible, and name the source.
+- Do not use any outside knowledge, even if you are confident.
+
+CONTEXT:
+[Source: refund-policy.md] Customers may return items within
+7 days with the receipt…
+
+QUESTION: Can I return a bag after 10 days?</code></pre>
+<h3>📝 Why so strict?</h3>
+<p>Without the ONLY rule, the model blends your documents with its general guesses — and you can't tell which is which. Grounding rules turn "probably right" into "provably right", which is what businesses pay for.</p>
+<div class="callout"><strong>Go deeper:</strong> building the search half (embeddings, vector databases) is covered in the 🤖 <em>Agentic AI Engineering</em> course — this lesson is the prompt half you'll reuse there.</div>
+<div class="callout tip"><strong>Try it yourself:</strong> paste any paragraph from this course as CONTEXT and ask one question it answers and one it doesn't. The second must return "I don't have that information." — if not, tighten your rules.</div>`),
+          article("pe-agents", "Prompts that Drive Agents", "10 min", `
+<h3>🎯 From answers to actions</h3>
+<p>An <strong>agent</strong> is an AI that plans steps, uses tools (search, code, APIs), checks results and keeps going until the goal is done. Frameworks like CrewAI and AutoGen orchestrate this — but the "brain" of every agent is still a prompt: its <strong>operating manual</strong>.</p>
+<h3>💻 An agent prompt = an operating manual</h3>
+<pre><code>GOAL: Research a topic and produce a short report.
+
+TOOLS YOU MAY USE:
+- web_search(query) — find recent sources
+- read_page(url) — read one page fully
+
+PROCESS:
+1. Plan: list the 3 sub-questions you need to answer.
+2. For each: search, read the best source, note key facts + URL.
+3. Write a 200-word summary citing every source used.
+
+RULES:
+- Maximum 6 tool calls total. Then you MUST write the report.
+- If sources conflict, say so — do not silently pick one.
+- Never invent a URL or a fact you didn't read.</code></pre>
+<h3>📝 The three ingredients every agent prompt needs</h3>
+<ul>
+  <li><strong>A clear goal + process</strong> — agents without a process wander (and burn your money doing it).</li>
+  <li><strong>Explicit tool descriptions</strong> — the model only uses tools well if it understands exactly what each does.</li>
+  <li><strong>Stop conditions &amp; guardrails</strong> — max steps, forbidden actions, "ask before anything destructive". Runaway agents are a real (expensive) failure mode.</li>
+</ul>
+<h3>💡 Multi-agent = multiple system prompts</h3>
+<p>A "research crew" is just several agents with different operating manuals — a Researcher, a Writer, a Critic — passing work between them. Design each manual with everything from this course: role, constraints, format, escape hatches.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> write the operating manual for an agent that plans a study week from your course list: goal, 2 imaginary tools, a 3-step process, and 2 guardrails. This exact skill is what the agent frameworks run on.</div>`),
+          article("pe-evals", "Testing Prompts Like a Pro", "10 min", `
+<h3>🎯 "It worked once" is not evidence</h3>
+<p>A prompt that worked on one friendly example can fail on the next ten real ones. Professionals keep an <strong>eval set</strong> — a fixed list of test inputs — and re-run it after every prompt change, exactly like unit tests for code.</p>
+<h3>📝 Building your eval set (30 minutes, once)</h3>
+<ol>
+  <li>Collect <strong>10–20 real inputs</strong> — include the ugly ones: typos, mixed Burmese-English, missing info, angry tone, trick questions.</li>
+  <li>Write the <strong>expected result</strong> for each — the exact label/JSON, or a checklist ("under 80 words, no jargon, has one analogy").</li>
+  <li>Store them in a simple table: input | expected | latest output | pass?</li>
+</ol>
+<h3>📝 Three ways to score</h3>
+<ul>
+  <li><strong>Exact match</strong> — for labels and JSON fields. Automatic and objective.</li>
+  <li><strong>Rubric check</strong> — for writing: 4–5 yes/no questions you answer per output.</li>
+  <li><strong>LLM-as-judge</strong> — a second AI scores outputs against your rubric. Fast at scale, but spot-check it — judges have biases too.</li>
+</ul>
+<h3>💡 The regression rule</h3>
+<p>After ANY prompt change, re-run the whole set — not just the case you were fixing. Improving one case while silently breaking three others is the classic prompt-editing trap, and evals are the only thing that catches it.</p>
+<div class="callout"><strong>This is a hiring signal:</strong> an eval table in your portfolio ("v3 prompt: 18/20, up from 11/20") instantly separates you from everyone who just says "I'm good with AI".</div>
+<div class="callout tip"><strong>Try it yourself:</strong> build a 10-row eval set for the order-extractor from the JSON lesson. Run it, count passes, improve the prompt once, run again. Save that table — it goes in your portfolio.</div>`),
+          article("pe-career", "Your Prompt Engineering Career Path", "10 min", `
+<h3>🎯 Where this skill takes you</h3>
+<p>"Prompt engineer" as a standalone title is rare now — instead, prompting became a <strong>multiplier inside every role</strong>: marketers who prompt well produce 5× the content, developers ship AI features, freelancers deliver faster. And it's the required first floor of the AI-engineer ladder.</p>
+<h3>📝 Three realistic paths from here</h3>
+<ul>
+  <li><strong>The multiplier</strong> — keep your current direction (design, marketing, code, school) and be the person who's 5× faster with AI. Lowest risk, immediate payoff.</li>
+  <li><strong>The builder</strong> — continue to 🤖 <em>Agentic AI Engineering</em>: RAG pipelines, agents, MCP. Prompting is the foundation it builds on.</li>
+  <li><strong>The freelancer</strong> — offer AI-powered services (content systems, chatbot setup, data extraction) to local businesses. Your prompt library IS the product.</li>
+</ul>
+<h3>📝 The portfolio that proves it (certificates alone don't)</h3>
+<ol>
+  <li><strong>A prompt library repo</strong> — 10–15 battle-tested prompts, each with: the prompt, when to use it, one real before/after example.</li>
+  <li><strong>One case study</strong> — "Facebook captions: 40 minutes → 6 minutes" with the iteration story from v1 to v4.</li>
+  <li><strong>One eval table</strong> — your extractor scored across 20 test cases. Proof you test, not just vibe.</li>
+</ol>
+<h3>💡 Your 30-day plan</h3>
+<ol>
+  <li>Days 1–10: finish this course; save every prompt you refine into your library.</li>
+  <li>Days 11–20: build the case study on a real task from your life; write it up honestly.</li>
+  <li>Days 21–30: publish the repo, post the case study (LinkedIn in English, Facebook in Burmese), and start the Agentic AI course.</li>
+</ol>
+<div class="callout tip"><strong>Graduation task:</strong> pass the final quiz, grab your certificate 🎓, then create the prompt-library repo TODAY with your 3 best prompts from this course. A public library with 3 great prompts beats a private folder with 300.</div>`),
+          quiz("pe-final", "Final Quiz: Prompt Engineering Mastery", [
+            { q: "The four blocks of a strong prompt are…", options: ["Role, Context, Task, Format", "Speed, length, color, font", "Hello, please, thanks, bye", "Model, GPU, token, cloud"], answer: 0 },
+            { q: "Output format keeps breaking. Best fix:", options: ["Beg the model", "Add 2–3 perfect few-shot examples", "Raise temperature", "Shorter prompt always wins"], answer: 1 },
+            { q: "For a tricky multi-step money calculation you should…", options: ["Ask for the number only, fast", "Ask for step-by-step reasoning, then a labeled final answer", "Ask in all caps", "Avoid AI entirely"], answer: 1 },
+            { q: "AI output goes straight into an app. The output must be…", options: ["A friendly paragraph", "Only valid JSON with exactly the agreed fields, validated in code", "A voice message", "Markdown with emoji"], answer: 1 },
+            { q: "A RAG prompt must instruct the model to…", options: ["Use any knowledge it has", "Answer ONLY from the provided context, and admit when the answer isn't there", "Always answer confidently", "Skip citing sources"], answer: 1 },
+            { q: "\"My prompt worked once\" — the professional response:", options: ["Ship it!", "Run it against a 10–20 case eval set and re-run after every change", "Add more emoji", "Make it longer"], answer: 1 },
+          ]),
+        ],
+      },
+    ],
+  },
+  {
     id: "cloud-computing",
     title: "Cloud Computing Foundations",
     subtitle: "Understand AWS, Azure and Google Cloud from zero — compute, storage, networking, serverless and the certification roadmap.",

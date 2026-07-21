@@ -16862,6 +16862,617 @@ Key developer leaves          2  5   10    Sam    Pair on the core
       },
     ],
   },
+  {
+    id: "flutter-zero-to-hero",
+    title: "Flutter: Zero to Hero",
+    subtitle: "Build real cross-platform mobile apps with Flutter & Dart — from your first widget to a finished app.",
+    instructor: "WebDev Academy",
+    category: "Programming",
+    level: "Beginner",
+    rating: 4.9,
+    ratings: 214,
+    students: 5600,
+    hours: 12,
+    price: "Free",
+    free: true,
+    color: "linear-gradient(135deg,#02569B,#13B9FD)",
+    icon: "📱",
+    description:
+      "One codebase, every screen. In this zero-to-hero course you'll learn Dart, then master Flutter widgets, layout, state and navigation — and finish able to build real Android and iOS apps that fetch data, save it, and look great. No prior mobile experience needed.",
+    whatYouLearn: [
+      "Write Dart: variables, null safety, collections, classes and async",
+      "Think in widgets — Stateless vs Stateful, and how the tree renders",
+      "Lay out any screen with Row, Column, Expanded, Stack and ListView",
+      "Manage state with setState (and know when to reach for Provider)",
+      "Navigate between screens and pass data",
+      "Fetch data from an API and show it with FutureBuilder",
+      "Save data on the device and validate forms",
+      "Build and ship an app for Android & iOS",
+    ],
+    sections: [
+      {
+        title: "1 · Getting Started with Flutter",
+        lessons: [
+          article("fl-what", "What is Flutter (and Dart)?", "6 min", `
+<h3>🎯 One codebase, every device</h3>
+<p><strong>Flutter</strong> is Google's toolkit for building apps that run on <strong>Android, iOS, web and desktop from a single codebase</strong>. You write the app once in the <strong>Dart</strong> language, and Flutter draws every pixel itself — so your app looks and behaves the same everywhere.</p>
+<h3>📝 Why people love it</h3>
+<ul>
+  <li><strong>Fast:</strong> compiled to native code, with buttery 60fps UI.</li>
+  <li><strong>Hot reload:</strong> change your code and see it on screen in under a second.</li>
+  <li><strong>Everything is a widget:</strong> one simple idea builds the whole UI (you'll see this soon).</li>
+  <li><strong>Huge ecosystem:</strong> thousands of ready packages on <em>pub.dev</em>.</li>
+</ul>
+<h3>💡 Flutter vs Dart</h3>
+<p><strong>Dart</strong> is the <em>language</em> you type. <strong>Flutter</strong> is the <em>framework</em> of widgets and tools built with Dart. Learn a little Dart, then spend most of your time in Flutter.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> Open <em>dartpad.dev</em> in your browser — it runs Dart and Flutter with zero setup. Keep it open while you take this course.</div>`),
+          article("fl-setup", "Setting Up Your Machine", "8 min", `
+<h3>🎯 Goal: run <code>flutter doctor</code> with all green checks</h3>
+<p>You have two ways to follow along:</p>
+<h3>📝 Option A — No install (fastest)</h3>
+<p>Use <strong>DartPad</strong> (dartpad.dev) for Dart snippets and small Flutter samples. Perfect for this course's examples.</p>
+<h3>📝 Option B — Full setup (to build real apps)</h3>
+<ul>
+  <li>Install the <strong>Flutter SDK</strong> from flutter.dev, and add it to your PATH.</li>
+  <li>Install an editor: <strong>VS Code</strong> (add the Flutter extension) or Android Studio.</li>
+  <li>Install the <strong>Android SDK</strong> (via Android Studio) for an emulator, and/or Xcode on a Mac for iOS.</li>
+</ul>
+<p>Then check everything is wired up:</p>
+<pre><code>flutter doctor</code></pre>
+<p>Fix anything it flags until each line shows a green check. Create and run your first project with:</p>
+<pre><code>flutter create my_app
+cd my_app
+flutter run</code></pre>
+<div class="callout tip"><strong>Try it yourself:</strong> Run <code>flutter doctor</code> and note anything with a red ✗ — that's your setup to-do list.</div>`),
+          article("fl-first", "Your First App: main() and runApp()", "7 min", `
+<h3>🎯 The smallest Flutter app</h3>
+<p>Every Flutter app starts at <code>main()</code>, which calls <code>runApp()</code> with a widget. Here is a complete, working app:</p>
+<pre><code>import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(title: const Text('Hello Flutter')),
+        body: const Center(
+          child: Text('I built my first app!'),
+        ),
+      ),
+    );
+  }
+}</code></pre>
+<h3>📝 What each piece does</h3>
+<ul>
+  <li><code>MaterialApp</code> — sets up theming, routing and more.</li>
+  <li><code>Scaffold</code> — the basic screen layout (app bar, body, buttons).</li>
+  <li><code>AppBar</code> / <code>Center</code> / <code>Text</code> — widgets that build the UI.</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> Paste this into DartPad (Flutter mode) and change the two strings. Run it.</div>`),
+          article("fl-hotreload", "Hot Reload — The Superpower", "5 min", `
+<h3>🎯 Change code, see it instantly</h3>
+<p><strong>Hot reload</strong> injects your changed code into the <em>running</em> app and keeps its current state — no restart, no losing your place. It's why Flutter feels so fast to build with.</p>
+<h3>📝 How to use it</h3>
+<ul>
+  <li>In VS Code / Android Studio: just <strong>save the file</strong> (Ctrl/Cmd + S).</li>
+  <li>From the terminal after <code>flutter run</code>: press <strong>r</strong> for hot reload, <strong>R</strong> for a full restart.</li>
+</ul>
+<h3>💡 Reload vs Restart</h3>
+<p><strong>Hot reload</strong> keeps state (great for tweaking UI). A <strong>hot restart</strong> resets state (use it after changing <code>main()</code> or global variables).</p>
+<div class="callout tip"><strong>Try it yourself:</strong> With your app running, change a color or text and save. Notice the change appears while your counter or scroll position stays put.</div>`),
+          quiz("fl-q1", "Quiz: Flutter Basics", [
+            { q: "What does Flutter let you do?", options: ["Only build Android apps", "Build Android, iOS, web & desktop from one codebase", "Only style websites", "Replace the Dart language"], answer: 1 },
+            { q: "Which language do you write Flutter apps in?", options: ["JavaScript", "Kotlin", "Dart", "Swift"], answer: 2 },
+            { q: "Every Flutter app begins by calling…", options: ["start()", "runApp() from main()", "render()", "build() directly"], answer: 1 },
+            { q: "Hot reload is special because it…", options: ["Restarts the whole phone", "Applies code changes while keeping the app's current state", "Only works on the web", "Compiles to JavaScript"], answer: 1 },
+            { q: "The Scaffold widget gives you…", options: ["A database", "A basic screen layout (app bar, body, buttons)", "Network requests", "Animations only"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "2 · Dart Essentials",
+        lessons: [
+          article("fl-dart-vars", "Variables, Types & Null Safety", "7 min", `
+<h3>🎯 Dart in five minutes</h3>
+<pre><code>var name = 'Su';        // type inferred as String
+String city = 'Yangon'; // explicit type
+final age = 16;         // set once, can't change
+const pi = 3.14;        // compile-time constant
+int xp = 0;
+double price = 1500.0;
+bool isPro = false;</code></pre>
+<h3>📝 Null safety</h3>
+<p>By default a variable <strong>cannot be null</strong>. Add <code>?</code> when null is allowed:</p>
+<pre><code>String name = 'Su';   // never null
+String? nickname;     // may be null
+print(nickname ?? 'no nickname'); // ?? gives a fallback</code></pre>
+<p>The <code>?.</code> operator safely reads a value that might be null, and <code>!</code> asserts it isn't (use sparingly).</p>
+<div class="callout tip"><strong>Try it yourself:</strong> Declare a <code>String? phone;</code> and print <code>phone ?? 'unknown'</code>. Then assign it and print again.</div>`),
+          article("fl-dart-fn", "Functions", "6 min", `
+<h3>🎯 Define and call functions</h3>
+<pre><code>int add(int a, int b) {
+  return a + b;
+}
+
+// arrow syntax for one-liners
+int square(int n) =&gt; n * n;
+
+// named &amp; optional parameters
+String greet(String name, {String greeting = 'Hi'}) {
+  return '$greeting, $name!';
+}
+
+void main() {
+  print(add(2, 3));            // 5
+  print(square(4));           // 16
+  print(greet('Su'));         // Hi, Su!
+  print(greet('Ko', greeting: 'Mingalaba')); // Mingalaba, Ko!
+}</code></pre>
+<h3>💡 String interpolation</h3>
+<p>Inside a string, <code>$name</code> drops a variable in. For an expression, wrap it in braces (dollar-brace).</p>
+<div class="callout tip"><strong>Try it yourself:</strong> Write a function <code>double average(List&lt;int&gt; xs)</code> that returns the mean. (Hint: <code>xs.reduce((a, b) =&gt; a + b) / xs.length</code>.)</div>`),
+          article("fl-dart-collections", "Lists, Maps & Sets", "7 min", `
+<h3>🎯 The three collections you'll use daily</h3>
+<pre><code>// List — ordered items
+List&lt;String&gt; fruits = ['apple', 'mango'];
+fruits.add('banana');
+print(fruits[0]);        // apple
+print(fruits.length);    // 3
+
+// Map — key &rarr; value
+Map&lt;String, int&gt; scores = {'Su': 90, 'Ko': 82};
+print(scores['Su']);     // 90
+scores['Mya'] = 75;
+
+// Set — unique items
+Set&lt;int&gt; ids = {1, 2, 2, 3}; // {1, 2, 3}</code></pre>
+<h3>📝 Loop &amp; transform</h3>
+<pre><code>for (final f in fruits) {
+  print(f);
+}
+final upper = fruits.map((f) =&gt; f.toUpperCase()).toList();
+final long = fruits.where((f) =&gt; f.length &gt; 5).toList();</code></pre>
+<div class="callout tip"><strong>Try it yourself:</strong> Make a <code>List&lt;int&gt;</code> of prices and use <code>.where()</code> to keep only those above 1000.</div>`),
+          article("fl-dart-classes", "Classes & Objects", "8 min", `
+<h3>🎯 Model your data</h3>
+<pre><code>class Student {
+  final String name;
+  int xp;
+
+  Student(this.name, {this.xp = 0});
+
+  void addXp(int amount) {
+    xp += amount;
+  }
+
+  String get level =&gt; xp &gt;= 100 ? 'Pro' : 'Rookie';
+}
+
+void main() {
+  final s = Student('Su', xp: 40);
+  s.addXp(70);
+  print(s.xp);    // 110
+  print(s.level); // Pro
+}</code></pre>
+<h3>📝 Key ideas</h3>
+<ul>
+  <li>The <strong>constructor</strong> <code>Student(this.name, ...)</code> assigns fields directly.</li>
+  <li><code>get level</code> is a computed property — read it like a field.</li>
+  <li><code>final</code> fields can't change; plain fields can.</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> Add a <code>bool get canGraduate</code> that is true when xp is at least 200.</div>`),
+          article("fl-dart-async", "Async: Future & await", "7 min", `
+<h3>🎯 Do slow things without freezing the app</h3>
+<p>Network calls and file reads take time. Dart represents "a value that will arrive later" as a <strong>Future</strong>, and <code>async</code>/<code>await</code> lets you write it like normal code.</p>
+<pre><code>Future&lt;String&gt; fetchName() async {
+  await Future.delayed(const Duration(seconds: 1));
+  return 'Su';
+}
+
+Future&lt;void&gt; main() async {
+  print('loading...');
+  final name = await fetchName();
+  print('Hello, $name'); // runs after 1 second
+}</code></pre>
+<h3>💡 Rules of thumb</h3>
+<ul>
+  <li>Mark a function <code>async</code> if it uses <code>await</code>.</li>
+  <li><code>await</code> pauses <em>this</em> function, not the whole app.</li>
+  <li>Wrap risky awaits in <code>try / catch</code> to handle errors.</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> Change the delay to 2 seconds and add a <code>print</code> after the await to confirm the order.</div>`),
+          quiz("fl-q2", "Quiz: Dart Essentials", [
+            { q: "Which keyword means 'set once, never reassign'?", options: ["var", "final", "int", "dynamic"], answer: 1 },
+            { q: "A variable that may hold null is declared with…", options: ["String name", "String? name", "String!name", "null String name"], answer: 1 },
+            { q: "What does the ?? operator do?", options: ["Multiplies", "Provides a fallback when the value is null", "Compares types", "Loops"], answer: 1 },
+            { q: "Which collection stores key → value pairs?", options: ["List", "Set", "Map", "Array"], answer: 2 },
+            { q: "What does await do?", options: ["Freezes the whole app", "Pauses the current async function until the Future completes", "Deletes a variable", "Starts a new app"], answer: 1 },
+            { q: "The arrow => in Dart is shorthand for…", options: ["A loop", "A single-expression function body that returns the value", "Null safety", "An import"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "3 · Widgets — Everything is a Widget",
+        lessons: [
+          article("fl-widgets", "Stateless vs Stateful Widgets", "8 min", `
+<h3>🎯 Two kinds of widget</h3>
+<p>In Flutter, your whole UI is a <strong>tree of widgets</strong>. There are two you'll write constantly:</p>
+<ul>
+  <li><strong>StatelessWidget</strong> — never changes after it's built (a label, an icon, a static card).</li>
+  <li><strong>StatefulWidget</strong> — holds data that can change and rebuilds when it does (a counter, a form, a toggle).</li>
+</ul>
+<pre><code>class Greeting extends StatelessWidget {
+  final String name;
+  const Greeting(this.name, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text('Hello, $name');
+  }
+}</code></pre>
+<h3>💡 The build method</h3>
+<p><code>build()</code> describes the UI right now. Flutter calls it whenever something changes — you never manually update the screen; you change data and let Flutter rebuild.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> Make a <code>StatelessWidget</code> called <code>PriceTag</code> that takes an <code>int kyat</code> and shows it as <code>'$kyat Ks'</code>.</div>`),
+          article("fl-core-widgets", "Core Widgets: Text, Container, Image, Icon", "7 min", `
+<h3>🎯 Your everyday building blocks</h3>
+<pre><code>Text(
+  'On sale!',
+  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.purple),
+)
+
+Container(
+  padding: const EdgeInsets.all(16),
+  margin: const EdgeInsets.all(8),
+  decoration: BoxDecoration(
+    color: Colors.amber,
+    borderRadius: BorderRadius.circular(12),
+  ),
+  child: const Text('A rounded box'),
+)
+
+Icon(Icons.favorite, color: Colors.red)
+Image.network('https://picsum.photos/200')</code></pre>
+<h3>📝 The <code>child</code> pattern</h3>
+<p>Most wrapper widgets take a single <code>child</code>. <code>Container</code> adds padding, color and rounding around its child — you'll nest these all day.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> Wrap a <code>Text</code> in a <code>Container</code> with 20px padding and a light-blue background.</div>`),
+          article("fl-layout", "Layout: Row, Column & Expanded", "8 min", `
+<h3>🎯 Arrange widgets in space</h3>
+<p><strong>Column</strong> stacks children vertically; <strong>Row</strong> lines them up horizontally.</p>
+<pre><code>Column(
+  mainAxisAlignment: MainAxisAlignment.center,
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    Text('Title'),
+    SizedBox(height: 8),   // spacing
+    Text('Subtitle'),
+  ],
+)</code></pre>
+<h3>📝 Sharing space with Expanded</h3>
+<pre><code>Row(
+  children: [
+    Expanded(flex: 1, child: Container(color: Colors.red, height: 40)),
+    Expanded(flex: 2, child: Container(color: Colors.blue, height: 40)),
+  ],
+)</code></pre>
+<p><code>Expanded</code> makes a child fill the leftover space; <code>flex</code> sets the ratio (here 1:2).</p>
+<div class="callout tip"><strong>Try it yourself:</strong> Build a Row with three <code>Expanded</code> colored boxes of equal width.</div>`),
+          article("fl-lists", "Scrolling Lists: ListView", "7 min", `
+<h3>🎯 Show many items</h3>
+<p>For a short, fixed list use <code>ListView</code> with children. For a long or dynamic list, use <code>ListView.builder</code> — it only builds items on screen, so it's fast even with thousands of rows.</p>
+<pre><code>final items = ['HTML', 'CSS', 'JavaScript', 'Dart', 'Flutter'];
+
+ListView.builder(
+  itemCount: items.length,
+  itemBuilder: (context, index) {
+    return ListTile(
+      leading: const Icon(Icons.book),
+      title: Text(items[index]),
+    );
+  },
+)</code></pre>
+<h3>💡 ListTile</h3>
+<p><code>ListTile</code> is a ready-made row with a leading icon, title, subtitle and trailing widget — perfect for menus and feeds.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> Turn a <code>List&lt;String&gt;</code> of your favourite apps into a scrolling <code>ListView.builder</code>.</div>`),
+          article("fl-theme", "Styling with Themes & Material 3", "6 min", `
+<h3>🎯 Consistent colors in one place</h3>
+<p>Set your app's look once on <code>MaterialApp</code>, and every widget follows it.</p>
+<pre><code>MaterialApp(
+  theme: ThemeData(
+    colorSchemeSeed: Colors.purple,
+    useMaterial3: true,
+  ),
+  home: const HomeScreen(),
+)</code></pre>
+<p>Flutter generates a full, accessible color palette from a single <strong>seed color</strong>. Read theme values in your widgets instead of hard-coding:</p>
+<pre><code>final scheme = Theme.of(context).colorScheme;
+Container(color: scheme.primaryContainer);</code></pre>
+<div class="callout tip"><strong>Try it yourself:</strong> Change the seed color to <code>Colors.teal</code> and hot reload — watch the whole app re-tint.</div>`),
+          quiz("fl-q3", "Quiz: Widgets & Layout", [
+            { q: "Which widget can change and rebuild over time?", options: ["StatelessWidget", "StatefulWidget", "Text", "Icon"], answer: 1 },
+            { q: "To stack widgets vertically you use…", options: ["Row", "Column", "Stack only", "ListTile"], answer: 1 },
+            { q: "Expanded is used to…", options: ["Add a network image", "Make a child fill the remaining space in a Row/Column", "Create a theme", "Delay code"], answer: 1 },
+            { q: "For a long, dynamic list, the efficient choice is…", options: ["Column with 1000 children", "ListView.builder", "A single Container", "Row.builder"], answer: 1 },
+            { q: "In Material 3, a full color palette is generated from…", options: ["Ten manual colors", "A single seed color", "The app icon", "The device wallpaper only"], answer: 1 },
+            { q: "Most wrapper widgets (like Container) hold their content in a…", options: ["body property", "child property", "content property", "root property"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "4 · Interactivity & State",
+        lessons: [
+          article("fl-setstate", "State & setState", "8 min", `
+<h3>🎯 Make the UI react</h3>
+<p>A <code>StatefulWidget</code> keeps its changing data in a <code>State</code> class. Call <code>setState()</code> to change data — Flutter then rebuilds the widget with the new values.</p>
+<pre><code>class Counter extends StatefulWidget {
+  const Counter({super.key});
+  @override
+  State&lt;Counter&gt; createState() =&gt; _CounterState();
+}
+
+class _CounterState extends State&lt;Counter&gt; {
+  int count = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text('Count: $count'),
+        ElevatedButton(
+          onPressed: () =&gt; setState(() =&gt; count++),
+          child: const Text('Add'),
+        ),
+      ],
+    );
+  }
+}</code></pre>
+<h3>💡 The golden rule</h3>
+<p>Never change a field directly and expect the screen to update. Always wrap the change in <code>setState(() { ... })</code>.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> Add a second button that resets <code>count</code> to 0 (inside setState).</div>`),
+          article("fl-input", "Handling Input: Buttons & TextField", "7 min", `
+<h3>🎯 Read what the user types</h3>
+<pre><code>final controller = TextEditingController();
+String greeting = '';
+
+TextField(
+  controller: controller,
+  decoration: const InputDecoration(labelText: 'Your name'),
+)
+
+ElevatedButton(
+  onPressed: () {
+    setState(() {
+      greeting = 'Hello, ' + controller.text;
+    });
+  },
+  child: const Text('Greet me'),
+)
+
+Text(greeting)</code></pre>
+<h3>📝 Controllers</h3>
+<p>A <code>TextEditingController</code> holds and reads the field's text (<code>controller.text</code>). Dispose it in <code>dispose()</code> to avoid leaks.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> Show the length of the typed text live under the field.</div>`),
+          article("fl-nav", "Navigation Between Screens", "8 min", `
+<h3>🎯 Move between pages</h3>
+<p>Flutter keeps screens on a stack. <strong>Push</strong> a new screen on top, <strong>pop</strong> to go back.</p>
+<pre><code>// go to a details screen
+Navigator.push(
+  context,
+  MaterialPageRoute(builder: (context) =&gt; const DetailsScreen()),
+);
+
+// go back
+Navigator.pop(context);</code></pre>
+<h3>📝 Passing data forward</h3>
+<pre><code>MaterialPageRoute(
+  builder: (context) =&gt; DetailsScreen(title: 'Flutter'),
+)</code></pre>
+<p>The details screen just takes <code>title</code> in its constructor. To send a result <em>back</em>, pass it to <code>Navigator.pop(context, result)</code> and <code>await</code> the push.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> Build two screens where tapping a ListTile opens a details screen showing that item's name.</div>`),
+          article("fl-state-mgmt", "When setState Isn't Enough", "6 min", `
+<h3>🎯 Sharing state across screens</h3>
+<p><code>setState</code> is perfect for state that lives in <em>one</em> widget. But when many screens need the same data (a logged-in user, a shopping cart), passing it down by hand gets painful.</p>
+<h3>📝 The next step: a state manager</h3>
+<ul>
+  <li><strong>Provider</strong> — the gentle, official-recommended starting point.</li>
+  <li><strong>Riverpod</strong> — a modern, more powerful evolution of Provider.</li>
+  <li><strong>Bloc</strong> — structured events + states for big apps.</li>
+</ul>
+<p>The idea is the same: keep shared data in one place, and let any widget "watch" it and rebuild when it changes — no manual threading through constructors.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> On pub.dev, read the first example on the <em>provider</em> package page. Don't memorize it — just notice the pattern.</div>`),
+          quiz("fl-q4", "Quiz: State & Navigation", [
+            { q: "To update the screen after changing data, you call…", options: ["refresh()", "setState(() { ... })", "rebuild()", "update()"], answer: 1 },
+            { q: "Where does a StatefulWidget keep its changing data?", options: ["In main()", "In its State class", "In the AppBar", "In pubspec.yaml"], answer: 1 },
+            { q: "To open a new screen you use…", options: ["Navigator.push(...)", "openScreen(...)", "route.go(...)", "setState(...)"], answer: 0 },
+            { q: "To go back to the previous screen you use…", options: ["Navigator.back()", "Navigator.pop(context)", "close(context)", "return;"], answer: 1 },
+            { q: "You read a TextField's text from…", options: ["field.value", "the TextEditingController's .text", "context.text", "Navigator"], answer: 1 },
+            { q: "When many screens share the same data, a good tool is…", options: ["More setState everywhere", "A state manager like Provider", "Global print()", "Hot restart"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "5 · Real Apps — Data & Polish",
+        lessons: [
+          article("fl-http", "Fetching Data from an API", "8 min", `
+<h3>🎯 Talk to the internet</h3>
+<p>Add the <code>http</code> package to <code>pubspec.yaml</code> (or run <code>flutter pub add http</code>), then:</p>
+<pre><code>import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+Future&lt;List&lt;dynamic&gt;&gt; fetchPosts() async {
+  final res = await http.get(
+    Uri.parse('https://jsonplaceholder.typicode.com/posts'),
+  );
+  if (res.statusCode == 200) {
+    return jsonDecode(res.body) as List&lt;dynamic&gt;;
+  }
+  throw Exception('Failed: status ' + res.statusCode.toString());
+}</code></pre>
+<h3>📝 Steps</h3>
+<ul>
+  <li><code>http.get</code> returns a <code>Future</code> — <code>await</code> it.</li>
+  <li><code>jsonDecode</code> turns the JSON text into Dart lists/maps.</li>
+  <li>Always check <code>statusCode</code> and handle failures.</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> Change the URL to <code>/users</code> and print the first user's name.</div>`),
+          article("fl-futurebuilder", "Showing Async Data with FutureBuilder", "7 min", `
+<h3>🎯 Turn a Future into UI</h3>
+<p><code>FutureBuilder</code> watches a Future and rebuilds through its <strong>loading → data → error</strong> stages for you.</p>
+<pre><code>FutureBuilder&lt;List&lt;dynamic&gt;&gt;(
+  future: fetchPosts(),
+  builder: (context, snapshot) {
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (snapshot.hasError) {
+      return Center(child: Text('Error: ' + snapshot.error.toString()));
+    }
+    final posts = snapshot.data!;
+    return ListView.builder(
+      itemCount: posts.length,
+      itemBuilder: (context, i) =&gt; ListTile(title: Text(posts[i]['title'])),
+    );
+  },
+)</code></pre>
+<h3>💡 Always handle all three states</h3>
+<p>Loading spinner, error message, then the data — users should never see a blank screen.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> Add a subtitle to each ListTile showing <code>posts[i]['id']</code>.</div>`),
+          article("fl-persist", "Saving Data on the Device", "6 min", `
+<h3>🎯 Remember things between launches</h3>
+<p>For small values (settings, a token, a high score) use <code>shared_preferences</code>:</p>
+<pre><code>import 'package:shared_preferences/shared_preferences.dart';
+
+Future&lt;void&gt; saveXp(int xp) async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setInt('xp', xp);
+}
+
+Future&lt;int&gt; loadXp() async {
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getInt('xp') ?? 0;
+}</code></pre>
+<h3>💡 Bigger data?</h3>
+<p>For lots of structured data, reach for a local database like <strong>sqflite</strong> or <strong>Hive</strong>. Same idea, more power.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> Save a dark-mode <code>bool</code> and load it when the app starts.</div>`),
+          article("fl-forms", "Forms & Validation", "7 min", `
+<h3>🎯 Collect input the right way</h3>
+<p>Wrap fields in a <code>Form</code> with a key, give each field a <code>validator</code>, then validate on submit.</p>
+<pre><code>final _formKey = GlobalKey&lt;FormState&gt;();
+
+Form(
+  key: _formKey,
+  child: Column(children: [
+    TextFormField(
+      decoration: const InputDecoration(labelText: 'Email'),
+      validator: (value) {
+        if (value == null || !value.contains('@')) {
+          return 'Enter a valid email';
+        }
+        return null; // null means valid
+      },
+    ),
+    ElevatedButton(
+      onPressed: () {
+        if (_formKey.currentState!.validate()) {
+          // all good — submit
+        }
+      },
+      child: const Text('Submit'),
+    ),
+  ]),
+)</code></pre>
+<div class="callout tip"><strong>Try it yourself:</strong> Add a password field that must be at least 6 characters.</div>`),
+          quiz("fl-q5", "Quiz: Real Apps", [
+            { q: "Which package makes HTTP requests?", options: ["dart:ui", "http", "material", "provider"], answer: 1 },
+            { q: "jsonDecode is used to…", options: ["Send an email", "Turn JSON text into Dart lists/maps", "Build a widget", "Save to disk"], answer: 1 },
+            { q: "FutureBuilder helps you…", options: ["Style text", "Render loading / data / error states of a Future", "Navigate screens", "Create themes"], answer: 1 },
+            { q: "For small key-value data on the device, use…", options: ["shared_preferences", "http", "FutureBuilder", "Navigator"], answer: 0 },
+            { q: "In a TextFormField validator, returning null means…", options: ["The field is invalid", "The field is valid", "Clear the field", "Submit the form"], answer: 1 },
+            { q: "Before using data from FutureBuilder you should first handle…", options: ["Only the data", "Loading and error states too", "Nothing", "The theme"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "6 · Ship It — From Hero to Store",
+        lessons: [
+          article("fl-assets", "Assets, Fonts & App Icons", "6 min", `
+<h3>🎯 Bundle images and fonts</h3>
+<p>Declare assets in <code>pubspec.yaml</code> (watch the indentation — YAML is strict):</p>
+<pre><code>flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/logo.png
+  fonts:
+    - family: Padauk
+      fonts:
+        - asset: assets/fonts/Padauk-Regular.ttf</code></pre>
+<p>Then use them:</p>
+<pre><code>Image.asset('assets/images/logo.png')
+Text('Mingalaba', style: TextStyle(fontFamily: 'Padauk'))</code></pre>
+<h3>💡 App icon &amp; name</h3>
+<p>The package <strong>flutter_launcher_icons</strong> generates every icon size from one image. Set the app's display name in the Android and iOS config.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> Add one image to an <code>assets/</code> folder, declare it, and show it with <code>Image.asset</code>.</div>`),
+          article("fl-debug", "Debugging & DevTools", "6 min", `
+<h3>🎯 Find and fix problems fast</h3>
+<ul>
+  <li><code>print('value: $x')</code> — the humble, always-useful log.</li>
+  <li><strong>Flutter DevTools</strong> — inspect the widget tree, layout, and performance in your browser.</li>
+  <li>The <strong>widget inspector</strong> shows exactly which widget draws each pixel.</li>
+  <li>Red screen? Read the top line of the error — it usually names the widget and the problem.</li>
+</ul>
+<h3>💡 Common beginner errors</h3>
+<ul>
+  <li><em>"RenderFlex overflowed"</em> — content is too big; wrap it in <code>Expanded</code> or a scroll view.</li>
+  <li><em>"setState called during build"</em> — don't call setState directly inside build().</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> Trigger an overflow by putting a very long <code>Text</code> in a <code>Row</code>, then fix it with <code>Expanded</code>.</div>`),
+          article("fl-build", "Building for Android & iOS", "7 min", `
+<h3>🎯 Turn code into an installable app</h3>
+<pre><code># Android — an app bundle for the Play Store
+flutter build appbundle
+
+# Android — a shareable APK
+flutter build apk --release
+
+# iOS (on a Mac with Xcode)
+flutter build ipa</code></pre>
+<h3>📝 Before release</h3>
+<ul>
+  <li>Set a unique <strong>application id</strong> (e.g. com.yourname.myapp).</li>
+  <li>Bump the <strong>version</strong> in pubspec.yaml.</li>
+  <li>Test on a real device, not just the emulator.</li>
+  <li>Test in <strong>release</strong> mode: <code>flutter run --release</code>.</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> Run <code>flutter build apk --release</code> and find the .apk it produces under <code>build/app/outputs</code>.</div>`),
+          article("fl-next", "You're a Flutter Hero — What Next?", "5 min", `
+<h3>🎉 Look how far you came</h3>
+<p>You can write Dart, think in widgets, lay out any screen, manage state, navigate, fetch and save data, and build a real app. That's a genuine, employable skill.</p>
+<h3>🚀 Keep leveling up</h3>
+<ul>
+  <li>Rebuild an app you love (a to-do, a weather app, a notes app) from scratch.</li>
+  <li>Learn a state manager properly — <strong>Riverpod</strong> or <strong>Bloc</strong>.</li>
+  <li>Add <strong>Firebase</strong> for auth and a cloud database.</li>
+  <li>Add <strong>animations</strong> with <code>AnimatedContainer</code> and <code>Hero</code>.</li>
+  <li>Publish one app to the Play Store — nothing teaches more than shipping.</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> Pick ONE small app idea and build it this week. Share it in the community chat when it runs!</div>`),
+          quiz("fl-q6", "Final Quiz: Ship It", [
+            { q: "Where do you declare image and font assets?", options: ["main.dart", "pubspec.yaml", "AndroidManifest only", "index.html"], answer: 1 },
+            { q: "'RenderFlex overflowed' usually means…", options: ["No internet", "Content is too big for its space — wrap it in Expanded or a scroll view", "A syntax error", "The app is signed wrong"], answer: 1 },
+            { q: "To build an Android app bundle for the Play Store you run…", options: ["flutter run", "flutter build appbundle", "flutter make", "dart compile"], answer: 1 },
+            { q: "Which is a genuinely good next step after this course?", options: ["Never build anything", "Rebuild a small app from scratch and ship it", "Only read docs forever", "Avoid state managers"], answer: 1 },
+            { q: "Before releasing, you should test…", options: ["Only in debug mode", "On a real device in release mode", "Only on the web", "Only the emulator"], answer: 1 },
+            { q: "Flutter DevTools lets you…", options: ["Write Kotlin", "Inspect the widget tree, layout and performance", "Replace Dart", "Publish automatically"], answer: 1 },
+          ]),
+        ],
+      },
+    ],
+  },
 ];
 
 /* Expose to the app */

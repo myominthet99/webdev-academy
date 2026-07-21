@@ -2160,7 +2160,7 @@
      styles.css. No-ops entirely under prefers-reduced-motion. ---- */
   let moObserver = null;
   /* containers whose CHILDREN should each animate (vs the block as a whole) */
-  const MO_ROWS = /(^|\s)(grid|gal-grid|sc-grid|repo-grid|da-res-grid|da-flow|chips|mylist|roadmap|search-hits)(\s|$)/;
+  const MO_ROWS = /(^|\s)(grid|gal-grid|sc-grid|repo-grid|da-res-grid|da-flow|chips|mylist|roadmap|search-hits|why-grid)(\s|$)/;
   function applyMotion() {
     if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     if (moObserver) { moObserver.disconnect(); moObserver = null; }
@@ -2220,14 +2220,29 @@
     });
   }
 
-  function renderHome() {
-    const featured = COURSES.slice(0, 4);
-    const fresh = NEW_COURSE_IDS.map(courseById).filter(Boolean);
-    /* Trending: most-enrolled courses not already shown in Featured */
-    const trending = COURSES.filter((c) => featured.indexOf(c) === -1 && fresh.indexOf(c) === -1)
-      .sort((a, b) => (b.students || 0) - (a.students || 0))
-      .slice(0, 3);
-    app.innerHTML = `
+  /* Level/XP for the dashboard header (same formula as statsHeader) */
+  function homeLevel() {
+    let lessons = 0;
+    COURSES.forEach((c) => { lessons += completedCount(c); });
+    const qs = loadQuizScores();
+    const passes = Object.values(qs).filter((q) => q.score >= Math.ceil(q.total * 0.6)).length;
+    const xp = lessons * 10 + passes * 5 + bonusXp();
+    return { xp: xp, level: Math.floor(xp / 100) + 1, inLvl: xp % 100 };
+  }
+  /* The one course to resume: the enrolled course closest to finishing */
+  function resumeTarget() {
+    const active = COURSES.filter((c) => isEnrolled(c.id) && progressPct(c) < 100)
+      .sort((a, b) => progressPct(b) - progressPct(a));
+    const pick = active[0] || COURSES.filter((c) => isEnrolled(c.id))[0];
+    if (!pick) return null;
+    const flat = lessonsOf(pick), set = completedSet(pick.id);
+    const lid = (flat.find((x) => !set.has(x.lesson.id)) || flat[0]).lesson.id;
+    return { c: pick, lid: lid, pct: progressPct(pick) };
+  }
+
+  /* Logged-OUT home: a marketing showcase hero + a "why us" feature row */
+  function showcaseHeroHtml() {
+    return `
       <section class="hero">
         <div class="hero-float" aria-hidden="true">
           <span style="left:5%;top:16%;animation-duration:9s">&lt;/&gt;</span>
@@ -2260,26 +2275,74 @@
           </div>
         </div>
       </section>
-
       <div class="container">
-        ${streakNudge()}
-        ${almostCard()}
-        ${recapHomeCard()}
-        ${dailyHomeCard()}
-        ${reviewHomeCard()}
-        ${howtoHomeCard()}
-        ${communityHomeCard()}
-        ${careerHomeCard()}
-        ${exploreHomeCard()}
-        ${motivHomeCard()}
-        ${resumeBanner()}
+        <div class="why-grid">
+          <div class="panel why-card"><span class="why-ic">🤖</span><b>${t("why_ai_t")}</b><p class="muted">${t("why_ai_d")}</p></div>
+          <div class="panel why-card"><span class="why-ic">🧪</span><b>${t("why_play_t")}</b><p class="muted">${t("why_play_d")}</p></div>
+          <div class="panel why-card"><span class="why-ic">🎓</span><b>${t("why_cert_t")}</b><p class="muted">${t("why_cert_d")}</p></div>
+        </div>
+      </div>`;
+  }
+
+  /* Logged-IN home: an app-style dashboard — greeting, resume card, actions */
+  function dashboardHomeHtml(user) {
+    const name = escapeHtml(String(user.name || user.email || "there").split(/[\s@]/)[0]);
+    const streak = dayStreak();
+    const lvl = homeLevel().level;
+    const r = resumeTarget();
+    const cont = r
+      ? `<a class="dh-continue" href="#/learn/${r.c.id}/${r.lid}">
+           <span class="dh-cic" style="background:${r.c.color}">${r.c.icon}</span>
+           <div class="dh-ctxt">
+             <span class="dh-clabel">${r.pct > 0 ? t("home_continue") : t("home_start_course")}</span>
+             <b>${cf(r.c, "title")}</b>
+             ${r.pct > 0 ? `<span class="progress thin"><span style="width:${r.pct}%"></span></span>` : ""}
+           </div>
+           <span class="dh-go">${r.pct > 0 ? t("continue") : t("start")} →</span>
+         </a>`
+      : `<a class="dh-continue" href="#/courses">
+           <span class="dh-cic" style="background:linear-gradient(135deg,#7b2ff7,#c86dd7)">🚀</span>
+           <div class="dh-ctxt"><span class="dh-clabel">${t("home_get_started")}</span><b>${t("browse_courses")}</b></div>
+           <span class="dh-go">→</span>
+         </a>`;
+    return `
+      <section class="dash-hero">
+        <div class="container">
+          <div class="dh-top">
+            <div class="dh-hi"><b>${t("home_hi").replace("{n}", name)} 👋</b><span class="muted">${t("home_hi_sub")}</span></div>
+            <div class="dh-badges"><span class="dh-badge">🔥 ${streak}</span><span class="dh-badge">Lv ${lvl}</span></div>
+          </div>
+          ${cont}
+          <div class="chips dh-actions">
+            <a class="chip" href="#/daily">🎯 ${t("daily_title")}</a>
+            <a class="chip" href="#/review">🧠 ${t("review_title")}</a>
+            <a class="chip" href="#/recap">📊 ${t("recap_title")}</a>
+            <a class="chip" href="#/interview">🎤 ${t("iv_title")}</a>
+            <a class="chip" href="#/explore">🌍 ${t("xp_card_btn")}</a>
+          </div>
+        </div>
+      </section>`;
+  }
+
+  function renderHome() {
+    const user = loggedIn() ? window.Auth.current() : null;
+    const featured = COURSES.slice(0, 4);
+    const fresh = NEW_COURSE_IDS.map(courseById).filter(Boolean);
+    /* Trending: most-enrolled courses not already shown in Featured */
+    const trending = COURSES.filter((c) => featured.indexOf(c) === -1 && fresh.indexOf(c) === -1)
+      .sort((a, b) => (b.students || 0) - (a.students || 0))
+      .slice(0, 3);
+    app.innerHTML = `
+      ${user ? dashboardHomeHtml(user) : showcaseHeroHtml()}
+      <div class="container">
+        ${user ? streakNudge() + almostCard() : ""}
         ${fresh.length ? `
         <h2 class="section-title">🆕 ${t("new_title")}</h2>
         <p class="section-sub">${t("new_sub")}</p>
         <div class="grid">${fresh.map(courseCard).join("")}</div>` : ""}
 
-        <h2 class="section-title">${t("featured")}</h2>
-        <p class="section-sub">${t("featured_sub")}</p>
+        <h2 class="section-title">${user ? t("home_pick") : t("featured")}</h2>
+        <p class="section-sub">${user ? t("home_pick_sub") : t("featured_sub")}</p>
         <div class="grid">${featured.map(courseCard).join("")}</div>
 
         ${trending.length ? `
@@ -2300,6 +2363,8 @@
         <div class="chips">
           ${TOOLS.map((tl) => `<a class="chip" href="#/tools/${tl.id}">${tl.ic} ${t("tool_" + tl.id)}</a>`).join("")}
         </div>
+
+        ${communityHomeCard()}
       </div>`;
 
     applyMotion();

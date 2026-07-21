@@ -2589,6 +2589,47 @@ input[type="range"].tl-range { width: 100%; accent-color: var(--purple); }
 .repo-tag { font-size: 11.5px; padding: 3px 10px; cursor: default; }
 .repo-stars { font-size: 12.5px; font-weight: 700; color: var(--star); white-space: nowrap; }
 
+/* ---------- 🏠 Adaptive home ---------- */
+/* Logged-out: "why us" feature row under the showcase hero */
+.why-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 4px 0 8px; }
+@media (max-width: 640px) { .why-grid { grid-template-columns: 1fr; } }
+.why-card { text-align: center; padding: 20px 18px; }
+.why-card .why-ic { font-size: 30px; line-height: 1; display: block; margin-bottom: 8px; }
+.why-card b { display: block; margin-bottom: 4px; }
+.why-card p { margin: 0; font-size: 13.5px; }
+
+/* Logged-in: app-style dashboard header */
+.dash-hero {
+  background: linear-gradient(135deg, #f3ecff, #eaf4ff);
+  border-bottom: 1px solid var(--line);
+  padding: 20px 0 22px;
+}
+[data-theme="dark"] .dash-hero { background: linear-gradient(135deg, #241a3b, #16233a); }
+.dh-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.dh-hi b { font-size: 22px; }
+.dh-hi .muted { display: block; font-size: 13.5px; margin-top: 2px; }
+.dh-badges { display: flex; gap: 8px; flex-shrink: 0; }
+.dh-badge {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 999px;
+  padding: 6px 14px; font-weight: 800; font-size: 14px; white-space: nowrap;
+}
+.dh-continue {
+  display: flex; align-items: center; gap: 14px; text-decoration: none; color: var(--ink);
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 14px 16px; box-shadow: var(--card-shadow);
+}
+.dh-cic {
+  width: 52px; height: 52px; flex: 0 0 auto; border-radius: 12px;
+  display: grid; place-items: center; font-size: 26px; color: #fff;
+}
+.dh-ctxt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.dh-clabel { font-size: 12px; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+.dh-ctxt b { font-size: 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dh-ctxt .progress { margin-top: 4px; }
+.dh-go { flex: 0 0 auto; color: var(--purple); font-weight: 800; font-size: 14px; white-space: nowrap; }
+.dh-actions { margin: 14px 0 0; }
+.dh-actions .chip { background: var(--surface); border: 1px solid var(--line); }
+
 /* ---------- 📊 Weekly recap (#/recap) ---------- */
 .recap-hero { text-align: center; }
 .recap-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 6px; }

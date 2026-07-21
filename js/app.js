@@ -2151,6 +2151,57 @@
   /* Courses to spotlight in the home "New & trending" strip */
   const NEW_COURSE_IDS = ["zero-to-hero", "n8n-automation", "ai-engineering", "cloud-computing"];
 
+  /* ---- Home motion (mo-*): stagger what's on screen, reveal the rest on
+     scroll, count the hero stats up. CSS partner at the end of styles.css.
+     No-ops entirely under prefers-reduced-motion. ---- */
+  let moObserver = null;
+  function applyHomeMotion() {
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (moObserver) { moObserver.disconnect(); moObserver = null; }
+    if ("IntersectionObserver" in window) {
+      moObserver = new IntersectionObserver((entries) => {
+        entries.forEach((en) => {
+          if (en.isIntersecting) { en.target.classList.add("mo-on"); moObserver.unobserve(en.target); }
+        });
+      }, { rootMargin: "0px 0px -8% 0px", threshold: 0.05 });
+    }
+    /* hero first, then the feed; grids and chip rows animate per child */
+    const items = [];
+    app.querySelectorAll(".hero h1, .hero > .container p, .hero .btn, .hero .hero-quiz, .hero .hero-badges, .hero .hero-art").forEach((el) => items.push(el));
+    app.querySelectorAll(":scope > .container > *").forEach((el) => {
+      if (el.classList.contains("grid") || el.classList.contains("chips")) {
+        el.querySelectorAll(":scope > *").forEach((k) => items.push(k));
+      } else items.push(el);
+    });
+    const fold = (window.innerHeight || 800) * 0.92;
+    let above = 0;
+    items.forEach((el) => {
+      if (el.getBoundingClientRect().top < fold) {
+        el.style.setProperty("--mo-i", String(Math.min(above++, 9)));
+        el.classList.add("mo-in");
+      } else if (moObserver) {
+        const p = el.parentElement || el;
+        const k = p.__moN || 0;
+        p.__moN = k + 1;
+        el.style.setProperty("--mo-i", String(Math.min(k, 5)));
+        el.classList.add("mo-reveal");
+        moObserver.observe(el);
+      }
+    });
+    /* hero stat count-up (pure integers only — "4.7★" stays as-is) */
+    app.querySelectorAll(".hero-badges .stat strong").forEach((s) => {
+      const n = parseInt(s.textContent, 10);
+      if (!isFinite(n) || String(n) !== s.textContent.trim()) return;
+      const dur = 900, t0 = performance.now();
+      const tick = (now) => {
+        const pct = Math.min(1, (now - t0) / dur);
+        s.textContent = String(Math.round(n * (1 - Math.pow(1 - pct, 3))));
+        if (pct < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    });
+  }
+
   function renderHome() {
     const featured = COURSES.slice(0, 4);
     const fresh = NEW_COURSE_IDS.map(courseById).filter(Boolean);
@@ -2232,6 +2283,8 @@
           ${TOOLS.map((tl) => `<a class="chip" href="#/tools/${tl.id}">${tl.ic} ${t("tool_" + tl.id)}</a>`).join("")}
         </div>
       </div>`;
+
+    applyHomeMotion();
 
     app.querySelectorAll(".chip[data-cat]").forEach((chip) =>
       chip.addEventListener("click", () => {
@@ -2704,19 +2757,29 @@
       const wait = bubble("bot", "⏳ " + escapeHtml(t("tutor_thinking")));
       const convo = history.slice(-6).map((h) => (h.me ? "Student" : "Tutor") + ": " + h.text).join("\n");
       history.push({ me: true, text: question.slice(0, 300) });
-      return window.AI.complete(
+      const tutorPrompt =
         'The student is reading the lesson "' + lesson.title + '" in the course "' + course.title + '".\n' +
-          (lessonText ? "Lesson text:\n" + lessonText + "\n" : "") +
-          (convo ? "\nConversation so far:\n" + convo + "\n" : "") +
-          "\nStudent asks: " + question,
-        {
-          system:
-            "You are the patient AI tutor of WebDev Academy, helping Myanmar teenagers (ages 12-18) learn web development. " +
-            "Use very simple English; if the student writes Burmese or asks for Burmese, answer in Burmese but keep technical words (HTML, CSS, tag names) in English. " +
-            "Keep answers under 150 words unless showing code. Put code inside ```fences```. Be encouraging.",
-          maxTokens: 2500,
-        }
-      ).then((reply) => {
+        (lessonText ? "Lesson text:\n" + lessonText + "\n" : "") +
+        (convo ? "\nConversation so far:\n" + convo + "\n" : "") +
+        "\nStudent asks: " + question;
+      const tutorOpts = {
+        system:
+          "You are the patient AI tutor of WebDev Academy, helping Myanmar teenagers (ages 12-18) learn web development. " +
+          "Use very simple English; if the student writes Burmese or asks for Burmese, answer in Burmese but keep technical words (HTML, CSS, tag names) in English. " +
+          "Keep answers under 150 words unless showing code. Put code inside ```fences```. Be encouraging.",
+        maxTokens: 2500,
+      };
+      /* stream: replace the ⏳ bubble live as tokens arrive so the first
+         words show in ~1s instead of after the whole answer generates */
+      let firstDelta = true;
+      const onDelta = (soFar) => {
+        wait.innerHTML = fmt(soFar);
+        if (firstDelta) { firstDelta = false; wait.scrollIntoView({ block: "nearest" }); }
+      };
+      const run = window.AI.stream
+        ? window.AI.stream(tutorPrompt, tutorOpts, onDelta)
+        : window.AI.complete(tutorPrompt, tutorOpts);
+      return run.then((reply) => {
         history.push({ me: false, text: String(reply).slice(0, 500) });
         wait.innerHTML = fmt(reply);
         return reply;
@@ -3884,8 +3947,31 @@
   }
 
   /* ---------------- View: Learning Roadmap ---------------- */
-  function renderRoadmap() {
-    /* Order courses along the natural learning path */
+  /* Curated Data Analyst path — a NON-web-dev track. There are no in-app DA
+     courses, so this points students at the best external resources along
+     the standard skill ladder (Spreadsheets → SQL → BI → Programming). */
+  const DA_STEPS = [
+    { n: 1, ic: "📊", key: "da_s1", tools: "Excel · Google Sheets" },
+    { n: 2, ic: "🗄️", key: "da_s2", tools: "SQL" },
+    { n: 3, ic: "📈", key: "da_s3", tools: "Power BI · Tableau" },
+    { n: 4, ic: "🐍", key: "da_s4", tools: "Python (Pandas, NumPy, Matplotlib) · R" },
+  ];
+  const DA_RESOURCES = [
+    { name: "Google Data Analytics Certificate", by: "Coursera", free: false, tag: "da_tag_beginner",
+      url: "https://www.coursera.org/professional-certificates/google-data-analytics", key: "da_r_google" },
+    { name: "Data Analyst Career Track", by: "DataCamp", free: false, tag: "da_tag_hands",
+      url: "https://www.datacamp.com/tracks/data-analyst-with-python", key: "da_r_datacamp" },
+    { name: "Microsoft Data Analyst (PL-300)", by: "Coursera · MS Learn", free: false, tag: "da_tag_bi",
+      url: "https://learn.microsoft.com/credentials/certifications/data-analyst-associate/", key: "da_r_ms" },
+    { name: "Alex The Analyst — Free Bootcamp", by: "YouTube", free: true, tag: "da_tag_free",
+      url: "https://www.youtube.com/@AlexTheAnalyst", key: "da_r_alex" },
+    { name: "Data Analysis with Python", by: "freeCodeCamp", free: true, tag: "da_tag_free",
+      url: "https://www.freecodecamp.org/learn/data-analysis-with-python/", key: "da_r_fcc" },
+    { name: "Kaggle Courses", by: "Kaggle", free: true, tag: "da_tag_free",
+      url: "https://www.kaggle.com/learn", key: "da_r_kaggle" },
+  ];
+
+  function webTrackHtml() {
     const order = ["Kids", "Fundamentals", "HTML", "CSS", "JavaScript", "Responsive", "Frontend", "Backend", "Databases", "Programming", "AI", "Tools", "Career"];
     const oi = (c) => { const i = order.indexOf(c.category); return i === -1 ? 98 : i; };
     const list = COURSES.slice().sort(
@@ -3912,12 +3998,71 @@
           </div>
         </div>`;
     }).join("");
+    return `<div class="roadmap">${steps}</div>`;
+  }
+
+  function daTrackHtml() {
+    const steps = DA_STEPS.map((s) => `
+      <div class="road-step todo">
+        <div class="road-marker">${s.n}</div>
+        <div class="road-card">
+          <div class="road-head">
+            <span class="road-icon" style="background:linear-gradient(135deg,#654ea3,#0ea5e9)">${s.ic}</span>
+            <div>
+              <h3>${t(s.key + "_t")}</h3>
+              <p class="muted">${t(s.key + "_s")}</p>
+            </div>
+          </div>
+          <div class="muted" style="font-size:12px;margin-top:6px">🧰 ${escapeHtml(s.tools)}</div>
+        </div>
+      </div>`).join("");
+    const card = (r) => `
+      <div class="panel da-res">
+        <div class="da-res-head">
+          <b>${escapeHtml(r.name)}</b>
+          <span class="chip da-tag ${r.free ? "free" : ""}">${t(r.tag)}</span>
+        </div>
+        <div class="muted" style="font-size:12px">${escapeHtml(r.by)}</div>
+        <p class="da-res-note">${t(r.key)}</p>
+        <a class="btn btn-outline btn-sm" href="${r.url}" target="_blank" rel="noopener">${t("da_open")} ↗</a>
+      </div>`;
+    const paid = DA_RESOURCES.filter((r) => !r.free).map(card).join("");
+    const free = DA_RESOURCES.filter((r) => r.free).map(card).join("");
+    return `
+      <p class="da-intro">🧭 ${t("da_intro")}</p>
+      <div class="da-flow">
+        ${DA_STEPS.map((s, i) => `<span class="da-flow-box">${s.ic}<b>${t(s.key + "_t")}</b></span>${i < DA_STEPS.length - 1 ? '<span class="da-flow-arrow">→</span>' : ""}`).join("")}
+      </div>
+      <div class="roadmap">${steps}</div>
+      <h3 class="section-title" style="font-size:18px">🎯 ${t("da_core")}</h3>
+      <div class="da-res-grid">${paid}</div>
+      <h3 class="section-title" style="font-size:18px">🆓 ${t("da_freebudget")}</h3>
+      <div class="da-res-grid">${free}</div>
+      <p class="muted" style="font-size:12px;margin-top:10px">${t("da_note")}</p>`;
+  }
+
+  let roadmapTrack = "web";
+  function renderRoadmap() {
     app.innerHTML = `
       <div class="container" style="max-width:720px">
         <h2 class="section-title">🗺️ ${t("roadmap_title")}</h2>
         <p class="section-sub">${t("roadmap_sub")}</p>
-        <div class="roadmap">${steps}</div>
+        <div class="chips" id="road-tracks">
+          <button class="chip ${roadmapTrack === "web" ? "active" : ""}" data-track="web">🌐 ${t("track_web")}</button>
+          <button class="chip ${roadmapTrack === "da" ? "active" : ""}" data-track="da">📊 ${t("track_da")}</button>
+        </div>
+        <div id="road-body"></div>
       </div>`;
+    const body = document.getElementById("road-body");
+    const paint = () => { body.innerHTML = roadmapTrack === "da" ? daTrackHtml() : webTrackHtml(); };
+    document.getElementById("road-tracks").addEventListener("click", (e) => {
+      const b = e.target.closest("[data-track]");
+      if (!b) return;
+      roadmapTrack = b.getAttribute("data-track");
+      document.querySelectorAll("#road-tracks .chip").forEach((x) => x.classList.toggle("active", x === b));
+      paint();
+    });
+    paint();
     window.scrollTo(0, 0);
   }
 

@@ -2548,6 +2548,32 @@ input[type="range"].tl-range { width: 100%; accent-color: var(--purple); }
   margin-right: 5px; vertical-align: -1px;
 }
 
+/* ---------- 📊 Roadmap: Data Analyst track (#/roadmap) ---------- */
+#road-tracks { margin: 4px 0 16px; }
+.da-intro { font-size: 14px; margin: 0 0 14px; }
+.da-flow {
+  display: flex; align-items: stretch; flex-wrap: wrap; gap: 6px;
+  margin-bottom: 18px; overflow-x: auto;
+}
+.da-flow-box {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  flex: 1 1 0; min-width: 78px; text-align: center;
+  background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 10px 6px; font-size: 20px;
+}
+.da-flow-box b { font-size: 11.5px; font-weight: 700; color: var(--ink); }
+.da-flow-arrow { align-self: center; color: var(--purple); font-weight: 800; }
+@media (max-width: 460px) { .da-flow-arrow { display: none; } }
+.da-res-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; margin-bottom: 8px; }
+.da-res { display: flex; flex-direction: column; gap: 6px; }
+.da-res-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.da-res-head b { font-size: 14.5px; }
+.da-res-note { margin: 2px 0 8px; font-size: 13px; }
+.da-res .btn { margin-top: auto; align-self: flex-start; }
+.da-tag { font-size: 11px; padding: 2px 10px; cursor: default; white-space: nowrap; }
+.da-tag.free { background: var(--success-bg, #e9f9ef); color: var(--success, #1a7f43); }
+[data-theme="dark"] .da-tag.free { background: #17351f; color: #6ee7a0; }
+
 /* ---------- 🌍 Explore Open Source (#/explore) ---------- */
 .repo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
 .repo-card { display: flex; flex-direction: column; gap: 8px; }
@@ -2608,3 +2634,28 @@ input[type="range"].tl-range { width: 100%; accent-color: var(--purple); }
   .cv-grid { display: block; }
   .cv-sheet { border: 0; box-shadow: none; padding: 0; }
 }
+
+/* ---------------- Home motion (mo-*) ----------------
+   Entrance stagger above the fold, scroll-reveal below, hero stat count-up
+   partner in app.js (applyHomeMotion). Opacity/transform only (GPU-cheap).
+   The hidden starting states live INSIDE the no-preference block, so
+   reduced-motion users simply get the static page. */
+@media (prefers-reduced-motion: no-preference) {
+  .mo-in {
+    opacity: 0;
+    transform: translateY(16px);
+    animation: moRise 0.55s cubic-bezier(0.22, 0.7, 0.3, 1) forwards;
+    animation-delay: calc(var(--mo-i, 0) * 60ms);
+  }
+  .mo-reveal {
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.22, 0.7, 0.3, 1);
+    transition-delay: calc(var(--mo-i, 0) * 70ms);
+  }
+  .mo-reveal.mo-on { opacity: 1; transform: none; }
+  /* micro-lift on top of the existing border-color hovers (.card has its own) */
+  .daily-card, .chips .chip { transition: transform 0.18s ease, border-color 0.18s ease; }
+  .daily-card:hover, .chips .chip:hover { transform: translateY(-2px); }
+}
+@keyframes moRise { to { opacity: 1; transform: translateY(0); } }

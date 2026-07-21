@@ -178,17 +178,32 @@ export default {
 
     const model = String(payload.model || "gemini-2.5-flash").replace(/[^a-zA-Z0-9.\-]/g, "");
     const body = payload.body || {};
+    const wantStream = !!payload.stream;
 
-    /* 1) Gemini first (best Burmese) */
+    /* 1) Gemini first (best Burmese).
+       Timeout bounds a slow-FAILING Gemini so the Groq fallback kicks in
+       fast instead of inheriting the hang: streams show headers within a
+       couple of seconds (8s is generous); non-stream generateContent only
+       responds after FULL generation, so it gets a hang-guard, not a cap.
+       The timer is cleared the moment headers arrive — it never cuts off a
+       healthy response mid-body. */
     if (env.GEMINI_KEY) {
+      const ac = new AbortController();
+      const tid = setTimeout(() => ac.abort(), wantStream ? 8000 : 25000);
       try {
         const g = await fetch(
-          "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent?key=" + env.GEMINI_KEY,
-          { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }
+          "https://generativelanguage.googleapis.com/v1beta/models/" + model +
+            (wantStream ? ":streamGenerateContent?alt=sse&key=" : ":generateContent?key=") + env.GEMINI_KEY,
+          { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body), signal: ac.signal }
         );
+        clearTimeout(tid);
+        if (g.ok && wantStream) {
+          /* pass the SSE stream straight through to the browser */
+          return new Response(g.body, { status: 200, headers: Object.assign({ "Content-Type": "text/event-stream" }, cors) });
+        }
         if (g.ok) return new Response(await g.text(), { status: 200, headers: Object.assign({ "Content-Type": "application/json" }, cors) });
         /* not ok (429 rate-limit, 5xx…) → fall through to Groq */
-      } catch (e) { /* network error → fall through */ }
+      } catch (e) { clearTimeout(tid); /* timeout or network error → fall through */ }
     }
 
     /* 2) Groq fallback — convert Gemini request → OpenAI chat, and the

@@ -964,6 +964,7 @@
         <div class="playground pg-page" id="pg-mount"></div>
       </div>`;
     buildPlayground(document.getElementById("pg-mount"), starter);
+    applyMotion();
     window.scrollTo(0, 0);
   }
 
@@ -1861,6 +1862,7 @@
         <h2 class="gal-h2">${t("gal_all")} (${rest.length})</h2>
         <div class="gal-grid">${rest.map(tile).join("")}</div>
       </div>`;
+    applyMotion();
     window.scrollTo(0, 0);
   }
 
@@ -2149,13 +2151,17 @@
 
   /* ---------------- View: Home ---------------- */
   /* Courses to spotlight in the home "New & trending" strip */
-  const NEW_COURSE_IDS = ["zero-to-hero", "n8n-automation", "ai-engineering", "cloud-computing"];
+  const NEW_COURSE_IDS = ["flutter-zero-to-hero", "zero-to-hero", "n8n-automation", "ai-engineering", "cloud-computing"];
 
-  /* ---- Home motion (mo-*): stagger what's on screen, reveal the rest on
-     scroll, count the hero stats up. CSS partner at the end of styles.css.
-     No-ops entirely under prefers-reduced-motion. ---- */
+  /* ---- Motion (mo-*): stagger what's on screen, reveal the rest on scroll,
+     count the hero stats up. Works on ANY view — hero entrance + count-up
+     only fire where a .hero exists (home). Grids, chip rows, tile & card
+     lists animate per child with a springy "pop". CSS partner at the end of
+     styles.css. No-ops entirely under prefers-reduced-motion. ---- */
   let moObserver = null;
-  function applyHomeMotion() {
+  /* containers whose CHILDREN should each animate (vs the block as a whole) */
+  const MO_ROWS = /(^|\s)(grid|gal-grid|sc-grid|repo-grid|da-res-grid|da-flow|chips|mylist|roadmap|search-hits)(\s|$)/;
+  function applyMotion() {
     if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     if (moObserver) { moObserver.disconnect(); moObserver = null; }
     if ("IntersectionObserver" in window) {
@@ -2163,19 +2169,31 @@
         entries.forEach((en) => {
           if (en.isIntersecting) { en.target.classList.add("mo-on"); moObserver.unobserve(en.target); }
         });
-      }, { rootMargin: "0px 0px -8% 0px", threshold: 0.05 });
+      }, { rootMargin: "0px 0px -8% 0px", threshold: 0.04 });
     }
-    /* hero first, then the feed; grids and chip rows animate per child */
-    const items = [];
-    app.querySelectorAll(".hero h1, .hero > .container p, .hero .btn, .hero .hero-quiz, .hero .hero-badges, .hero .hero-art").forEach((el) => items.push(el));
-    app.querySelectorAll(":scope > .container > *").forEach((el) => {
-      if (el.classList.contains("grid") || el.classList.contains("chips")) {
-        el.querySelectorAll(":scope > *").forEach((k) => items.push(k));
-      } else items.push(el);
+    const items = []; /* { el, hero?, pop? } */
+    /* hero (home only) gets a distinct entrance + stat count-up */
+    const hero = app.querySelector(".hero");
+    if (hero) {
+      hero.querySelectorAll("h1, .container p, .btn, .hero-quiz, .hero-badges, .hero-art")
+        .forEach((el) => items.push({ el: el, hero: true }));
+    }
+    /* every content container's direct children; row-containers animate their
+       own children (tiles / cards / chips) with a pop */
+    app.querySelectorAll(".container").forEach((c) => {
+      if (c.closest(".hero")) return;
+      Array.prototype.forEach.call(c.children, (el) => {
+        if (MO_ROWS.test(el.className)) {
+          Array.prototype.forEach.call(el.children, (k) => items.push({ el: k, pop: true }));
+        } else items.push({ el: el });
+      });
     });
-    const fold = (window.innerHeight || 800) * 0.92;
+    const fold = (window.innerHeight || 800) * 0.94;
     let above = 0;
-    items.forEach((el) => {
+    items.forEach((it) => {
+      const el = it.el;
+      if (it.hero) el.classList.add("mo-hero");
+      if (it.pop) el.classList.add("mo-pop");
       if (el.getBoundingClientRect().top < fold) {
         el.style.setProperty("--mo-i", String(Math.min(above++, 9)));
         el.classList.add("mo-in");
@@ -2189,10 +2207,10 @@
       }
     });
     /* hero stat count-up (pure integers only — "4.7★" stays as-is) */
-    app.querySelectorAll(".hero-badges .stat strong").forEach((s) => {
+    if (hero) app.querySelectorAll(".hero-badges .stat strong").forEach((s) => {
       const n = parseInt(s.textContent, 10);
       if (!isFinite(n) || String(n) !== s.textContent.trim()) return;
-      const dur = 900, t0 = performance.now();
+      const dur = 1000, t0 = performance.now();
       const tick = (now) => {
         const pct = Math.min(1, (now - t0) / dur);
         s.textContent = String(Math.round(n * (1 - Math.pow(1 - pct, 3))));
@@ -2284,7 +2302,7 @@
         </div>
       </div>`;
 
-    applyHomeMotion();
+    applyMotion();
 
     app.querySelectorAll(".chip[data-cat]").forEach((chip) =>
       chip.addEventListener("click", () => {
@@ -2711,6 +2729,7 @@
       }, { passive: true });
     } catch (e) {}
     wireReviews(c);
+    applyMotion();
     window.scrollTo(0, 0);
   }
 
@@ -4774,6 +4793,7 @@
               </a>`).join("")}
           </div>
         </div>`;
+      applyMotion();
       return;
     }
 
@@ -4786,6 +4806,7 @@
       </div>`;
     wireTool(tool.id);
     wireCopyBtns();
+    applyMotion();
   }
 
   /* 📜 cheat sheets — plain strings on purpose: rows may contain backticks

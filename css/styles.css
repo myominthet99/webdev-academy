@@ -2641,21 +2641,48 @@ input[type="range"].tl-range { width: 100%; accent-color: var(--purple); }
    The hidden starting states live INSIDE the no-preference block, so
    reduced-motion users simply get the static page. */
 @media (prefers-reduced-motion: no-preference) {
+  /* base: rise + settle-scale + fade (GPU-cheap: opacity + transform only) */
   .mo-in {
     opacity: 0;
-    transform: translateY(16px);
-    animation: moRise 0.55s cubic-bezier(0.22, 0.7, 0.3, 1) forwards;
-    animation-delay: calc(var(--mo-i, 0) * 60ms);
+    transform: translateY(20px) scale(0.985);
+    animation: moRise 0.62s cubic-bezier(0.22, 0.7, 0.3, 1) both;
+    animation-delay: calc(var(--mo-i, 0) * 65ms);
+    will-change: opacity, transform;
   }
   .mo-reveal {
     opacity: 0;
-    transform: translateY(22px);
-    transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.22, 0.7, 0.3, 1);
-    transition-delay: calc(var(--mo-i, 0) * 70ms);
+    transform: translateY(26px) scale(0.985);
+    transition: opacity 0.6s ease, transform 0.66s cubic-bezier(0.22, 0.7, 0.3, 1);
+    transition-delay: calc(var(--mo-i, 0) * 75ms);
+    will-change: opacity, transform;
   }
   .mo-reveal.mo-on { opacity: 1; transform: none; }
-  /* micro-lift on top of the existing border-color hovers (.card has its own) */
-  .daily-card, .chips .chip { transition: transform 0.18s ease, border-color 0.18s ease; }
+
+  /* pop: springy scale-in for tiles, cards & chips */
+  .mo-in.mo-pop {
+    transform: translateY(12px) scale(0.9);
+    animation: moPop 0.52s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    animation-delay: calc(var(--mo-i, 0) * 55ms);
+  }
+  .mo-reveal.mo-pop {
+    transform: translateY(14px) scale(0.92);
+    transition: opacity 0.5s ease, transform 0.56s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /* hero: a touch more travel + a longer settle; the art slides in */
+  .mo-hero { animation-duration: 0.72s; }
+  .hero h1.mo-in { transform: translateY(24px) scale(0.965); }
+  .hero-art.mo-in { transform: translateY(14px) translateX(26px) scale(0.96); }
+
+  /* interactive lift — layers on top of the existing border-color hovers */
+  .daily-card, .chips .chip, .card, .gal-tile, .repo-card, .tool-card {
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.22s ease;
+  }
   .daily-card:hover, .chips .chip:hover { transform: translateY(-2px); }
+  .card:hover, .gal-tile:hover, .repo-card:hover, .tool-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--card-shadow);
+  }
 }
-@keyframes moRise { to { opacity: 1; transform: translateY(0); } }
+@keyframes moRise { to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes moPop { to { opacity: 1; transform: translateY(0) scale(1); } }

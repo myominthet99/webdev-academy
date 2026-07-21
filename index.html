@@ -3,8 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WebDev Academy — Learn Web Development</title>
-  <meta name="description" content="A bilingual (English + Myanmar) learning platform for mastering web development: HTML, CSS, JavaScript and more." />
+  <title>WebDev Academy — Free AI-Powered Coding Courses (English + Myanmar)</title>
+  <meta name="description" content="Learn to code for free with an AI tutor that answers in English or Burmese. Interactive courses in HTML, CSS, JavaScript, Python, Flutter & more — with a live code playground, quizzes, spaced-repetition review, AI mock interviews, a CV builder and real certificates. Learn on your phone." />
+  <meta name="keywords" content="learn to code, free coding course, AI tutor, HTML, CSS, JavaScript, Python, Flutter, web development, coding for beginners, Myanmar, မြန်မာ, code playground, data analyst roadmap, AI mock interview, online certificate" />
+  <meta name="author" content="WebDev Academy" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://myominthet99.github.io/webdev-academy/" />
   <meta name="theme-color" content="#a435f0" />
 
   <!-- Favicon: inline SVG (no extra file needed) -->
@@ -12,14 +16,68 @@
 
   <!-- Social share (Open Graph + Twitter) -->
   <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="WebDev Academy" />
   <meta property="og:url" content="https://myominthet99.github.io/webdev-academy/" />
-  <meta property="og:title" content="WebDev Academy — Learn Web Development" />
-  <meta property="og:description" content="Free, bilingual (English + Myanmar) courses in HTML, CSS, JavaScript, Python & Full Stack — with an AI tutor, code playground, quizzes and certificates. Learn on your phone." />
+  <meta property="og:title" content="WebDev Academy — Free AI-Powered Coding Courses (English + Myanmar)" />
+  <meta property="og:description" content="Learn to code free with an AI tutor in English or Burmese: HTML, CSS, JavaScript, Python, Flutter & more — plus a live playground, quizzes, AI mock interviews and real certificates." />
   <meta property="og:image" content="https://myominthet99.github.io/webdev-academy/social-card.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:locale:alternate" content="my_MM" />
   <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="WebDev Academy — Free AI-Powered Coding Courses" />
+  <meta name="twitter:description" content="A free, bilingual (English + Myanmar) coding school with an AI tutor, live playground, AI mock interviews and certificates." />
   <meta name="twitter:image" content="https://myominthet99.github.io/webdev-academy/social-card.png" />
+
+  <!-- Structured data (SEO): organization, site search & flagship courses -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "EducationalOrganization",
+        "@id": "https://myominthet99.github.io/webdev-academy/#org",
+        "name": "WebDev Academy",
+        "url": "https://myominthet99.github.io/webdev-academy/",
+        "logo": "https://myominthet99.github.io/webdev-academy/social-card.png",
+        "description": "A free, bilingual (English + Myanmar) coding school with an AI tutor, code playground, quizzes, AI mock interviews and real certificates.",
+        "sameAs": ["https://github.com/myominthet99/webdev-academy"]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://myominthet99.github.io/webdev-academy/#website",
+        "url": "https://myominthet99.github.io/webdev-academy/",
+        "name": "WebDev Academy",
+        "inLanguage": ["en", "my"],
+        "publisher": { "@id": "https://myominthet99.github.io/webdev-academy/#org" },
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://myominthet99.github.io/webdev-academy/#/search/{search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      },
+      {
+        "@type": "Course",
+        "name": "The Complete Web Development Bootcamp",
+        "description": "Go from total beginner to building real websites with HTML, CSS and JavaScript, finishing with a portfolio project.",
+        "url": "https://myominthet99.github.io/webdev-academy/#/course/webdev-bootcamp",
+        "inLanguage": "en",
+        "isAccessibleForFree": true,
+        "provider": { "@id": "https://myominthet99.github.io/webdev-academy/#org" }
+      },
+      {
+        "@type": "Course",
+        "name": "Flutter: Zero to Hero",
+        "description": "Build real cross-platform mobile apps with Flutter and Dart, from your first widget to a finished app.",
+        "url": "https://myominthet99.github.io/webdev-academy/#/course/flutter-zero-to-hero",
+        "inLanguage": "en",
+        "isAccessibleForFree": true,
+        "provider": { "@id": "https://myominthet99.github.io/webdev-academy/#org" }
+      }
+    ]
+  }
+  </script>
 
   <!-- PWA (installable + offline) -->
   <link rel="manifest" href="manifest.json" />

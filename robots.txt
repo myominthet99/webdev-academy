@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://myominthet99.github.io/webdev-academy/sitemap.xml

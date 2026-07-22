@@ -720,6 +720,7 @@
   const saveSnippets = (s) => jset("wda_pg_snippets", s);
 
   let pgConsoleEl = null; /* the active playground's console panel */
+  let pgErrBtn = null, pgLastErr = ""; /* 🐛 "Explain this error" button + last error */
   window.addEventListener("message", (e) => {
     if (!e.data || !e.data.__pg || !pgConsoleEl) return;
     const line = document.createElement("div");
@@ -727,6 +728,8 @@
     line.textContent = (e.data.type === "error" ? "✖ " : e.data.type === "warn" ? "⚠ " : "» ") + e.data.text;
     pgConsoleEl.appendChild(line);
     pgConsoleEl.scrollTop = pgConsoleEl.scrollHeight;
+    /* a runtime error → offer the AI "explain this" button */
+    if (e.data.type === "error") { pgLastErr = String(e.data.text || ""); if (pgErrBtn) pgErrBtn.hidden = false; }
   });
 
   /* Builds the full playground UI inside `mount`. Used by both the modal
@@ -766,7 +769,9 @@
       </div>
       <div class="pg-check-panel" data-pg-check-panel hidden></div>
       <div class="pg-console-wrap">
-        <div class="pg-console-head">${t("pg_console")}</div>
+        <div class="pg-console-head">${t("pg_console")}
+          <button class="btn btn-outline btn-sm pg-explain" data-pg-explain hidden>🐛 ${t("pg_explain")}</button>
+        </div>
         <div class="pg-console" data-pg-console></div>
       </div>`;
 
@@ -774,10 +779,12 @@
     const frame = mount.querySelector(".pg-result");
     const auto = mount.querySelector("[data-pg-auto]");
     const consoleEl = mount.querySelector("[data-pg-console]");
+    const errBtn = mount.querySelector("[data-pg-explain]");
     const sel = mount.querySelector("[data-pg-snippets]");
     const body = mount.querySelector(".pg-body");
     ta.value = initialCode || "";
     pgConsoleEl = consoleEl;
+    pgErrBtn = errBtn; pgLastErr = "";
 
     /* editor font size (persisted) */
     let fontPx = Math.min(22, Math.max(11, Number(localStorage.getItem("wda_pg_font")) || 14));
@@ -829,6 +836,8 @@
     const run = () => {
       consoleEl.innerHTML = "";
       pgConsoleEl = consoleEl;
+      pgErrBtn = errBtn; pgLastErr = "";
+      if (errBtn) errBtn.hidden = true; /* re-hide until a fresh error appears */
       frame.srcdoc = buildRunnableDoc(ta.value);
       try { localStorage.setItem("wda_pg_last", ta.value); } catch (e) {}
     };
@@ -882,6 +891,44 @@
           showCheck('<p class="muted">' + (m === "no-key" ? escapeHtml(t("ai_no_key")) : "⚠ AI: " + escapeHtml(m)) + "</p>");
         })
         .finally(() => { checkBtn.disabled = false; checkBtn.textContent = old; });
+    });
+
+    /* 🐛 Explain this error — plain-language AI help when code throws.
+       Free for everyone (counts against the daily free-AI budget); premium
+       is unlimited. Uses the last runtime error + the student's code. */
+    if (errBtn) errBtn.addEventListener("click", () => {
+      if (!window.AI) { showCheck('<p class="muted">' + escapeHtml(t("ai_no_key")) + "</p>"); return; }
+      const errText = pgLastErr;
+      if (!errText) return;
+      if (!isPremiumUser()) {
+        if (aiFreeLeft() <= 0) {
+          showCheck('<p class="muted">🔒 ' + escapeHtml(t("tutor_free_out")) + ' <a href="#/premium">⭐ ' + escapeHtml(t("prem_go")) + "</a></p>");
+          return;
+        }
+        aiFreeInc();
+      }
+      const old = errBtn.textContent;
+      errBtn.disabled = true;
+      errBtn.textContent = "🐛 " + t("ai_working");
+      showCheck('<p class="muted">⏳ ' + escapeHtml(t("pg_explain_working")) + "</p>");
+      window.AI.complete(
+        "A beginner's web page threw this error:\n" + errText.slice(0, 500) +
+          "\n\nHere is their code:\n```\n" + ta.value.slice(0, 5000) + "\n```",
+        {
+          system:
+            "You are a kind coding teacher at WebDev Academy for Myanmar teenagers learning web development. " +
+            "In simple, friendly language explain what this error means and the MOST LIKELY cause in THEIR code, then how to fix it. " +
+            (lang === "my" ? "Reply in simple Burmese, but keep code, tag names and error text in English. " : "") +
+            "Output plain HTML only (no markdown): a <p> for what the error means, a <p> for the likely cause here, " +
+            "then <h4>🔧 Fix</h4> with a short <ul> or a tiny <pre><code> snippet. Under 180 words. Be encouraging — errors are normal.",
+          maxTokens: 1500,
+        }
+      ).then((html) => showCheck('<div class="reader">' + window.AI.stripFences(html) + "</div>"))
+        .catch((e2) => {
+          const m = (e2 && e2.message) || String(e2);
+          showCheck('<p class="muted">' + (m === "no-key" ? escapeHtml(t("ai_no_key")) : "⚠ AI: " + escapeHtml(m)) + "</p>");
+        })
+        .finally(() => { errBtn.disabled = false; errBtn.textContent = old; });
     });
 
     /* download as a standalone .html file */

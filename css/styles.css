@@ -224,6 +224,57 @@ button { font-family: inherit; cursor: pointer; }
   font-weight: 600;
 }
 
+/* ============ 💎 Imperial Sapphire — royal menu ============
+   A self-contained deep-navy top bar + mobile tab bar with sapphire, frost
+   and silver accents. Colors are FIXED (theme-independent) so the menu reads
+   royal over BOTH the light and dark page themes. Everything is scoped to
+   .topbar / .tabbar, so the rest of the app is untouched. */
+.topbar {
+  background: linear-gradient(120deg, #050c1a 0%, #0a1128 55%, #0f1d44 100%);
+  border-bottom: 1px solid rgba(147, 197, 253, .22);
+  box-shadow: 0 2px 20px rgba(5, 12, 26, .55);
+}
+.topbar .brand-mark {
+  background: linear-gradient(135deg, #1d4ed8, #3b82f6 60%, #93c5fd);
+  box-shadow: 0 3px 12px rgba(29, 78, 216, .5), inset 0 0 0 1px rgba(240, 248, 255, .25);
+}
+.topbar .brand-name { color: #eaf1ff; }
+.topbar .brand-name strong { color: #93c5fd; }
+.topbar .topnav a { color: #cbd5e1; }
+.topbar .topnav a:hover { color: #eaf1ff; }
+.topbar .topnav:not(.right) a { color: #b7c2d6; }
+.topbar .topnav:not(.right) a:hover { color: #eaf1ff; background: rgba(147, 197, 253, .12); }
+.topbar .topnav:not(.right) a.active { color: #93c5fd; }
+.topbar .topnav:not(.right) a.active::after { background: linear-gradient(90deg, #1d4ed8, #93c5fd); }
+.topbar #nav-howto:hover .nv-ic svg { filter: drop-shadow(0 0 5px #93c5fd); }
+.topbar .searchbar { background: rgba(255, 255, 255, .05); border-color: rgba(147, 197, 253, .28); }
+.topbar .searchbar input { color: #eaf1ff; }
+.topbar .searchbar input::placeholder { color: #8ea0bd; }
+.topbar .searchbar button { color: #cbd5e1; }
+.topbar .searchbar:focus-within { border-color: #93c5fd; box-shadow: 0 0 0 2px rgba(147, 197, 253, .25); }
+.topbar .lang-btn,
+.topbar .cmdk-hint { background: rgba(255, 255, 255, .06); color: #dbe4f3; border-color: rgba(147, 197, 253, .28); }
+.topbar .lang-btn:hover,
+.topbar .cmdk-hint:hover { color: #fff; border-color: #93c5fd; background: rgba(147, 197, 253, .14); }
+.topbar .chat-nav-btn { background: rgba(255, 255, 255, .06); border-color: rgba(147, 197, 253, .28); color: #eaf1ff; }
+.topbar .pill { background: rgba(255, 255, 255, .06); color: #eaf1ff; border-color: rgba(147, 197, 253, .28); }
+.topbar .install-btn { background: rgba(255, 255, 255, .06); color: #eaf1ff; border: 1px solid rgba(147, 197, 253, .28); }
+.topbar .btn-login { background: linear-gradient(135deg, #1d4ed8, #2563eb); border-color: rgba(147, 197, 253, .4); color: #fff; }
+.topbar .btn-login:hover { filter: brightness(1.08); background: linear-gradient(135deg, #1d4ed8, #2563eb); }
+.topbar .user-chip { border-color: rgba(147, 197, 253, .3); }
+.topbar .user-chip:hover { border-color: #93c5fd; }
+.topbar .user-name { color: #eaf1ff; }
+.topbar .user-chip .caret { color: #93c5fd; }
+@media (max-width: 768px) {
+  .tabbar {
+    background: linear-gradient(180deg, #0a1128 0%, #050c1a 100%);
+    border-top: 1px solid rgba(147, 197, 253, .22);
+    box-shadow: 0 -4px 20px rgba(5, 12, 26, .5);
+  }
+  .tabbar a { color: #90a0bd; }
+  .tabbar a.active { color: #93c5fd; }
+}
+
 /* ---------- Layout ---------- */
 .app { min-height: 60vh; }
 .container { max-width: 1180px; margin: 0 auto; padding: 0 20px; }
@@ -2178,26 +2229,21 @@ input[type="range"].tl-range { width: 100%; accent-color: var(--purple); }
    iOS/FaceTime. Wrapped in @supports so browsers without backdrop-filter
    keep the solid look. */
 @supports ((-webkit-backdrop-filter: blur(2px)) or (backdrop-filter: blur(2px))) {
-  .topbar {
-    background: rgba(255, 255, 255, .72);
+  /* 💎 Imperial Sapphire: frosted NAVY glass for the menu (both themes) */
+  .topbar,
+  [data-theme="dark"] .topbar {
+    background: rgba(9, 15, 38, .82);
     -webkit-backdrop-filter: saturate(1.7) blur(18px);
     backdrop-filter: saturate(1.7) blur(18px);
-    border-bottom-color: rgba(0, 0, 0, .06);
+    border-bottom-color: rgba(147, 197, 253, .22);
   }
-  [data-theme="dark"] .topbar {
-    background: rgba(17, 19, 22, .68);
-    border-bottom-color: rgba(255, 255, 255, .08);
-  }
-  .tabbar {
-    background: rgba(255, 255, 255, .75);
+  .tabbar,
+  [data-theme="dark"] .tabbar {
+    background: rgba(9, 15, 38, .88);
     -webkit-backdrop-filter: saturate(1.7) blur(20px);
     backdrop-filter: saturate(1.7) blur(20px);
-    border-top-color: rgba(0, 0, 0, .06);
-    box-shadow: 0 -8px 26px rgba(0, 0, 0, .07);
-  }
-  [data-theme="dark"] .tabbar {
-    background: rgba(17, 19, 22, .7);
-    border-top-color: rgba(255, 255, 255, .08);
+    border-top-color: rgba(147, 197, 253, .22);
+    box-shadow: 0 -8px 26px rgba(5, 12, 26, .5);
   }
   .chat-panel:not(.full) {
     background: rgba(255, 255, 255, .82);

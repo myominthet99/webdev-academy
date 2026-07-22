@@ -17473,6 +17473,534 @@ flutter build ipa</code></pre>
       },
     ],
   },
+  {
+    id: "real-world-oop",
+    title: "Real-World OOP: Design Better Software",
+    subtitle: "Model the real world with objects — the four pillars, SOLID and the design patterns pros actually use.",
+    instructor: "WebDev Academy",
+    category: "Programming",
+    level: "Intermediate",
+    rating: 4.9,
+    ratings: 186,
+    students: 4200,
+    hours: 10,
+    price: "Free",
+    free: true,
+    color: "linear-gradient(135deg,#e8590c,#f59f00)",
+    icon: "🧱",
+    description:
+      "Once you can write code, the next leap is writing code that stays clean as it grows. Object-Oriented Programming is how most real software is organised. You'll learn to think in objects, master the four pillars, apply the SOLID principles, and use real design patterns — with clear Python examples whose ideas carry straight over to Java, C#, JavaScript and Dart.",
+    whatYouLearn: [
+      "Model real things as classes and objects",
+      "Master the four pillars: encapsulation, abstraction, inheritance, polymorphism",
+      "Choose composition over inheritance — and know why",
+      "Apply the five SOLID principles to real code",
+      "Use the Factory, Strategy, Observer & Singleton patterns",
+      "Spot and refactor god objects, deep hierarchies and over-engineering",
+      "Write OOP code that's easy to test and change",
+    ],
+    sections: [
+      {
+        title: "1 · Thinking in Objects",
+        lessons: [
+          article("oop-what", "What is OOP — and Why?", "6 min", `
+<h3>🎯 Code that mirrors the real world</h3>
+<p><strong>Object-Oriented Programming (OOP)</strong> organises a program around <strong>objects</strong> — self-contained things that bundle <em>data</em> and the <em>actions</em> on that data together. Instead of a big pile of loose functions and variables, you model your program as a set of objects that talk to each other, just like the real world.</p>
+<h3>📝 Why it caught on</h3>
+<ul>
+  <li><strong>It mirrors how we think:</strong> a <em>User</em>, an <em>Order</em>, a <em>Car</em> — nouns become objects.</li>
+  <li><strong>It scales:</strong> big programs stay organised because related data and behaviour live together.</li>
+  <li><strong>It's everywhere:</strong> Java, C#, Python, JavaScript, Dart, Swift — all support OOP. Learn it once, use it forever.</li>
+</ul>
+<h3>💡 The core idea</h3>
+<p>A bank account isn't just a number floating around — it's a <em>balance</em> plus the <em>deposit</em> and <em>withdraw</em> actions that protect it. OOP keeps them together.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> List three "things" in an app you use (e.g. a chat app: Message, User, Room). For each, jot the data it holds and two actions it can do.</div>`),
+          article("oop-class-object", "Classes vs Objects", "6 min", `
+<h3>🎯 Blueprint vs the real thing</h3>
+<p>A <strong>class</strong> is a blueprint. An <strong>object</strong> (or <em>instance</em>) is a real thing built from that blueprint. One <code>Car</code> class; many actual cars.</p>
+<pre><code>class Car:
+    pass
+
+my_car = Car()      # an object (instance)
+your_car = Car()    # a different object
+print(my_car is your_car)   # False — two separate things</code></pre>
+<h3>📝 One blueprint, many objects</h3>
+<p>The class is written once. You create as many objects from it as you need, each with its own data.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> In plain words, what's the class and what's the object here: "Su's red Toyota"? (Class = Car; object = Su's specific red Toyota.)</div>`),
+          article("oop-attributes", "Attributes & Methods", "7 min", `
+<h3>🎯 Data + behaviour, together</h3>
+<p><strong>Attributes</strong> are the data an object holds. <strong>Methods</strong> are the actions it can do (functions that live inside the class).</p>
+<pre><code>class Dog:
+    def bark(self):          # a method
+        return "Woof!"
+
+d = Dog()
+d.name = "Bolt"              # an attribute
+print(d.name)               # Bolt
+print(d.bark())             # Woof!</code></pre>
+<h3>📝 The <code>self</code> parameter</h3>
+<p>Every method's first parameter is <code>self</code> — it's the object the method was called on, so the method can read and change <em>that object's</em> attributes.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> Add a method <code>describe(self)</code> that returns <code>self.name + " says Woof"</code>.</div>`),
+          article("oop-constructor", "Constructors: __init__ and self", "7 min", `
+<h3>🎯 Set an object up the moment it's born</h3>
+<p>The <strong>constructor</strong> runs automatically when you create an object. In Python it's <code>__init__</code>. Use it to give every new object its starting data.</p>
+<pre><code>class Student:
+    def __init__(self, name, xp=0):
+        self.name = name        # attribute set at birth
+        self.xp = xp
+
+    def add_xp(self, amount):
+        self.xp += amount
+
+s = Student("Su", 40)
+s.add_xp(70)
+print(s.name, s.xp)             # Su 110</code></pre>
+<h3>💡 Why it matters</h3>
+<p>The constructor guarantees an object is <em>valid from the start</em> — a <code>Student</code> always has a name, so the rest of your code never has to check.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> Write a <code>BankAccount</code> class whose <code>__init__</code> takes an <code>owner</code> and an optional <code>balance=0</code>.</div>`),
+          quiz("oop-q1", "Quiz: Thinking in Objects", [
+            { q: "OOP organises a program around…", options: ["Loose global variables", "Objects that bundle data and behaviour", "Only functions", "HTML tags"], answer: 1 },
+            { q: "A class is to an object as…", options: ["A car is to a road", "A blueprint is to a house built from it", "A number is to a letter", "A loop is to an if"], answer: 1 },
+            { q: "Attributes are an object's ___ and methods are its ___.", options: ["actions / data", "data / actions", "names / colors", "loops / classes"], answer: 1 },
+            { q: "In Python, the method that runs when an object is created is…", options: ["__start__", "__init__", "__new_object__", "create()"], answer: 1 },
+            { q: "The first parameter of an instance method (self) refers to…", options: ["The class blueprint", "The specific object the method was called on", "The parent class", "A global variable"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "2 · The Four Pillars",
+        lessons: [
+          article("oop-encapsulation", "Encapsulation", "8 min", `
+<h3>🎯 Protect the data; expose the behaviour</h3>
+<p><strong>Encapsulation</strong> means keeping an object's data private and only letting the outside world change it through safe methods. It stops the rest of your program from putting the object into a broken state.</p>
+<pre><code>class BankAccount:
+    def __init__(self, balance=0):
+        self._balance = balance      # _ = "please don't touch directly"
+
+    def deposit(self, amount):
+        if amount &lt;= 0:
+            raise ValueError("Amount must be positive")
+        self._balance += amount
+
+    def withdraw(self, amount):
+        if amount &gt; self._balance:
+            raise ValueError("Insufficient funds")
+        self._balance -= amount
+
+    @property
+    def balance(self):               # read-only view
+        return self._balance</code></pre>
+<h3>📝 The win</h3>
+<p>Nobody can set a negative balance or overdraw — the rules live <em>inside</em> the object. Change the rule once, and every user of the class is protected.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> Why is <code>account.balance = -999</code> dangerous, and how does the <code>@property</code> (no setter) above prevent it?</div>`),
+          article("oop-abstraction", "Abstraction", "7 min", `
+<h3>🎯 Show what it does, hide how it does it</h3>
+<p><strong>Abstraction</strong> means exposing a simple interface and hiding the messy details. You <code>send()</code> an email without knowing about SMTP handshakes — that complexity is abstracted away.</p>
+<pre><code>class Emailer:
+    def send(self, to, message):
+        self._connect()
+        self._authenticate()
+        self._transmit(to, message)   # caller never sees these
+
+# using it is simple:
+Emailer().send("su@example.com", "Hi!")</code></pre>
+<h3>💡 Interface vs implementation</h3>
+<p>The <strong>interface</strong> is the promise (<code>send(to, message)</code>). The <strong>implementation</strong> is the hidden how. Keep the interface small and stable; change the guts freely.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> Name the simple "interface" of a TV remote, and one "implementation" detail it hides from you.</div>`),
+          article("oop-inheritance", "Inheritance", "8 min", `
+<h3>🎯 Reuse with an "is-a" relationship</h3>
+<p><strong>Inheritance</strong> lets a class build on another. A <code>Dog</code> <em>is an</em> <code>Animal</code>, so it gets the Animal's data and methods for free, and adds its own.</p>
+<pre><code>class Animal:
+    def __init__(self, name):
+        self.name = name
+    def speak(self):
+        return "..."
+
+class Dog(Animal):               # Dog inherits Animal
+    def speak(self):             # and overrides one method
+        return "Woof!"
+
+class Cat(Animal):
+    def speak(self):
+        return "Meow!"
+
+print(Dog("Bolt").speak())      # Woof!</code></pre>
+<h3>📝 super()</h3>
+<p>Call <code>super().__init__(...)</code> to run the parent's constructor, then add the child's own setup on top.</p>
+<div class="callout warn"><strong>Careful:</strong> inheritance is powerful but easy to overuse. If the relationship isn't a true "is-a", prefer <em>composition</em> (next section).</div>
+<div class="callout tip"><strong>Try it yourself:</strong> Add a <code>Cow(Animal)</code> whose <code>speak()</code> returns "Moo!".</div>`),
+          article("oop-polymorphism", "Polymorphism", "7 min", `
+<h3>🎯 Same call, many forms</h3>
+<p><strong>Polymorphism</strong> means one interface, many behaviours. You call <code>speak()</code> on any animal and the <em>right</em> version runs — without your code knowing or caring which type it is.</p>
+<pre><code>animals = [Dog("Bolt"), Cat("Milo"), Cow("Daisy")]
+
+for a in animals:
+    print(a.speak())     # Woof! / Meow! / Moo!</code></pre>
+<h3>💡 Why it's powerful</h3>
+<p>The loop above never changes when you add a new animal type. Write <code>Duck(Animal)</code> tomorrow and it just works. <em>Adding behaviour without editing existing code</em> is the heart of clean OOP.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> A <code>draw()</code> method on Circle, Square and Triangle — how does polymorphism let one <code>for shape in shapes: shape.draw()</code> loop handle them all?</div>`),
+          quiz("oop-q2", "Quiz: The Four Pillars", [
+            { q: "Encapsulation is mainly about…", options: ["Making everything public", "Keeping data private and changing it only through safe methods", "Copying code", "Faster loops"], answer: 1 },
+            { q: "Abstraction means…", options: ["Hiding the how, exposing a simple interface", "Deleting methods", "Using global variables", "Writing more comments"], answer: 0 },
+            { q: "Inheritance models which relationship?", options: ["has-a", "is-a", "uses-a", "next-to"], answer: 1 },
+            { q: "Overriding a parent method in a child class is an example of…", options: ["Encapsulation", "Polymorphism", "Abstraction only", "A syntax error"], answer: 1 },
+            { q: "The big payoff of polymorphism is…", options: ["Adding new types without changing the code that uses them", "Fewer classes", "No need for methods", "Faster typing"], answer: 0 },
+            { q: "To run the parent's constructor from a child you call…", options: ["parent()", "super().__init__(...)", "self.__init__()", "base.new()"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "3 · Designing Real Objects",
+        lessons: [
+          article("oop-composition", "Composition Over Inheritance", "8 min", `
+<h3>🎯 "has-a" often beats "is-a"</h3>
+<p>Inheritance says a Car <em>is an</em> Engine — wrong. A Car <em>has an</em> Engine. That's <strong>composition</strong>: build objects out of other objects instead of inheriting from them.</p>
+<pre><code>class Engine:
+    def start(self):
+        return "Vroom"
+
+class Car:
+    def __init__(self):
+        self.engine = Engine()      # Car HAS an Engine
+
+    def start(self):
+        return self.engine.start()  # delegate to it</code></pre>
+<h3>📝 Why composition scales better</h3>
+<ul>
+  <li>Swap parts easily: give the Car an <code>ElectricEngine</code> with the same <code>start()</code> — no hierarchy to untangle.</li>
+  <li>Avoids deep, brittle inheritance trees.</li>
+  <li>The famous advice: <strong>"favour composition over inheritance."</strong></li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> Is "a Playlist has Songs" composition or inheritance? Model <code>Playlist</code> holding a list of <code>Song</code> objects.</div>`),
+          article("oop-relationships", "Object Relationships", "6 min", `
+<h3>🎯 How objects connect</h3>
+<ul>
+  <li><strong>Association</strong> — objects that know each other (a Teacher and their Students).</li>
+  <li><strong>Aggregation</strong> — a "has-a" where parts can live on their own (a Team <em>has</em> Players; players exist without the team).</li>
+  <li><strong>Composition</strong> — a strong "has-a" where parts die with the whole (a House <em>has</em> Rooms; no house, no rooms).</li>
+</ul>
+<pre><code>class Team:
+    def __init__(self):
+        self.players = []          # aggregation: add existing players
+
+    def add(self, player):
+        self.players.append(player)</code></pre>
+<div class="callout tip"><strong>Try it yourself:</strong> A Playlist and its Songs — aggregation or composition? (Songs exist without the playlist → aggregation.)</div>`),
+          article("oop-modeling", "Modeling a Real Domain", "8 min", `
+<h3>🎯 From nouns to a design</h3>
+<p>Let's model a simple shopping cart. Find the nouns (Product, CartItem, Cart), give each clear data and behaviour, and let them collaborate.</p>
+<pre><code>class Product:
+    def __init__(self, name, price):
+        self.name = name
+        self.price = price
+
+class CartItem:
+    def __init__(self, product, qty):
+        self.product = product
+        self.qty = qty
+    def subtotal(self):
+        return self.product.price * self.qty
+
+class Cart:
+    def __init__(self):
+        self.items = []
+    def add(self, product, qty=1):
+        self.items.append(CartItem(product, qty))
+    def total(self):
+        return sum(item.subtotal() for item in self.items)</code></pre>
+<h3>💡 Notice</h3>
+<p>Each class does <em>one</em> job. The Cart doesn't know how to price a product; it asks the item, which asks the product. Small, focused objects that collaborate.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> Add a <code>Discount</code> concept — where does the responsibility for applying it belong?</div>`),
+          article("oop-srp", "One Class, One Job", "6 min", `
+<h3>🎯 The Single Responsibility idea</h3>
+<p>A class should have <strong>one reason to change</strong>. When a class does too much — stores data, saves to a database, <em>and</em> formats a report — every new requirement risks breaking it.</p>
+<pre><code># Too much — 3 jobs in one class:
+class Report:
+    def data(self): ...
+    def save_to_db(self): ...     # database job
+    def to_pdf(self): ...         # formatting job
+
+# Better — split the jobs:
+class Report: ...                 # just the data
+class ReportRepository: ...       # saving
+class ReportPrinter: ...          # formatting</code></pre>
+<div class="callout tip"><strong>Try it yourself:</strong> A <code>User</code> class that also sends emails has how many responsibilities? How would you split it?</div>`),
+          quiz("oop-q3", "Quiz: Designing Real Objects", [
+            { q: "\"A Car has an Engine\" is best modeled with…", options: ["Inheritance", "Composition", "A global variable", "Polymorphism"], answer: 1 },
+            { q: "The common advice is to favour…", options: ["Inheritance over composition", "Composition over inheritance", "No classes at all", "Deep hierarchies"], answer: 1 },
+            { q: "Parts that can exist on their own (Team has Players) is…", options: ["Composition", "Aggregation", "Inheritance", "Abstraction"], answer: 1 },
+            { q: "In the cart example, whose job is it to compute a line subtotal?", options: ["Cart", "CartItem", "Product", "The database"], answer: 1 },
+            { q: "The Single Responsibility Principle says a class should have…", options: ["Many jobs for efficiency", "One reason to change", "No methods", "Only static data"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "4 · The SOLID Principles",
+        lessons: [
+          article("oop-solid-s", "S — Single Responsibility", "6 min", `
+<h3>🎯 One class, one reason to change</h3>
+<p>The <strong>S</strong> in SOLID. A class should do one thing well. If you can describe a class with "and" ("it stores users <em>and</em> sends emails"), it's probably doing too much.</p>
+<pre><code># One responsibility each — easy to change &amp; test
+class Invoice: ...            # the data
+class InvoicePrinter: ...    # how it looks
+class InvoiceMailer: ...     # how it's sent</code></pre>
+<p>Now a change to the email provider touches only <code>InvoiceMailer</code> — nothing else can break.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> Split a <code>BlogPost</code> class that also renders HTML and saves to disk into three focused classes.</div>`),
+          article("oop-solid-o", "O — Open/Closed", "7 min", `
+<h3>🎯 Open to extend, closed to modify</h3>
+<p>You should be able to add new behaviour <em>without editing</em> existing, working code. Add a new class instead of an <code>if/elif</code> that grows forever.</p>
+<pre><code># Closed: adding a shape means editing this every time
+def area(shape):
+    if shape.kind == "circle": ...
+    elif shape.kind == "square": ...   # grows and grows
+
+# Open: each shape knows its own area
+class Circle:
+    def area(self): ...
+class Square:
+    def area(self): ...
+# add Triangle tomorrow — nothing above changes</code></pre>
+<div class="callout tip"><strong>Try it yourself:</strong> How does polymorphism (pillar 4) make the Open/Closed principle easy?</div>`),
+          article("oop-solid-l", "L — Liskov Substitution", "7 min", `
+<h3>🎯 A subclass must not surprise you</h3>
+<p>If <code>Duck</code> is a subclass of <code>Bird</code>, anywhere the code expects a Bird you should be able to hand it a Duck and everything still works. Subclasses must honour the parent's promises.</p>
+<pre><code># Violation: a Penguin that breaks fly()
+class Bird:
+    def fly(self): ...
+
+class Penguin(Bird):
+    def fly(self):
+        raise Exception("Can't fly!")   # surprises callers — bad
+
+# Fix: don't force fly() onto birds that can't.
+# Split into FlyingBird / Bird, or use composition.</code></pre>
+<div class="callout tip"><strong>Try it yourself:</strong> Why would a <code>Square</code> that inherits from <code>Rectangle</code> (and forces width == height) violate this principle?</div>`),
+          article("oop-solid-i", "I — Interface Segregation", "6 min", `
+<h3>🎯 Small, focused interfaces</h3>
+<p>Don't force a class to implement methods it doesn't need. Many small interfaces beat one fat one.</p>
+<pre><code># Fat: a printer forced to implement scanning &amp; faxing
+class AllInOne:
+    def print(self): ...
+    def scan(self): ...
+    def fax(self): ...     # a simple printer doesn't want these
+
+# Segregated: pick only what you need
+class Printer:  def print(self): ...
+class Scanner:  def scan(self): ...</code></pre>
+<div class="callout tip"><strong>Try it yourself:</strong> A <code>Worker</code> interface with <code>work()</code> and <code>eat()</code> — why is that awkward for a <code>Robot</code>?</div>`),
+          article("oop-solid-d", "D — Dependency Inversion", "7 min", `
+<h3>🎯 Depend on abstractions, not details</h3>
+<p>High-level code shouldn't depend on a specific low-level class. Both should depend on a shared abstraction — so you can swap the details freely.</p>
+<pre><code># Rigid: Notifier is welded to Email
+class Notifier:
+    def __init__(self):
+        self.channel = EmailSender()   # can't swap it
+
+# Inverted: pass in ANY sender with a send() method
+class Notifier:
+    def __init__(self, sender):        # depend on the abstraction
+        self.sender = sender
+    def alert(self, msg):
+        self.sender.send(msg)
+
+Notifier(EmailSender()).alert("Hi")
+Notifier(SmsSender()).alert("Hi")      # swapped, no edits</code></pre>
+<div class="callout tip"><strong>Try it yourself:</strong> This is called "dependency injection" — how does passing the sender in make the Notifier easy to <em>test</em>?</div>`),
+          quiz("oop-q4", "Quiz: SOLID", [
+            { q: "The S in SOLID stands for…", options: ["Simple", "Single Responsibility", "Static", "Strategy"], answer: 1 },
+            { q: "Open/Closed means code should be…", options: ["Open to modify, closed to extend", "Open to extend, closed to modify", "Always rewritten", "Never reused"], answer: 1 },
+            { q: "Liskov Substitution says a subclass must…", options: ["Add as many overrides as possible", "Be usable anywhere the parent is, without surprises", "Never call super()", "Have more methods"], answer: 1 },
+            { q: "Interface Segregation prefers…", options: ["One big interface", "Many small, focused interfaces", "No interfaces", "Only abstract classes"], answer: 1 },
+            { q: "Dependency Inversion says high-level code should depend on…", options: ["Concrete low-level classes", "Abstractions, not details", "Global state", "The database directly"], answer: 1 },
+            { q: "Passing a dependency into the constructor is called…", options: ["Inheritance", "Dependency injection", "Encapsulation", "Overriding"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "5 · Design Patterns That Pay Off",
+        lessons: [
+          article("oop-patterns-what", "What Are Design Patterns?", "5 min", `
+<h3>🎯 Proven solutions to common problems</h3>
+<p><strong>Design patterns</strong> are named, reusable solutions to problems that come up again and again. They're not code you copy — they're <em>recipes</em>. Knowing them gives you a shared vocabulary ("let's use a Factory here") and saves you reinventing the wheel.</p>
+<h3>📝 The three families</h3>
+<ul>
+  <li><strong>Creational</strong> — how objects get made (Factory, Singleton).</li>
+  <li><strong>Structural</strong> — how objects are composed (Adapter, Decorator).</li>
+  <li><strong>Behavioural</strong> — how objects talk (Strategy, Observer).</li>
+</ul>
+<div class="callout warn"><strong>Use with care:</strong> patterns solve real problems — but forcing a pattern where none is needed just adds complexity. Reach for one when the problem actually appears.</div>
+<div class="callout tip"><strong>Try it yourself:</strong> We'll cover Factory, Strategy, Observer and Singleton next — which family does each belong to?</div>`),
+          article("oop-factory", "Factory Pattern", "7 min", `
+<h3>🎯 Create objects without hard-coding the class</h3>
+<p>A <strong>Factory</strong> centralises object creation, so the rest of your code asks for <em>what</em> it wants, not <em>how</em> to build it.</p>
+<pre><code>class Circle:
+    def draw(self): return "○"
+class Square:
+    def draw(self): return "□"
+
+class ShapeFactory:
+    def create(self, kind):
+        if kind == "circle": return Circle()
+        if kind == "square": return Square()
+        raise ValueError("Unknown shape")
+
+shape = ShapeFactory().create("circle")
+print(shape.draw())            # ○</code></pre>
+<h3>💡 Why bother</h3>
+<p>The creation logic lives in one place. Add a new shape and you edit only the factory — the callers don't change.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> Add a <code>Triangle</code> to the factory. How many other places did you have to touch?</div>`),
+          article("oop-strategy", "Strategy Pattern", "7 min", `
+<h3>🎯 Swap the algorithm at runtime</h3>
+<p>The <strong>Strategy</strong> pattern lets you pick <em>how</em> something is done from a family of interchangeable options — without a tangle of if/else.</p>
+<pre><code>class Cart:
+    def __init__(self, payment):
+        self.payment = payment          # a strategy object
+    def checkout(self, amount):
+        return self.payment.pay(amount)
+
+class KbzPay:
+    def pay(self, amount): return f"Paid {amount} via KBZPay"
+class Cash:
+    def pay(self, amount): return f"Paid {amount} in cash"
+
+print(Cart(KbzPay()).checkout(5000))
+print(Cart(Cash()).checkout(5000))      # same Cart, different strategy</code></pre>
+<h3>💡 Notice</h3>
+<p>This is Dependency Inversion + polymorphism in action. New payment method? Add a class with a <code>pay()</code> — the Cart never changes.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> Add a <code>WavePay</code> strategy. Did you edit <code>Cart</code>? (You shouldn't have to.)</div>`),
+          article("oop-observer", "Observer Pattern", "7 min", `
+<h3>🎯 Notify many objects when something happens</h3>
+<p>The <strong>Observer</strong> pattern lets one object (the <em>subject</em>) tell a list of others (the <em>observers</em>) when it changes — the basis of event systems, live UIs and notifications.</p>
+<pre><code>class Channel:
+    def __init__(self):
+        self.subscribers = []
+    def subscribe(self, fn):
+        self.subscribers.append(fn)
+    def publish(self, video):
+        for notify in self.subscribers:
+            notify(video)
+
+ch = Channel()
+ch.subscribe(lambda v: print("Su got:", v))
+ch.subscribe(lambda v: print("Ko got:", v))
+ch.publish("New lesson!")        # both are notified</code></pre>
+<div class="callout tip"><strong>Try it yourself:</strong> Where have you seen this in real life? (YouTube subscriptions, a "like" counter updating live, button click handlers.)</div>`),
+          article("oop-singleton", "Singleton — and When Not To", "6 min", `
+<h3>🎯 Exactly one instance</h3>
+<p>A <strong>Singleton</strong> guarantees a class has only one object — handy for a single shared config or connection pool.</p>
+<pre><code>class Config:
+    _instance = None
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+
+a = Config()
+b = Config()
+print(a is b)        # True — same single object</code></pre>
+<div class="callout warn"><strong>Use sparingly.</strong> A Singleton is global state in disguise — it can make code hard to test and hide dependencies. Often, passing one shared object in (dependency injection) is cleaner.</div>
+<div class="callout tip"><strong>Try it yourself:</strong> Name one good Singleton use — and one case where a normal object passed around would be better.</div>`),
+          quiz("oop-q5", "Quiz: Design Patterns", [
+            { q: "A design pattern is…", options: ["Code you copy-paste exactly", "A named, reusable solution to a common problem", "A programming language", "A type of loop"], answer: 1 },
+            { q: "The Factory pattern is mainly about…", options: ["Notifying observers", "Centralising how objects are created", "Sorting lists", "Encapsulation only"], answer: 1 },
+            { q: "The Strategy pattern lets you…", options: ["Store one instance", "Swap interchangeable algorithms at runtime", "Inherit deeply", "Hide all data"], answer: 1 },
+            { q: "The Observer pattern is the basis of…", options: ["Event & notification systems", "Faster math", "Database indexes", "CSS layout"], answer: 0 },
+            { q: "A common warning about the Singleton pattern is that it…", options: ["Is always required", "Is global state in disguise and can hurt testability", "Creates too many objects", "Only works in Python"], answer: 1 },
+            { q: "Strategy is really an application of which principle(s)?", options: ["None", "Dependency inversion + polymorphism", "Singleton", "Encapsulation only"], answer: 1 },
+          ]),
+        ],
+      },
+      {
+        title: "6 · OOP in the Real World",
+        lessons: [
+          article("oop-vs-fp", "OOP vs Functional — When to Use Which", "6 min", `
+<h3>🎯 Not a religion — a toolbox</h3>
+<p>OOP isn't the only way, and it isn't always best. Modern code mixes styles.</p>
+<ul>
+  <li><strong>Reach for OOP</strong> when you're modeling <em>things with state and behaviour</em> that live a while — a game's entities, a UI's widgets, a domain like orders and users.</li>
+  <li><strong>Reach for functional</strong> when you're <em>transforming data</em> — map/filter/reduce over a list, pure calculations, data pipelines.</li>
+</ul>
+<p>Good engineers use both, picking the right tool per problem.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> Would you model a chess <em>game</em> with objects or with pure functions? What about "sum these prices"?</div>`),
+          article("oop-pitfalls", "Common OOP Pitfalls", "7 min", `
+<h3>🎯 How OOP goes wrong</h3>
+<ul>
+  <li><strong>God object</strong> — one huge class that does everything. Split by responsibility (SRP).</li>
+  <li><strong>Deep inheritance</strong> — five levels of subclasses nobody understands. Prefer composition.</li>
+  <li><strong>Over-engineering</strong> — patterns and abstractions for problems you don't have yet. Add them when the need is real.</li>
+  <li><strong>Anemic objects</strong> — classes with only data and no behaviour, so logic leaks out everywhere. Put behaviour next to its data.</li>
+  <li><strong>Leaky encapsulation</strong> — exposing internals so callers depend on them. Keep the interface small.</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> You inherit a 900-line <code>OrderManager</code> that does everything. Name the first two classes you'd split out.</div>`),
+          article("oop-refactor", "Refactoring Toward Objects", "8 min", `
+<h3>🎯 From tangled to clean</h3>
+<p>Watch a messy function become a small object. Before — data and logic scattered:</p>
+<pre><code># Before: a dict and loose functions
+order = {"items": [("Tea", 1500, 2)], "paid": False}
+
+def order_total(order):
+    return sum(price * qty for _, price, qty in order["items"])
+
+def pay(order):
+    order["paid"] = True</code></pre>
+<p>After — a cohesive object that guards its own state:</p>
+<pre><code># After: behaviour lives with the data
+class Order:
+    def __init__(self):
+        self.items = []
+        self._paid = False
+    def add(self, name, price, qty):
+        self.items.append((name, price, qty))
+    def total(self):
+        return sum(price * qty for _, price, qty in self.items)
+    def pay(self):
+        if self._paid:
+            raise ValueError("Already paid")
+        self._paid = True</code></pre>
+<div class="callout tip"><strong>Try it yourself:</strong> The <code>Order</code> now prevents paying twice. Where did that rule live in the "before" version? (Nowhere — that's the bug OOP fixes.)</div>`),
+          article("oop-testing", "Testing OOP Code", "6 min", `
+<h3>🎯 Well-designed objects are easy to test</h3>
+<p>Good OOP and good testing go together. Small classes with injected dependencies can be checked in isolation.</p>
+<pre><code>class Notifier:
+    def __init__(self, sender):
+        self.sender = sender
+    def alert(self, msg):
+        self.sender.send(msg)
+
+# In a test, pass a FAKE sender and assert it was called:
+class FakeSender:
+    def __init__(self): self.sent = []
+    def send(self, msg): self.sent.append(msg)
+
+fake = FakeSender()
+Notifier(fake).alert("Hi")
+assert fake.sent == ["Hi"]      # no real email sent</code></pre>
+<h3>💡 The link</h3>
+<p>Because we <em>injected</em> the sender (Dependency Inversion), we swapped in a fake. Hard-to-test code is usually a design smell.</p>
+<div class="callout tip"><strong>Try it yourself:</strong> Why is a class that creates its own database connection inside <code>__init__</code> hard to test?</div>`),
+          article("oop-next", "You Think in Objects Now", "5 min", `
+<h3>🎉 What you can do</h3>
+<p>You can model a domain with classes, apply the four pillars, keep classes SOLID, and reach for the right pattern. That's the difference between code that works today and code that's still pleasant to change in a year.</p>
+<h3>🚀 Keep going</h3>
+<ul>
+  <li>Refactor an old project of yours into clean objects.</li>
+  <li>Learn 2–3 more patterns: <strong>Adapter</strong>, <strong>Decorator</strong>, <strong>Repository</strong>.</li>
+  <li>Read <em>Refactoring</em> (Martin Fowler) and <em>Clean Code</em> (Robert Martin).</li>
+  <li>Apply this in another language — the ideas are identical in Java, C#, TypeScript and Dart.</li>
+</ul>
+<div class="callout tip"><strong>Try it yourself:</strong> Pick one class in a project you've built and improve it using one idea from this course. Share it in the community chat!</div>`),
+          quiz("oop-q6", "Final Quiz: Real-World OOP", [
+            { q: "A good rule for OOP vs functional is…", options: ["Always use OOP", "OOP for things with state & behaviour; functional for data transforms", "Never use classes", "They can't mix"], answer: 1 },
+            { q: "A single huge class that does everything is called a…", options: ["Factory", "God object", "Singleton", "Strategy"], answer: 1 },
+            { q: "An 'anemic' object is one that…", options: ["Has too many methods", "Has data but no behaviour, so logic leaks out", "Is a subclass", "Uses composition"], answer: 1 },
+            { q: "In the refactor, moving 'can't pay twice' INTO the Order class is an example of…", options: ["Over-engineering", "Putting behaviour next to its data (encapsulation)", "A god object", "Breaking SOLID"], answer: 1 },
+            { q: "Injecting a fake sender to test a Notifier works because of…", options: ["Inheritance", "Dependency inversion / injection", "A Singleton", "Global state"], answer: 1 },
+            { q: "Over-engineering means…", options: ["Adding patterns & abstractions for problems you don't have yet", "Writing tests", "Using one class per job", "Naming things well"], answer: 0 },
+          ]),
+        ],
+      },
+    ],
+  },
 ];
 
 /* Expose to the app */

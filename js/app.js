@@ -2151,7 +2151,7 @@
 
   /* ---------------- View: Home ---------------- */
   /* Courses to spotlight in the home "New & trending" strip */
-  const NEW_COURSE_IDS = ["flutter-zero-to-hero", "zero-to-hero", "n8n-automation", "ai-engineering", "cloud-computing"];
+  const NEW_COURSE_IDS = ["real-world-oop", "flutter-zero-to-hero", "zero-to-hero", "n8n-automation", "ai-engineering", "cloud-computing"];
 
   /* ---- Motion (mo-*): stagger what's on screen, reveal the rest on scroll,
      count the hero stats up. Works on ANY view — hero entrance + count-up

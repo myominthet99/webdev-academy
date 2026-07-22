@@ -1915,6 +1915,41 @@
       whyMy: "အလုပ်လုပ်ပုံကို တကယ်နားလည်ဖို့ အကောင်းဆုံးနည်း — ကိုယ်တိုင်တည်ဆောက်ခြင်း။" },
   ];
   const rf = (r, field) => (lang === "my" && r[field + "My"]) || r[field];
+
+  /* Interactive learning platforms — sites where you learn by DOING (code in
+     the browser, instant feedback). All have a free tier. External links. */
+  const PLATFORMS = [
+    { name: "Scrimba", ic: "🎥", focus: "HTML · CSS · JS · React · Node", url: "https://scrimba.com",
+      what: "Interactive screencasts you can pause and edit right inside the video.",
+      whatMy: "ဗီဒီယိုထဲမှာတင် pause လုပ်ပြီး code ကို တည်းဖြတ်လို့ရတဲ့ interactive screencast များ။",
+      why: "Feels like pair-programming — edit the exact code on the instructor's screen.",
+      whyMy: "ဆရာနဲ့အတူ code ရေးနေသလို — မျက်နှာပြင်ပေါ်က code အတိအကျကို ပြင်လို့ရတယ်။" },
+    { name: "freeCodeCamp", ic: "🔥", focus: "Full curriculum + certs", url: "https://www.freecodecamp.org",
+      what: "Thousands of interactive coding challenges — completely free.",
+      whatMy: "အပြန်အလှန် coding challenge ထောင်ချီ — လုံးဝအခမဲ့။",
+      why: "The most complete free path, with real certifications at the end.",
+      whyMy: "အပြည့်စုံဆုံး အခမဲ့လမ်းကြောင်း၊ အဆုံးမှာ certification အစစ်တွေနဲ့။" },
+    { name: "Codecademy", ic: "🟣", focus: "Guided interactive courses", url: "https://www.codecademy.com",
+      what: "Learn by typing code in the browser with instant checks.",
+      whatMy: "Browser ထဲမှာ code ရိုက်ရင်း ချက်ချင်းစစ်ဆေးပေးတဲ့ သင်ခန်းစာများ။",
+      why: "Gentle, hand-held lessons — great for your very first steps.",
+      whyMy: "ညင်သာပြီး လမ်းညွှန်ပေးတဲ့ သင်ခန်းစာ — ပထမဆုံးအဆင့်တွေအတွက် အကောင်းဆုံး။" },
+    { name: "Frontend Mentor", ic: "🎯", focus: "Real UI build challenges", url: "https://www.frontendmentor.io",
+      what: "Build real designs from professional mockups and get feedback.",
+      whatMy: "professional mockup များကနေ UI အစစ်တွေ တည်ဆောက်ပြီး feedback ရယူပါ။",
+      why: "The best way to practice turning a design into real, responsive code.",
+      whyMy: "design တစ်ခုကို responsive code အစစ်ဖြစ်အောင် လေ့ကျင့်ဖို့ အကောင်းဆုံးနည်း။" },
+    { name: "Exercism", ic: "💪", focus: "Practice + free mentoring", url: "https://exercism.org",
+      what: "Free coding exercises in 70+ languages, with human mentors.",
+      whatMy: "ဘာသာစကား ၇၀+ မှာ အခမဲ့ coding လေ့ကျင့်ခန်းများ၊ လူသားဆရာများနဲ့။",
+      why: "Real people review your solutions — feedback you can't get from a video.",
+      whyMy: "လူအစစ်တွေက သင့်အဖြေကို စစ်ဆေးပေးတယ် — ဗီဒီယိုကရမရတဲ့ feedback။" },
+    { name: "Codewars", ic: "🥋", focus: "Gamified challenges", url: "https://www.codewars.com",
+      what: "Level up by solving bite-size 'kata' coding challenges.",
+      whatMy: "အသေးစား 'kata' coding challenge တွေ ဖြေရှင်းရင်း အဆင့်တက်ပါ။",
+      why: "Turns practice into a game — fun once you know the basics.",
+      whyMy: "လေ့ကျင့်မှုကို ဂိမ်းဖြစ်စေတယ် — အခြေခံရပြီးရင် ပျော်စရာ။" },
+  ];
   const fmtStars = (n) => n >= 1000 ? (n / 1000).toFixed(n >= 100000 ? 0 : 1).replace(/\.0$/, "") + "k" : String(n);
 
   /* refresh star counts from the GitHub API, cached 24h; fails silently
@@ -1975,6 +2010,24 @@
         </div>
         <div class="repo-grid" id="xp-grid">${cards(REPOS)}</div>
         <p class="muted" style="font-size:12px;margin-top:14px">${t("xp_note")}</p>
+
+        <h2 class="section-title" style="margin-top:26px">🎥 ${t("plat_title")}</h2>
+        <p class="section-sub">${t("plat_sub")}</p>
+        <div class="repo-grid">
+          ${PLATFORMS.map((p) => `
+            <div class="panel repo-card">
+              <div class="repo-head">
+                <span class="repo-ic">${p.ic}</span>
+                <div class="repo-id"><b>${escapeHtml(p.name)}</b><span class="muted">${escapeHtml(p.focus)}</span></div>
+              </div>
+              <p class="repo-what">${escapeHtml(rf(p, "what"))}</p>
+              <p class="repo-why">💡 ${escapeHtml(rf(p, "why"))}</p>
+              <div class="repo-foot">
+                <span class="repo-tags"><span class="chip da-tag free">${t("plat_free")}</span></span>
+                <a class="btn btn-outline btn-sm" href="${p.url}" target="_blank" rel="noopener">${t("plat_visit")}</a>
+              </div>
+            </div>`).join("")}
+        </div>
       </div>`;
     const grid = document.getElementById("xp-grid");
     document.getElementById("xp-filters").addEventListener("click", (e) => {

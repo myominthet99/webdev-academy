@@ -9266,9 +9266,141 @@
       }
     });
   }
+  /* ---------------- ⌘K command palette ----------------
+     Fuzzy quick-jump to any page, course, lesson, tool or external resource.
+     Ctrl/Cmd+K opens it; ↑↓ move, ↵ go, esc close. Built client-side over
+     the catalog already in memory. */
+  let cmdkEl = null, cmdkItems = [], cmdkSel = 0;
+  const cmdkLessonIc = (ty) => ty === "video" ? "🎬" : ty === "quiz" ? "❓" : ty === "exercise" ? "🏋️" : "📖";
+  function cmdkIndex() {
+    const out = [];
+    [ ["🏠", t("tab_home"), "#/"], ["📚", t("nav_courses"), "#/courses"],
+      ["🧪", t("nav_playground"), "#/playground"], ["🗺️", t("roadmap_title"), "#/roadmap"],
+      ["🌍", t("xp_title"), "#/explore"], ["🧰", t("tools_title"), "#/tools"],
+      ["🖼️", t("nav_gallery"), "#/gallery"], ["🧠", t("review_title"), "#/review"],
+      ["📊", t("recap_title"), "#/recap"], ["🎯", t("daily_title"), "#/daily"],
+      ["🎤", t("iv_title"), "#/interview"], ["📄", t("cv_title"), "#/cv"],
+      ["🏆", t("lb_title"), "#/leaderboard"], ["🫂", t("comm_title"), "#/community"],
+      ["📖", t("howto_title"), "#/howto"], ["🎓", t("dash_title"), "#/my-learning"],
+    ].forEach(([ic, label, hash]) => out.push({ ic: ic, label: label, sub: "", hash: hash, kind: "page" }));
+    COURSES.forEach((c) => {
+      out.push({ ic: c.icon || "📘", label: cf(c, "title"), sub: catName(c.category), hash: "#/course/" + c.id, kind: "course" });
+      (c.sections || []).forEach((s) => (s.lessons || []).forEach((l) => {
+        out.push({ ic: cmdkLessonIc(l.type), label: lf(l, "title") || l.title || l.id, sub: cf(c, "title"), hash: "#/learn/" + c.id + "/" + l.id, kind: "lesson" });
+      }));
+    });
+    TOOLS.forEach((tl) => out.push({ ic: tl.ic, label: t("tool_" + tl.id), sub: "", hash: "#/tools/" + tl.id, kind: "tool" }));
+    REPOS.forEach((r) => out.push({ ic: r.ic, label: r.repo, sub: r.owner, url: "https://github.com/" + r.owner + "/" + r.repo, kind: "resource" }));
+    PLATFORMS.forEach((p) => out.push({ ic: p.ic, label: p.name, sub: p.focus, url: p.url, kind: "resource" }));
+    return out;
+  }
+  function cmdkSearch(q) {
+    q = String(q || "").trim().toLowerCase();
+    const all = cmdkIndex();
+    if (!q) return all.filter((x) => x.kind === "page").slice(0, 8);
+    const scored = [];
+    all.forEach((x) => {
+      const label = x.label.toLowerCase(), sub = (x.sub || "").toLowerCase();
+      let s = -1;
+      if (label === q) s = 100;
+      else if (label.indexOf(q) === 0) s = 80;
+      else if (label.indexOf(" " + q) >= 0) s = 62;
+      else if (label.indexOf(q) >= 0) s = 42;
+      else if (sub.indexOf(q) >= 0) s = 22;
+      if (s < 0) return;
+      if (x.kind === "page") s += 10;
+      else if (x.kind === "course" || x.kind === "tool") s += 5;
+      scored.push({ x: x, s: s });
+    });
+    scored.sort((a, b) => b.s - a.s || a.x.label.length - b.x.label.length);
+    return scored.slice(0, 12).map((r) => r.x);
+  }
+  function cmdkBuild() {
+    cmdkEl = document.createElement("div");
+    cmdkEl.className = "cmdk";
+    cmdkEl.hidden = true;
+    cmdkEl.innerHTML =
+      '<div class="cmdk-box" role="dialog" aria-modal="true" aria-label="Search">' +
+        '<input class="cmdk-input" type="text" autocomplete="off" spellcheck="false" placeholder="' + escapeHtml(t("cmdk_placeholder")) + '">' +
+        '<div class="cmdk-list"></div>' +
+        '<div class="cmdk-foot"><span>↑↓ ' + escapeHtml(t("cmdk_nav")) + "</span><span>↵ " + escapeHtml(t("cmdk_open")) + "</span><span>esc</span></div>" +
+      "</div>";
+    document.body.appendChild(cmdkEl);
+    const inp = cmdkEl.querySelector(".cmdk-input");
+    inp.addEventListener("input", () => cmdkRender(inp.value));
+    inp.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowDown") { e.preventDefault(); cmdkMove(1); }
+      else if (e.key === "ArrowUp") { e.preventDefault(); cmdkMove(-1); }
+      else if (e.key === "Enter") { e.preventDefault(); cmdkGo(cmdkSel); }
+      else if (e.key === "Escape") { e.preventDefault(); cmdkClose(); }
+    });
+    cmdkEl.addEventListener("click", (e) => { if (e.target === cmdkEl) cmdkClose(); });
+    cmdkEl.querySelector(".cmdk-list").addEventListener("click", (e) => {
+      const row = e.target.closest("[data-i]");
+      if (row) cmdkGo(Number(row.getAttribute("data-i")));
+    });
+  }
+  function cmdkRender(q) {
+    cmdkItems = cmdkSearch(q); cmdkSel = 0;
+    const list = cmdkEl.querySelector(".cmdk-list");
+    if (!cmdkItems.length) { list.innerHTML = '<div class="cmdk-empty">' + escapeHtml(t("cmdk_none")) + "</div>"; return; }
+    list.innerHTML = cmdkItems.map((x, i) =>
+      '<div class="cmdk-row' + (i === 0 ? " sel" : "") + '" data-i="' + i + '">' +
+        '<span class="cmdk-ic">' + x.ic + "</span>" +
+        '<span class="cmdk-txt"><b>' + escapeHtml(x.label) + "</b>" + (x.sub ? '<span class="cmdk-sub">' + escapeHtml(x.sub) + "</span>" : "") + "</span>" +
+        '<span class="cmdk-kind">' + escapeHtml(t("cmdk_kind_" + x.kind)) + (x.url ? " ↗" : "") + "</span>" +
+      "</div>").join("");
+  }
+  function cmdkMove(d) {
+    const rows = cmdkEl.querySelectorAll(".cmdk-row");
+    if (!rows.length) return;
+    if (rows[cmdkSel]) rows[cmdkSel].classList.remove("sel");
+    cmdkSel = (cmdkSel + d + rows.length) % rows.length;
+    rows[cmdkSel].classList.add("sel");
+    rows[cmdkSel].scrollIntoView({ block: "nearest" });
+  }
+  function cmdkGo(i) {
+    const x = cmdkItems[i];
+    if (!x) return;
+    cmdkClose();
+    if (x.url) window.open(x.url, "_blank", "noopener");
+    else location.hash = x.hash;
+  }
+  function cmdkOpen() {
+    if (!cmdkEl) cmdkBuild();
+    cmdkEl.hidden = false;
+    const inp = cmdkEl.querySelector(".cmdk-input");
+    /* refresh chrome text so it follows a language switch (built once) */
+    inp.placeholder = t("cmdk_placeholder");
+    const foot = cmdkEl.querySelector(".cmdk-foot");
+    if (foot) foot.innerHTML = "<span>↑↓ " + escapeHtml(t("cmdk_nav")) + "</span><span>↵ " + escapeHtml(t("cmdk_open")) + "</span><span>esc</span>";
+    inp.value = ""; cmdkRender("");
+    setTimeout(() => inp.focus(), 0);
+  }
+  function cmdkClose() { if (cmdkEl) cmdkEl.hidden = true; }
+  function setupCmdk() {
+    document.addEventListener("keydown", (e) => {
+      if ((e.ctrlKey || e.metaKey) && (e.key === "k" || e.key === "K")) {
+        e.preventDefault();
+        (cmdkEl && !cmdkEl.hidden) ? cmdkClose() : cmdkOpen();
+      }
+    });
+    /* tappable ⌘K hint in the header search bar (desktop + tablet) */
+    const sbar = document.getElementById("search-form");
+    if (sbar && !document.getElementById("cmdk-hint")) {
+      const hint = document.createElement("button");
+      hint.type = "button"; hint.id = "cmdk-hint"; hint.className = "cmdk-hint";
+      hint.textContent = "⌘K";
+      hint.title = t("cmdk_placeholder");
+      hint.addEventListener("click", cmdkOpen);
+      sbar.appendChild(hint);
+    }
+  }
+
   window.addEventListener("hashchange", router);
   applyTheme();
   applyChrome();
+  setupCmdk();
   updateStreak();
   router();
   loadAnnouncement();

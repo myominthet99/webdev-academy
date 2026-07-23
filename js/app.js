@@ -9075,20 +9075,17 @@
       a.classList.toggle("active", a.getAttribute("data-tab") === tabOf)
     );
 
-    /* highlight the matching top-nav pill */
-    const navOf =
-      ["courses", "course", "learn", "search", "map"].indexOf(parts[0]) >= 0 ? "nav-courses"
-      : parts[0] === "gallery" ? "nav-gallery"
-      : ["showcase", "portfolio", "project"].indexOf(parts[0]) >= 0 ? "nav-showcase"
-      : parts[0] === "roadmap" ? "nav-roadmap"
-      : parts[0] === "howto" ? "nav-howto"
-      : parts[0] === "tools" ? "nav-tools"
-      : parts[0] === "playground" ? "nav-playground"
-      : parts[0] === "my-learning" ? "nav-mylearning"
-      : "";
-    document.querySelectorAll(".topnav a").forEach((a) =>
-      a.classList.toggle("active", a.id === navOf)
+    /* highlight the menu that owns this route, and the exact item inside it */
+    const here = parts[0] || "";
+    const owner = NAV_MENUS.concat(NAV_ME).find((m) => m.owns.indexOf(here) >= 0);
+    document.querySelectorAll(".nv-menu").forEach((el) =>
+      el.classList.toggle("active", !!owner && el.getAttribute("data-menu") === owner.id)
     );
+    const hash = location.hash || "#/";
+    document.querySelectorAll(".nv-panel a").forEach((a) =>
+      a.classList.toggle("active", a.getAttribute("href") === hash)
+    );
+    closeNavMenus(); /* navigating always dismisses an open menu */
 
     /* Point the chat at this course's room, or the global community room */
     if (window.Chat && window.Chat.setRoom) {
@@ -9135,6 +9132,134 @@
     else renderNotFound();
   }
 
+  /* ---------------- 🧭 Grouped top navigation --------------------------
+     One source of truth for the header menus: the label key, the target
+     route, and (via `owns`) which routes light the parent menu up. The
+     markup in index.html is just empty containers — renderNav() fills them
+     and applyChrome() re-runs it whenever the language changes. */
+  const NAV_ICONS = {
+    learn: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>',
+    build: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76Z"/></svg>',
+    community: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+    me: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+  };
+  const NAV_MENUS = [
+    {
+      id: "learn", label: "nm_learn",
+      owns: ["courses", "course", "learn", "search", "map", "gallery", "roadmap", "start", "howto", "daily", "review"],
+      items: [
+        { k: "nm_courses", h: "#/courses" },
+        { k: "nm_gallery", h: "#/gallery" },
+        { k: "nm_roadmap", h: "#/roadmap" },
+        { k: "nm_start", h: "#/start" },
+        { k: "nm_howto", h: "#/howto" },
+        { k: "nm_daily", h: "#/daily" },
+        { k: "nm_review", h: "#/review" },
+      ],
+    },
+    {
+      id: "build", label: "nm_build",
+      owns: ["playground", "tools", "notes", "portfolio", "cv", "interview", "project"],
+      items: [
+        { k: "nm_playground", h: "#/playground" },
+        { k: "nm_tools", h: "#/tools" },
+        { k: "nm_notes", h: "#/notes" },
+        { k: "nm_portfolio", h: "#/portfolio" },
+        { k: "nm_cv", h: "#/cv" },
+        { k: "nm_interview", h: "#/interview" },
+      ],
+    },
+    {
+      id: "community", label: "nm_community",
+      owns: ["showcase", "community", "leaderboard", "battle", "explore", "call"],
+      items: [
+        { k: "nm_trending", h: "#/showcase" },
+        { k: "nm_chat", h: "#/community" },
+        { k: "nm_leaderboard", h: "#/leaderboard" },
+        { k: "nm_battle", h: "#/battle" },
+        { k: "nm_explore", h: "#/explore" },
+      ],
+    },
+  ];
+  const NAV_ME = {
+    id: "me", label: "nm_me",
+    owns: ["my-learning", "recap", "account", "premium", "certificate", "verify"],
+    items: [
+      { k: "nm_mylearning", h: "#/my-learning" },
+      { k: "nm_recap", h: "#/recap" },
+      { k: "nm_account", h: "#/account" },
+      { k: "nm_premium", h: "#/premium" },
+    ],
+  };
+
+  function navMenuHtml(m) {
+    return (
+      '<button class="nv-btn" type="button" id="nvb-' + m.id + '" aria-expanded="false" ' +
+        'aria-haspopup="true" aria-controls="nvp-' + m.id + '">' +
+        '<span class="nv-ic">' + NAV_ICONS[m.id] + "</span>" +
+        '<span class="nv-lbl">' + escapeHtml(t(m.label)) + "</span>" +
+        '<span class="nv-caret" aria-hidden="true"></span>' +
+      "</button>" +
+      '<div class="nv-panel" id="nvp-' + m.id + '" role="menu" aria-labelledby="nvb-' + m.id + '" hidden>' +
+        m.items.map((it) =>
+          '<a role="menuitem" href="' + it.h + '">' + escapeHtml(t(it.k)) + "</a>"
+        ).join("") +
+      "</div>"
+    );
+  }
+
+  function renderNav() {
+    const top = document.getElementById("topnav");
+    if (top) {
+      top.innerHTML = NAV_MENUS.map((m) =>
+        '<div class="nv-menu" data-menu="' + m.id + '">' + navMenuHtml(m) + "</div>"
+      ).join("");
+    }
+    const me = document.getElementById("nav-me");
+    if (me) {
+      me.setAttribute("data-menu", NAV_ME.id);
+      me.innerHTML = navMenuHtml(NAV_ME);
+    }
+    document.querySelectorAll(".nv-menu .nv-btn").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation(); /* don't trip the document click-outside handler */
+        const open = btn.getAttribute("aria-expanded") === "true";
+        closeNavMenus();
+        if (!open) openNavMenu(btn);
+      });
+    });
+    /* Clicking an item navigates via the hash; just close the panel. */
+    document.querySelectorAll(".nv-panel a").forEach((a) =>
+      a.addEventListener("click", () => closeNavMenus())
+    );
+  }
+
+  function openNavMenu(btn) {
+    const panel = document.getElementById(btn.getAttribute("aria-controls"));
+    if (!panel) return;
+    btn.setAttribute("aria-expanded", "true");
+    panel.hidden = false;
+    btn.closest(".nv-menu").classList.add("open");
+  }
+  function closeNavMenus() {
+    document.querySelectorAll(".nv-menu .nv-btn[aria-expanded='true']").forEach((btn) => {
+      btn.setAttribute("aria-expanded", "false");
+      const panel = document.getElementById(btn.getAttribute("aria-controls"));
+      if (panel) panel.hidden = true;
+      btn.closest(".nv-menu").classList.remove("open");
+    });
+  }
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".nv-menu")) closeNavMenus();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    const open = document.querySelector(".nv-menu .nv-btn[aria-expanded='true']");
+    if (!open) return;
+    closeNavMenus();
+    open.focus(); /* return focus to the trigger, not the void */
+  });
+
   /* ---------------- Static header/footer text ---------------- */
   function applyChrome() {
     document.body.classList.toggle("lang-my", lang === "my");
@@ -9151,14 +9276,8 @@
       chatBtn.dataset.wired = "1";
       chatBtn.addEventListener("click", () => { if (window.Chat) window.Chat.open(); });
     }
-    set("nav-courses", t("nav_courses"));
-    set("nav-roadmap", t("nav_roadmap"));
-    set("nav-howto", t("nav_howto"));
-    set("nav-playground", t("nav_playground"));
-    set("nav-tools", t("nav_tools"));
-    set("nav-gallery", t("nav_gallery"));
-    set("nav-showcase", t("nav_showcase"));
-    set("nav-mylearning", t("nav_mylearning"));
+    renderNav(); /* grouped header menus — rebuilt so labels follow the language */
+    set("footer-verify", t("nm_verify"));
     set("tab-home", t("tab_home"));
     set("tab-courses", t("nav_courses"));
     set("tab-play", t("nav_playground"));

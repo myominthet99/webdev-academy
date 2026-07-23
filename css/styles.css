@@ -115,43 +115,71 @@ button { font-family: inherit; cursor: pointer; }
 /* Main menu: monochrome stroke icons that inherit the link colour
    (muted → ink on hover → purple when active). Inline SVG, no icon set. */
 .topnav:not(.right) { gap: 2px; }
-.topnav:not(.right) a {
+
+/* Grouped menus: one trigger button per group with a dropdown panel below.
+   Monochrome stroke icons inherit the trigger colour — muted, ink on hover,
+   purple when the current route belongs to that group. */
+.nv-menu { position: relative; display: flex; align-items: center; }
+.nv-btn {
   display: flex; align-items: center; gap: 8px; position: relative;
   padding: 9px 12px; border-radius: 8px; white-space: nowrap;
   font-size: 14px; font-weight: 600; color: var(--muted);
+  background: none; border: 0; cursor: pointer; font-family: inherit;
   transition: color .18s ease, background .18s ease;
 }
-.topnav:not(.right) a .nv-ic { display: inline-flex; flex: 0 0 auto; }
-.topnav:not(.right) a .nv-ic svg {
+.nv-btn .nv-ic { display: inline-flex; flex: 0 0 auto; }
+.nv-btn .nv-ic svg {
   width: 19px; height: 19px; display: block;
   fill: none; stroke: currentColor; stroke-width: 1.75;
   stroke-linecap: round; stroke-linejoin: round;
 }
-.topnav:not(.right) a:hover { color: var(--ink); background: var(--surface-2); }
-.topnav:not(.right) a.active { color: var(--purple); }
-.topnav:not(.right) a.active::after {
+.nv-caret {
+  width: 0; height: 0; flex: 0 0 auto;
+  border-left: 4px solid transparent; border-right: 4px solid transparent;
+  border-top: 4.5px solid currentColor; opacity: .65;
+  transition: transform .18s ease;
+}
+.nv-btn:hover, .nv-menu.open .nv-btn { color: var(--ink); background: var(--surface-2); }
+.nv-menu.open .nv-caret { transform: rotate(180deg); }
+.nv-menu.active .nv-btn { color: var(--purple); }
+.nv-menu.active .nv-btn::after {
   content: ""; position: absolute; left: 12px; right: 12px; bottom: -1px;
   height: 2px; border-radius: 2px; background: var(--purple);
   transform-origin: center; animation: nvBar .28s ease-out;
 }
 
+/* Dropdown panel. Sits under the topbar's own stacking but above page content. */
+.nv-panel {
+  position: absolute; top: calc(100% + 8px); left: 0; z-index: 1500;
+  min-width: 224px; padding: 6px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+  box-shadow: 0 12px 34px rgba(0, 0, 0, .16);
+  display: flex; flex-direction: column; gap: 2px;
+  animation: nvPanel .16s ease-out;
+}
+.nv-panel[hidden] { display: none; }
+.topnav .nv-panel a {
+  display: block; padding: 9px 12px; border-radius: 8px;
+  font-size: 14px; font-weight: 600; color: var(--ink); white-space: nowrap;
+}
+.topnav .nv-panel a:hover { background: var(--surface-2); color: var(--purple); }
+.topnav .nv-panel a.active { background: var(--surface-2); color: var(--purple); }
+.nv-me .nv-panel { left: auto; right: 0; }
+@keyframes nvPanel { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+
 /* Icon micro-motion: each icon animates to mean what it is. Transform-only
    (GPU-cheap), ~220ms, and fully disabled under prefers-reduced-motion. */
-.topnav:not(.right) a .nv-ic svg,
-.topnav:not(.right) a .nv-ic svg > * {
+.nv-btn .nv-ic svg,
+.nv-btn .nv-ic svg > * {
   transition: transform .22s cubic-bezier(.34, 1.2, .64, 1), filter .22s ease;
   transform-origin: center; transform-box: fill-box;
 }
-#nav-courses:hover    .nv-ic svg { transform: rotate(-7deg) translateY(-1px); }   /* book tips open */
-#nav-gallery:hover    .nv-ic svg { transform: scale(1.1); }                       /* photo zooms in */
-#nav-showcase:hover   .nv-ic svg { transform: translate(1.5px, -2px); }           /* arrow trends up */
-#nav-roadmap:hover    .nv-ic svg { transform: translateY(-2px) rotate(-3deg); }   /* map lifts */
-#nav-howto:hover      .nv-ic svg { transform: scale(1.1); filter: drop-shadow(0 0 4px currentColor); } /* bulb lights up */
-#nav-tools:hover      .nv-ic svg { transform: rotate(-18deg); }                   /* wrench turns */
-#nav-playground:hover .nv-ic svg > polyline:first-child { transform: translateX(1.6px); }
-#nav-playground:hover .nv-ic svg > polyline:last-child  { transform: translateX(-1.6px); } /* brackets spread */
-/* the icon pops in when its page becomes active */
-.topnav:not(.right) a.active .nv-ic svg { animation: nvIn .34s cubic-bezier(.34, 1.4, .64, 1); }
+[data-menu="learn"]     .nv-btn:hover .nv-ic svg { transform: rotate(-7deg) translateY(-1px); } /* book tips open */
+[data-menu="build"]     .nv-btn:hover .nv-ic svg { transform: rotate(-18deg); }                 /* wrench turns */
+[data-menu="community"] .nv-btn:hover .nv-ic svg { transform: scale(1.09); }                    /* group leans in */
+[data-menu="me"]        .nv-btn:hover .nv-ic svg { transform: scale(1.09); }
+/* the icon pops in when a page in that group becomes active */
+.nv-menu.active .nv-btn .nv-ic svg { animation: nvIn .34s cubic-bezier(.34, 1.4, .64, 1); }
 @keyframes nvIn {
   0%   { transform: scale(.7); opacity: .3; }
   60%  { transform: scale(1.12); opacity: 1; }
@@ -159,11 +187,12 @@ button { font-family: inherit; cursor: pointer; }
 }
 @keyframes nvBar { from { transform: scaleX(0); opacity: 0; } to { transform: scaleX(1); opacity: 1; } }
 @media (prefers-reduced-motion: reduce) {
-  .topnav:not(.right) a .nv-ic svg,
-  .topnav:not(.right) a .nv-ic svg > *,
-  .topnav:not(.right) a.active::after { transition: none; animation: none; transform: none; }
-  #nav-courses:hover .nv-ic svg, #nav-gallery:hover .nv-ic svg, #nav-showcase:hover .nv-ic svg,
-  #nav-roadmap:hover .nv-ic svg, #nav-howto:hover .nv-ic svg, #nav-tools:hover .nv-ic svg { transform: none; filter: none; }
+  .nv-btn .nv-ic svg,
+  .nv-btn .nv-ic svg > *,
+  .nv-menu.active .nv-btn::after,
+  .nv-caret,
+  .nv-panel { transition: none; animation: none; }
+  .nv-btn:hover .nv-ic svg { transform: none; filter: none; }
 }
 /* Messenger-style chat button in the header */
 .chat-nav-btn {
@@ -176,11 +205,18 @@ button { font-family: inherit; cursor: pointer; }
   .topnav:not(.right) { overflow-x: auto; scrollbar-width: none; max-width: 100%; -webkit-overflow-scrolling: touch; }
   .topnav:not(.right)::-webkit-scrollbar { display: none; }
 }
-@media (max-width: 1360px) {
-  /* FB look: icon-only tabs whenever space is tight (labels return on wide screens) */
+@media (max-width: 1100px) {
+  /* Icon-only triggers when space is tight (labels return on wide screens).
+     Three grouped menus fit far longer than the seven flat pills did. */
   .topnav:not(.right) .nv-lbl { display: none; }
-  .topnav:not(.right) a { padding: 8px 11px; }
-  .topnav:not(.right) a .nv-ic { font-size: 19px; }
+  .topnav:not(.right) .nv-btn { padding: 8px 10px; gap: 5px; }
+}
+@media (max-width: 640px) {
+  /* Anchored panels would run off-screen — drop to a full-width sheet. */
+  .nv-panel, .nv-me .nv-panel {
+    position: fixed; top: 60px; left: 8px; right: 8px;
+    min-width: 0; max-height: calc(100vh - 76px); overflow-y: auto;
+  }
 }
 
 .searchbar {
@@ -240,13 +276,16 @@ button { font-family: inherit; cursor: pointer; }
 }
 .topbar .brand-name { color: #eaf1ff; }
 .topbar .brand-name strong { color: #93c5fd; }
-.topbar .topnav a { color: #cbd5e1; }
-.topbar .topnav a:hover { color: #eaf1ff; }
-.topbar .topnav:not(.right) a { color: #b7c2d6; }
-.topbar .topnav:not(.right) a:hover { color: #eaf1ff; background: rgba(147, 197, 253, .12); }
-.topbar .topnav:not(.right) a.active { color: #93c5fd; }
-.topbar .topnav:not(.right) a.active::after { background: linear-gradient(90deg, #1d4ed8, #93c5fd); }
-.topbar #nav-howto:hover .nv-ic svg { filter: drop-shadow(0 0 5px #93c5fd); }
+.topbar .topnav > a { color: #cbd5e1; }
+.topbar .topnav > a:hover { color: #eaf1ff; }
+.topbar .nv-btn { color: #b7c2d6; }
+.topbar .nv-btn:hover, .topbar .nv-menu.open .nv-btn { color: #eaf1ff; background: rgba(147, 197, 253, .12); }
+.topbar .nv-menu.active .nv-btn { color: #93c5fd; }
+.topbar .nv-menu.active .nv-btn::after { background: linear-gradient(90deg, #1d4ed8, #93c5fd); }
+/* The panel is its own surface — it must not inherit the dark bar's palette. */
+.topbar .nv-panel { background: var(--surface); border-color: var(--line); }
+.topbar .nv-panel a { color: var(--ink); }
+.topbar .nv-panel a:hover, .topbar .nv-panel a.active { color: var(--purple); background: var(--surface-2); }
 .topbar .searchbar { background: rgba(255, 255, 255, .05); border-color: rgba(147, 197, 253, .28); }
 .topbar .searchbar input { color: #eaf1ff; }
 .topbar .searchbar input::placeholder { color: #8ea0bd; }
@@ -416,9 +455,11 @@ button { font-family: inherit; cursor: pointer; }
      down the file — it MUST come after the base #chat-widget rule, or it
      loses on source order.) */
   #app { padding-bottom: 76px; }
-  /* the tab bar already has a "Me" tab — the header link is a duplicate
-     that pushes the whole header onto an extra row */
-  #nav-mylearning { display: none; }
+  /* The tab bar's "Me" tab only reaches My Learning, so this menu still has
+     to carry Recap / Account / Premium. Shrink it to an icon rather than
+     hiding it, so it stops pushing the header onto a second row. */
+  #nav-me .nv-lbl, #nav-me .nv-caret { display: none; }
+  #nav-me .nv-btn { padding: 8px 10px; }
   /* the icon row already scrolls horizontally, so let it share the logo's
      row and take the remaining width — instead of wrapping onto a row of
      its own and leaving the 34px logo alone on one. The flex-basis keeps

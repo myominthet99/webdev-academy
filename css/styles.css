@@ -1367,9 +1367,41 @@ a.lesson-row:hover .ttl { color: var(--purple); }
   flex: 1 1 auto; min-width: 0;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.chat-head > :not(.chat-title):not(.chat-search) { flex: 0 0 auto; }
+.chat-head > :not(.chat-title) { flex: 0 0 auto; } /* search moved to its own row */
 .chat-close { border: 0; background: transparent; color: inherit; font-size: 22px; cursor: pointer; line-height: 1; opacity: .75; }
 .chat-close:hover { opacity: 1; }
+
+/* ---------- 🔍 Chat search + 🔖 saved messages ---------- */
+.chat-ico {
+  border: 0; background: transparent; color: inherit; cursor: pointer;
+  opacity: .7; padding: 3px; border-radius: 7px; display: inline-flex;
+  transition: opacity .15s ease, background .15s ease, color .15s ease;
+}
+.chat-ico:hover { opacity: 1; background: var(--surface-2); }
+.chat-ico.on { opacity: 1; color: var(--purple); background: var(--surface-2); }
+.chat-searchbar {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 12px; background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+.chat-searchbar[hidden] { display: none; }
+.chat-search {
+  flex: 1 1 auto; min-width: 0;
+  border: 1px solid var(--line); border-radius: 999px;
+  padding: 7px 12px; font-size: 13.5px; font-family: inherit;
+  background: var(--surface-2); color: var(--ink);
+}
+.chat-search:focus { outline: none; border-color: var(--purple); }
+.chat-searchn { flex: 0 0 auto; font-size: 12px; color: var(--muted); white-space: nowrap; }
+.chat-searchx {
+  flex: 0 0 auto; border: 0; background: transparent; color: var(--muted);
+  cursor: pointer; padding: 3px; display: inline-flex; border-radius: 6px;
+}
+.chat-searchx:hover { color: var(--ink); background: var(--surface-2); }
+.chat-hit { background: #fde68a; color: #1f2937; border-radius: 3px; padding: 0 1px; }
+[data-theme="dark"] .chat-hit { background: #b45309; color: #fff7ed; }
+.chat-save.on { color: var(--purple); opacity: 1; }
+
 .chat-list { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 14px; display: flex; flex-direction: column; gap: 10px; background: var(--surface-2); }
 .chat-empty { color: var(--muted); text-align: center; margin: auto; font-size: 14px; }
 .chat-msg { display: flex; gap: 8px; align-items: flex-end; max-width: 85%; min-width: 0; }

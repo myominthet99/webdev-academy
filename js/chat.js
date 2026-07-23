@@ -15,7 +15,7 @@
   const I18N = window.I18N;
   const KEY = "wda_chat_v1";
   const MAX = 200;
-  const BUILD = "v20"; /* shown in the chat header — bump with releases */
+  const BUILD = "v21"; /* shown in the chat header — bump with releases */
 
   /* Crisp inline SVG icons (emoji buttons render differently on every
      Android brand — these look identical everywhere) */
@@ -43,6 +43,8 @@
       down: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>',
       play: '<polygon points="6 3 20 12 6 21 6 3"/>',
       pause: '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>',
+      search: '<circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
+      book: '<path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/>',
     };
     return '<svg class="ci" viewBox="0 0 24 24" aria-hidden="true">' + (P[name] || "") + "</svg>";
   };
@@ -101,6 +103,8 @@
   let room = "community", roomLabel = null;
   let roomCache = [], primed = false, unsub = null;
   let sendTimes = [], typingUsers = new Set(), searchQuery = "";
+  let savedOnly = false;      /* 🔖 showing only bookmarked messages */
+  let setSearchOpen = null;   /* assigned in build() */
   let replyTo = null; /* { name, text } while composing a reply */
   let fab, panel, listEl, footEl, badgeEl, searchEl, presenceEl;
   let activeUsers = new Map(); /* room -> Set of user IDs */
@@ -144,6 +148,24 @@
     const b = loadBlocked();
     if (b[uid]) delete b[uid]; else b[uid] = String(name || "?").slice(0, 40);
     try { localStorage.setItem(blkKey(), JSON.stringify(b)); } catch (e) {}
+  };
+
+  /* 🔖 Saved messages — personal bookmarks, same per-account key shape as
+     blocking. Keyed by "<room>|<ref>" so the same ref in two rooms can't
+     collide; the stored copy keeps the message readable even if it later
+     scrolls out of the 200-message cache. */
+  const savKey = () => "wda_sav::" + ((me() && me().id) || "guest");
+  const loadSaved = () => { try { return JSON.parse(localStorage.getItem(savKey())) || {}; } catch (e) { return {}; } };
+  const savedId = (r, ref) => r + "|" + ref;
+  const toggleSaved = (ref) => {
+    const s = loadSaved();
+    const k = savedId(room, ref);
+    if (s[k]) delete s[k];
+    else {
+      const m = roomCache.find((x) => (x._key || x.id) === ref);
+      s[k] = { ts: (m && m.ts) || Date.now(), name: (m && m.name) || "", room: room };
+    }
+    try { localStorage.setItem(savKey(), JSON.stringify(s)); } catch (e) {}
   };
 
   /* ---------------- CLOUD presence & typing (真 cross-device) ----------------
@@ -453,10 +475,16 @@
       '  <div class="chat-head"><span class="chat-title"></span>' +
       '    <span id="chat-ver" class="chat-ver" title="build · backend"></span>' +
       '    <span id="chat-presence" class="chat-presence"></span>' +
-      '    <input id="chat-search" type="text" class="chat-search" placeholder="🔍 Search..." style="display:none">' +
+      '    <button class="chat-ico" id="chat-savedbtn" type="button" aria-pressed="false" aria-label="' + esc(t("chat_saved")) + '" title="' + esc(t("chat_saved")) + '">' + ICON("book") + "</button>" +
+      '    <button class="chat-ico" id="chat-searchbtn" type="button" aria-expanded="false" aria-controls="chat-searchbar" aria-label="' + esc(t("chat_search")) + '" title="' + esc(t("chat_search")) + '">' + ICON("search") + "</button>" +
       '    <button class="chat-call" id="chat-call" type="button" aria-label="Video call" title="' + esc(t("call_title")) + '">' + ICON("video") + "</button>" +
       '    <button class="chat-full" id="chat-full" type="button" aria-label="Fullscreen" title="Fullscreen">' + ICON("expand") + "</button>" +
       '    <button class="chat-close" type="button" aria-label="Close">' + ICON("x") + "</button></div>" +
+      '  <div class="chat-searchbar" id="chat-searchbar" hidden>' +
+      '    <input id="chat-search" type="text" class="chat-search" autocomplete="off" spellcheck="false" placeholder="' + esc(t("chat_search_ph")) + '">' +
+      '    <span class="chat-searchn" id="chat-searchn"></span>' +
+      '    <button class="chat-searchx" id="chat-searchx" type="button" aria-label="' + esc(t("chat_search_clear")) + '">' + ICON("x") + "</button>" +
+      "  </div>" +
       '  <div class="chat-list" id="chat-list"></div>' +
       '  <button id="chat-jump" class="chat-jump" type="button" hidden>⬇ <b id="chat-jumpn" hidden></b></button>' +
       '  <div id="chat-typing" class="chat-typing" hidden></div>' +
@@ -488,7 +516,35 @@
     };
     fullBtn.addEventListener("click", () => applyFull(!panel.classList.contains("full")));
     if (localStorage.getItem("wda_chat_full") === "1") applyFull(true);
-    searchEl.addEventListener("input", (e) => { searchQuery = e.target.value.toLowerCase(); if (open) renderList(); });
+    /* 🔍 Search this room. The filter already existed but nothing ever
+       revealed the input — this is the toggle, the count and the reset. */
+    const searchBar = wrap.querySelector("#chat-searchbar");
+    const searchBtn = wrap.querySelector("#chat-searchbtn");
+    setSearchOpen = (on) => {
+      searchBar.hidden = !on;
+      searchBtn.setAttribute("aria-expanded", on ? "true" : "false");
+      searchBtn.classList.toggle("on", on);
+      if (on) searchEl.focus();
+      else if (searchQuery) { searchEl.value = ""; searchQuery = ""; if (open) { renderList(); scrollBottom(); } }
+    };
+    searchBtn.addEventListener("click", () => setSearchOpen(searchBar.hidden));
+    searchEl.addEventListener("input", (e) => {
+      searchQuery = e.target.value.trim().toLowerCase();
+      if (open) renderList();
+    });
+    searchEl.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") { e.stopPropagation(); setSearchOpen(false); }
+    });
+    wrap.querySelector("#chat-searchx").addEventListener("click", () => setSearchOpen(false));
+
+    /* 🔖 Saved messages: a per-user bookmark list, filtered in place. */
+    const savedBtn = wrap.querySelector("#chat-savedbtn");
+    savedBtn.addEventListener("click", () => {
+      savedOnly = !savedOnly;
+      savedBtn.setAttribute("aria-pressed", savedOnly ? "true" : "false");
+      savedBtn.classList.toggle("on", savedOnly);
+      if (open) { renderList(); scrollBottom(); }
+    });
     /* ⬇ jump-to-bottom chip: appears when scrolled up; counts new arrivals */
     jumpEl = wrap.querySelector("#chat-jump");
     jumpEl.addEventListener("click", () => { newWhileUp = 0; scrollBottom(); updateJump(); });
@@ -504,6 +560,18 @@
     if (el) el.textContent = roomLabel || t("chat_title");
     const ver = panel && panel.querySelector("#chat-ver");
     if (ver) ver.textContent = BUILD + (FIREBASE_CONFIG ? (restMode ? "⚡" : "☁") : "💾");
+    /* these labels are baked into build()'s markup, so they'd otherwise keep
+       the language the page loaded in — refresh() routes through here */
+    if (!panel) return;
+    const lbl = (sel, attrs) => {
+      const el = panel.querySelector(sel);
+      if (el) Object.entries(attrs).forEach(([k, v]) =>
+        k === "placeholder" ? (el.placeholder = v) : el.setAttribute(k, v));
+    };
+    lbl("#chat-search", { placeholder: t("chat_search_ph") });
+    lbl("#chat-searchbtn", { title: t("chat_search"), "aria-label": t("chat_search") });
+    lbl("#chat-savedbtn", { title: t("chat_saved"), "aria-label": t("chat_saved") });
+    lbl("#chat-searchx", { "aria-label": t("chat_search_clear") });
   }
 
   function renderPresence() {
@@ -574,16 +642,28 @@
       listEl.querySelectorAll("[data-unblock]").forEach((ub) =>
         ub.addEventListener("click", () => { toggleBlock(ub.getAttribute("data-unblock")); renderList(); }));
     };
+    /* read the bookmark set once — isSaved() per message would re-parse
+       localStorage hundreds of times per render */
+    const savedAll = loadSaved();
+    const savedHere = (ref) => !!savedAll[savedId(room, ref)];
     const filtered = (searchQuery
       ? roomCache.filter((m) => (m.text || "").toLowerCase().includes(searchQuery) || (m.name || "").toLowerCase().includes(searchQuery))
-      : roomCache).filter((m) => !blocked[m.userId]);
+      : roomCache)
+      .filter((m) => !savedOnly || savedHere(m._key || m.id))
+      .filter((m) => !blocked[m.userId]);
+    /* live hit count next to the search box */
+    const cnt = panel && panel.querySelector("#chat-searchn");
+    if (cnt) cnt.textContent = searchQuery ? t("chat_search_n").replace("{n}", filtered.length) : "";
     /* 🕓 offline outbox: queued messages for this room stay visible until sent */
     const pendingHtml = loadOutbox().filter((x) => x.room === room).map((x) =>
       '<div class="chat-msg mine pending"><div class="chat-bubble">' +
       (x.msg.text ? '<div class="chat-text">' + formatText(x.msg.text) + "</div>" : "") +
       '<div class="chat-meta"><span class="chat-time">🕓 ' + esc(t("chat_queued")) + "</span></div></div></div>").join("");
     if (!filtered.length) {
-      listEl.innerHTML = roomBar + blockedBar + '<div class="chat-empty">' + (searchQuery ? "No messages match" : t("chat_empty")) + "</div>" + pendingHtml;
+      const emptyMsg = searchQuery ? t("chat_search_none")
+        : savedOnly ? t("chat_saved_none")
+        : t("chat_empty");
+      listEl.innerHTML = roomBar + blockedBar + '<div class="chat-empty">' + esc(emptyMsg) + "</div>" + pendingHtml;
       wireRoomBar();
       return;
     }
@@ -657,6 +737,8 @@
           (text && window.AI && window.AI.ready()
             ? '<button class="chat-tr" data-tr="' + ref + '" title="' + esc(t("chat_translate")) + '">' + ICON("translate") + "</button>" : "") +
           '<button class="chat-react" data-react="' + ref + '" title="React">' + ICON("smile") + "</button>" +
+          '<button class="chat-save' + (savedHere(ref) ? " on" : "") + '" data-save="' + ref + '" aria-pressed="' + (savedHere(ref) ? "true" : "false") +
+            '" title="' + esc(savedHere(ref) ? t("chat_unsave") : t("chat_save")) + '">' + ICON("book") + "</button>" +
           (!mine && !msg.bot ? '<button class="chat-report" data-report="' + ref + '" title="' + esc(t("chat_report")) + '">🚩</button>' : "") +
           (!mine && !msg.bot && msg.userId ? '<button class="chat-block" data-block="' + esc(msg.userId) + '" data-bname="' + esc((msg.name || "?")) + '" title="' + esc(t("chat_block")) + '">🚫</button>' : "") +
           (!mine && msg.userId && u && u.admin ? '<button class="chat-banbtn" data-ban="' + esc(msg.userId) + '" data-bname="' + esc((msg.name || "?")) + '" title="' + esc(t("chat_ban")) + '">⛔</button>' : "") +
@@ -691,6 +773,10 @@
     listEl.querySelectorAll("[data-react]").forEach((b) =>
       b.addEventListener("click", () => showReactionPicker(b.getAttribute("data-react"), b))
     );
+    listEl.querySelectorAll("[data-save]").forEach((b) =>
+      b.addEventListener("click", () => { toggleSaved(b.getAttribute("data-save")); renderList(); })
+    );
+    if (searchQuery) highlightHits(searchQuery);
     listEl.querySelectorAll("[data-pin]").forEach((b) =>
       b.addEventListener("click", () => togglePin(b.getAttribute("data-pin")))
     );
@@ -746,6 +832,39 @@
       })
     );
     wireRoomBar();
+  }
+
+  /* Highlight search hits without disturbing formatText()'s markup: walk the
+     rendered text nodes and wrap the matches. Running a regex over the HTML
+     string would happily rewrite the inside of an href or a code block. */
+  function highlightHits(q) {
+    if (!q || !listEl) return;
+    listEl.querySelectorAll(".chat-text, .chat-name").forEach((host) => {
+      const walker = document.createTreeWalker(host, NodeFilter.SHOW_TEXT);
+      const nodes = [];
+      while (walker.nextNode()) nodes.push(walker.currentNode);
+      nodes.forEach((node) => {
+        /* code keeps its exact characters; link *text* is safe to mark since
+           we only ever touch text nodes, never the href attribute */
+        if (!node.parentNode || node.parentElement.closest("code, pre")) return;
+        const txt = node.nodeValue;
+        const lower = txt.toLowerCase();
+        if (lower.indexOf(q) < 0) return;
+        const frag = document.createDocumentFragment();
+        let pos = 0, i = lower.indexOf(q);
+        while (i >= 0) {
+          if (i > pos) frag.appendChild(document.createTextNode(txt.slice(pos, i)));
+          const mk = document.createElement("mark");
+          mk.className = "chat-hit";
+          mk.textContent = txt.slice(i, i + q.length);
+          frag.appendChild(mk);
+          pos = i + q.length;
+          i = lower.indexOf(q, pos);
+        }
+        if (pos < txt.length) frag.appendChild(document.createTextNode(txt.slice(pos)));
+        node.parentNode.replaceChild(frag, node);
+      });
+    });
   }
 
   function updateReplyBar() {

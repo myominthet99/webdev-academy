@@ -15,7 +15,7 @@
   const I18N = window.I18N;
   const KEY = "wda_chat_v1";
   const MAX = 200;
-  const BUILD = "v21"; /* shown in the chat header — bump with releases */
+  const BUILD = "v22"; /* shown in the chat header — bump with releases */
 
   /* Crisp inline SVG icons (emoji buttons render differently on every
      Android brand — these look identical everywhere) */
@@ -45,6 +45,7 @@
       pause: '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>',
       search: '<circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
       book: '<path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/>',
+      dots: '<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>',
     };
     return '<svg class="ci" viewBox="0 0 24 24" aria-hidden="true">' + (P[name] || "") + "</svg>";
   };
@@ -472,14 +473,28 @@
       '<button id="chat-fab" class="chat-fab" type="button" aria-label="Chat">' + ICON("chat") +
       '<span class="chat-badge" hidden>0</span></button>' +
       '<div id="chat-panel" class="chat-panel" hidden>' +
-      '  <div class="chat-head"><span class="chat-title"></span>' +
-      '    <span id="chat-ver" class="chat-ver" title="build · backend"></span>' +
-      '    <span id="chat-presence" class="chat-presence"></span>' +
-      '    <button class="chat-ico" id="chat-savedbtn" type="button" aria-pressed="false" aria-label="' + esc(t("chat_saved")) + '" title="' + esc(t("chat_saved")) + '">' + ICON("book") + "</button>" +
-      '    <button class="chat-ico" id="chat-searchbtn" type="button" aria-expanded="false" aria-controls="chat-searchbar" aria-label="' + esc(t("chat_search")) + '" title="' + esc(t("chat_search")) + '">' + ICON("search") + "</button>" +
-      '    <button class="chat-call" id="chat-call" type="button" aria-label="Video call" title="' + esc(t("call_title")) + '">' + ICON("video") + "</button>" +
-      '    <button class="chat-full" id="chat-full" type="button" aria-label="Fullscreen" title="Fullscreen">' + ICON("expand") + "</button>" +
-      '    <button class="chat-close" type="button" aria-label="Close">' + ICON("x") + "</button></div>" +
+      /* Header: identity on the left, three controls on the right. Anything
+         secondary lives in the ⋯ menu — five buttons plus a build chip made
+         this bar unreadable, especially with a long Burmese room name. */
+      '  <div class="chat-head">' +
+      '    <div class="chat-id">' +
+      '      <span class="chat-title"></span>' +
+      '      <span id="chat-presence" class="chat-presence"></span>' +
+      "    </div>" +
+      '    <div class="chat-tools">' +
+      '      <button class="chat-ico" id="chat-searchbtn" type="button" aria-expanded="false" aria-controls="chat-searchbar" aria-label="' + esc(t("chat_search")) + '" title="' + esc(t("chat_search")) + '">' + ICON("search") + "</button>" +
+      '      <div class="chat-menu">' +
+      '        <button class="chat-ico" id="chat-morebtn" type="button" aria-expanded="false" aria-haspopup="true" aria-controls="chat-moremenu" aria-label="' + esc(t("chat_more_menu")) + '" title="' + esc(t("chat_more_menu")) + '">' + ICON("dots") + "</button>" +
+      '        <div class="chat-moremenu" id="chat-moremenu" role="menu" hidden>' +
+      '          <button role="menuitem" type="button" class="chat-mi" id="chat-savedbtn" aria-pressed="false">' + ICON("book") + '<span>' + esc(t("chat_saved")) + '</span><i class="chat-mi-tick">✓</i></button>' +
+      '          <button role="menuitem" type="button" class="chat-mi" id="chat-call">' + ICON("video") + "<span>" + esc(t("call_title")) + "</span></button>" +
+      '          <button role="menuitem" type="button" class="chat-mi" id="chat-full">' + ICON("expand") + '<span id="chat-full-lbl">' + esc(t("chat_full")) + "</span></button>" +
+      '          <div class="chat-mi-ver"><span id="chat-ver" title="build · backend"></span></div>' +
+      "        </div>" +
+      "      </div>" +
+      '      <button class="chat-ico chat-close" type="button" aria-label="' + esc(t("chat_close")) + '" title="' + esc(t("chat_close")) + '">' + ICON("x") + "</button>" +
+      "    </div>" +
+      "  </div>" +
       '  <div class="chat-searchbar" id="chat-searchbar" hidden>' +
       '    <input id="chat-search" type="text" class="chat-search" autocomplete="off" spellcheck="false" placeholder="' + esc(t("chat_search_ph")) + '">' +
       '    <span class="chat-searchn" id="chat-searchn"></span>' +
@@ -500,8 +515,34 @@
     presenceEl = wrap.querySelector("#chat-presence");
     fab.addEventListener("click", () => setOpen(!open));
     wrap.querySelector(".chat-close").addEventListener("click", () => setOpen(false));
+    /* ⋯ overflow menu — holds everything that isn't search or close */
+    const moreBtn = wrap.querySelector("#chat-morebtn");
+    const moreMenu = wrap.querySelector("#chat-moremenu");
+    const closeMore = () => {
+      moreMenu.hidden = true;
+      moreBtn.setAttribute("aria-expanded", "false");
+      moreBtn.classList.remove("open");
+    };
+    moreBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const willOpen = moreMenu.hidden;
+      closeMore();
+      if (willOpen) {
+        moreMenu.hidden = false;
+        moreBtn.setAttribute("aria-expanded", "true");
+        moreBtn.classList.add("open");
+      }
+    });
+    document.addEventListener("click", (e) => {
+      if (!moreMenu.hidden && !e.target.closest(".chat-menu")) closeMore();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && !moreMenu.hidden) { closeMore(); moreBtn.focus(); }
+    });
+
     /* 📹 jump to the current room's video study call */
     wrap.querySelector("#chat-call").addEventListener("click", () => {
+      closeMore();
       setOpen(false);
       location.hash = "#/call/" + encodeURIComponent(room);
     });
@@ -509,12 +550,12 @@
     const fullBtn = wrap.querySelector("#chat-full");
     const applyFull = (on) => {
       panel.classList.toggle("full", on);
-      fullBtn.innerHTML = ICON("expand");
-      fullBtn.title = on ? "Exit fullscreen" : "Fullscreen";
+      const lbl = wrap.querySelector("#chat-full-lbl");
+      if (lbl) lbl.textContent = on ? t("chat_full_exit") : t("chat_full");
       try { localStorage.setItem("wda_chat_full", on ? "1" : ""); } catch (e) {}
       if (open) scrollBottom();
     };
-    fullBtn.addEventListener("click", () => applyFull(!panel.classList.contains("full")));
+    fullBtn.addEventListener("click", () => { applyFull(!panel.classList.contains("full")); closeMore(); });
     if (localStorage.getItem("wda_chat_full") === "1") applyFull(true);
     /* 🔍 Search this room. The filter already existed but nothing ever
        revealed the input — this is the toggle, the count and the reset. */
@@ -543,6 +584,10 @@
       savedOnly = !savedOnly;
       savedBtn.setAttribute("aria-pressed", savedOnly ? "true" : "false");
       savedBtn.classList.toggle("on", savedOnly);
+      /* the filter now lives behind ⋯, so the trigger has to show it's on —
+         otherwise a filtered room looks like an empty one */
+      moreBtn.classList.toggle("filtered", savedOnly);
+      closeMore();
       if (open) { renderList(); scrollBottom(); }
     });
     /* ⬇ jump-to-bottom chip: appears when scrolled up; counts new arrivals */
@@ -570,8 +615,13 @@
     };
     lbl("#chat-search", { placeholder: t("chat_search_ph") });
     lbl("#chat-searchbtn", { title: t("chat_search"), "aria-label": t("chat_search") });
-    lbl("#chat-savedbtn", { title: t("chat_saved"), "aria-label": t("chat_saved") });
     lbl("#chat-searchx", { "aria-label": t("chat_search_clear") });
+    lbl("#chat-morebtn", { title: t("chat_more_menu"), "aria-label": t("chat_more_menu") });
+    lbl(".chat-close", { title: t("chat_close"), "aria-label": t("chat_close") });
+    const txt = (sel, s) => { const el = panel.querySelector(sel); if (el) el.textContent = s; };
+    txt("#chat-savedbtn span", t("chat_saved"));
+    txt("#chat-call span", t("call_title"));
+    txt("#chat-full-lbl", panel.classList.contains("full") ? t("chat_full_exit") : t("chat_full"));
   }
 
   function renderPresence() {

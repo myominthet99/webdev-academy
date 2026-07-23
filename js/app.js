@@ -3387,7 +3387,10 @@
             }
           </div>
           <div class="reader">
-            <div class="muted" style="font-size:13px"><a href="#/course/${c.id}">← ${cf(c, "title")}</a></div>
+            <div class="lesson-top">
+              <a class="muted" style="font-size:13px" href="#/course/${c.id}">← ${cf(c, "title")}</a>
+              <button class="focus-btn no-print" id="focus-toggle" type="button" title="${escapeHtml(t("focus_hint"))}">📖 ${t("focus_mode")}</button>
+            </div>
             <h1>${lf(current, "title")}</h1>
             <p class="lesson-sub">${secTitle} · ${current.duration} · ⏱ ${t("spent")}: <span id="time-spent">${formatTime(loadLessonTime(current.id).total)}</span></p>
             ${previewMode ? `<div class="preview-banner">🎁 ${t("preview_free").replace("{n}", PREVIEW_LESSONS)} · <a href="#/premium">⭐ ${t("preview_unlock")}</a></div>` : ""}
@@ -3729,6 +3732,9 @@
 
     if (current.type === "quiz") wireQuiz(current, c);
     if (current.type === "exercise") wireExercise(current, c);
+
+    const focusBtn = app.querySelector("#focus-toggle");
+    if (focusBtn) focusBtn.addEventListener("click", enterFocus);
 
     /* Time tracking: start timer for this lesson */
     startLessonTimer(current.id);
@@ -9379,7 +9385,7 @@
       if (e.key === "ArrowDown") { e.preventDefault(); cmdkMove(1); }
       else if (e.key === "ArrowUp") { e.preventDefault(); cmdkMove(-1); }
       else if (e.key === "Enter") { e.preventDefault(); cmdkGo(cmdkSel); }
-      else if (e.key === "Escape") { e.preventDefault(); cmdkClose(); }
+      else if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); cmdkClose(); }
     });
     cmdkEl.addEventListener("click", (e) => { if (e.target === cmdkEl) cmdkClose(); });
     cmdkEl.querySelector(".cmdk-list").addEventListener("click", (e) => {
@@ -9443,6 +9449,38 @@
       sbar.appendChild(hint);
     }
   }
+
+  /* ---------------- 📖 Focus mode (distraction-free lesson reader) ---------
+     Hides the whole app chrome (bars, chat, sidebar, footer), centers and
+     enlarges the lesson. Esc or the ✕ button exits; navigating away exits. */
+  let focusEsc = null;
+  function enterFocus() {
+    document.body.classList.add("focus-mode");
+    let ex = document.getElementById("focus-exit");
+    if (!ex) {
+      ex = document.createElement("button");
+      ex.id = "focus-exit"; ex.type = "button"; ex.className = "focus-exit no-print";
+      ex.addEventListener("click", exitFocus);
+      document.body.appendChild(ex);
+    }
+    ex.innerHTML = "✕ " + escapeHtml(t("focus_exit"));
+    ex.hidden = false;
+    focusEsc = (e) => { if (e.key === "Escape") exitFocus(); };
+    document.addEventListener("keydown", focusEsc);
+    window.scrollTo(0, 0);
+  }
+  function exitFocus() {
+    if (!document.body.classList.contains("focus-mode")) return;
+    document.body.classList.remove("focus-mode");
+    const ex = document.getElementById("focus-exit");
+    if (ex) ex.hidden = true;
+    if (focusEsc) { document.removeEventListener("keydown", focusEsc); focusEsc = null; }
+  }
+  /* Only leaving the lesson flow exits — advancing to the next lesson keeps
+     focus mode on, otherwise every "Next lesson" click would drop out of it. */
+  window.addEventListener("hashchange", () => {
+    if (!location.hash.startsWith("#/learn/")) exitFocus();
+  });
 
   window.addEventListener("hashchange", router);
   applyTheme();

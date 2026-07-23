@@ -2728,6 +2728,43 @@ input[type="range"].tl-range { width: 100%; accent-color: var(--purple); }
 .cmdk-hint:hover { color: var(--purple); border-color: var(--purple); }
 @media (max-width: 640px) { .cmdk-hint { display: none; } }
 
+/* ---------- 📖 Focus mode (distraction-free lesson reader) ---------- */
+.lesson-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.focus-btn {
+  border: 1px solid var(--line); background: var(--surface); color: var(--muted);
+  border-radius: 999px; padding: 4px 12px; font-size: 12.5px; font-weight: 700;
+  cursor: pointer; white-space: nowrap; font-family: inherit;
+}
+.focus-btn:hover { color: var(--purple); border-color: var(--purple); }
+.focus-exit {
+  /* Below the overlay layer (cmdk / lightbox sit at 2000) so it never
+     floats on top of a dimmed modal. */
+  position: fixed; top: 14px; right: 16px; z-index: 1900;
+  background: var(--purple); color: #fff; border: 0; border-radius: 999px;
+  padding: 8px 16px; font-size: 13px; font-weight: 700; cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, .25); font-family: inherit;
+}
+.focus-exit:hover { background: var(--purple-dark); }
+
+body.focus-mode { background: #f4f1ea; }
+[data-theme="dark"] body.focus-mode { background: #0d0f11; }
+body.focus-mode .topbar,
+body.focus-mode #tabbar,
+body.focus-mode .site-footer,
+body.focus-mode #announce-bar,
+body.focus-mode #chat-widget,
+body.focus-mode #focus-toggle { display: none !important; }
+body.focus-mode #app { padding-bottom: 0 !important; }
+body.focus-mode .learn-wrap { display: block; max-width: 780px; margin: 0 auto; min-height: 0; }
+body.focus-mode .player-side { display: none !important; }
+body.focus-mode .player-main { background: transparent; color: inherit; }
+body.focus-mode .reader {
+  max-width: 720px; margin: 22px auto; border-radius: 16px;
+  font-size: 18px; box-shadow: 0 8px 34px rgba(0, 0, 0, .10);
+}
+body.focus-mode .reader h1 { font-size: 30px; }
+body.focus-mode .reader p, body.focus-mode .reader li { line-height: 1.9; }
+
 /* ---------- 📊 Weekly recap (#/recap) ---------- */
 .recap-hero { text-align: center; }
 .recap-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 6px; }
